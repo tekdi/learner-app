@@ -1,4 +1,4 @@
-# AwesomeProject
+# Learner App
 
 ## Project Overview
 
