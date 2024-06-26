@@ -68,6 +68,49 @@ To enhance your development experience, install the following VSCode extensions:
 - [Metro Documentation](https://facebook.github.io/metro/docs/getting-started)
 - [Android Studio Download](https://developer.android.com/studio)
 
+
+## Adding UI Kitten to Your Project
+
+UI Kitten is a React Native framework for creating modern, stylish, and customizable UI components. Follow these steps to add UI Kitten to your existing React Native project.
+
+### Installation
+
+1. **Install UI Kitten and Eva Design System**:
+    Open your terminal and navigate to your React Native project directory. Run the following commands to install UI Kitten and the Eva Design System:
+    ```sh
+    npm i @ui-kitten/components @eva-design/eva react-native-svg
+    ```
+
+2. **Install React Navigation**:
+    UI Kitten requires React Navigation for handling navigation within the app. Install the necessary packages using the following commands:
+    ```sh
+    npm install @react-navigation/native
+    npm install @react-navigation/native-stack
+    npm install react-native-screens react-native-safe-area-context
+    ```
+
+3. **Install Additional Peer Dependencies**:
+    To ensure everything works correctly, install additional peer dependencies for React Navigation:
+    ```sh
+    npm install react-native-gesture-handler react-native-reanimated
+    ```
+
+
+2. **Install Poppins Font**:
+   Follow the steps shown in the below link.
+ - [Custom Font](https://blog.logrocket.com/adding-custom-fonts-react-native/)
+
+
+### Additional Resources
+Please follow all the necessary steps as is shown in the below given link.
+- [UI Kitten Documentation](https://akveo.github.io/react-native-ui-kitten/)
+- [React Navigation Documentation](https://reactnavigation.org/docs/getting-started/)
+- [Eva Design System](https://eva.design/)
+
+### Troubleshooting
+
+- **UI Kitten components not displaying correctly**: Ensure that the `ApplicationProvider` is correctly wrapping your application and that you have imported and applied the theme correctly.
+- **Navigation issues**: Verify that you have installed all the necessary React Navigation packages and dependencies.
 ## Troubleshooting
 
 ### Common Issues
