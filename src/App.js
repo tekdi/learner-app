@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native'
 import React from 'react'
+import { View } from 'react-native'
 import LoadingScreen from './screens/LoadingScreen/LoadingScreen'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { NavigationContainer } from '@react-navigation/native'
@@ -9,6 +9,8 @@ import { ApplicationProvider } from '@ui-kitten/components'
 import * as eva from '@eva-design/eva'
 //importing custom theme for UI Kitten
 import theme from './assets/themes/theme.json'
+import RegisterScreen from './screens/RegisterScreen/RegisterScreen'
+import LoginSignUpScreen from './screens/LoginSignUpScreen/LoginSignUpScreen'
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +22,8 @@ const App = () => {
          <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName='LoadingScreen' >
             <Stack.Screen name='LoadingScreen' component={LoadingScreen}/>
             <Stack.Screen name='LanguageScreen' component={LanguageScreen}/>
+            <Stack.Screen  name='RegisterScreen' component={RegisterScreen} options={{headerShown: false, headerBackground: ()=>(<View style={{backgroundColor: 'white', flex: 1}}></View>) }}/>
+            <Stack.Screen  name='LoginSignUpScreen' component={LoginSignUpScreen} options={{headerShown: false, headerBackground: ()=>(<View style={{backgroundColor: 'white', flex: 1}}></View>) }}/>
         </Stack.Navigator>
     </NavigationContainer>
     </ApplicationProvider>

@@ -1,11 +1,14 @@
-import { View, StyleSheet, TextInput } from 'react-native'
+import { View, StyleSheet, TextInput, Text} from 'react-native'
 import React from 'react'
-import { Text } from '@ui-kitten/components'
-export default function CustomTextField({text, position="static"}) {
+
+
+const CustomTextField= ({text=" Hello World ", position="static", onChangeText, value}) => {
 
   return (
     <View style={styles.container}>
         <TextInput
+        onChangeText={onChangeText}
+        value={value}
         style={[styles.input, {position: position}]}
         />
         <View style={styles.overlap}>
@@ -14,11 +17,14 @@ export default function CustomTextField({text, position="static"}) {
     </View>
   )
 }
+export default CustomTextField
 const styles =StyleSheet.create({
     container: {
         width: "100%",
         alignItems: 'flex-start',
-        padding: 20,
+        paddingBottom: 5,
+        paddingLeft: 10,
+        paddingRight: 10,
         backgroundColor:'white'
     },
     input:{
@@ -36,6 +42,8 @@ const styles =StyleSheet.create({
     overlap:{
         top: -76,
         left: 13,
+        // top: -76,
+        // left: -120,
         backgroundColor: 'white'
     },
     text:{

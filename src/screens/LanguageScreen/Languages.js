@@ -1,4 +1,4 @@
-export const data = [
+export const languages = [
     {
         id: 0,
         title: 'English'
