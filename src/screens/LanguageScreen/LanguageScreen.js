@@ -4,17 +4,17 @@ import {  Layout, Text } from '@ui-kitten/components';
 import CustomCard from '../../components/CustomCard/CustomCard';
 import Logo from '../../assets/images/png/logo.png'
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
-import { data } from './Languages';
+import { languages } from './Languages';
 import { useNavigation } from '@react-navigation/native';
 
 const LanguageScreen = () => {
   const renderItem = ({ item }) => (
-    <CustomCard text={item.title} />
+    <CustomCard title={item.title} />
   );
 
   const navigation=useNavigation()
-  const handelethis=()=>{
-    navigation.navigate("HomeScreen")
+  const handlethis=()=>{
+    navigation.navigate("LoginSignUpScreen")
   }
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -33,11 +33,11 @@ const LanguageScreen = () => {
         <FlatList
         showsVerticalScrollIndicator={false}
           style={styles.list}
-          data={data}
+          data={languages}
           renderItem={renderItem}
           keyExtractor={item => item.id}
         />
-        <CustomBottomCard onPress={handelethis}/>
+        <CustomBottomCard onPress={handlethis}/>
       </Layout>
     </SafeAreaView>
   );

@@ -27,15 +27,8 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         height: 50,
         justifyContent: 'center'
-
     },
-    container: 
-    {
-        backgroundColor: 'white',
-         flex: 1, 
-         justifyContent:'center',
-         padding: 10
-    }
+  
 })
 
 export default CustomButton2
