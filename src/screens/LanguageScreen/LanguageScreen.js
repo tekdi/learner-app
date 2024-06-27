@@ -10,7 +10,7 @@ import { Layout, Text } from '@ui-kitten/components';
 import CustomCard from '../../components/CustomCard/CustomCard';
 import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
-import { data } from './Languages';
+import { languages } from './Languages';
 import { useNavigation } from '@react-navigation/native';
 //import config from '../../config';
 import Config from 'react-native-config';
@@ -20,12 +20,14 @@ console.log(`Debug Mode: ${Config.DEBUG_MODE}`);
 
 console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 const LanguageScreen = () => {
-  const renderItem = ({ item }) => <CustomCard text={item.title} />;
+  const renderItem = ({ item }) => (
+    <CustomCard title={item.title} />
+  );
 
-  const navigation = useNavigation();
-  const handelethis = () => {
-    navigation.navigate('HomeScreen');
-  };
+  const navigation=useNavigation()
+  const handlethis=()=>{
+    navigation.navigate("LoginSignUpScreen")
+  }
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar
@@ -48,11 +50,11 @@ const LanguageScreen = () => {
         <FlatList
           showsVerticalScrollIndicator={false}
           style={styles.list}
-          data={data}
+          data={languages}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
-        <CustomBottomCard onPress={handelethis} />
+        <CustomBottomCard onPress={handlethis}/>
       </Layout>
     </SafeAreaView>
   );

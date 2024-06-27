@@ -13,28 +13,23 @@ const CustomButton2 = () => {
   );
 };
 const styles = StyleSheet.create({
-  buttontext: {
-    textAlign: 'center',
-    fontSize: 17,
-    color: 'black',
-    width: '100%',
-    fontFamily: 'Poppins-Medium',
-  },
-  button: {
-    borderRadius: 30,
-    color: 'black',
-    backgroundColor: 'white',
-    borderColor: 'black',
-    borderWidth: 2,
-    height: 50,
-    justifyContent: 'center',
-  },
-  container: {
-    backgroundColor: 'white',
-    flex: 1,
-    justifyContent: 'center',
-    padding: 10,
-  },
-});
+    buttontext:{
+        textAlign:'center',
+        fontSize: 17,
+        color: 'black',
+        width: '100%',
+        fontFamily: 'Poppins-Medium',
+        },
+    button:{
+        borderRadius: 30,
+        color: 'black',
+        backgroundColor:'white',
+        borderColor:'black',
+        borderWidth: 2,
+        height: 50,
+        justifyContent: 'center'
+    },
+  
+})
 
-export default CustomButton2;
+export default CustomButton2

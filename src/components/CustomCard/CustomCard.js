@@ -1,32 +1,33 @@
-import PropTypes from 'prop-types';
-import { Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
-import { Card } from '@ui-kitten/components';
+import { View, Text, StyleSheet } from 'react-native';
 
-const CustomCard = ({ text, onPress }) => {
+const CustomCard = ({ title, style, bold }) => {
   return (
-    <TouchableOpacity onPress={onPress}>
-      <Card style={styles.card}>
-        <Text style={styles.text}>{text}</Text>
-      </Card>
-    </TouchableOpacity>
+    <View style={[styles.card, style]}>
+      <Text style={[styles.title, {fontFamily: bold==="bold" ? 'Poppins-Medium' : 'Poppins-Regular'}]}>{title}</Text>
+    </View>
   );
 };
-CustomCard.propTypes = {
-  text: PropTypes.string,
-  onPress: PropTypes.func,
-};
+
 const styles = StyleSheet.create({
   card: {
-    padding: 0,
-    textAlign: 'center',
+    paddingLeft: 20,
+    flex: 1,
+    height: 60,
+    justifyContent: 'center', // Center vertically
+    backgroundColor: 'white',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D0C5B4',
     margin: 10,
-    borderRadius: 20,
   },
-  text: {
-    color: 'black',
+  title: {
+    paddingTop:10,
     fontSize: 20,
+    color:'black',
     fontFamily: 'Poppins-Regular',
+    marginBottom: 8,
   },
 });
+
 export default CustomCard;
