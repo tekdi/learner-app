@@ -1,6 +1,6 @@
 import { View, Image, StyleSheet } from 'react-native'
 import React, { useEffect } from 'react'
-import Logo from '../../assets/images/logo-with-tagline.png'
+import Logo from '../../assets/images/png/logo-with-tagline.png'
 import { Spinner } from '@ui-kitten/components'
 import { useNavigation } from '@react-navigation/native'
 const LoadingScreen = () => {

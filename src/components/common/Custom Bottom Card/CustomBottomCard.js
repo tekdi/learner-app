@@ -1,6 +1,6 @@
 import { View, StyleSheet } from 'react-native'
 import React from 'react'
-import CustomButton from './CustomButton'
+import CustomButton from '../Custom Button/CustomButton'
 import { Layout , Text} from '@ui-kitten/components'
 
 const CustomBottomCard = ({onPress}) => {

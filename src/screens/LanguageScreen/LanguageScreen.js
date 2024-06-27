@@ -1,9 +1,9 @@
 import { FlatList, SafeAreaView, StatusBar, StyleSheet , Image} from 'react-native';
 import React from 'react';
 import {  Layout, Text } from '@ui-kitten/components';
-import CustomCard from '../../components/common/CustomCard';
-import Logo from '../../assets/images/logo.png'
-import CustomBottomCard from '../../components/common/CustomBottomCard';
+import CustomCard from '../../components/common/Custom Card/CustomCard';
+import Logo from '../../assets/images/png/logo.png'
+import CustomBottomCard from '../../components/common/Custom Bottom Card/CustomBottomCard';
 import { data } from './Languages';
 import { useNavigation } from '@react-navigation/native';
 
