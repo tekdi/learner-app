@@ -3,17 +3,21 @@ import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import CustomButton from '../CustomButton/CustomButton';
 import { Layout, Text } from '@ui-kitten/components';
+import { useTranslation } from '../../context/LanguageContext';
 
 const CustomBottomCard = ({ onPress }) => {
+  //multi language setup
+  const { t } = useTranslation();
+
   return (
     <View style={styles.overlap}>
       <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <CustomButton onPress={onPress} text="Continue"></CustomButton>
+        <CustomButton onPress={onPress} text={t('continue')}></CustomButton>
         <Text
           category="p2"
           style={{ color: '#635E57', fontFamily: 'Poppins-Regular' }}
         >
-          You can change the language any time later
+          {t('language_help')}
         </Text>
       </Layout>
     </View>

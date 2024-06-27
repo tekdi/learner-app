@@ -1,11 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 
-const CustomCard = ({ title, style, bold }) => {
+const CustomCard = ({ title, style, bold, clickEvent,value }) => {
   return (
-    <View style={[styles.card, style]}>
-      <Text style={[styles.title, {fontFamily: bold==="bold" ? 'Poppins-Medium' : 'Poppins-Regular'}]}>{title}</Text>
-    </View>
+    <TouchableOpacity onPress={() => clickEvent(value)}>
+      <View style={[styles.card, style]}>
+        <Text
+          style={[
+            styles.title,
+            {
+              fontFamily:
+                bold === 'bold' ? 'Poppins-Medium' : 'Poppins-Regular',
+            },
+          ]}
+        >
+          {title}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -22,9 +34,9 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   title: {
-    paddingTop:10,
+    paddingTop: 10,
     fontSize: 20,
-    color:'black',
+    color: 'black',
     fontFamily: 'Poppins-Regular',
     marginBottom: 8,
   },

@@ -12,22 +12,32 @@ import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
 import { languages } from './Languages';
 import { useNavigation } from '@react-navigation/native';
-//import config from '../../config';
+//import env variables
 import Config from 'react-native-config';
-console.log(`Current Environment: ${Config.ENV}`);
-console.log(`API URL: ${Config.API_URL}`);
-console.log(`Debug Mode: ${Config.DEBUG_MODE}`);
 
-console.log('process.env.NODE_ENV', process.env.NODE_ENV);
+//multi language
+import { useTranslation } from '../../context/LanguageContext';
+
 const LanguageScreen = () => {
+  //multi language setup
+  const { t, setLanguage } = useTranslation();
+  const changeLanguage = (lng) => {
+    setLanguage(lng);
+  };
+
   const renderItem = ({ item }) => (
-    <CustomCard title={item.title} />
+    <CustomCard
+      key={item.value}
+      title={item.title}
+      clickEvent={changeLanguage}
+      value={item.value}
+    />
   );
 
-  const navigation=useNavigation()
-  const handlethis=()=>{
-    navigation.navigate("LoginSignUpScreen")
-  }
+  const navigation = useNavigation();
+  const handlethis = () => {
+    navigation.navigate('LoginSignUpScreen');
+  };
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar
@@ -40,11 +50,11 @@ const LanguageScreen = () => {
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         {/* Text Samples here */}
         <Text category="s1" style={styles.title}>
-          Welcome! {Config.ENV}
+          {t('welcome')}
         </Text>
-        <Text style={styles.subtitle}>Let`s choose your language</Text>
+        <Text style={styles.subtitle}>{t('choose_language')}</Text>
         <Text category="p1" style={styles.description}>
-          Select the language you`re most comfortable with to get started
+          {t('select_language')}
         </Text>
         {/* List of Languages */}
         <FlatList
@@ -52,9 +62,9 @@ const LanguageScreen = () => {
           style={styles.list}
           data={languages}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.value}
         />
-        <CustomBottomCard onPress={handlethis}/>
+        <CustomBottomCard onPress={handlethis} />
       </Layout>
     </SafeAreaView>
   );

@@ -4,9 +4,13 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import CustomButton2 from '../../components/CustomButtonOutlined/CustomButtonOutlined';
 import CustomButton from '../../components/CustomButton/CustomButton';
+import { useTranslation } from '../../context/LanguageContext';
 
 
 const LoginSignUpScreen = () => {
+  //multi language setup
+  const { t } = useTranslation();
+
   const nav = useNavigation();
 
   const navigate = () => {
@@ -20,7 +24,7 @@ const LoginSignUpScreen = () => {
       </TouchableOpacity>
       <View style={styles.buttonContainer}>
 
-        <CustomButton text="I am a new user"  onPress={()=> {nav.navigate("RegisterScreen")}}/>
+        <CustomButton text={t('i_am_new_user')}  onPress={()=> {nav.navigate("RegisterScreen")}}/>
         <View style={{padding: 10}}></View>
         <CustomButton2 />
       </View>
