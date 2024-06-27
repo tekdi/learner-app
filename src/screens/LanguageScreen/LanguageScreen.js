@@ -12,8 +12,13 @@ import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
 import { data } from './Languages';
 import { useNavigation } from '@react-navigation/native';
-import { API_URL, ENV, DEBUG_MODE } from '@env';
+//import config from '../../config';
+import Config from 'react-native-config';
+console.log(`Current Environment: ${Config.ENV}`);
+console.log(`API URL: ${Config.API_URL}`);
+console.log(`Debug Mode: ${Config.DEBUG_MODE}`);
 
+console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 const LanguageScreen = () => {
   const renderItem = ({ item }) => <CustomCard text={item.title} />;
 
@@ -33,7 +38,7 @@ const LanguageScreen = () => {
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         {/* Text Samples here */}
         <Text category="s1" style={styles.title}>
-          Welcome!
+          Welcome! {Config.ENV}
         </Text>
         <Text style={styles.subtitle}>Let`s choose your language</Text>
         <Text category="p1" style={styles.description}>
