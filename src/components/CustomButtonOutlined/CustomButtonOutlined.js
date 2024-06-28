@@ -2,13 +2,13 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
 
-const CustomButton2 = () => {
+const CustomButton2 = ({onPress}) => {
   //multi language setup
   const { t } = useTranslation();
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.button}>
+      <Pressable style={styles.button} onPress={onPress}>
         <Text style={styles.buttontext}>{t('already_login')}</Text>
       </Pressable>
     </View>

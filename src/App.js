@@ -14,6 +14,8 @@ import LoginSignUpScreen from './screens/LoginSignUpScreen/LoginSignUpScreen';
 
 //multiple language
 import { LanguageProvider } from './context/LanguageContext'; // Adjust path as needed
+import LoginScreen from './screens/LoginScreen/LoginScreen';
+import ContinueRegisterScreen from './screens/ContinueRegisterScreen/ContinueRegisterScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,6 +52,9 @@ const App = () => {
                 ),
               }}
             />
+            <Stack.Screen name='LoginScreen' component={LoginScreen} options={{headerShown:false}}/>
+            <Stack.Screen name='ContinueRegisterScreen' component={ContinueRegisterScreen} options={{headerShown:false}}/>
+
           </Stack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>

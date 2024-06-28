@@ -10,6 +10,7 @@ import { gender } from './RegisterScreenData/gender';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import { Card } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
+import { preferredlanguages } from './RegisterScreenData/languages';
 
 const RegistrationFlow = ({ config }) => {
 
@@ -41,9 +42,7 @@ const RegistrationFlow = ({ config }) => {
     const backgroundColor = isSelected ? '#FFEFD5' : 'white';
     const bold = isSelected ? 'bold' : 'medium';
     return (
-      <TouchableOpacity onPress={() => handleItemPress(listId, item)}>
-        <CustomCard bold={bold} title={item.title} style={{ backgroundColor }} />
-      </TouchableOpacity>
+        <CustomCard bold={bold} title={item.title} style={{ backgroundColor }} clickEvent={()=> handleItemPress(listId, item)} />
     );
   };
 
@@ -96,13 +95,12 @@ const RegistrationFlow = ({ config }) => {
             />
           </View>
         );
-
       case 3:
         return (
           <View style={styles.containerswitch}>
             <FlatList
               showsVerticalScrollIndicator={false}
-              data={languages}
+              data={preferredlanguages}
               renderItem={renderItem('list3')}
               keyExtractor={item => item.id}
               extraData={selectedIds}
@@ -167,7 +165,7 @@ const RegistrationFlow = ({ config }) => {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
     else {
-        navigation.navigate("LanguageScreen")
+        navigation.navigate("LoginSignUpScreen")
     }
   };
 

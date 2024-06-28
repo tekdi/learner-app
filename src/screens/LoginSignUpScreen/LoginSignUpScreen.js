@@ -24,9 +24,9 @@ const LoginSignUpScreen = () => {
       </TouchableOpacity>
       <View style={styles.buttonContainer}>
 
-        <CustomButton text={t('i_am_new_user')}  onPress={()=> {nav.navigate("RegisterScreen")}}/>
+        <CustomButton text={t('i_am_new_user')}  onPress={()=> {nav.navigate("ContinueRegisterScreen")}}/>
         <View style={{padding: 10}}></View>
-        <CustomButton2 />
+        <CustomButton2 onPress={()=> {nav.navigate("LoginScreen")}}/>
       </View>
     </View>
   );
@@ -34,6 +34,7 @@ const LoginSignUpScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
+    padding: 10,
     flex: 1,
     backgroundColor: 'white',
   },

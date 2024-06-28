@@ -4,6 +4,8 @@ import {
   StatusBar,
   StyleSheet,
   Image,
+  ScrollView,
+  View,
 } from 'react-native';
 import React from 'react';
 import { Layout, Text } from '@ui-kitten/components';
@@ -57,13 +59,15 @@ const LanguageScreen = () => {
           {t('select_language')}
         </Text>
         {/* List of Languages */}
+        <View>
         <FlatList
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={true}
           style={styles.list}
           data={languages}
           renderItem={renderItem}
           keyExtractor={(item) => item.value}
         />
+        </View>
         <CustomBottomCard onPress={handlethis} />
       </Layout>
     </SafeAreaView>
@@ -99,7 +103,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   list: {
-    flex: 1,
+    height:"60%",
     marginTop: 20,
   },
 });

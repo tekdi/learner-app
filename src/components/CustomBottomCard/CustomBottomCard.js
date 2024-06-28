@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 3, height: 4 },
     shadowOpacity: 0.7, // Increase this value for a darker shadow
     shadowRadius: 10,
+    height: "13%"
   },
 });
 export default CustomBottomCard;
