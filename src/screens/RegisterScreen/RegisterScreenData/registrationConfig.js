@@ -1,3 +1,8 @@
+//multi language
+import { useTranslation } from '../../../context/LanguageContext'; // Adjust path as needed
+//multi language setup
+const { t } = useTranslation();
+
 export const registrationConfig = [
   {
     question: t('q1_name'),
