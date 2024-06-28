@@ -6,16 +6,16 @@ import CustomButton2 from '../../components/CustomButtonOutlined/CustomButtonOut
 import CustomButton from '../../components/CustomButton/CustomButton';
 import { useTranslation } from '../../context/LanguageContext';
 
-import Logo from '../../assets/images/png/logo.png';
+import UserImage from '../../assets/images/gif/face.gif';
 
-const LoginSignUpScreen = () => {
+const RegisterStart = () => {
   //multi language setup
   const { t } = useTranslation();
 
   const nav = useNavigation();
 
   const navigate = () => {
-    nav.navigate('LanguageScreen');
+    nav.goBack();
   };
 
   return (
@@ -29,18 +29,16 @@ const LoginSignUpScreen = () => {
       </TouchableOpacity>
       {/* Icon png here */}
       <View style={styles.container_image}>
-        <Image style={styles.image} source={Logo} resizeMode="contain" />
-        <Text style={styles.title}>{t('let_log_in')}</Text>
+        <Image style={styles.image} source={UserImage} resizeMode="contain" />
+        <Text style={styles.title}>{t('form_start_lable')}</Text>
       </View>
       <View style={styles.buttonContainer}>
         <CustomButton
-          text={t('i_am_new_user')}
+          text={t('continue')}
           onPress={() => {
-            nav.navigate('RegisterStart');
+            nav.navigate('RegisterScreen');
           }}
         />
-        <View style={{ padding: 10 }}></View>
-        <CustomButton2 />
       </View>
     </View>
   );
@@ -48,13 +46,12 @@ const LoginSignUpScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
     flex: 1,
     backgroundColor: 'white',
   },
   backbutton: {
     position: 'absolute',
-    top: 10,
+    top: 95,
     left: 20,
     zIndex: 1,
   },
@@ -66,11 +63,11 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   image: {
-    height: 60,
-    width: 60,
+    height: 80,
+    width: 80,
   },
   container_image: {
-    marginTop: 150,
+    marginTop: 200,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -83,4 +80,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginSignUpScreen;
+export default RegisterStart;

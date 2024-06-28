@@ -1,15 +1,14 @@
 import { View, Image, StyleSheet } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Logo from '../../assets/images/png/logo-with-tagline.png';
 import { Spinner } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
-const LoadingScreen = () => {
-  const navigation = useNavigation();
+const LoadingScreen = ({ navigation }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.navigate('LanguageScreen');
-    }, 1000);
+      navigation.replace('LanguageScreen');
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [navigation]);
