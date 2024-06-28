@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
+import { getAccessToken } from '../../utils/API/ApiCalls';
 
 const CustomButton2 = () => {
   //multi language setup
@@ -8,9 +9,15 @@ const CustomButton2 = () => {
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={async () => {
+          let token = await getAccessToken();
+          console.log('token', token);
+        }}
+      >
         <Text style={styles.buttontext}>{t('already_login')}</Text>
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 };

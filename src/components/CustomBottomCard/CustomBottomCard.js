@@ -10,16 +10,18 @@ const CustomBottomCard = ({ onPress }) => {
   const { t } = useTranslation();
 
   return (
-    <View style={styles.overlap}>
-      <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <CustomButton onPress={onPress} text={t('continue')}></CustomButton>
-        <Text
-          category="p2"
-          style={{ color: '#635E57', fontFamily: 'Poppins-Regular' }}
-        >
-          {t('language_help')}
-        </Text>
-      </Layout>
+    <View>
+      <View style={styles.overlap}>
+        <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <CustomButton onPress={onPress} text={t('continue')}></CustomButton>
+          <Text
+            category="p2"
+            style={{ color: '#635E57', fontFamily: 'Poppins-Regular' }}
+          >
+            {t('language_help')}
+          </Text>
+        </Layout>
+      </View>
     </View>
   );
 };
@@ -28,20 +30,19 @@ CustomBottomCard.propTypes = {
 };
 const styles = StyleSheet.create({
   overlap: {
-    position: 'absolute',
+    flexGrow: 1,
+    justifyContent: 'space-between',
+    flexDirection: 'column',
     bottom: 0,
     left: 0,
     right: 0,
+    top: 5,
     backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 3,
+    padding: 5,
+    borderRadius: 0,
     borderWidth: 0.7,
-    elevation: 10,
-    borderColor: '#cccccc',
-    shadowColor: '#000000',
-    shadowOffset: { width: 3, height: 4 },
-    shadowOpacity: 0.7, // Increase this value for a darker shadow
-    shadowRadius: 10,
+    borderColor: '#ffffff',
+    borderTopColor: '#cccccc',
   },
 });
 export default CustomBottomCard;

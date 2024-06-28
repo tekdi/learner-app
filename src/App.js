@@ -11,6 +11,7 @@ import * as eva from '@eva-design/eva';
 import theme from './assets/themes/theme.json';
 import RegisterScreen from './screens/RegisterScreen/RegisterScreen';
 import LoginSignUpScreen from './screens/LoginSignUpScreen/LoginSignUpScreen';
+import RegisterStart from './screens/RegisterStart/RegisterStart';
 
 //multiple language
 import { LanguageProvider } from './context/LanguageContext'; // Adjust path as needed
@@ -50,6 +51,7 @@ const App = () => {
                 ),
               }}
             />
+            <Stack.Screen name="RegisterStart" component={RegisterStart} />
           </Stack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>

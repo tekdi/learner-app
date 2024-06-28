@@ -12,6 +12,7 @@ import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
 import { languages } from './Languages';
 import { useNavigation } from '@react-navigation/native';
+import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 //import env variables
 import Config from 'react-native-config';
 
@@ -20,7 +21,7 @@ import { useTranslation } from '../../context/LanguageContext';
 
 const LanguageScreen = () => {
   //multi language setup
-  const { t, setLanguage } = useTranslation();
+  const { t, setLanguage, language } = useTranslation();
   const changeLanguage = (lng) => {
     setLanguage(lng);
   };
@@ -31,6 +32,7 @@ const LanguageScreen = () => {
       title={item.title}
       clickEvent={changeLanguage}
       value={item.value}
+      active={item.value == language ? true : false}
     />
   );
 
@@ -50,7 +52,7 @@ const LanguageScreen = () => {
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         {/* Text Samples here */}
         <Text category="s1" style={styles.title}>
-          {t('welcome')}
+          {t('welcome')}! 😊
         </Text>
         <Text style={styles.subtitle}>{t('choose_language')}</Text>
         <Text category="p1" style={styles.description}>
@@ -64,6 +66,7 @@ const LanguageScreen = () => {
           renderItem={renderItem}
           keyExtractor={(item) => item.value}
         />
+        <HorizontalLine />
         <CustomBottomCard onPress={handlethis} />
       </Layout>
     </SafeAreaView>

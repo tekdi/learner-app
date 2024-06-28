@@ -1,10 +1,10 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 
-const CustomCard = ({ title, style, bold, clickEvent,value }) => {
+const CustomCard = ({ title, style, bold, clickEvent, value, active }) => {
   return (
     <TouchableOpacity onPress={() => clickEvent(value)}>
-      <View style={[styles.card, style]}>
+      <View style={active ? [styles.cardActive, style] : [styles.card, style]}>
         <Text
           style={[
             styles.title,
@@ -28,6 +28,17 @@ const styles = StyleSheet.create({
     height: 60,
     justifyContent: 'center', // Center vertically
     backgroundColor: 'white',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D0C5B4',
+    margin: 10,
+  },
+  cardActive: {
+    paddingLeft: 20,
+    flex: 1,
+    height: 60,
+    justifyContent: 'center', // Center vertically
+    backgroundColor: '#FFEFD5',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#D0C5B4',

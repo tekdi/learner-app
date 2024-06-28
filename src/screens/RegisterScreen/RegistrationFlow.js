@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View,Image, StyleSheet, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import HeaderComponent from '../../components/CustomHeaderComponent/customheadercomponent';
 import { ages } from './RegisterScreenData/ages';
@@ -11,44 +19,52 @@ import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import { Card } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
 
+//multi language
+import { useTranslation } from '../../context/LanguageContext';
+
 const RegistrationFlow = ({ config }) => {
+  //multi language setup
+  const { t } = useTranslation();
 
-
-  const navigation = useNavigation()  
+  const navigation = useNavigation();
   const [formData, setFormData] = useState({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedIds, setSelectedIds] = useState({});
 
   const handleItemPress = (listId, item) => {
-    console.log(listId)
-    if(listId==='list1'){   
-      handleChange("Age Group", item.title)
+    console.log(listId);
+    if (listId === 'list1') {
+      handleChange('Age Group', item.title);
+    } else if (listId === 'list2') {
+      handleChange('Gender', item.title);
+    } else if (listId === 'list3') {
+      handleChange('Language of Learning', item.title);
     }
-    else if(listId==='list2'){
-      handleChange("Gender", item.title)
-    }
-    else if(listId==='list3'){
-      handleChange("Language of Learning", item.title)
-    }
-    setSelectedIds(prevSelectedIds => ({
+    setSelectedIds((prevSelectedIds) => ({
       ...prevSelectedIds,
       [listId]: item.id,
     }));
   };
 
-  const renderItem = listId => ({ item }) => {
-    const isSelected = selectedIds[listId] === item.id;
-    const backgroundColor = isSelected ? '#FFEFD5' : 'white';
-    const bold = isSelected ? 'bold' : 'medium';
-    return (
-      <TouchableOpacity onPress={() => handleItemPress(listId, item)}>
-        <CustomCard bold={bold} title={item.title} style={{ backgroundColor }} />
-      </TouchableOpacity>
-    );
-  };
+  const renderItem =
+    (listId) =>
+    ({ item }) => {
+      const isSelected = selectedIds[listId] === item.id;
+      const backgroundColor = isSelected ? '#FFEFD5' : 'white';
+      const bold = isSelected ? 'bold' : 'medium';
+      return (
+        <TouchableOpacity onPress={() => handleItemPress(listId, item)}>
+          <CustomCard
+            bold={bold}
+            title={item.title}
+            style={{ backgroundColor }}
+          />
+        </TouchableOpacity>
+      );
+    };
 
   const handleChange = (question, value) => {
-    setFormData(prevState => ({
+    setFormData((prevState) => ({
       ...prevState,
       [question]: value,
     }));
@@ -59,14 +75,14 @@ const RegistrationFlow = ({ config }) => {
         return (
           <View style={styles.containerswitch}>
             <CustomTextField
-              text='First Name'
-              onChangeText={text => handleChange("First Name", text)}
-              value={formData["First Name"] || ""}
+              text={t('lb_first_name')}
+              onChangeText={(text) => handleChange('First Name', text)}
+              value={formData['First Name'] || ''}
             />
             <CustomTextField
-              text='Last Name'
-              onChangeText={text => handleChange("Last Name", text)}
-              value={formData["Last Name"] || ""}
+              text={t('lb_last_name')}
+              onChangeText={(text) => handleChange('Last Name', text)}
+              value={formData['Last Name'] || ''}
             />
           </View>
         );
@@ -78,7 +94,7 @@ const RegistrationFlow = ({ config }) => {
               showsVerticalScrollIndicator={false}
               data={ages}
               renderItem={renderItem('list1')}
-              keyExtractor={item => item.id}
+              keyExtractor={(item) => item.id}
               extraData={selectedIds}
             />
           </View>
@@ -91,7 +107,7 @@ const RegistrationFlow = ({ config }) => {
               showsVerticalScrollIndicator={false}
               data={gender}
               renderItem={renderItem('list2')}
-              keyExtractor={item => item.id}
+              keyExtractor={(item) => item.id}
               extraData={selectedIds}
             />
           </View>
@@ -104,7 +120,7 @@ const RegistrationFlow = ({ config }) => {
               showsVerticalScrollIndicator={false}
               data={languages}
               renderItem={renderItem('list3')}
-              keyExtractor={item => item.id}
+              keyExtractor={(item) => item.id}
               extraData={selectedIds}
             />
           </View>
@@ -113,40 +129,38 @@ const RegistrationFlow = ({ config }) => {
       case 4:
         return (
           <View style={styles.containerswitch}>
-            <View style={{flexDirection: 'row'}}>
-            <Card style={{width:"53%", margin: 5}}></Card>
-            <Card style={{width:"25%", margin: 5}}></Card>
-            <Card style={{width:"12%", margin: 5}}></Card>
+            <View style={{ flexDirection: 'row' }}>
+              <Card style={{ width: '53%', margin: 5 }}></Card>
+              <Card style={{ width: '25%', margin: 5 }}></Card>
+              <Card style={{ width: '12%', margin: 5 }}></Card>
             </View>
-            <View style={{flexDirection: 'row'}}>
-            <Card style={{width:"20%", margin: 5}}></Card>
-            <Card style={{width:"20%", margin: 5}}></Card>
-
+            <View style={{ flexDirection: 'row' }}>
+              <Card style={{ width: '20%', margin: 5 }}></Card>
+              <Card style={{ width: '20%', margin: 5 }}></Card>
             </View>
-            <Card style={{width:"20%", margin: 5}}></Card>
-            <Card style={{width:"45%",margin: 5}}></Card>
-            <Card style={{width:"50%",margin: 5}}></Card>
-            <Card style={{width:"60%", margin: 5}}></Card>
-
+            <Card style={{ width: '20%', margin: 5 }}></Card>
+            <Card style={{ width: '45%', margin: 5 }}></Card>
+            <Card style={{ width: '50%', margin: 5 }}></Card>
+            <Card style={{ width: '60%', margin: 5 }}></Card>
           </View>
         );
       case 5:
         return (
           <View style={styles.containerswitch}>
             <CustomTextField
-              text='Customize your username'
-              onChangeText={text => handleChange("Username", text)}
-              value={formData["Username"] || ""}
+              text="Customize your username"
+              onChangeText={(text) => handleChange('Username', text)}
+              value={formData['Username'] || ''}
             />
             <CustomTextField
-              text='Password'
-              onChangeText={text => handleChange("Password", text)}
-              value={formData["Password"] || ""}
+              text="Password"
+              onChangeText={(text) => handleChange('Password', text)}
+              value={formData['Password'] || ''}
             />
             <CustomTextField
-              text='Confirm Password'
-              onChangeText={text => handleChange("Confirm Password", text)}
-              value={formData["Confirm Password"] || ""}
+              text="Confirm Password"
+              onChangeText={(text) => handleChange('Confirm Password', text)}
+              value={formData['Confirm Password'] || ''}
             />
           </View>
         );
@@ -165,9 +179,8 @@ const RegistrationFlow = ({ config }) => {
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
-    }
-    else {
-        navigation.navigate("LanguageScreen")
+    } else {
+      navigation.goBack();
     }
   };
 
@@ -179,16 +192,22 @@ const RegistrationFlow = ({ config }) => {
 
   return (
     <KeyboardAvoidingView
-    style={styles.container}
-    behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >   
-
-    {/* Back Button** */}
-       <TouchableOpacity style={styles.backbutton} onPress={handlePrevious}>
-        <Image source={backIcon} resizeMode='contain' style={{ width: 30, height: 30,}}/>
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      {/* Back Button** */}
+      <TouchableOpacity style={styles.backbutton} onPress={handlePrevious}>
+        <Image
+          source={backIcon}
+          resizeMode="contain"
+          style={{ width: 30, height: 30 }}
+        />
       </TouchableOpacity>
 
-
-      <HeaderComponent question={currentQuestion["question"]} questionIndex={currentQuestionIndex + 1} />
+      <HeaderComponent
+        question={currentQuestion['question']}
+        questionIndex={currentQuestionIndex + 1}
+      />
       {renderQuestionContent()}
       <View style={styles.buttonContainer}>
         {currentQuestionIndex < config.length - 1 ? (
@@ -197,7 +216,7 @@ const RegistrationFlow = ({ config }) => {
           </View>
         ) : (
           <View style={styles.buttonWrapper}>
-          <CustomButton text="Finish" onPress={handleSubmit} />
+            <CustomButton text="Finish" onPress={handleSubmit} />
           </View>
         )}
       </View>
@@ -223,7 +242,7 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     marginBottom: 40,
-    width: "100%",
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },
