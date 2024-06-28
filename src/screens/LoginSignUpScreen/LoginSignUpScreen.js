@@ -48,6 +48,7 @@ const LoginSignUpScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
+    padding: 10,
     flex: 1,
     backgroundColor: 'white',
   },

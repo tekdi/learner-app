@@ -15,6 +15,8 @@ import RegisterStart from './screens/RegisterStart/RegisterStart';
 
 //multiple language
 import { LanguageProvider } from './context/LanguageContext'; // Adjust path as needed
+import LoginScreen from './screens/LoginScreen/LoginScreen';
+import ContinueRegisterScreen from './screens/ContinueRegisterScreen/ContinueRegisterScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -52,6 +54,9 @@ const App = () => {
               }}
             />
             <Stack.Screen name="RegisterStart" component={RegisterStart} />
+            <Stack.Screen name='LoginScreen' component={LoginScreen} options={{headerShown:false}}/>
+            <Stack.Screen name='ContinueRegisterScreen' component={ContinueRegisterScreen} options={{headerShown:false}}/>
+
           </Stack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>

@@ -3,19 +3,13 @@ import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
 import { getAccessToken } from '../../utils/API/ApiCalls';
 
-const CustomButton2 = () => {
+const CustomButton2 = ({onPress}) => {
   //multi language setup
   const { t } = useTranslation();
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={async () => {
-          let token = await getAccessToken();
-          console.log('token', token);
-        }}
-      >
+      <TouchableOpacity style={styles.button} onPress={onPress}>
         <Text style={styles.buttontext}>{t('already_login')}</Text>
       </TouchableOpacity>
     </View>
