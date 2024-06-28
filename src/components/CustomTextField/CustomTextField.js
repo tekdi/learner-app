@@ -15,7 +15,7 @@ const CustomTextField= ({text=" Hello World ", position="static", onChangeText, 
         <Text style={styles.text}> {text} </Text>
       </View>
     </View>
-  )
+  );
 }
 export default CustomTextField
 const styles =StyleSheet.create({
