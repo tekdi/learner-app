@@ -2,7 +2,6 @@ import { View, TouchableOpacity, Image, StyleSheet, Text } from 'react-native';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import CustomButton2 from '../../components/CustomButtonOutlined/CustomButtonOutlined';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import { useTranslation } from '../../context/LanguageContext';
 

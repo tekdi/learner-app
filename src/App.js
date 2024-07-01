@@ -22,9 +22,9 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  useEffect(()=> {
+  useEffect(() => {
     changeNavigationBarColor('white', { barStyle: 'light-content' });
-  })
+  });
   return (
     <LanguageProvider>
       {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
@@ -58,9 +58,21 @@ const App = () => {
               }}
             />
             <Stack.Screen name="RegisterStart" component={RegisterStart} />
-            <Stack.Screen name='LoginScreen' component={LoginScreen} options={{headerShown:true, headerTitle:"Login", headerBackVisible:false, headerTitleAlign:'center'}}/>
-            <Stack.Screen name='ContinueRegisterScreen' component={ContinueRegisterScreen} options={{headerShown:false}}/>
-
+            <Stack.Screen
+              name="LoginScreen"
+              component={LoginScreen}
+              options={{
+                headerShown: true,
+                headerTitle: 'Login',
+                headerBackVisible: false,
+                headerTitleAlign: 'center',
+              }}
+            />
+            <Stack.Screen
+              name="ContinueRegisterScreen"
+              component={ContinueRegisterScreen}
+              options={{ headerShown: false }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>

@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native'
 import React from 'react'
 import CustomTextField from '../../components/CustomTextField/CustomTextField'
-import { Button, CheckBox } from '@ui-kitten/components'
+import { CheckBox } from '@ui-kitten/components'
 import backIcon from '../../assets/images/png/arrow-back-outline.png'
 import CustomButton from '../../components/CustomButton/CustomButton'
 import { useNavigation } from '@react-navigation/native'

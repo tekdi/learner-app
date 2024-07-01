@@ -1,7 +1,6 @@
-import { View, Text, StyleSheet, FlatList, ScrollView, Touchable, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { fields } from '../../screens/RegisterScreen/RegisterScreenData/interestedfields'
-import { Card } from '@ui-kitten/components'
 
 const InterestedCardsComponent = () => {
 
