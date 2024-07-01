@@ -58,20 +58,20 @@ const styles = StyleSheet.create({
   buttonContainer: {
     padding: 10,
     flex: 1,
-    marginBottom: 100,
     justifyContent: 'flex-end',
-    paddingBottom: 40,
+    marginBottom: 16,
   },
   image: {
     height: 80,
     width: 80,
   },
   container_image: {
-    marginTop: 200,
+    marginTop: 300,
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
+    color:'black',
     fontSize: 20,
     fontFamily: 'Poppins-Regular',
     marginTop: 15,

@@ -12,16 +12,15 @@ import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import HeaderComponent from '../../components/CustomHeaderComponent/customheadercomponent';
 import { ages } from './RegisterScreenData/ages';
 import CustomButton from '../../components/CustomButton/CustomButton';
-import { languages } from '../LanguageScreen/Languages';
 import CustomCard from '../../components/CustomCard/CustomCard';
 import { gender } from './RegisterScreenData/gender';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
-import { Card } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
 import { preferredlanguages } from './RegisterScreenData/languages';
 
 //multi language
 import { useTranslation } from '../../context/LanguageContext';
+import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
 
 const RegistrationFlow = ({ config }) => {
   //multi language setup
@@ -120,20 +119,8 @@ const RegistrationFlow = ({ config }) => {
 
       case 4:
         return (
-          <View style={styles.containerswitch}>
-            <View style={{ flexDirection: 'row' }}>
-              <Card style={{ width: '53%', margin: 5 }}></Card>
-              <Card style={{ width: '25%', margin: 5 }}></Card>
-              <Card style={{ width: '12%', margin: 5 }}></Card>
-            </View>
-            <View style={{ flexDirection: 'row' }}>
-              <Card style={{ width: '20%', margin: 5 }}></Card>
-              <Card style={{ width: '20%', margin: 5 }}></Card>
-            </View>
-            <Card style={{ width: '20%', margin: 5 }}></Card>
-            <Card style={{ width: '45%', margin: 5 }}></Card>
-            <Card style={{ width: '50%', margin: 5 }}></Card>
-            <Card style={{ width: '60%', margin: 5 }}></Card>
+          <View style={{flex:1, margin: 5}}>
+           <InterestedCardsComponent/>
           </View>
         );
       case 5:
@@ -233,7 +220,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonWrapper: {
-    marginBottom: 40,
+    marginTop:14,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',

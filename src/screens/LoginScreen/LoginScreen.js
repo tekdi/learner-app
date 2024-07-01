@@ -32,7 +32,7 @@ const LoginScreen = () => {
             <Text style={{color:'black',fontFamily:'Poppins-Regular', fontSize: 17}}>Remember me</Text>
         </View>
         </View>
-        <View style={{ position:'absolute', bottom: 25, padding: 20, alignSelf:'center'}}>
+        <View style={{ position:'absolute', bottom: 10, padding: 10, alignSelf:'center'}}>
         <CustomButton text="Login" onPress={()=> {
             navigation.navigate("LoginSignUpScreen")
         }}/>
