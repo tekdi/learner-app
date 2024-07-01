@@ -4,8 +4,8 @@ import { fields } from '../../screens/RegisterScreen/RegisterScreenData/interest
 
 const InterestedCardsComponent = () => {
 
-    const [selectedId, setIds]= useState([]);
-    const [formData, setFormData]=useState({})
+    const [selectedId]= useState([]);
+    const [formData]=useState({})
 
 
     const Pressed=(item)=> {

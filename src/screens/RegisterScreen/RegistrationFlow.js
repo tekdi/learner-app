@@ -22,7 +22,7 @@ import { preferredlanguages } from './RegisterScreenData/languages';
 import { useTranslation } from '../../context/LanguageContext';
 import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
 
-const RegistrationFlow = ({ config }) => {
+const RegistrationFlow = ({ config}) => {
   //multi language setup
   const { t } = useTranslation();
 
