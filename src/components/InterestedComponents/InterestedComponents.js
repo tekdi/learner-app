@@ -4,7 +4,7 @@ import { fields } from '../../screens/RegisterScreen/RegisterScreenData/interest
 
 const InterestedCardsComponent = () => {
 
-    const [selectedId]= useState([]);
+    const [selectedId,setIds]= useState([]);
     const [formData]=useState({})
 
 
