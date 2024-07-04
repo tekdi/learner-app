@@ -1,42 +1,123 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-import { fields } from '../../screens/RegisterScreen/RegisterScreenData/interestedfields'
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
+import React, { useEffect } from 'react';
+import { useController } from 'react-hook-form';
 
-const InterestedCardsComponent = () => {
+const InterestedCardsComponent = ({
+  field,
+  control,
+  name,
+  errors,
+  setSelectedIds,
+  selectedIds,
+}) => {
+  const {
+    field: { onChange, value },
+  } = useController({ name, control });
 
-    const [selectedId,setIds]= useState([]);
-    const [formData]=useState({})
-
-
-    const Pressed=(item)=> {
-        if(selectedId.includes(item.id)){
-            setIds((prevIds) => prevIds.filter((id) => id !== item.id));   
-            }
-        else {
-            console.log(formData) 
-            setIds((prevIds) => [...prevIds, item.id])
-            }
+  const handlePress = (name, id) => {
+    const newSelectedIds = { ...selectedIds };
+    if (newSelectedIds[name] && newSelectedIds[name].includes(id)) {
+      newSelectedIds[name] = newSelectedIds[name].filter((item) => item !== id);
+    } else {
+      if (!newSelectedIds[name]) {
+        newSelectedIds[name] = [];
+      }
+      newSelectedIds[name].push(id);
     }
 
+    setSelectedIds(newSelectedIds);
+    onChange(newSelectedIds[name]); // Trigger validation
+  };
+
+  useEffect(() => {
+    if (value) {
+      setSelectedIds((prevSelectedIds) => ({
+        ...prevSelectedIds,
+        [name]: value,
+      }));
+    }
+  }, [value]);
   return (
     <View style={styles.container}>
-        <Text style={{color:'black', fontFamily:'Poppins-Regular', paddingLeft: 10}}>Choose at least 3</Text>
-        <ScrollView>
-            <View style={{flexWrap: 'wrap', flexDirection:'row', marginTop:10}}>
-                {fields.map((item)=> (
-                    <TouchableOpacity key={item.id} onPress={()=> {Pressed(item)}} style={{marginTop: 3}}>
-                    <View  style={{ backgroundColor: selectedId.includes(item.id)? '#FEEDA1': 'white' ,margin: 5, padding:7, borderRadius: 10, height: 40, borderWidth:1, borderColor:'#DADADA'}}><Text style={{color:'black', fontSize: 16, fontFamily:'Poppins-Medium'}}>{item.title}</Text></View>
-                    </TouchableOpacity>
-                ))}
-            </View>
-        </ScrollView>
+      <Text style={styles.title}>{field.label}</Text>
+      <ScrollView>
+        <View style={styles.cardContainer}>
+          {field.options.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              onPress={() => {
+                handlePress(name, item.id);
+              }}
+              style={styles.touchable}
+            >
+              <View
+                style={[
+                  styles.card,
+                  selectedIds[name] &&
+                    selectedIds[name].includes(item.id) &&
+                    styles.selectedCard,
+                ]}
+              >
+                <Text style={styles.cardText}>{item.title}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+        {errors[name] && (
+          <Text style={styles.error}>{errors[name].message}</Text>
+        )}
+      </ScrollView>
     </View>
-  )
-}
-const styles =StyleSheet.create({
-    container: {
-        marginTop: 30,
-    },
- 
-})
-export default InterestedCardsComponent
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 10,
+  },
+  error: {
+    color: 'red',
+    fontFamily: 'Poppins-Medium',
+    fontSize: 18,
+    padding: 10,
+  },
+  title: {
+    color: 'black',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 15,
+    paddingLeft: 10,
+  },
+  cardContainer: {
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  touchable: {
+    marginTop: 3,
+  },
+  card: {
+    backgroundColor: 'white',
+    margin: 5,
+    padding: 7,
+    borderRadius: 10,
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#DADADA',
+  },
+  selectedCard: {
+    backgroundColor: '#FEEDA1',
+  },
+  cardText: {
+    color: 'black',
+    fontSize: 16,
+    fontFamily: 'Poppins-Medium',
+  },
+});
+
+export default InterestedCardsComponent;

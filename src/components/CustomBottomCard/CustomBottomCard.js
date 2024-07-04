@@ -16,7 +16,12 @@ const CustomBottomCard = ({ onPress }) => {
           <CustomButton onPress={onPress} text={t('continue')}></CustomButton>
           <Text
             category="p2"
-            style={{ marginTop: 5,color: '#635E57', fontFamily: 'Poppins-Regular' }}
+            style={{
+              marginTop: 10,
+              color: '#635E57',
+              fontFamily: 'Poppins-Regular',
+              textAlign: 'center',
+            }}
           >
             {t('language_help')}
           </Text>

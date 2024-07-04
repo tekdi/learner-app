@@ -4,170 +4,187 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import * as yup from 'yup';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import HeaderComponent from '../../components/CustomHeaderComponent/customheadercomponent';
-import { ages } from './RegisterScreenData/ages';
 import CustomButton from '../../components/CustomButton/CustomButton';
-import CustomCard from '../../components/CustomCard/CustomCard';
-import { gender } from './RegisterScreenData/gender';
+import CustomCards from '../../components/CustomCard/CustomCard';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import { useNavigation } from '@react-navigation/native';
-import { preferredlanguages } from './RegisterScreenData/languages';
 
 //multi language
 import { useTranslation } from '../../context/LanguageContext';
-import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
 
-const RegistrationFlow = ({ config}) => {
+import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
+import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
+
+const buildYupSchema = (form) => {
+  const shape = {};
+  form.fields.forEach((field) => {
+    if (field.validation) {
+      let validator;
+      switch (field.type) {
+        case 'text':
+        case 'password':
+          validator = yup.string();
+          if (field.validation.required) {
+            validator = validator.required(`${field.label} is required`);
+          }
+          if (field.validation.minLength) {
+            validator = validator.min(
+              field.validation.minLength,
+              `${field.label} must be at least ${field.validation.minLength} characters`
+            );
+          }
+          if (field.validation.maxLength) {
+            validator = validator.max(
+              field.validation.maxLength,
+              `${field.label} must be at most ${field.validation.maxLength} characters`
+            );
+          }
+          if (field.validation.match) {
+            validator = validator.oneOf(
+              [yup.ref('password'), null],
+              'Passwords must match'
+            );
+          }
+          if (field.validation.pattern) {
+            validator = validator.matches(
+              /^[A-Za-z]+$/,
+              `${field.label} can only contain letters`
+            );
+          }
+          break;
+        case 'singleCard':
+          validator = yup
+            .string()
+            .required(`At least one selection is required`);
+          break;
+        // Add other field types as needed...
+        case 'multipleCard':
+          validator = yup
+            .array()
+            .min(
+              field.validation.minSelection,
+              `At least ${field.validation.minSelection} cards must be selected`
+            )
+            .required(`${field.label} selection is required`);
+          break;
+        default:
+      }
+      shape[field.name] = validator;
+    }
+  });
+  return yup.object().shape(shape);
+};
+
+const RegistrationFlow = ({ schema }) => {
   //multi language setup
   const { t } = useTranslation();
+  //dynamic schema for json object validation
 
+  const stepSchema = schema.map(buildYupSchema);
   const navigation = useNavigation();
-  const [formData, setFormData] = useState({});
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedIds, setSelectedIds] = useState({});
+  const [currentForm, setCurrentForm] = useState(1);
+  const currentschema = stepSchema[currentForm - 1];
 
-  const handleItemPress = (listId, item) => {
-    console.log(listId);
-    if (listId === 'list1') {
-      handleChange('Age Group', item.title);
-    } else if (listId === 'list2') {
-      handleChange('Gender', item.title);
-    } else if (listId === 'list3') {
-      handleChange('Language of Learning', item.title);
-    }
-    setSelectedIds((prevSelectedIds) => ({
-      ...prevSelectedIds,
-      [listId]: item.id,
-    }));
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(currentschema),
+    defaultValues: {
+      firstname: '',
+      lastname: '',
+      username: '',
+      password: '',
+      repeatpassword: '',
+    },
+  });
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+  const renderFields = (fields) => {
+    return fields.map((field, index) => {
+      switch (field.type) {
+        case 'text':
+          return (
+            <View key={index} style={styles.inputContainer}>
+              <CustomTextField
+                field={field}
+                control={control}
+                errors={errors}
+              />
+            </View>
+          );
+        case 'password':
+          return (
+            <View key={index} style={styles.inputContainer}>
+              <CustomPasswordTextField
+                field={field}
+                control={control}
+                secureTextEntry={true}
+                errors={errors}
+              />
+            </View>
+          );
+        case 'singleCard':
+          return (
+            <View style={styles.inputContainer} key={field.name}>
+              <CustomCards
+                field={field}
+                name={field.name}
+                errors={errors}
+                control={control}
+                secureTextEntry={true}
+                setSelectedIds={setSelectedIds}
+                selectedIds={selectedIds}
+              />
+            </View>
+          );
+        case 'multipleCard':
+          return (
+            <View style={styles.inputContainer} key={field.name}>
+              <InterestedCardsComponent
+                field={field}
+                name={field.name}
+                control={control}
+                selectedIds={selectedIds}
+                setSelectedIds={setSelectedIds}
+                errors={errors}
+              />
+            </View>
+          );
+        default:
+          return null;
+      }
+    });
   };
 
-  const renderItem = listId => ({ item }) => {
-    const isSelected = selectedIds[listId] === item.id;
-    const backgroundColor = isSelected ? '#FFEFD5' : 'white';
-    const bold = isSelected ? 'bold' : 'medium';
-    return (
-        <CustomCard bold={bold} title={item.title} style={{ backgroundColor }} clickEvent={()=> handleItemPress(listId, item)} />
-    );
-  };
-
-  const handleChange = (question, value) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [question]: value,
-    }));
-  };
-  const renderQuestionContent = () => {
-    switch (currentQuestionIndex) {
-      case 0:
-        return (
-          <View style={styles.containerswitch}>
-            <CustomTextField
-              text={t('lb_first_name')}
-              onChangeText={(text) => handleChange('First Name', text)}
-              value={formData['First Name'] || ''}
-            />
-            <CustomTextField
-              text={t('lb_last_name')}
-              onChangeText={(text) => handleChange('Last Name', text)}
-              value={formData['Last Name'] || ''}
-            />
-          </View>
-        );
-
-      case 1:
-        return (
-          <View style={styles.containerswitch}>
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              data={ages}
-              renderItem={renderItem('list1')}
-              keyExtractor={(item) => item.id}
-              extraData={selectedIds}
-            />
-          </View>
-        );
-
-      case 2:
-        return (
-          <View style={styles.containerswitch}>
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              data={gender}
-              renderItem={renderItem('list2')}
-              keyExtractor={(item) => item.id}
-              extraData={selectedIds}
-            />
-          </View>
-        );
-      case 3:
-        return (
-          <View style={styles.containerswitch}>
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              data={preferredlanguages}
-              renderItem={renderItem('list3')}
-              keyExtractor={(item) => item.id}
-              extraData={selectedIds}
-            />
-          </View>
-        );
-
-      case 4:
-        return (
-          <View style={{flex:1, margin: 5}}>
-           <InterestedCardsComponent/>
-          </View>
-        );
-      case 5:
-        return (
-          <View style={styles.containerswitch}>
-            <CustomTextField
-              text="Customize your username"
-              onChangeText={(text) => handleChange('Username', text)}
-              value={formData['Username'] || ''}
-            />
-            <CustomTextField
-              text="Password"
-              onChangeText={(text) => handleChange('Password', text)}
-              value={formData['Password'] || ''}
-            />
-            <CustomTextField
-              text="Confirm Password"
-              onChangeText={(text) => handleChange('Confirm Password', text)}
-              value={formData['Confirm Password'] || ''}
-            />
-          </View>
-        );
-
-      default:
-        return null;
+  const nextForm = (data) => {
+    console.log(data);
+    if (currentForm < schema.length) {
+      setCurrentForm(currentForm + 1);
     }
   };
 
-  const handleNext = () => {
-    if (currentQuestionIndex < config.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+  const prevForm = () => {
+    if (currentForm > 1) {
+      setCurrentForm(currentForm - 1);
     } else {
       navigation.goBack();
     }
   };
 
-  const handleSubmit = () => {
-    console.warn('Form Data:', formData);
-  };
-
-  const currentQuestion = config[currentQuestionIndex];
+  const currentSchema = schema.find((form) => form.formNumber === currentForm);
 
   return (
     <KeyboardAvoidingView
@@ -175,7 +192,7 @@ const RegistrationFlow = ({ config}) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* Back Button** */}
-      <TouchableOpacity style={styles.backbutton} onPress={handlePrevious}>
+      <TouchableOpacity style={styles.backbutton} onPress={prevForm}>
         <Image
           source={backIcon}
           resizeMode="contain"
@@ -184,19 +201,21 @@ const RegistrationFlow = ({ config}) => {
       </TouchableOpacity>
 
       <HeaderComponent
-        question={currentQuestion['question']}
-        questionIndex={currentQuestionIndex + 1}
+        question={currentSchema.question}
+        questionIndex={currentForm}
+        totalForms={schema.length}
       />
-      {renderQuestionContent()}
+      <View style={{ margin: 10 }}></View>
+      {schema
+        .filter((form) => form.formNumber === currentForm)
+        .map((form, index) => (
+          <View key={index}>{renderFields(form.fields)}</View>
+        ))}
       <View style={styles.buttonContainer}>
-        {currentQuestionIndex < config.length - 1 ? (
-          <View style={styles.buttonWrapper}>
-            <CustomButton text="Continue" onPress={handleNext} />
-          </View>
+        {currentForm < schema.length ? (
+          <CustomButton text={t('continue')} onPress={handleSubmit(nextForm)} />
         ) : (
-          <View style={styles.buttonWrapper}>
-            <CustomButton text="Finish" onPress={handleSubmit} />
-          </View>
+          <CustomButton text={t('finish')} onPress={handleSubmit(onSubmit)} />
         )}
       </View>
     </KeyboardAvoidingView>
@@ -209,22 +228,26 @@ const styles = StyleSheet.create({
     margin: 20,
     backgroundColor: 'white',
   },
-  backbutton: {
-    // Add specific styles if needed
-  },
-  containerswitch: {
-    flex: 1,
-    marginTop: 30,
+  inputContainer: {
+    marginTop: 5,
+    Bottom: 16,
   },
   buttonContainer: {
-    alignItems: 'center',
-  },
-  buttonWrapper: {
-    marginTop:14,
+    position: 'absolute',
+    bottom: 10,
     width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
+  card: {
+    padding: 16,
+    borderWidth: 1,
+    borderRadius: 4,
+    marginVertical: 8,
+  },
+  input: {
+    borderWidth: 1,
+    padding: 8,
+    borderRadius: 4,
+  },
+  backbutton: {},
 });
-
 export default RegistrationFlow;

@@ -40,7 +40,11 @@ const LoginSignUpScreen = () => {
           }}
         />
         <View style={{ padding: 10 }}></View>
-        <CustomButton2 onPress={()=> {nav.navigate("LoginScreen")}} />
+        <CustomButton2
+          onPress={() => {
+            nav.navigate('LoginScreen');
+          }}
+        />
       </View>
     </View>
   );
@@ -74,7 +78,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    color:'black',
+    color: 'black',
     fontSize: 20,
     fontFamily: 'Poppins-Medium',
     marginTop: 15,

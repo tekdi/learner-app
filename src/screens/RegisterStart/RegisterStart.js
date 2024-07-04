@@ -4,7 +4,6 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import { useTranslation } from '../../context/LanguageContext';
-
 import UserImage from '../../assets/images/gif/face.gif';
 
 const RegisterStart = () => {
@@ -46,6 +45,7 @@ const RegisterStart = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     backgroundColor: 'white',
   },
   backbutton: {
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    color:'black',
+    color: 'black',
     fontSize: 20,
     fontFamily: 'Poppins-Regular',
     marginTop: 15,

@@ -4,22 +4,20 @@ import {
   StatusBar,
   StyleSheet,
   Image,
-  ScrollView,
   View,
 } from 'react-native';
 import React from 'react';
 import { Layout, Text } from '@ui-kitten/components';
-import CustomCard from '../../components/CustomCard/CustomCard';
 import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
 import { languages } from './Languages';
 import { useNavigation } from '@react-navigation/native';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 //import env variables
-import Config from 'react-native-config';
 
 //multi language
 import { useTranslation } from '../../context/LanguageContext';
+import CustomCardLanguage from '../../components/CustomCardLanguage/CustomCardLanguage';
 
 const LanguageScreen = () => {
   //multi language setup
@@ -29,12 +27,12 @@ const LanguageScreen = () => {
   };
 
   const renderItem = ({ item }) => (
-    <CustomCard
+    <CustomCardLanguage
       key={item.value}
       title={item.title}
       clickEvent={changeLanguage}
       value={item.value}
-      active={item.value == language ? true : false}
+      active={item.value == language}
     />
   );
 
@@ -63,7 +61,7 @@ const LanguageScreen = () => {
         {/* List of Languages */}
         <View>
           <FlatList
-            showsVerticalScrollIndicator={true}
+            showsVerticalScrollIndicator={false}
             style={styles.list}
             data={languages}
             renderItem={renderItem}
