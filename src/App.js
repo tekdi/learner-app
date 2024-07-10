@@ -17,6 +17,8 @@ import RegisterStart from './screens/RegisterStart/RegisterStart';
 import { LanguageProvider } from './context/LanguageContext'; // Adjust path as needed
 import LoginScreen from './screens/LoginScreen/LoginScreen';
 import ContinueRegisterScreen from './screens/ContinueRegisterScreen/ContinueRegisterScreen';
+import PlayerScreen from './screens/PlayerScreen/PlayerScreen';
+import QuMLPlayer from './screens/PlayerScreen/QuMLPlayer';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +35,26 @@ const App = () => {
           >
             <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
             <Stack.Screen name="LanguageScreen" component={LanguageScreen} />
+            <Stack.Screen
+              name="PlayerScreen"
+              component={PlayerScreen}
+              options={{
+                headerShown: false,
+                headerBackground: () => (
+                  <View style={{ backgroundColor: 'white', flex: 1 }}></View>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="QuMLPlayer"
+              component={QuMLPlayer}
+              options={{
+                headerShown: false,
+                headerBackground: () => (
+                  <View style={{ backgroundColor: 'white', flex: 1 }}></View>
+                ),
+              }}
+            />
             <Stack.Screen
               name="RegisterScreen"
               component={RegisterScreen}
@@ -54,9 +76,16 @@ const App = () => {
               }}
             />
             <Stack.Screen name="RegisterStart" component={RegisterStart} />
-            <Stack.Screen name='LoginScreen' component={LoginScreen} options={{headerShown:false}}/>
-            <Stack.Screen name='ContinueRegisterScreen' component={ContinueRegisterScreen} options={{headerShown:false}}/>
-
+            <Stack.Screen
+              name="LoginScreen"
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ContinueRegisterScreen"
+              component={ContinueRegisterScreen}
+              options={{ headerShown: false }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>

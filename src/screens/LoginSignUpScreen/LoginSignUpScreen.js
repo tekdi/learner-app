@@ -41,6 +41,13 @@ const LoginSignUpScreen = () => {
         />
         <View style={{ padding: 10 }}></View>
         <CustomButton2 />
+        <View style={{ padding: 10 }}></View>
+        <CustomButton
+          text={'PlayerScreen'}
+          onPress={() => {
+            nav.navigate('PlayerScreen');
+          }}
+        />
       </View>
     </View>
   );
