@@ -1,17 +1,15 @@
-import React from 'react'
+import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import RegistrationFlow from './RegistrationFlow';
-import { registrationConfig } from './RegisterScreenData/registrationConfig';
-
+import { schema } from './RegisterScreenData/registrationConfig';
 
 const RegisterScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
-          <RegistrationFlow config={registrationConfig}/>
+      <RegistrationFlow schema={schema} />
     </SafeAreaView>
-    
-  )
-}
+  );
+};
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
@@ -27,4 +25,4 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 });
-export default RegisterScreen
+export default RegisterScreen;

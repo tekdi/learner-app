@@ -100,6 +100,13 @@ UI Kitten is a React Native framework for creating modern, stylish, and customiz
    Follow the steps shown in the below link.
  - [Custom Font](https://blog.logrocket.com/adding-custom-fonts-react-native/)
 
+3. **Install Necessary Packages**:
+   Use --legacy-peer-deps where necessary
+   Follow the steps shown in the below link.
+ - [Yup](https://www.npmjs.com/package/yup)
+ - [React-hook-form](https://react-hook-form.com/)
+ - [Eva Icons](https://akveo.github.io/eva-icons/#/)
+ - [@hookform/resolvers/yup](https://www.npmjs.com/package/@hookform/resolvers)
 
 ### Additional Resources
 Please follow all the necessary steps as is shown in the below given link.

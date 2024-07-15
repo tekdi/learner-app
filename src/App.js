@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import LoadingScreen from './screens/LoadingScreen/LoadingScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -17,10 +17,14 @@ import RegisterStart from './screens/RegisterStart/RegisterStart';
 import { LanguageProvider } from './context/LanguageContext'; // Adjust path as needed
 import LoginScreen from './screens/LoginScreen/LoginScreen';
 import ContinueRegisterScreen from './screens/ContinueRegisterScreen/ContinueRegisterScreen';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
+  useEffect(() => {
+    changeNavigationBarColor('white', { barStyle: 'light-content' });
+  });
   return (
     <LanguageProvider>
       {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
@@ -54,9 +58,21 @@ const App = () => {
               }}
             />
             <Stack.Screen name="RegisterStart" component={RegisterStart} />
-            <Stack.Screen name='LoginScreen' component={LoginScreen} options={{headerShown:false}}/>
-            <Stack.Screen name='ContinueRegisterScreen' component={ContinueRegisterScreen} options={{headerShown:false}}/>
-
+            <Stack.Screen
+              name="LoginScreen"
+              component={LoginScreen}
+              options={{
+                headerShown: true,
+                headerTitle: 'Login',
+                headerBackVisible: false,
+                headerTitleAlign: 'center',
+              }}
+            />
+            <Stack.Screen
+              name="ContinueRegisterScreen"
+              component={ContinueRegisterScreen}
+              options={{ headerShown: false }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </ApplicationProvider>

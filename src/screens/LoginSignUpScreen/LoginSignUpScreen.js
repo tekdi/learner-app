@@ -40,7 +40,11 @@ const LoginSignUpScreen = () => {
           }}
         />
         <View style={{ padding: 10 }}></View>
-        <CustomButton2 />
+        <CustomButton2
+          onPress={() => {
+            nav.navigate('LoginScreen');
+          }}
+        />
       </View>
     </View>
   );
@@ -61,22 +65,22 @@ const styles = StyleSheet.create({
   buttonContainer: {
     padding: 10,
     flex: 1,
-    marginBottom: 100,
     justifyContent: 'flex-end',
-    paddingBottom: 40,
+    paddingBottom: 20,
   },
   image: {
     height: 60,
     width: 60,
   },
   container_image: {
-    marginTop: 150,
+    marginTop: 200,
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
+    color: 'black',
     fontSize: 20,
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'Poppins-Medium',
     marginTop: 15,
     fontWeight: '1000',
     textAlign: 'center',

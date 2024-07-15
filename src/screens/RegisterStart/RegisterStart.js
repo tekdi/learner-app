@@ -2,10 +2,8 @@ import { View, TouchableOpacity, Image, StyleSheet, Text } from 'react-native';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import CustomButton2 from '../../components/CustomButtonOutlined/CustomButtonOutlined';
 import CustomButton from '../../components/CustomButton/CustomButton';
 import { useTranslation } from '../../context/LanguageContext';
-
 import UserImage from '../../assets/images/gif/face.gif';
 
 const RegisterStart = () => {
@@ -47,6 +45,7 @@ const RegisterStart = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     backgroundColor: 'white',
   },
   backbutton: {
@@ -58,20 +57,20 @@ const styles = StyleSheet.create({
   buttonContainer: {
     padding: 10,
     flex: 1,
-    marginBottom: 100,
     justifyContent: 'flex-end',
-    paddingBottom: 40,
+    marginBottom: 16,
   },
   image: {
     height: 80,
     width: 80,
   },
   container_image: {
-    marginTop: 200,
+    marginTop: 300,
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
+    color: 'black',
     fontSize: 20,
     fontFamily: 'Poppins-Regular',
     marginTop: 15,
