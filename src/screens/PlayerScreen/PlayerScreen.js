@@ -41,6 +41,13 @@ const PlayerScreen = () => {
           nav.navigate('QuMLPlayer');
         }}
       />
+      <View style={{ padding: 10 }}></View>
+      <CustomButton
+        text={'Pdf Player'}
+        onPress={() => {
+          nav.navigate('PdfPlayer');
+        }}
+      />
     </View>
   );
 };

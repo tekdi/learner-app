@@ -18,7 +18,8 @@ import { LanguageProvider } from './context/LanguageContext'; // Adjust path as 
 import LoginScreen from './screens/LoginScreen/LoginScreen';
 import ContinueRegisterScreen from './screens/ContinueRegisterScreen/ContinueRegisterScreen';
 import PlayerScreen from './screens/PlayerScreen/PlayerScreen';
-import QuMLPlayer from './screens/PlayerScreen/QuMLPlayer';
+import QuMLPlayer from './screens/PlayerScreen/QuMLPlayer/QuMLPlayer';
+import PdfPlayer from './screens/PlayerScreen/PdfPlayer/PdfPlayer';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +49,16 @@ const App = () => {
             <Stack.Screen
               name="QuMLPlayer"
               component={QuMLPlayer}
+              options={{
+                headerShown: false,
+                headerBackground: () => (
+                  <View style={{ backgroundColor: 'white', flex: 1 }}></View>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="PdfPlayer"
+              component={PdfPlayer}
               options={{
                 headerShown: false,
                 headerBackground: () => (
