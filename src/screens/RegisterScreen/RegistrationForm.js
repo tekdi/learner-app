@@ -105,12 +105,12 @@ const RegistrationForm = ({ schema }) => {
   } = useForm({
     resolver: yupResolver(currentschema),
     defaultValues: {
-      firstname: 'vicky',
+      firstname: '',
       lastname: '',
       username: '',
       password: '',
       repeatpassword: '',
-      multiplecards: [0, 1, 2, 3],
+      multiplecards: [],
     },
   });
 
