@@ -2,22 +2,24 @@ import { View, StyleSheet, TextInput, Text } from 'react-native';
 import { useState, React } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { TouchableWithoutFeedback } from '@ui-kitten/components/devsupport';
+import { useTranslation } from '../../context/LanguageContext';
 
 const LoginTextField = ({ text, position = 'static', onChangeText, value }) => {
   const [passwordView, setPasswordView] = useState(false);
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <TextInput
-        secureTextEntry={text === 'Password' && !passwordView}
+        secureTextEntry={text === 'password' && !passwordView}
         onChangeText={onChangeText}
         value={value}
         style={[styles.input, { position: position }]}
       />
 
       <View style={styles.overlap}>
-        <Text style={styles.text}> {text} </Text>
+        <Text style={styles.text}> {t(text)} </Text>
       </View>
-      {text === 'Password' && (
+      {text === 'password' && (
         <TouchableWithoutFeedback
           onPress={() => {
             setPasswordView(!passwordView);

@@ -52,5 +52,9 @@
   "login": "लॉगिन",
   "content":"विषय-वस्तु",
   "courses":"पाठ्यक्रम",
-  "profile":"प्रोफ़ाइल"
+  "profile":"प्रोफ़ाइल",
+  "username":"उपयोगकर्ता",
+  "password":"पासवर्ड",
+  "forgot_password":"पासवर्ड भूल गया",
+  "remember_me":"मुझे याद रखिए।"
 }

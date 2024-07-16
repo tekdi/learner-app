@@ -1,28 +1,19 @@
 import React, { useEffect } from 'react';
-import { Alert, BackHandler, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, StyleSheet, Text, View } from 'react-native';
 import Header from '../../components/Layout/Header';
+import { backAction } from '../../utils/JsHelper/Helper';
+import { useNavigation } from '@react-navigation/native';
 
 const Dashboard = () => {
+  const navigation = useNavigation();
+
   useEffect(() => {
-    const backAction = () => {
-      Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
-        {
-          text: 'Cancel',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        { text: 'YES', onPress: () => BackHandler.exitApp() },
-      ]);
-      return true; // Prevent default behavior (exiting the app)
+    BackHandler.addEventListener('backAction', backAction);
+
+    return () => {
+      BackHandler.removeEventListener('backAction', backAction);
     };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction
-    );
-
-    return () => backHandler.remove(); // Clean up the subscription on unmount
-  }, []);
+  }, [navigation]);
 
   return (
     <>

@@ -19,9 +19,11 @@ import {
   saveToken,
 } from '../../utils/JsHelper/Helper';
 import LoginTextField from '../../components/LoginTextField/LoginTextField';
+import { useTranslation } from '../../context/LanguageContext';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
@@ -90,13 +92,13 @@ const LoginScreen = () => {
       </TouchableOpacity>
       <View style={styles.textfieldbox}>
         <LoginTextField
-          text="Username"
+          text="username"
           onChangeText={onChangeText}
           value={userName}
         />
         <View style={{ padding: 10 }}></View>
         <LoginTextField
-          text="Password"
+          text="password"
           onChangeText={onChangePassword}
           value={password}
         />
@@ -112,7 +114,7 @@ const LoginScreen = () => {
             fontSize: 15,
           }}
         >
-          Forgot Password?
+          {t('forgot_password')}
         </Text>
       </TouchableOpacity>
       <View style={styles.rembox}>
@@ -132,7 +134,7 @@ const LoginScreen = () => {
               fontSize: 17,
             }}
           >
-            Remember me
+            {t('remember_me')}
           </Text>
         </View>
       </View>
@@ -145,7 +147,7 @@ const LoginScreen = () => {
         }}
       >
         <PrimaryButton
-          text="Login"
+          text={t('login')}
           onPress={() => {
             handleLogin();
           }}

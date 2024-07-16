@@ -52,5 +52,9 @@
   "login": "Login",
   "content":"Content",
   "courses":"Courses",
-  "profile":"Profile"
+  "profile":"Profile",
+  "username":"Username",
+  "password":"Password",
+  "forgot_password":"Forgot Password",
+  "remember_me":"Remember Me"
 }

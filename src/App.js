@@ -21,7 +21,10 @@ import RegisterStart from './screens/RegisterStart/RegisterStart';
 import { LanguageProvider, useTranslation } from './context/LanguageContext'; // Adjust path as needed
 import LoginScreen from './screens/LoginScreen/LoginScreen';
 import ContinueRegisterScreen from './screens/ContinueRegisterScreen/ContinueRegisterScreen';
-import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import {
+  changeNavigationBarColor,
+  hideNavigationBar,
+} from 'react-native-navigation-bar-color';
 import Dashboard from './screens/Dashboard/Dashboard';
 import Profile from './screens/Dashboard/Profile';
 import Courses from './screens/Dashboard/Courses';
@@ -92,7 +95,8 @@ function HomeScreen() {
 
 const App = () => {
   useEffect(() => {
-    changeNavigationBarColor('white', { barStyle: 'light-content' });
+    // changeNavigationBarColor('white', { barStyle: 'light-content' });
+    hideNavigationBar();
   });
   return (
     <LanguageProvider>
