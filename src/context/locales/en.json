@@ -49,5 +49,8 @@
   "lb_pass": "Password",
   "lb_conf_pass": "Confirm Password",
   "customize_dashboard_message": "Customizing your dashboard for you..",
-  "login": "Login"
+  "login": "Login",
+  "content":"Content",
+  "courses":"Courses",
+  "profile":"Profile"
 }

@@ -6,7 +6,7 @@ import {
   Image,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Layout, Text } from '@ui-kitten/components';
 import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
@@ -18,13 +18,48 @@ import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 //multi language
 import { useTranslation } from '../../context/LanguageContext';
 import CustomCardLanguage from '../../components/CustomCardLanguage/CustomCardLanguage';
+import {
+  getRefreshToken,
+  getSavedToken,
+  saveRefreshToken,
+  saveToken,
+} from '../../utils/JsHelper/Helper';
+import { getAccessToken, refreshToken } from '../../utils/API/AuthService';
+import LoadingScreen from '../LoadingScreen/LoadingScreen';
 
 const LanguageScreen = () => {
   //multi language setup
   const { t, setLanguage, language } = useTranslation();
+  const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+
   const changeLanguage = (lng) => {
     setLanguage(lng);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = await getSavedToken();
+      const refresh_token = await getRefreshToken();
+      if (token?.token) {
+        const current_token = await getAccessToken();
+        if (current_token === 'successful') {
+          // navigation.navigate('Dashboard');
+        } else {
+          const data = await refreshToken({
+            refresh_token: refresh_token?.token,
+          });
+          await saveToken(data?.access_token);
+          await saveRefreshToken(data?.refresh_token);
+          navigation.navigate('Dashboard');
+        }
+      } else {
+        setLoading(false);
+      }
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
 
   const renderItem = ({ item }) => (
     <CustomCardLanguage
@@ -36,11 +71,13 @@ const LanguageScreen = () => {
     />
   );
 
-  const navigation = useNavigation();
   const handlethis = () => {
     navigation.navigate('LoginSignUpScreen');
   };
-  return (
+
+  return loading ? (
+    <LoadingScreen />
+  ) : (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar
         barStyle="dark-content"

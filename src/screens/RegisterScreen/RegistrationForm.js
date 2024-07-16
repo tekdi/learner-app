@@ -12,8 +12,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import HeaderComponent from '../../components/CustomHeaderComponent/customheadercomponent';
-import CustomButton from '../../components/CustomButton/CustomButton';
 import CustomCards from '../../components/CustomCard/CustomCard';
+import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import { useNavigation } from '@react-navigation/native';
 
@@ -73,7 +73,11 @@ const buildYupSchema = (form) => {
               field.validation.minSelection,
               `At least ${field.validation.minSelection} cards must be selected`
             )
-            .required(`${field.label} selection is required`);
+            .required(`${field.label} selection is required`)
+            .max(
+              field.validation.maxSelection,
+              `Max ${field.validation.maxSelection} cards can be selected`
+            );
           break;
         default:
       }
@@ -83,7 +87,7 @@ const buildYupSchema = (form) => {
   return yup.object().shape(shape);
 };
 
-const RegistrationFlow = ({ schema }) => {
+const RegistrationForm = ({ schema }) => {
   //multi language setup
   const { t } = useTranslation();
   //dynamic schema for json object validation
@@ -101,11 +105,12 @@ const RegistrationFlow = ({ schema }) => {
   } = useForm({
     resolver: yupResolver(currentschema),
     defaultValues: {
-      firstname: '',
+      firstname: 'vicky',
       lastname: '',
       username: '',
       password: '',
       repeatpassword: '',
+      multiplecards: [0, 1, 2, 3],
     },
   });
 
@@ -117,7 +122,7 @@ const RegistrationFlow = ({ schema }) => {
       switch (field.type) {
         case 'text':
           return (
-            <View key={index} style={styles.inputContainer}>
+            <View key={field?.name} style={styles.inputContainer}>
               <CustomTextField
                 field={field}
                 control={control}
@@ -127,7 +132,7 @@ const RegistrationFlow = ({ schema }) => {
           );
         case 'password':
           return (
-            <View key={index} style={styles.inputContainer}>
+            <View key={field?.name} style={styles.inputContainer}>
               <CustomPasswordTextField
                 field={field}
                 control={control}
@@ -170,7 +175,6 @@ const RegistrationFlow = ({ schema }) => {
   };
 
   const nextForm = (data) => {
-    console.log(data);
     if (currentForm < schema.length) {
       setCurrentForm(currentForm + 1);
     }
@@ -213,9 +217,12 @@ const RegistrationFlow = ({ schema }) => {
         ))}
       <View style={styles.buttonContainer}>
         {currentForm < schema.length ? (
-          <CustomButton text={t('continue')} onPress={handleSubmit(nextForm)} />
+          <PrimaryButton
+            text={t('continue')}
+            onPress={handleSubmit(nextForm)}
+          />
         ) : (
-          <CustomButton text={t('finish')} onPress={handleSubmit(onSubmit)} />
+          <PrimaryButton text={t('finish')} onPress={handleSubmit(onSubmit)} />
         )}
       </View>
     </KeyboardAvoidingView>
@@ -250,4 +257,4 @@ const styles = StyleSheet.create({
   },
   backbutton: {},
 });
-export default RegistrationFlow;
+export default RegistrationForm;

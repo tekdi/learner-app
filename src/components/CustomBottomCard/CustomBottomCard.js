@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { View, StyleSheet } from 'react-native';
 import React from 'react';
-import CustomButton from '../CustomButton/CustomButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import { Layout, Text } from '@ui-kitten/components';
 import { useTranslation } from '../../context/LanguageContext';
 
@@ -13,7 +13,7 @@ const CustomBottomCard = ({ onPress }) => {
     <View>
       <View style={styles.overlap}>
         <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <CustomButton onPress={onPress} text={t('continue')}></CustomButton>
+          <PrimaryButton onPress={onPress} text={t('continue')}></PrimaryButton>
           <Text
             category="p2"
             style={{
@@ -42,12 +42,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     top: 5,
-    backgroundColor: 'white',
     padding: 5,
-    borderRadius: 0,
-    borderWidth: 0.7,
-    borderColor: '#ffffff',
-    borderTopColor: '#cccccc',
   },
 });
 export default CustomBottomCard;

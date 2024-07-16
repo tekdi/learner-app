@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Image } from 'react-native';
 import React from 'react';
-import CustomButton from '../../components/CustomButton/CustomButton';
+import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import nerd from '../../assets/images/png/nerdface.png';
 import { useNavigation } from '@react-navigation/native';
 const ContinueRegisterScreen = () => {
@@ -25,7 +25,7 @@ const ContinueRegisterScreen = () => {
         </Text>
       </View>
       <View style={{ position: 'absolute', bottom: 60, alignSelf: 'center' }}>
-        <CustomButton
+        <PrimaryButton
           text="Continue"
           onPress={() => {
             navigation.navigate('RegisterScreen');

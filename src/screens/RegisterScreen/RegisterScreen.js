@@ -1,12 +1,12 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
-import RegistrationFlow from './RegistrationFlow';
-import { schema } from './RegisterScreenData/registrationConfig';
+import RegistrationForm from './RegistrationForm';
+import { schema } from './RegistrationSchema';
 
 const RegisterScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <RegistrationFlow schema={schema} />
+      <RegistrationForm schema={schema} />
     </SafeAreaView>
   );
 };

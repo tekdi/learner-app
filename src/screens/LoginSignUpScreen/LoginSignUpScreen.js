@@ -2,8 +2,8 @@ import { View, TouchableOpacity, Image, StyleSheet, Text } from 'react-native';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import CustomButton2 from '../../components/CustomButtonOutlined/CustomButtonOutlined';
-import CustomButton from '../../components/CustomButton/CustomButton';
+import SecondaryButton from '../../components/SecondaryButton/SecondaryButton';
+import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
 
 import Logo from '../../assets/images/png/logo.png';
@@ -33,14 +33,14 @@ const LoginSignUpScreen = () => {
         <Text style={styles.title}>{t('let_log_in')}</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <CustomButton
+        <PrimaryButton
           text={t('i_am_new_user')}
           onPress={() => {
             nav.navigate('RegisterStart');
           }}
         />
         <View style={{ padding: 10 }}></View>
-        <CustomButton2
+        <SecondaryButton
           onPress={() => {
             nav.navigate('LoginScreen');
           }}

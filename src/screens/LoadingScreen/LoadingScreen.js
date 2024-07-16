@@ -3,13 +3,13 @@ import React, { useEffect } from 'react';
 import Logo from '../../assets/images/png/logo-with-tagline.png';
 import { Spinner } from '@ui-kitten/components';
 const LoadingScreen = ({ navigation }) => {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('LanguageScreen');
-    }, 1500);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     navigation.replace('LanguageScreen');
+  //   }, 1500);
 
-    return () => clearTimeout(timer);
-  }, [navigation]);
+  //   return () => clearTimeout(timer);
+  // }, [navigation]);
 
   return (
     <View style={styles.container}>

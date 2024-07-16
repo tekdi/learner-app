@@ -2,7 +2,7 @@ import { View, TouchableOpacity, Image, StyleSheet, Text } from 'react-native';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import CustomButton from '../../components/CustomButton/CustomButton';
+import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
 import UserImage from '../../assets/images/gif/face.gif';
 
@@ -31,7 +31,7 @@ const RegisterStart = () => {
         <Text style={styles.title}>{t('form_start_lable')}</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <CustomButton
+        <PrimaryButton
           text={t('continue')}
           onPress={() => {
             nav.navigate('RegisterScreen');
