@@ -36,16 +36,23 @@ const PlayerScreen = () => {
       </View>
       <View style={{ padding: 10 }}></View>
       <CustomButton
-        text={'QuML Player'}
+        text={'QuML Player: Online'}
         onPress={() => {
           nav.navigate('QuMLPlayer');
         }}
       />
       <View style={{ padding: 10 }}></View>
       <CustomButton
-        text={'Pdf Player'}
+        text={'Pdf Player: Online'}
         onPress={() => {
           nav.navigate('PdfPlayer');
+        }}
+      />
+      <View style={{ padding: 10 }}></View>
+      <CustomButton
+        text={'Pdf Player: Offline'}
+        onPress={() => {
+          nav.navigate('PdfPlayerOffline');
         }}
       />
     </View>
@@ -60,7 +67,7 @@ const styles = StyleSheet.create({
   },
   backbutton: {
     position: 'absolute',
-    top: 50,
+    top: 10,
     left: 20,
     zIndex: 1,
   },
@@ -76,7 +83,7 @@ const styles = StyleSheet.create({
     width: 60,
   },
   container_image: {
-    marginTop: 150,
+    marginTop: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },

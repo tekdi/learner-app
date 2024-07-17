@@ -9,13 +9,12 @@
     <link rel="stylesheet" href="./styles.css">
     <style>
       .player-grid {
-        height: 90vh;
-        ;
-        width: 90%;
+        height: 100vh;
+        width: 100%;
         margin: 0 auto;
         display: grid;
         gap: 1.5rem;
-        padding-top: 4rem;
+        padding-top: 0rem;
 
         @media screen and (max-width:768px) {
           grid-template-columns: 100%;
@@ -38,137 +37,25 @@
     </div>
     <script type="text/javascript" src="sunbird-pdf-player.js"></script>
     <script type="text/javascript">
-      const playerConfig = {
-        "context": {
-          "mode": "play",
-          "partner": [],
-          "pdata": {
-            "id": "dev.sunbird.portal",
-            "ver": "5.2.0",
-            "pid": "sunbird-portal"
-          },
-          "contentId": "do_21374910251798528014586",
-          "sid": "6d1898db-d783-4f83-8b92-4a36636e0d2f",
-          "uid": "anonymous",
-          "timeDiff": -0.089,
-          "channel": "01269878797503692810",
-          "tags": ["01269878797503692810"],
-          "did": "3ca74a4c5fbce6b7b7f5cd12cebb1682",
-          "contextRollup": { "l1": "01269878797503692810" },
-          "objectRollup": {},
-          "userData": { "firstName": "Guest", "lastName": "" }
-        },
-        "config": {
-          "showEndPage": false,
-          "endPage": [{ "template": "assessment", "contentType": ["SelfAssess"] }],
-          "showStartPage": true,
-          "host": "",
-          "overlay": { "showUser": false },
-          "splash": {
-            "text": "",
-            "icon": "",
-            "bgImage": "assets/icons/splacebackground_1.png",
-            "webLink": ""
-          },
-          "apislug": "/action",
-          "repos": ["/sunbird-plugins/renderer"],
-          "plugins": [
-            { "id": "org.sunbird.iframeEvent", "ver": 1, "type": "plugin" },
-            { "id": "org.sunbird.player.endpage", "ver": 1.1, "type": "plugin" }
-          ],
-          "sideMenu": { "showShare": true, "showDownload": true, "showExit": false }
-        },
-        "metadata": {
-          "ownershipType": ["createdBy"],
-          "copyright": "pragati",
-          "previewUrl": "file:///android_asset/libs/sunbird-pdf-player/paatth-7-saamgrii.pdf",
-          "channel": "0135656861912678406",
-          "downloadUrl": "https://slecosystemprod.blob.core.windows.net/content/content/do_1135818637830144001213/paatth-7-saamgrii_1657946967933_do_1135818637830144001213_1.ecar",
-          "organisation": ["pragati"],
-          "language": ["English"],
-          "mimeType": "application/pdf",
-          "variants": {
-            "full": {
-              "ecarUrl": "https://slecosystemprod.blob.core.windows.net/content/content/do_1135818637830144001213/paatth-7-saamgrii_1657946967933_do_1135818637830144001213_1.ecar",
-              "size": "3000228"
-            },
-            "spine": {
-              "ecarUrl": "https://slecosystemprod.blob.core.windows.net/content/content/do_1135818637830144001213/paatth-7-saamgrii_1657946968661_do_1135818637830144001213_1_SPINE.ecar",
-              "size": "3611"
-            }
-          },
-          "objectType": "Content",
-          "se_mediums": ["Hindi"],
-          "appIcon": "https://slecosystemprod.blob.core.windows.net/content/content/do_1135818637830144001213/artifact/do_1135818639151759361214_1657942372554_eg_logo.thumb.jpg",
-          "primaryCategory": "eTextbook",
-          "contentEncoding": "identity",
-          "artifactUrl": "file:///android_asset/libs/sunbird-pdf-player/paatth-7-saamgrii.pdf",
-          "lockKey": "3fe51172-0e38-4a4a-9af5-095838bcca35",
-          "contentType": "Resource",
-          "identifier": "do_1135818637830144001213",
-          "lastUpdatedBy": "45556d4e-28a5-4850-a33b-569a140ec615",
-          "audience": ["Teacher"],
-          "visibility": "Default",
-          "discussionForum": {
-            "enabled": "No"
-          },
-          "mediaType": "content",
-          "osId": "org.ekstep.quiz.app",
-          "languageCode": ["en"],
-          "lastPublishedBy": "38b51ce0-826a-43db-980f-c7b00672323f",
-          "version": 2,
-          "pragma": ["external"],
-          "license": "CC BY 4.0",
-          "prevState": "Review",
-          "size": 10322179,
-          "lastPublishedOn": "2022-07-16T04:49:27.790+0000",
-          "name": "पाठ-7 : सामग्री",
-          "status": "Live",
-          "code": "bbb142d8-4aae-4c28-90b9-cdb885231da2",
-          "interceptionPoints": {},
-          "credentials": {
-            "enabled": "No"
-          },
-          "prevStatus": "Processing",
-          "description": "पाठ-7 : सामग्री",
-          "streamingUrl": "file:///android_asset/libs/sunbird-pdf-player/paatth-7-saamgrii.pdf",
-          "medium": ["Hindi"],
-          "posterImage": "https://slecosystemprod.blob.core.windows.net/content/content/do_1135818639151759361214/artifact/do_1135818639151759361214_1657942372554_eg_logo.jpg",
-          "idealScreenSize": "normal",
-          "createdOn": "2022-07-16T03:32:36.330+0000",
-          "contentDisposition": "inline",
-          "lastUpdatedOn": "2022-07-16T04:49:28.731+0000",
-          "dialcodeRequired": "No",
-          "lastStatusChangedOn": "2022-07-16T04:49:28.731+0000",
-          "createdFor": ["0135656861912678406"],
-          "creator": "Shubhangi Bhong",
-          "os": ["All"],
-          "se_FWIds": ["pragatifw"],
-          "pkgVersion": 1,
-          "versionKey": "1657942394219",
-          "idealScreenDensity": "hdpi",
-          "framework": "pragatifw",
-          "lastSubmittedOn": "2022-07-16T03:33:14.206+0000",
-          "createdBy": "45556d4e-28a5-4850-a33b-569a140ec615",
-          "compatibilityLevel": 4,
-          "resourceType": "Learn"
-        },
-        "data": {}
-      };
-      const pdfElement = document.createElement('sunbird-pdf-player');
-      pdfElement.setAttribute('player-config', JSON.stringify(playerConfig));
+      function setData(playerConfig) 
+      {
+        //alert(JSON.stringify(playerConfig?.context));
+        //alert(playerConfig);
+        const pdfElement = document.createElement('sunbird-pdf-player');
+        //pdfElement.setAttribute('player-config', JSON.stringify(playerConfig));
+        pdfElement.setAttribute('player-config', playerConfig);
 
-      pdfElement.addEventListener('playerEvent', (event) => {
-        console.log("On playerEvent", event);
-      });
+        pdfElement.addEventListener('playerEvent', (event) => {
+          console.log("On playerEvent", event);
+        });
 
-      pdfElement.addEventListener('telemetryEvent', (event) => {
-        console.log("On telemetryEvent", event);
-      });
+        pdfElement.addEventListener('telemetryEvent', (event) => {
+          console.log("On telemetryEvent", event);
+        });
 
-      const myPlayer = document.getElementById("my-player");
-      myPlayer.appendChild(pdfElement);
-
+        const myPlayer = document.getElementById("my-player");
+        myPlayer.appendChild(pdfElement);
+      }
     </script>
   </body>
 

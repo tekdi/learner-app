@@ -34,3 +34,32 @@ export const getAccessToken = async () => {
     });
   return api_response;
 };
+
+//read content
+export const readContent = async (content_do_id) => {
+  const url = EndUrls.read_content + content_do_id;
+
+  let api_response = null;
+
+  let config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: url,
+    headers: {
+      accept: '*/*',
+      'Content-Type': 'application/json',
+    },
+  };
+
+  await axios
+    .request(config)
+    .then((response) => {
+      //console.log(JSON.stringify(response.data));
+      api_response = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  return api_response;
+};
