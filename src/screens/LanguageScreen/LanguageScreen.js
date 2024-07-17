@@ -25,7 +25,7 @@ import {
   saveToken,
 } from '../../utils/JsHelper/Helper';
 import { getAccessToken, refreshToken } from '../../utils/API/AuthService';
-import LoadingScreen from '../LoadingScreen/LoadingScreen';
+import Loading from '../LoadingScreen/Loading';
 
 const LanguageScreen = () => {
   //multi language setup
@@ -76,7 +76,7 @@ const LanguageScreen = () => {
   };
 
   return loading ? (
-    <LoadingScreen />
+    <Loading />
   ) : (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar

@@ -2,15 +2,7 @@ import { View, Image, StyleSheet } from 'react-native';
 import React, { useEffect } from 'react';
 import Logo from '../../assets/images/png/logo-with-tagline.png';
 import { Spinner } from '@ui-kitten/components';
-const LoadingScreen = ({ navigation }) => {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigation.replace('LanguageScreen');
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [navigation]);
-
+const Loading = () => {
   return (
     <View style={styles.container}>
       <View
@@ -39,4 +31,4 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 });
-export default LoadingScreen;
+export default Loading;
