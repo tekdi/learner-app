@@ -55,6 +55,20 @@ const PlayerScreen = () => {
           nav.navigate('PdfPlayerOffline');
         }}
       />
+      <View style={{ padding: 10 }}></View>
+      <CustomButton
+        text={'Video Player: Online'}
+        onPress={() => {
+          nav.navigate('VideoPlayer');
+        }}
+      />
+      <View style={{ padding: 10 }}></View>
+      <CustomButton
+        text={'Video Player: Offline'}
+        onPress={() => {
+          nav.navigate('VideoPlayerOffline');
+        }}
+      />
     </View>
   );
 };

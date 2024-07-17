@@ -41,6 +41,7 @@ export const pdfPlayerConfig = {
       showDownload: false,
       showExit: false,
       showPrint: false,
+      showReplay: true,
     },
   },
   metadata: {},

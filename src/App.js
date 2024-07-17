@@ -21,6 +21,8 @@ import PlayerScreen from './screens/PlayerScreen/PlayerScreen';
 import QuMLPlayer from './screens/PlayerScreen/QuMLPlayer/QuMLPlayer';
 import PdfPlayer from './screens/PlayerScreen/PdfPlayer/PdfPlayer';
 import PdfPlayerOffline from './screens/PlayerScreen/PdfPlayer/PdfPlayerOffline';
+import VideoPlayer from './screens/PlayerScreen/VideoPlayer/VideoPlayer';
+import VideoPlayerOffline from './screens/PlayerScreen/VideoPlayer/VideoPlayerOffline';
 import { PermissionsAndroid, Platform } from 'react-native';
 
 async function checkAndRequestStoragePermission() {
@@ -137,6 +139,26 @@ const App = () => {
             <Stack.Screen
               name="PdfPlayerOffline"
               component={PdfPlayerOffline}
+              options={{
+                headerShown: false,
+                headerBackground: () => (
+                  <View style={{ backgroundColor: 'white', flex: 1 }}></View>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="VideoPlayer"
+              component={VideoPlayer}
+              options={{
+                headerShown: false,
+                headerBackground: () => (
+                  <View style={{ backgroundColor: 'white', flex: 1 }}></View>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="VideoPlayerOffline"
+              component={VideoPlayerOffline}
               options={{
                 headerShown: false,
                 headerBackground: () => (

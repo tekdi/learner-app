@@ -109,7 +109,7 @@ const PdfPlayerOffline = () => {
         //download file and store object in local
         //download file
         // URL of the file to download
-        const fileUrl = contentObj?.streamingUrl;
+        const fileUrl = contentObj?.artifactUrl;
         //console.log('fileUrl', fileUrl);
         try {
           const granted = await PermissionsAndroid.request(
@@ -184,12 +184,6 @@ const PdfPlayerOffline = () => {
       const pdfBase64 = await RNFS.readFile(filePath, 'base64');
       const fileContent = `data:application/pdf;base64,${pdfBase64}`;
       //console.log('fileContent', fileContent);
-
-      // Create a Blob from the base64 encoded string
-      //const blob = new Blob([fileContent], { type: 'application/pdf' }); // Adjust 'application/pdf' to match your file type
-
-      //console.log('blob', blob);
-
       return fileContent;
     } catch (error) {
       console.error('Error loading file as Blob:', error);
