@@ -2,8 +2,8 @@ import { View, TouchableOpacity, Image, StyleSheet, Text } from 'react-native';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import CustomButton2 from '../../components/CustomButtonOutlined/CustomButtonOutlined';
-import CustomButton from '../../components/CustomButton/CustomButton';
+import SecondaryButton from '../../components/SecondaryButton/SecondaryButton';
+import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
 
 import Logo from '../../assets/images/png/logo.png';
@@ -33,21 +33,24 @@ const LoginSignUpScreen = () => {
         <Text style={styles.title}>{t('let_log_in')}</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <CustomButton
+        <PrimaryButton
           text={t('i_am_new_user')}
           onPress={() => {
             nav.navigate('RegisterStart');
           }}
         />
         <View style={{ padding: 10 }}></View>
-        <CustomButton2 />
-        <View style={{ padding: 10 }}></View>
-        <CustomButton
-          text={'PlayerScreen'}
+        <SecondaryButton
           onPress={() => {
-            nav.navigate('PlayerScreen');
+            nav.navigate('LoginScreen');
           }}
         />
+        <View style={{ padding: 10 }}></View>
+        <PrimaryButton
+        text={'PlayerScreen'}
+        onPress={() => {
+          nav.navigate('PlayerScreen');}}
+          />
       </View>
     </View>
   );
@@ -68,22 +71,22 @@ const styles = StyleSheet.create({
   buttonContainer: {
     padding: 10,
     flex: 1,
-    marginBottom: 100,
     justifyContent: 'flex-end',
-    paddingBottom: 40,
+    paddingBottom: 20,
   },
   image: {
     height: 60,
     width: 60,
   },
   container_image: {
-    marginTop: 150,
+    marginTop: 200,
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
+    color: 'black',
     fontSize: 20,
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'Poppins-Medium',
     marginTop: 15,
     fontWeight: '1000',
     textAlign: 'center',

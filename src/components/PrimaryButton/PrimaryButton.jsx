@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import React from 'react';
 import { Button } from '@ui-kitten/components';
 
-const CustomButton = ({ text, onPress }) => {
+const PrimaryButton = ({ text, onPress,isDisabled }) => {
   return (
     <View>
       <Button
@@ -15,6 +15,7 @@ const CustomButton = ({ text, onPress }) => {
           justifyContent: 'center',
           alignItems: 'center',
         }}
+        disabled={isDisabled}
       >
         {(props) => (
           <Text {...props} style={styles.buttontext}>
@@ -25,9 +26,10 @@ const CustomButton = ({ text, onPress }) => {
     </View>
   );
 };
-CustomButton.propTypes = {
+PrimaryButton.propTypes = {
   text: PropTypes.string,
   onPress: PropTypes.func,
+  isDisabled:PropTypes.bool
 };
 const styles = StyleSheet.create({
   buttontext: {
@@ -39,4 +41,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomButton;
+export default PrimaryButton;

@@ -4,45 +4,80 @@ import {
   StatusBar,
   StyleSheet,
   Image,
-  ScrollView,
   View,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Layout, Text } from '@ui-kitten/components';
-import CustomCard from '../../components/CustomCard/CustomCard';
 import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
 import { languages } from './Languages';
 import { useNavigation } from '@react-navigation/native';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 //import env variables
-import Config from 'react-native-config';
 
 //multi language
 import { useTranslation } from '../../context/LanguageContext';
+import CustomCardLanguage from '../../components/CustomCardLanguage/CustomCardLanguage';
+import {
+  getRefreshToken,
+  getSavedToken,
+  saveRefreshToken,
+  saveToken,
+} from '../../utils/JsHelper/Helper';
+import { getAccessToken, refreshToken } from '../../utils/API/AuthService';
+import Loading from '../LoadingScreen/Loading';
 
 const LanguageScreen = () => {
   //multi language setup
   const { t, setLanguage, language } = useTranslation();
+  const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+
   const changeLanguage = (lng) => {
     setLanguage(lng);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = await getSavedToken();
+      const refresh_token = await getRefreshToken();
+      if (token?.token) {
+        const current_token = await getAccessToken();
+        if (current_token === 'successful') {
+          // navigation.navigate('Dashboard');
+        } else {
+          const data = await refreshToken({
+            refresh_token: refresh_token?.token,
+          });
+          await saveToken(data?.access_token);
+          await saveRefreshToken(data?.refresh_token);
+          navigation.navigate('Dashboard');
+        }
+      } else {
+        setLoading(false);
+      }
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
+
   const renderItem = ({ item }) => (
-    <CustomCard
+    <CustomCardLanguage
       key={item.value}
       title={item.title}
       clickEvent={changeLanguage}
       value={item.value}
-      active={item.value == language ? true : false}
+      active={item.value == language}
     />
   );
 
-  const navigation = useNavigation();
   const handlethis = () => {
     navigation.navigate('LoginSignUpScreen');
   };
-  return (
+
+  return loading ? (
+    <Loading />
+  ) : (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar
         barStyle="dark-content"
@@ -63,7 +98,7 @@ const LanguageScreen = () => {
         {/* List of Languages */}
         <View>
           <FlatList
-            showsVerticalScrollIndicator={true}
+            showsVerticalScrollIndicator={false}
             style={styles.list}
             data={languages}
             renderItem={renderItem}

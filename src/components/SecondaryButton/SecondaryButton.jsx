@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
-import { getAccessToken } from '../../utils/API/ApiCalls';
+import { login } from '../../utils/API/ApiCalls';
 
-const CustomButton2 = ({onPress}) => {
+const SecondaryButton = ({onPress}) => {
   //multi language setup
   const { t } = useTranslation();
 
@@ -34,4 +34,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomButton2;
+export default SecondaryButton;

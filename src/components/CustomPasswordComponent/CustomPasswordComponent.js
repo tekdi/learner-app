@@ -1,18 +1,34 @@
-import { View, StyleSheet, TextInput, Text } from 'react-native';
-import React from 'react';
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
+import React, { useState } from 'react';
 import { Controller } from 'react-hook-form';
+import { IconRegistry, Icon } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { useTranslation } from '../../context/LanguageContext';
 
-const CustomTextField = ({
+const CustomPasswordTextField = ({
   position = 'static',
-  secureTextEntry,
   key,
   field,
   control,
   errors = {},
 }) => {
+  const [hidden, setHidden] = useState(true);
   const { t } = useTranslation();
-
+  const EyeIcon = (props) => (
+    <TouchableOpacity
+      onPress={() => {
+        setHidden(!hidden);
+      }}
+    >
+      <Icon name={hidden ? 'eye-off-outline' : 'eye-outline'} {...props} />
+    </TouchableOpacity>
+  );
   return (
     <Controller
       key={key}
@@ -20,6 +36,7 @@ const CustomTextField = ({
       name={field.name}
       render={({ field: { onChange, value, onBlur } }) => (
         <View style={styles.container}>
+          <IconRegistry icons={EvaIconsPack} />
           <TextInput
             style={[
               styles.input,
@@ -29,7 +46,7 @@ const CustomTextField = ({
             onBlur={onBlur}
             value={value}
             onChangeText={onChange}
-            secureTextEntry={secureTextEntry}
+            secureTextEntry={hidden}
           />
           <View style={styles.overlap}>
             <Text
@@ -40,6 +57,9 @@ const CustomTextField = ({
             >
               {t(field.label)}
             </Text>
+          </View>
+          <View style={styles.overlap2}>
+            <EyeIcon />
           </View>
           {errors[field.name] && (
             <Text
@@ -59,7 +79,7 @@ const CustomTextField = ({
     />
   );
 };
-export default CustomTextField;
+export default CustomPasswordTextField;
 const styles = StyleSheet.create({
   container: {
     width: '100%',
@@ -80,6 +100,18 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     fontSize: 20,
     fontFamily: 'Poppins-Regular',
+  },
+  overlap2: {
+    width: 32,
+    height: 32,
+    // borderColor:'black',
+    // borderWidth:2,
+    top: 15,
+    left: '88%',
+    position: 'absolute',
+    // top: -76,
+    // left: -120,
+    backgroundColor: 'white',
   },
   overlap: {
     top: -65,

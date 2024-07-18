@@ -1,55 +1,65 @@
-import { Image, StyleSheet, View, Text, KeyboardAvoidingView } from 'react-native'
-import React from 'react'
+import {
+  Image,
+  StyleSheet,
+  View,
+  Text,
+  KeyboardAvoidingView,
+} from 'react-native';
+import React from 'react';
 import Logo from '../../assets/images/png/form.png';
+import { useTranslation } from '../../context/LanguageContext';
 
-const HeaderComponent = ({question, questionIndex}) => {
+const HeaderComponent = ({ question, questionIndex, totalForms }) => {
+  const { t } = useTranslation();
   return (
     <KeyboardAvoidingView style={styles.container}>
-        <View style={styles.block}>
+      <View style={styles.block}>
         <Image style={styles.image} source={Logo} resizeMode="contain" />
-        <Text  style={styles.text1}>{questionIndex}/6</Text>
-        <Text  style={styles.text2}>{question}</Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.text1}>
+            {questionIndex}/{totalForms}
+          </Text>
+          <Text style={styles.text2}>{t(question)}</Text>
         </View>
-        {/* <View style={{bottom:10, position: 'relative'}}>
-        {/* <CustomButton text="Continue"/> */}
-        </KeyboardAvoidingView>        
-  )
-}
-const styles= StyleSheet.create({
-    image: {
-        margin: 20,
-        height: 90,
-        width: 70
-    },
-    container: {
-        backgroundColor: 'white',
-        // borderColor: 'green',
-        // borderWidth: 2,
-        maxHeight: 120,
-        flex: 1,
-    },
-    text1: {
-        left: 100,
-        top: 40,
-        position: 'absolute',
-        color: '#7C766F',
-        fontFamily: 'Poppins-Regular',
-        fontSize: 18
-    },
-    text2: {
-        position: 'absolute',
-        width: "100%",
-        fontFamily: 'Poppins-Medium',
-        color: "black",
-        left: 100,
-        top: 70,
-        fontSize: 20
-    },
-    block: {
-        position: 'absolute',
-        width: 250,
-        // borderColor:'black',
-        // borderWidth: 1
-    },
-})
-export default HeaderComponent
+      </View>
+    </KeyboardAvoidingView>
+  );
+};
+
+const styles = StyleSheet.create({
+  image: {
+    margin: 20,
+    height: 90,
+    width: 70,
+  },
+  container: {
+    backgroundColor: 'white',
+    maxHeight: 120,
+    flex: 1,
+  },
+  text1: {
+    color: '#7C766F',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 18,
+    marginRight: 15,
+  },
+  text2: {
+    fontFamily: 'Poppins-Medium',
+    color: 'black',
+    fontSize: 20,
+    flexWrap: 'wrap',
+  },
+  block: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // borderColor: 'black',
+    // borderWidth: 1,
+    padding: 10,
+  },
+  textContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+});
+
+export default HeaderComponent;
