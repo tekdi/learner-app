@@ -1,6 +1,7 @@
 import { View, StyleSheet, TextInput, Text } from 'react-native';
 import React from 'react';
 import { Controller } from 'react-hook-form';
+import { useTranslation } from '../../context/LanguageContext';
 
 const CustomTextField = ({
   position = 'static',
@@ -10,6 +11,8 @@ const CustomTextField = ({
   control,
   errors = {},
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Controller
       key={key}
@@ -35,8 +38,7 @@ const CustomTextField = ({
                 { color: errors[field.name] ? 'red' : '#4D4639' },
               ]}
             >
-              {' '}
-              {field.label}{' '}
+              {t(field.label)}
             </Text>
           </View>
           {errors[field.name] && (
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'white',
     width: '100%',
-    height: 65,
+    height: 55,
     borderRadius: 7,
     borderColor: '#DADADA',
     borderWidth: 1.4,
@@ -80,7 +82,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   overlap: {
-    top: -76,
+    top: -65,
     left: 13,
     // top: -76,
     // left: -120,

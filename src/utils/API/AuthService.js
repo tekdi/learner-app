@@ -28,7 +28,6 @@ export const login = async (params = {}) => {
 };
 export const refreshToken = async (params = {}) => {
   try {
-    console.log({ params });
     const result = await post(`${EndUrls.refresh_token}`, params, {
       headers: {
         'Content-Type': 'application/json',
@@ -52,6 +51,22 @@ export const getAccessToken = async () => {
     });
     if (result) {
       return result?.data?.params?.status;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+
+export const getStudentForm = async () => {
+  try {
+    const headers = await getHeaders();
+    const result = await get(`${EndUrls.get_form}`, {
+      headers: headers || {},
+    });
+    if (result) {
+      return result?.data?.result;
     } else {
       return {};
     }

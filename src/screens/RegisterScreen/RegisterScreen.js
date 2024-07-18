@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import RegistrationForm from './RegistrationForm';
-import { schema } from './RegistrationSchema';
+// import { schema } from './RegistrationSchema';
+import { useNavigation } from '@react-navigation/native';
+import { getStudentForm } from '../../utils/API/AuthService';
+import Loading from '../LoadingScreen/Loading';
+import { registerSchema } from './RegisterSchema';
 
 const RegisterScreen = () => {
-  return (
+  const nav = useNavigation();
+
+  const [mainSchema, setMainSchema] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getStudentForm();
+      let schema = await registerSchema(data?.fields);
+      setMainSchema(schema);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  return loading ? (
+    <Loading />
+  ) : (
     <SafeAreaView style={styles.container}>
-      <RegistrationForm schema={schema} />
+      <RegistrationForm schema={mainSchema} />
     </SafeAreaView>
   );
 };

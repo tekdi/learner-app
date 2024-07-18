@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import React, { useEffect } from 'react';
 import { useController } from 'react-hook-form';
+import { useTranslation } from '../../context/LanguageContext';
 
 const CustomCards = ({
   field,
@@ -16,6 +17,8 @@ const CustomCards = ({
   selectedIds,
   control,
 }) => {
+  const { t } = useTranslation();
+
   const {
     field: { onChange, value },
   } = useController({ name, control });
@@ -41,11 +44,11 @@ const CustomCards = ({
         <View style={styles.cardContainer}>
           {field.options.map((option) => (
             <TouchableOpacity
-              key={option.id}
-              onPress={() => handlePress(name, option.id)}
+              key={option.value}
+              onPress={() => handlePress(name, option.value)}
               style={[
                 styles.card,
-                selectedIds[name] === option.id && styles.selectedCard,
+                selectedIds[name] === option.value && styles.selectedCard,
               ]}
             >
               <Text
@@ -55,18 +58,20 @@ const CustomCards = ({
                     fontSize: 20,
                     fontFamily: 'Poppins-Regular',
                   },
-                  selectedIds[name] === option.id && {
+                  selectedIds[name] === option.value && {
                     fontFamily: 'Poppins-Medium',
                   },
                 ]}
               >
-                {option.title}
+                {t(option.label)}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
+        {errors[name] && (
+          <Text style={styles.error}>{errors[name].message}</Text>
+        )}
       </ScrollView>
-      {errors[name] && <Text style={styles.error}>{errors[name].message}</Text>}
     </View>
   );
 };

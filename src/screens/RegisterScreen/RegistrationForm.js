@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
+  ScrollView,
 } from 'react-native';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -22,9 +24,11 @@ import { useTranslation } from '../../context/LanguageContext';
 
 import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
 import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
+import { translateLanguage } from '../../utils/JsHelper/Helper';
 
 const buildYupSchema = (form) => {
   const shape = {};
+  const { t } = useTranslation();
   form.fields.forEach((field) => {
     if (field.validation) {
       let validator;
@@ -33,50 +37,54 @@ const buildYupSchema = (form) => {
         case 'password':
           validator = yup.string();
           if (field.validation.required) {
-            validator = validator.required(`${field.label} is required`);
+            validator = validator.required(
+              `${t(field.name)} ${t('is_required')}`
+            );
           }
           if (field.validation.minLength) {
             validator = validator.min(
               field.validation.minLength,
-              `${field.label} must be at least ${field.validation.minLength} characters`
+              `${t(field.name)} ${t('min')} ${t(field.validation.minLength)} ${t('characters')}`
             );
           }
           if (field.validation.maxLength) {
             validator = validator.max(
               field.validation.maxLength,
-              `${field.label} must be at most ${field.validation.maxLength} characters`
+              `${t(field.label)} ${t('max')} ${t(field.validation.maxLength)} ${t('characters')}`
             );
           }
           if (field.validation.match) {
             validator = validator.oneOf(
               [yup.ref('password'), null],
-              'Passwords must match'
+              `${t('Password_must_match')}`
             );
           }
           if (field.validation.pattern) {
             validator = validator.matches(
               /^[A-Za-z]+$/,
-              `${field.label} can only contain letters`
+              `${t(field.name)} ${t('can_only_contain_letters')}`
             );
           }
           break;
-        case 'singleCard':
+        case 'drop_down':
+        case 'radio':
           validator = yup
             .string()
-            .required(`At least one selection is required`);
+            .required(`${t(field.name)} ${t('is_required')}`);
           break;
         // Add other field types as needed...
         case 'multipleCard':
+        case 'checkbox':
           validator = yup
             .array()
             .min(
               field.validation.minSelection,
-              `At least ${field.validation.minSelection} cards must be selected`
+              `${t('Choose_at_least')} ${field.validation.minSelection}`
             )
-            .required(`${field.label} selection is required`)
+            .required(`${t(field.name)} selection is required`)
             .max(
               field.validation.maxSelection,
-              `Max ${field.validation.maxSelection} cards can be selected`
+              `${t('max')} ${t(field.validation.maxSelection)} ${t('can_only_contain_letters')}`
             );
           break;
         default:
@@ -89,14 +97,24 @@ const buildYupSchema = (form) => {
 
 const RegistrationForm = ({ schema }) => {
   //multi language setup
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   //dynamic schema for json object validation
 
-  const stepSchema = schema.map(buildYupSchema);
+  const stepSchema = schema?.map(buildYupSchema);
   const navigation = useNavigation();
   const [selectedIds, setSelectedIds] = useState({});
   const [currentForm, setCurrentForm] = useState(1);
   const currentschema = stepSchema[currentForm - 1];
+
+  console.log(translateLanguage(language));
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const data = await getDataFromStorage();
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   const {
     handleSubmit,
@@ -105,20 +123,36 @@ const RegistrationForm = ({ schema }) => {
   } = useForm({
     resolver: yupResolver(currentschema),
     defaultValues: {
-      firstname: '',
-      lastname: '',
-      username: '',
-      password: '',
-      repeatpassword: '',
-      multiplecards: [],
+      // firstname: '',
+      // lastname: '',
+      // username: '',
+      // password: '',
+      // repeatpassword: '',
+      // multiplecards: [],
+      preferred_language: translateLanguage(language),
     },
   });
 
   const onSubmit = (data) => {
-    console.log(data);
+    Alert.alert(
+      'JSON PAYLOAD',
+      JSON.stringify(data),
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('LoginSignUpScreen'), // Replace 'TargetScreen' with your screen name
+        },
+      ],
+      { cancelable: false }
+    );
   };
   const renderFields = (fields) => {
-    return fields.map((field, index) => {
+    return fields?.map((field, index) => {
       switch (field.type) {
         case 'text':
           return (
@@ -141,7 +175,8 @@ const RegistrationForm = ({ schema }) => {
               />
             </View>
           );
-        case 'singleCard':
+        case 'drop_down':
+        case 'radio':
           return (
             <View style={styles.inputContainer} key={field.name}>
               <CustomCards
@@ -156,6 +191,7 @@ const RegistrationForm = ({ schema }) => {
             </View>
           );
         case 'multipleCard':
+        case 'checkbox':
           return (
             <View style={styles.inputContainer} key={field.name}>
               <InterestedCardsComponent
@@ -175,7 +211,7 @@ const RegistrationForm = ({ schema }) => {
   };
 
   const nextForm = (data) => {
-    if (currentForm < schema.length) {
+    if (currentForm < schema?.length) {
       setCurrentForm(currentForm + 1);
     }
   };
@@ -188,7 +224,7 @@ const RegistrationForm = ({ schema }) => {
     }
   };
 
-  const currentSchema = schema.find((form) => form.formNumber === currentForm);
+  const currentSchema = schema?.find((form) => form.formNumber === currentForm);
 
   return (
     <KeyboardAvoidingView
@@ -205,18 +241,19 @@ const RegistrationForm = ({ schema }) => {
       </TouchableOpacity>
 
       <HeaderComponent
-        question={currentSchema.question}
+        question={currentSchema?.question}
         questionIndex={currentForm}
-        totalForms={schema.length}
+        totalForms={schema?.length}
       />
-      <View style={{ margin: 10 }}></View>
       {schema
-        .filter((form) => form.formNumber === currentForm)
-        .map((form, index) => (
-          <View key={index}>{renderFields(form.fields)}</View>
+        ?.filter((form) => form.formNumber === currentForm)
+        ?.map((form, index) => (
+          <View style={{ top: 20, position: 'relative' }} key={index}>
+            {renderFields(form.fields)}
+          </View>
         ))}
       <View style={styles.buttonContainer}>
-        {currentForm < schema.length ? (
+        {currentForm < schema?.length ? (
           <PrimaryButton
             text={t('continue')}
             onPress={handleSubmit(nextForm)}
@@ -233,6 +270,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 20,
+    marginTop: 0,
     backgroundColor: 'white',
   },
   inputContainer: {

@@ -1,29 +1,28 @@
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 import React, { useEffect } from 'react';
 import Logo from '../../assets/images/png/logo-with-tagline.png';
 import { Spinner } from '@ui-kitten/components';
+
 const Loading = () => {
   return (
-    <View style={styles.container}>
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          flex: 1,
-          width: '100%',
-        }}
-      >
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         <Spinner size="large" style={{ borderColor: '#635E57' }} />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
+  safeArea: {
     flex: 1,
-    padding: 10,
+    backgroundColor: 'white',
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
     marginBottom: 20,
@@ -31,4 +30,5 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 });
+
 export default Loading;

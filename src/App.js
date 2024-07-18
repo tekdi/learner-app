@@ -106,7 +106,7 @@ const App = () => {
         <NavigationContainer>
           <Stack.Navigator
             screenOptions={{ headerShown: false }}
-            initialRouteName="LoadingScreen"
+            initialRouteName="LanguageScreen"
           >
             <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
             <Stack.Screen name="LanguageScreen" component={LanguageScreen} />
