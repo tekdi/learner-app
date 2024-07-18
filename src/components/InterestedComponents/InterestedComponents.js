@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import React, { useEffect } from 'react';
 import { useController } from 'react-hook-form';
+import { useTranslation } from '../../context/LanguageContext';
 
 const InterestedCardsComponent = ({
   field,
@@ -19,6 +20,8 @@ const InterestedCardsComponent = ({
   const {
     field: { onChange, value },
   } = useController({ name, control });
+
+  const { t } = useTranslation();
 
   const handlePress = (name, id) => {
     const newSelectedIds = { ...selectedIds };
@@ -45,14 +48,14 @@ const InterestedCardsComponent = ({
   }, [value]);
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{field.label}</Text>
+      {/* <Text style={styles.title}>{field.label}</Text> */}
       <ScrollView>
         <View style={styles.cardContainer}>
           {field.options.map((item) => (
             <TouchableOpacity
-              key={item.id}
+              key={item.value}
               onPress={() => {
-                handlePress(name, item.id);
+                handlePress(name, item.value);
               }}
               style={styles.touchable}
             >
@@ -60,11 +63,11 @@ const InterestedCardsComponent = ({
                 style={[
                   styles.card,
                   selectedIds[name] &&
-                    selectedIds[name].includes(item.id) &&
+                    selectedIds[name].includes(item.value) &&
                     styles.selectedCard,
                 ]}
               >
-                <Text style={styles.cardText}>{item.title}</Text>
+                <Text style={styles.cardText}>{t(item.label)}</Text>
               </View>
             </TouchableOpacity>
           ))}

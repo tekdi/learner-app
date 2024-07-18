@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { IconRegistry, Icon } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
+import { useTranslation } from '../../context/LanguageContext';
 
 const CustomPasswordTextField = ({
   position = 'static',
@@ -18,6 +19,7 @@ const CustomPasswordTextField = ({
   errors = {},
 }) => {
   const [hidden, setHidden] = useState(true);
+  const { t } = useTranslation();
   const EyeIcon = (props) => (
     <TouchableOpacity
       onPress={() => {
@@ -53,8 +55,7 @@ const CustomPasswordTextField = ({
                 { color: errors[field.name] ? 'red' : '#4D4639' },
               ]}
             >
-              {' '}
-              {field.label}{' '}
+              {t(field.label)}
             </Text>
           </View>
           <View style={styles.overlap2}>
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'white',
     width: '100%',
-    height: 65,
+    height: 55,
     borderRadius: 7,
     borderColor: '#DADADA',
     borderWidth: 1.4,
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   overlap: {
-    top: -76,
+    top: -65,
     left: 13,
     // top: -76,
     // left: -120,

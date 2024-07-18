@@ -1,5 +1,5 @@
 //multi language
-import { useTranslation } from '../../../context/LanguageContext'; // Adjust path as needed
+import { useTranslation } from '../../context/LanguageContext'; // Adjust path as needed
 //multi language setup
 const { t } = useTranslation();
 
@@ -116,6 +116,7 @@ export const schema = [
         ],
         validation: {
           minSelection: 4,
+          maxSelection: 4,
         },
       },
     ],

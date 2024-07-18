@@ -1,102 +1,82 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import React from 'react';
-import CustomTextField from '../../components/CustomTextField/CustomTextField';
-import { CheckBox } from '@ui-kitten/components';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
+import { useState, React, useEffect } from 'react';
+import { Button, CheckBox } from '@ui-kitten/components';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
-import CustomButton from '../../components/CustomButton/CustomButton';
+import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
+import { login } from '../../utils/API/AuthService';
+import {
+  getSavedToken,
+  saveRefreshToken,
+  saveToken,
+} from '../../utils/JsHelper/Helper';
+import LoginTextField from '../../components/LoginTextField/LoginTextField';
 import { useTranslation } from '../../context/LanguageContext';
-import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
 
 const LoginScreen = () => {
-  const { t } = useTranslation();
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
-  const Loginschema = [
-    {
-      fields: [
-        {
-          type: 'text',
-          label: t('lb_first_name'),
-          name: 'firstname',
-          validation: {
-            required: true,
-            minLength: 3,
-            maxLength: 30,
-            pattern: /^[a-zA-Z]+$/,
-          },
-        },
-        {
-          type: 'password',
-          label: t('lb_pass'),
-          name: 'password',
-          placeholder: 'Enter your password',
-          validation: {
-            required: true,
-            minLength: 8,
-          },
-        },
-      ],
-    },
-  ];
+  const [userName, setUserName] = useState('');
+  const [password, setPassword] = useState('');
+  const [savePassword, setSavePassword] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(true);
+  const [errmsg, setErrmsg] = useState('');
 
-  const validationSchema = yup.object().shape({
-    firstname: yup
-      .string()
-      .required('Please enter your first name')
-      .min(3, 'First name should be at least 3 characters')
-      .max(30)
-      .matches(/^[a-zA-Z]+$/, 'First name should be alphabets only'),
-    password: yup
-      .string()
-      .required('Please enter your password')
-      .min(8, 'Password should be at least 8 characters'),
-  });
-
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(validationSchema),
-    defaultValues: {
-      firstname: '',
-      password: '',
-    },
-  });
-
-  const renderForm = () => {
-    return Loginschema[0].fields.map((field, index) => {
-      switch (field.type) {
-        case 'text':
-          return (
-            <CustomTextField
-              key={index}
-              field={field}
-              control={control}
-              errors={errors}
-            />
-          );
-        case 'password':
-          return (
-            <CustomPasswordTextField
-              key={index}
-              field={field}
-              control={control}
-              errors={errors}
-            />
-          );
-        default:
-          return null;
+  const onChangeText = (e) => {
+    setUserName(e.trim());
+  };
+  const onChangePassword = (e) => {
+    setPassword(e.trim());
+  };
+  const rememberPassword = (value) => {
+    setSavePassword(value);
+  };
+  const handleLogin = async () => {
+    const payload = {
+      username: userName,
+      password: password,
+    };
+    const data = await login(payload);
+    if (data?.params?.status !== 'failed') {
+      if (savePassword) {
+        await saveToken(data?.access_token);
+        await saveRefreshToken(data?.refresh_token);
+        navigation.navigate('Dashboard');
+      } else {
+        navigation.navigate('Dashboard');
       }
-    });
+    } else {
+      console.log('reached here');
+      setErrmsg(data?.params?.errmsg);
+    }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getSavedToken();
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (userName.length > 0 && password.length > 0) {
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+    }
+  }, [userName, password]);
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity
         style={styles.backbutton}
         onPress={() => {
@@ -108,8 +88,24 @@ const LoginScreen = () => {
           resizeMode="contain"
           style={{ width: 30, height: 30 }}
         />
+        {/* <Text>Back</Text> */}
       </TouchableOpacity>
-      <View style={styles.textfieldbox}>{renderForm()}</View>
+      <View style={styles.textfieldbox}>
+        <LoginTextField
+          text="username"
+          onChangeText={onChangeText}
+          value={userName}
+        />
+        <View style={{ padding: 10 }}></View>
+        <LoginTextField
+          text="password"
+          onChangeText={onChangePassword}
+          value={password}
+        />
+        {errmsg !== '' && (
+          <Text style={{ color: 'red', top: -10, left: 20 }}>{errmsg}</Text>
+        )}
+      </View>
       <TouchableOpacity style={{ paddingLeft: 20, marginBottom: 30 }}>
         <Text
           style={{
@@ -118,11 +114,18 @@ const LoginScreen = () => {
             fontSize: 15,
           }}
         >
-          Forgot Password?
+          {t('forgot_password')}
         </Text>
       </TouchableOpacity>
       <View style={styles.rembox}>
-        <CheckBox style={{ paddingLeft: 10 }} />
+        <CheckBox
+          style={{ paddingLeft: 10 }}
+          value={savePassword}
+          checked={savePassword}
+          onChange={(e) => {
+            rememberPassword(e);
+          }}
+        />
         <View style={{ paddingLeft: 10 }}>
           <Text
             style={{
@@ -131,7 +134,7 @@ const LoginScreen = () => {
               fontSize: 17,
             }}
           >
-            Remember me
+            {t('remember_me')}
           </Text>
         </View>
       </View>
@@ -143,18 +146,17 @@ const LoginScreen = () => {
           alignSelf: 'center',
         }}
       >
-        <CustomButton
+        <PrimaryButton
           text={t('login')}
-          onPress={handleSubmit((data) => {
-            console.log(data);
-            navigation.navigate('LoginSignUpScreen');
-          })}
+          onPress={() => {
+            handleLogin();
+          }}
+          isDisabled={isDisabled}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   backbutton: {},
   container: {
@@ -164,6 +166,11 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'white',
   },
+  scrollView: {
+    height: '100%',
+    borderWidth: 1,
+    flex: 1,
+  },
   textfieldbox: {
     marginTop: 40,
   },
@@ -172,5 +179,4 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
 });
-
 export default LoginScreen;
