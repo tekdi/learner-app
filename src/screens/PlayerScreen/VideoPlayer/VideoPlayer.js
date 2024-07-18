@@ -19,7 +19,7 @@ const VideoPlayer = () => {
   const [loading, setLoading] = useState(true);
   // content id
   const content_do_id = 'do_1131404596045168641385';
-  const [is_valid_video, set_is_valid_video] = useState(null);
+  const [is_valid_file, set_is_valid_file] = useState(null);
   // Determine the correct path to the index.html file based on the platform
   const htmlFilePath = Platform.select({
     ios: './assets/assets/libs/sunbird-video-player/index.html',
@@ -47,14 +47,15 @@ const VideoPlayer = () => {
     let content_response = await readContent(content_do_id);
     if (content_response == null) {
       Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
-      set_is_valid_video(false);
+      set_is_valid_file(false);
     } else if (
-      content_response?.result?.content?.mimeType == 'video/mp4'
+      content_response?.result?.content?.mimeType == 'video/mp4' ||
+      content_response?.result?.content?.mimeType == 'video/webm'
     ) {
       videoPlayerConfig.metadata = content_response.result.content;
-      set_is_valid_video(true);
+      set_is_valid_file(true);
     } else {
-      set_is_valid_video(false);
+      set_is_valid_file(false);
     }
     setLoading(false);
   };
@@ -81,9 +82,9 @@ const VideoPlayer = () => {
 
   return (
     <View style={styles.container}>
-      {is_valid_video == false ? (
+      {is_valid_file == false ? (
         <View style={styles.middle_screen}>
-          <Text>Invalid Video File</Text>
+          <Text>Invalid Player File</Text>
         </View>
       ) : (
         <WebView

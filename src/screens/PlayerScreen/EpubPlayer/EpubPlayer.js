@@ -12,18 +12,18 @@ import React, { useRef, useEffect, useState } from 'react';
 import { WebView } from 'react-native-webview';
 import { Platform } from 'react-native';
 import { readContent } from '../../../utils/API/ApiCalls';
-import { pdfPlayerConfig } from './data';
+import { epubPlayerConfig } from './data';
 import { Alert } from 'react-native';
 
-const PdfPlayer = () => {
+const EpubPlayer = () => {
   const [loading, setLoading] = useState(true);
   // content id
-  const content_do_id = 'do_1135818637830144001213';
+  const content_do_id = 'do_11361876156592128011436'; //epub
   const [is_valid_file, set_is_valid_file] = useState(null);
   // Determine the correct path to the index.html file based on the platform
   const htmlFilePath = Platform.select({
-    ios: './assets/assets/libs/sunbird-pdf-player/index.html',
-    android: 'file:///android_asset/libs/sunbird-pdf-player/index.html',
+    ios: './assets/assets/libs/sunbird-epub-player/index.html',
+    android: 'file:///android_asset/libs/sunbird-epub-player/index.html',
   });
 
   //set data from react native
@@ -48,10 +48,8 @@ const PdfPlayer = () => {
     if (content_response == null) {
       Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
       set_is_valid_file(false);
-    } else if (
-      content_response?.result?.content?.mimeType == 'application/pdf'
-    ) {
-      pdfPlayerConfig.metadata = content_response.result.content;
+    } else if (content_response?.result?.content?.mimeType == 'application/epub') {
+      epubPlayerConfig.metadata = content_response.result.content;
       set_is_valid_file(true);
     } else {
       set_is_valid_file(false);
@@ -75,7 +73,7 @@ const PdfPlayer = () => {
   //call content url
   let injectedJS = `
     (function() {
-      window.setData('${JSON.stringify(pdfPlayerConfig)}');
+      window.setData('${JSON.stringify(epubPlayerConfig)}');
     })();
   `;
 
@@ -133,4 +131,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PdfPlayer;
+export default EpubPlayer;

@@ -13,7 +13,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { WebView } from 'react-native-webview';
 import { Platform } from 'react-native';
 import { readContent } from '../../../utils/API/ApiCalls';
-import { pdfPlayerConfig } from './data';
+import { epubPlayerConfig } from './data';
 import { Alert } from 'react-native';
 import {
   getData,
@@ -23,10 +23,10 @@ import {
 import RNFS from 'react-native-fs';
 import Config from 'react-native-config';
 
-const PdfPlayerOffline = () => {
+const EpubPlayerOffline = () => {
   const [loading, setLoading] = useState(true);
   // content id
-  const content_do_id = 'do_1135906533266391041531';
+  const content_do_id = 'do_11372856157927014415'; //epub
   const content_file = `${RNFS.DocumentDirectoryPath}/${content_do_id}`;
   // console.log('rnfs DocumentDirectoryPath', RNFS.DocumentDirectoryPath);
   // console.log('rnfs ExternalDirectoryPath', RNFS.ExternalDirectoryPath);
@@ -35,8 +35,8 @@ const PdfPlayerOffline = () => {
   const [progress, setProgress] = useState(0);
   // Determine the correct path to the index.html file based on the platform
   const htmlFilePath = Platform.select({
-    ios: './assets/assets/libs/sunbird-pdf-player/index.html',
-    android: 'file:///android_asset/libs/sunbird-pdf-player/index.html',
+    ios: './assets/assets/libs/sunbird-epub-player/index.html',
+    android: 'file:///android_asset/libs/sunbird-epub-player/index.html',
   });
 
   //set data from react native
@@ -62,8 +62,8 @@ const PdfPlayerOffline = () => {
       set_is_download(true);
     } else {
       let filePath = '';
-      if (contentObj?.mimeType == 'application/pdf') {
-        filePath = `${content_file}.pdf`;
+      if (contentObj?.mimeType == 'application/epub') {
+        filePath = `${content_file}.epub`;
       }
       if (filePath != '') {
         let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
@@ -76,8 +76,8 @@ const PdfPlayerOffline = () => {
           delete contentObj.previewUrl;
           delete contentObj.streamingUrl;
 
-          pdfPlayerConfig.metadata = contentObj;
-          //console.log('pdfPlayerConfig set', pdfPlayerConfig);
+          epubPlayerConfig.metadata = contentObj;
+          //console.log('epubPlayerConfig set', epubPlayerConfig);
           set_is_valid_file(true);
         } else {
           set_is_valid_file(false);
@@ -106,8 +106,8 @@ const PdfPlayerOffline = () => {
     } else {
       let contentObj = content_response?.result?.content;
       let filePath = '';
-      if (contentObj?.mimeType == 'application/pdf') {
-        filePath = `${content_file}.pdf`;
+      if (contentObj?.mimeType == 'application/epub') {
+        filePath = `${content_file}.epub`;
       }
       if (filePath != '') {
         //download file and store object in local
@@ -197,7 +197,7 @@ const PdfPlayerOffline = () => {
   //call content url
   let injectedJS = `
     (function() {
-      window.setData('${JSON.stringify(pdfPlayerConfig)}',);
+      window.setData('${JSON.stringify(epubPlayerConfig)}',);
     })();
   `;
 
@@ -260,4 +260,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PdfPlayerOffline;
+export default EpubPlayerOffline;

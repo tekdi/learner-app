@@ -1,4 +1,11 @@
-import { View, TouchableOpacity, Image, StyleSheet, Text } from 'react-native';
+import {
+  ScrollView,
+  View,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Text,
+} from 'react-native';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -32,48 +39,65 @@ const PlayerScreen = () => {
       {/* Icon png here */}
       <View style={styles.container_image}>
         <Image style={styles.image} source={Logo} resizeMode="contain" />
-        <Text style={styles.title}>Players</Text>
+        <Text style={styles.title}>Content Players</Text>
       </View>
-      <View style={{ padding: 10 }}></View>
-      <CustomButton
-        text={'QuML Player: Online'}
-        onPress={() => {
-          nav.navigate('QuMLPlayer');
-        }}
-      />
-      <View style={{ padding: 10 }}></View>
-      <CustomButton
-        text={'Pdf Player: Online'}
-        onPress={() => {
-          nav.navigate('PdfPlayer');
-        }}
-      />
-      <View style={{ padding: 10 }}></View>
-      <CustomButton
-        text={'Pdf Player: Offline'}
-        onPress={() => {
-          nav.navigate('PdfPlayerOffline');
-        }}
-      />
-      <View style={{ padding: 10 }}></View>
-      <CustomButton
-        text={'Video Player: Online'}
-        onPress={() => {
-          nav.navigate('VideoPlayer');
-        }}
-      />
-      <View style={{ padding: 10 }}></View>
-      <CustomButton
-        text={'Video Player: Offline'}
-        onPress={() => {
-          nav.navigate('VideoPlayerOffline');
-        }}
-      />
+      <ScrollView contentContainerStyle={styles.container_scroll}>
+        <View style={{ padding: 10 }}></View>
+        <CustomButton
+          text={'QuML Player: Online'}
+          onPress={() => {
+            nav.navigate('QuMLPlayer');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <CustomButton
+          text={'Pdf Player: Online'}
+          onPress={() => {
+            nav.navigate('PdfPlayer');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <CustomButton
+          text={'Pdf Player: Offline'}
+          onPress={() => {
+            nav.navigate('PdfPlayerOffline');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <CustomButton
+          text={'Video Player: Online'}
+          onPress={() => {
+            nav.navigate('VideoPlayer');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <CustomButton
+          text={'Video Player: Offline'}
+          onPress={() => {
+            nav.navigate('VideoPlayerOffline');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <CustomButton
+          text={'Epub Player: Online'}
+          onPress={() => {
+            nav.navigate('EpubPlayer');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <CustomButton
+          text={'Epub Player: Offline'}
+          onPress={() => {
+            nav.navigate('EpubPlayerOffline');
+          }}
+        />
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container_scroll: { padding: 10 },
   container: {
     padding: 10,
     flex: 1,

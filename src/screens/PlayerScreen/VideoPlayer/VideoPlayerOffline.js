@@ -9,28 +9,29 @@ import {
 } from 'react-native';
 import { PermissionsAndroid } from 'react-native';
 import React, { useRef, useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { WebView } from 'react-native-webview';
 import { Platform } from 'react-native';
 import { readContent } from '../../../utils/API/ApiCalls';
 import { videoPlayerConfig } from './data';
 import { Alert } from 'react-native';
-import { getData, storeData } from '../../../utils/Helper/JSHelper';
+import {
+  getData,
+  loadFileAsBlob,
+  storeData,
+} from '../../../utils/Helper/JSHelper';
 import RNFS from 'react-native-fs';
 import Config from 'react-native-config';
-
-const PACKAGE_NAME = Config.PACKAGE_NAME;
 
 const VideoPlayerOffline = () => {
   const [loading, setLoading] = useState(true);
   // content id
-  const content_do_id = 'do_11314891914916659211286';
-  const content_file_name = `${content_do_id}.mp4`;
-  const content_file_path = `${RNFS.DocumentDirectoryPath}/${content_file_name}`;
+  //const content_do_id = 'do_11314891914916659211286'; //mp4
+  const content_do_id = 'do_1135798467931750401115'; //webm
+  const content_file = `${RNFS.DocumentDirectoryPath}/${content_do_id}`;
   // console.log('rnfs DocumentDirectoryPath', RNFS.DocumentDirectoryPath);
   // console.log('rnfs ExternalDirectoryPath', RNFS.ExternalDirectoryPath);
-  const [is_valid_video, set_is_valid_video] = useState(null);
+  const [is_valid_file, set_is_valid_file] = useState(null);
   const [is_download, set_is_download] = useState(null);
   const [progress, setProgress] = useState(0);
   // Determine the correct path to the index.html file based on the platform
@@ -61,14 +62,17 @@ const VideoPlayerOffline = () => {
     if (contentObj == null) {
       set_is_download(true);
     } else {
+      let filePath = '';
       if (contentObj?.mimeType == 'video/mp4') {
-        //replace offline file path
-        // Usage example
-        const filePath = content_file_path; // Replace with your file path
-        let blobContent = await loadFileAsBlob(filePath);
+        filePath = `${content_file}.mp4`;
+      } else if (contentObj?.mimeType == 'video/webm') {
+        filePath = `${content_file}.webm`;
+      }
+      if (filePath != '') {
+        let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
         //console.log('blobContent', blobContent);
         if (blobContent) {
-          console.log('create blob url');
+          //console.log('create blob url');
           contentObj.artifactUrl = blobContent;
 
           //previewUrl streamingUrl no needed for offline use
@@ -76,14 +80,13 @@ const VideoPlayerOffline = () => {
           delete contentObj.streamingUrl;
 
           videoPlayerConfig.metadata = contentObj;
-          //videoPlayerConfig.videoBase64 = blobContent;
-          console.log('videoPlayerConfig set', videoPlayerConfig);
-          set_is_valid_video(true);
+          //console.log('videoPlayerConfig set', videoPlayerConfig);
+          set_is_valid_file(true);
         } else {
-          set_is_valid_video(false);
+          set_is_valid_file(false);
         }
       } else {
-        set_is_valid_video(false);
+        set_is_valid_file(false);
       }
       set_is_download(false);
     }
@@ -102,10 +105,16 @@ const VideoPlayerOffline = () => {
     let content_response = await readContent(content_do_id);
     if (content_response == null) {
       Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
-      set_is_valid_video(false);
+      set_is_valid_file(false);
     } else {
       let contentObj = content_response?.result?.content;
+      let filePath = '';
       if (contentObj?.mimeType == 'video/mp4') {
+        filePath = `${content_file}.mp4`;
+      } else if (contentObj?.mimeType == 'video/webm') {
+        filePath = `${content_file}.webm`;
+      }
+      if (filePath != '') {
         //download file and store object in local
         //download file
         // URL of the file to download
@@ -125,7 +134,7 @@ const VideoPlayerOffline = () => {
             try {
               const download = RNFS.downloadFile({
                 fromUrl: fileUrl,
-                toFile: content_file_path,
+                toFile: filePath,
                 begin: (res) => {
                   console.log('Download started');
                 },
@@ -137,7 +146,7 @@ const VideoPlayerOffline = () => {
               });
               const result = await download.promise;
               if (result.statusCode === 200) {
-                console.log('File downloaded successfully:', content_file_path);
+                console.log('File downloaded successfully:', filePath);
                 setProgress(0);
                 //store content obj
                 //console.log(contentObj);
@@ -177,20 +186,6 @@ const VideoPlayerOffline = () => {
     await fetchData();
   };
 
-  const loadFileAsBlob = async (filePath) => {
-    try {
-      console.log('in loadFileAsBlob');
-      // Read the file content
-      const videoBase64 = await RNFS.readFile(filePath, 'base64');
-      const fileContent = `data:video/mp4;base64,${videoBase64}`;
-      //console.log('fileContent', fileContent);
-      return fileContent;
-    } catch (error) {
-      console.error('Error loading file as Blob:', error);
-      return null;
-    }
-  };
-
   if (loading) {
     return (
       <View style={styles.middle_screen}>
@@ -213,9 +208,9 @@ const VideoPlayerOffline = () => {
 
   return (
     <View style={styles.container}>
-      {is_valid_video == false ? (
+      {is_valid_file == false ? (
         <View style={styles.middle_screen}>
-          <Text>Invalid Video File</Text>
+          <Text>Invalid Player File</Text>
         </View>
       ) : is_download == true ? (
         <View style={styles.middle_screen}>
