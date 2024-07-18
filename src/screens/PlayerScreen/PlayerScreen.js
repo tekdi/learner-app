@@ -9,8 +9,7 @@ import {
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import CustomButton2 from '../../components/CustomButtonOutlined/CustomButtonOutlined';
-import CustomButton from '../../components/CustomButton/CustomButton';
+import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
 
 import Logo from '../../assets/images/png/logo.png';
@@ -43,49 +42,49 @@ const PlayerScreen = () => {
       </View>
       <ScrollView contentContainerStyle={styles.container_scroll}>
         <View style={{ padding: 10 }}></View>
-        <CustomButton
+        <PrimaryButton
           text={'QuML Player: Online'}
           onPress={() => {
             nav.navigate('QuMLPlayer');
           }}
         />
         <View style={{ padding: 10 }}></View>
-        <CustomButton
+        <PrimaryButton
           text={'Pdf Player: Online'}
           onPress={() => {
             nav.navigate('PdfPlayer');
           }}
         />
         <View style={{ padding: 10 }}></View>
-        <CustomButton
+        <PrimaryButton
           text={'Pdf Player: Offline'}
           onPress={() => {
             nav.navigate('PdfPlayerOffline');
           }}
         />
         <View style={{ padding: 10 }}></View>
-        <CustomButton
+        <PrimaryButton
           text={'Video Player: Online'}
           onPress={() => {
             nav.navigate('VideoPlayer');
           }}
         />
         <View style={{ padding: 10 }}></View>
-        <CustomButton
+        <PrimaryButton
           text={'Video Player: Offline'}
           onPress={() => {
             nav.navigate('VideoPlayerOffline');
           }}
         />
         <View style={{ padding: 10 }}></View>
-        <CustomButton
+        <PrimaryButton
           text={'Epub Player: Online'}
           onPress={() => {
             nav.navigate('EpubPlayer');
           }}
         />
         <View style={{ padding: 10 }}></View>
-        <CustomButton
+        <PrimaryButton
           text={'Epub Player: Offline'}
           onPress={() => {
             nav.navigate('EpubPlayerOffline');

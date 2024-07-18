@@ -1,9 +1,5 @@
 import React, { useEffect } from 'react';
-<<<<<<< HEAD
-import { View } from 'react-native';
-=======
 import { StyleSheet, View } from 'react-native';
->>>>>>> upstream/feat-auth
 import LoadingScreen from './screens/LoadingScreen/LoadingScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -169,10 +165,13 @@ const App = () => {
       }
     };
 
-    initializeApp();    
+    initializeApp();
+  }, []);
+
+  useEffect(() => {
     // changeNavigationBarColor('white', { barStyle: 'light-content' });
     hideNavigationBar();
-  }, []);
+  });
 
   return (
     <LanguageProvider>
@@ -182,7 +181,7 @@ const App = () => {
         <NavigationContainer>
           <Stack.Navigator
             screenOptions={{ headerShown: false }}
-            initialRouteName="LanguageScreen"
+            initialRouteName="LoadingScreen"
           >
             <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
             <Stack.Screen name="LanguageScreen" component={LanguageScreen} />

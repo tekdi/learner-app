@@ -5,31 +5,31 @@ const { t } = useTranslation();
 
 export const languages = [
   {
-    title: t('english'),
+    title: 'english',
     value: 'en',
   },
   {
-    title: t('hindi'),
+    title: 'hindi',
     value: 'hi',
   },
   {
-    title: t('marathi'),
+    title: 'marathi',
     value: 'ma',
   },
   {
-    title: t('bangla'),
+    title: 'bangla',
     value: 'ba',
   },
   {
-    title: t('telugu'),
+    title: 'telugu',
     value: 'te',
   },
   {
-    title: t('kannada'),
+    title: 'kannada',
     value: 'ka',
   },
   {
-    title: t('gujarati'),
+    title: 'gujarati',
     value: 'gu',
   },
 ];

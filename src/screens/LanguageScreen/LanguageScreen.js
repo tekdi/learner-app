@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -6,18 +7,16 @@ import {
   Image,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
 import { Layout, Text } from '@ui-kitten/components';
+import { useNavigation } from '@react-navigation/native';
 import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
-import { languages } from './Languages';
-import { useNavigation } from '@react-navigation/native';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
-//import env variables
-
-//multi language
-import { useTranslation } from '../../context/LanguageContext';
 import CustomCardLanguage from '../../components/CustomCardLanguage/CustomCardLanguage';
+import Loading from '../LoadingScreen/Loading';
+import { languages } from './Languages';
+// Multi-language context
+import { useTranslation } from '../../context/LanguageContext';
 import {
   getRefreshToken,
   getSavedToken,
@@ -25,19 +24,13 @@ import {
   saveToken,
 } from '../../utils/JsHelper/Helper';
 import { getAccessToken, refreshToken } from '../../utils/API/AuthService';
-import Loading from '../LoadingScreen/Loading';
 
 const LanguageScreen = () => {
-  //multi language setup
-  const { t, setLanguage, language } = useTranslation();
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(true);
+  const { t, setLanguage, language } = useTranslation();
+  const [loading1, setLoading1] = useState(false);
 
-  const changeLanguage = (lng) => {
-    setLanguage(lng);
-  };
-
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchData = async () => {
       const token = await getSavedToken();
       const refresh_token = await getRefreshToken();
@@ -54,17 +47,20 @@ const LanguageScreen = () => {
           navigation.navigate('Dashboard');
         }
       } else {
-        setLoading(false);
+        setLoading1(false);
       }
-      setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [navigation]);*/
+
+  const changeLanguage = (lng) => {
+    setLanguage(lng);
+  };
 
   const renderItem = ({ item }) => (
     <CustomCardLanguage
       key={item.value}
-      title={item.title}
+      title={t(item.title)}
       clickEvent={changeLanguage}
       value={item.value}
       active={item.value == language}
@@ -75,7 +71,7 @@ const LanguageScreen = () => {
     navigation.navigate('LoginSignUpScreen');
   };
 
-  return loading ? (
+  return loading1 ? (
     <Loading />
   ) : (
     <SafeAreaView style={styles.safeArea}>
@@ -85,9 +81,7 @@ const LanguageScreen = () => {
         backgroundColor="transparent"
       />
       <Layout style={styles.container}>
-        {/* Icon png here */}
         <Image style={styles.image} source={Logo} resizeMode="contain" />
-        {/* Text Samples here */}
         <Text category="s1" style={styles.title}>
           {t('welcome')}! 😊
         </Text>
@@ -95,7 +89,6 @@ const LanguageScreen = () => {
         <Text category="p1" style={styles.description}>
           {t('select_language')}
         </Text>
-        {/* List of Languages */}
         <View>
           <FlatList
             showsVerticalScrollIndicator={false}

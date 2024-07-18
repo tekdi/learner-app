@@ -21,6 +21,7 @@ import {
   storeData,
 } from '../../../utils/Helper/JSHelper';
 import RNFS from 'react-native-fs';
+import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
 
 const VideoPlayerOffline = () => {
@@ -34,6 +35,7 @@ const VideoPlayerOffline = () => {
   const [is_valid_file, set_is_valid_file] = useState(null);
   const [is_download, set_is_download] = useState(null);
   const [progress, setProgress] = useState(0);
+  const [loading_text, set_loading_text] = useState('');
   // Determine the correct path to the index.html file based on the platform
   const htmlFilePath = Platform.select({
     ios: './assets/assets/libs/sunbird-video-player/index.html',
@@ -58,6 +60,7 @@ const VideoPlayerOffline = () => {
   const fetchData = async () => {
     //content read
     setLoading(true);
+    set_loading_text('Reading Content...');
     let contentObj = await getData(content_do_id, 'json');
     if (contentObj == null) {
       set_is_download(true);
@@ -69,20 +72,35 @@ const VideoPlayerOffline = () => {
         filePath = `${content_file}.webm`;
       }
       if (filePath != '') {
-        let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
-        //console.log('blobContent', blobContent);
-        if (blobContent) {
-          //console.log('create blob url');
-          contentObj.artifactUrl = blobContent;
+        try {
+          //get content file name
+          let temp_file_url = contentObj?.artifactUrl;
+          const dividedArray = temp_file_url.split(content_do_id);
+          const file_name =
+            dividedArray[
+              dividedArray.length > 0
+                ? dividedArray.length - 1
+                : dividedArray.length
+            ];
+          filePath = `${content_file}/${content_do_id}${file_name}`;
+          //console.log('filePath', filePath);
+          let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
+          //console.log('blobContent', blobContent);
+          if (blobContent) {
+            //console.log('create blob url');
+            contentObj.artifactUrl = blobContent;
 
-          //previewUrl streamingUrl no needed for offline use
-          delete contentObj.previewUrl;
-          delete contentObj.streamingUrl;
+            //previewUrl streamingUrl no needed for offline use
+            delete contentObj.previewUrl;
+            delete contentObj.streamingUrl;
 
-          videoPlayerConfig.metadata = contentObj;
-          //console.log('videoPlayerConfig set', videoPlayerConfig);
-          set_is_valid_file(true);
-        } else {
+            videoPlayerConfig.metadata = contentObj;
+            //console.log('videoPlayerConfig set', videoPlayerConfig);
+            set_is_valid_file(true);
+          } else {
+            set_is_valid_file(false);
+          }
+        } catch (e) {
           set_is_valid_file(false);
         }
       } else {
@@ -90,6 +108,7 @@ const VideoPlayerOffline = () => {
       }
       set_is_download(false);
     }
+    set_loading_text('');
     setLoading(false);
   };
 
@@ -101,6 +120,7 @@ const VideoPlayerOffline = () => {
   const downloadContent = async () => {
     //content read
     setLoading(true);
+    set_loading_text('Reading Content...');
     //get data online
     let content_response = await readContent(content_do_id);
     if (content_response == null) {
@@ -118,7 +138,9 @@ const VideoPlayerOffline = () => {
         //download file and store object in local
         //download file
         // URL of the file to download
-        const fileUrl = contentObj?.artifactUrl;
+        //const fileUrl = contentObj?.artifactUrl;
+        const fileUrl = contentObj?.downloadUrl;
+        filePath = `${content_file}.zip`;
         //console.log('fileUrl', fileUrl);
         try {
           const granted = await PermissionsAndroid.request(
@@ -148,9 +170,22 @@ const VideoPlayerOffline = () => {
               if (result.statusCode === 200) {
                 console.log('File downloaded successfully:', filePath);
                 setProgress(0);
-                //store content obj
-                //console.log(contentObj);
-                await storeData(content_do_id, contentObj, 'json');
+                set_loading_text('Unzip content ecar file...');
+                // Define the paths
+                const sourcePath = filePath;
+                const targetPath = content_file;
+                try {
+                  // Ensure the target directory exists
+                  await RNFS.mkdir(targetPath);
+                  // Unzip the file
+                  const path = await unzip(sourcePath, targetPath);
+                  console.log(`Unzipped to ${path}`);
+                  //store content obj
+                  //console.log(contentObj);
+                  await storeData(content_do_id, contentObj, 'json');
+                } catch (error) {
+                  console.error(`Error extracting zip file: ${error}`);
+                }
               } else {
                 Alert.alert(
                   'Error Internal',
@@ -192,6 +227,8 @@ const VideoPlayerOffline = () => {
         <ActivityIndicator size="large" color="#0000ff" />
         {progress > 0 && progress < 100 ? (
           <Text>{`Downloading: ${progress.toFixed(2)}%`}</Text>
+        ) : loading_text != '' ? (
+          <Text>{loading_text}</Text>
         ) : (
           <></>
         )}
