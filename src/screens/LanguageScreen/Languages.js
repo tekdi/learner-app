@@ -17,7 +17,7 @@ export const languages = [
     value: 'ma',
   },
   {
-    title: 'bangla',
+    title: 'bengali',
     value: 'ba',
   },
   {

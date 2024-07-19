@@ -5,21 +5,17 @@ import {
   StyleSheet,
   Image,
   SafeAreaView,
-  ScrollView,
 } from 'react-native';
 import { useState, React, useEffect } from 'react';
-import { Button, CheckBox } from '@ui-kitten/components';
+import { CheckBox } from '@ui-kitten/components';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
 import { login } from '../../utils/API/AuthService';
-import {
-  getSavedToken,
-  saveRefreshToken,
-  saveToken,
-} from '../../utils/JsHelper/Helper';
+import { saveRefreshToken, saveToken } from '../../utils/JsHelper/Helper';
 import LoginTextField from '../../components/LoginTextField/LoginTextField';
 import { useTranslation } from '../../context/LanguageContext';
+import Loading from '../LoadingScreen/Loading';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -30,6 +26,7 @@ const LoginScreen = () => {
   const [savePassword, setSavePassword] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [errmsg, setErrmsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const onChangeText = (e) => {
     setUserName(e.trim());
@@ -41,6 +38,7 @@ const LoginScreen = () => {
     setSavePassword(value);
   };
   const handleLogin = async () => {
+    setLoading(true);
     const payload = {
       username: userName,
       password: password,
@@ -54,18 +52,12 @@ const LoginScreen = () => {
       } else {
         navigation.navigate('Dashboard');
       }
+      setLoading(false);
     } else {
-      console.log('reached here');
       setErrmsg(data?.params?.errmsg);
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getSavedToken();
-    };
-    fetchData();
-  }, []);
 
   useEffect(() => {
     if (userName.length > 0 && password.length > 0) {
@@ -77,83 +69,89 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity
-        style={styles.backbutton}
-        onPress={() => {
-          navigation.navigate('LoginSignUpScreen');
-        }}
-      >
-        <Image
-          source={backIcon}
-          resizeMode="contain"
-          style={{ width: 30, height: 30 }}
-        />
-        {/* <Text>Back</Text> */}
-      </TouchableOpacity>
-      <View style={styles.textfieldbox}>
-        <LoginTextField
-          text="username"
-          onChangeText={onChangeText}
-          value={userName}
-        />
-        <View style={{ padding: 10 }}></View>
-        <LoginTextField
-          text="password"
-          onChangeText={onChangePassword}
-          value={password}
-        />
-        {errmsg !== '' && (
-          <Text style={{ color: 'red', top: -10, left: 20 }}>{errmsg}</Text>
-        )}
-      </View>
-      <TouchableOpacity style={{ paddingLeft: 20, marginBottom: 30 }}>
-        <Text
-          style={{
-            color: '#0D599E',
-            fontFamily: 'Poppins-Medium',
-            fontSize: 15,
-          }}
-        >
-          {t('forgot_password')}
-        </Text>
-      </TouchableOpacity>
-      <View style={styles.rembox}>
-        <CheckBox
-          style={{ paddingLeft: 10 }}
-          value={savePassword}
-          checked={savePassword}
-          onChange={(e) => {
-            rememberPassword(e);
-          }}
-        />
-        <View style={{ paddingLeft: 10 }}>
-          <Text
-            style={{
-              color: 'black',
-              fontFamily: 'Poppins-Regular',
-              fontSize: 17,
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <TouchableOpacity
+            style={styles.backbutton}
+            onPress={() => {
+              navigation.navigate('LoginSignUpScreen');
             }}
           >
-            {t('remember_me')}
-          </Text>
-        </View>
-      </View>
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 10,
-          padding: 10,
-          alignSelf: 'center',
-        }}
-      >
-        <PrimaryButton
-          text={t('login')}
-          onPress={() => {
-            handleLogin();
-          }}
-          isDisabled={isDisabled}
-        />
-      </View>
+            <Image
+              source={backIcon}
+              resizeMode="contain"
+              style={{ width: 30, height: 30 }}
+            />
+            {/* <Text>Back</Text> */}
+          </TouchableOpacity>
+          <View style={styles.textfieldbox}>
+            <LoginTextField
+              text="username"
+              onChangeText={onChangeText}
+              value={userName}
+            />
+            <View style={{ padding: 10 }}></View>
+            <LoginTextField
+              text="password"
+              onChangeText={onChangePassword}
+              value={password}
+            />
+            {errmsg !== '' && (
+              <Text style={{ color: 'red', top: -10, left: 20 }}>{errmsg}</Text>
+            )}
+          </View>
+          <TouchableOpacity style={{ paddingLeft: 20, marginBottom: 30 }}>
+            <Text
+              style={{
+                color: '#0D599E',
+                fontFamily: 'Poppins-Medium',
+                fontSize: 15,
+              }}
+            >
+              {t('forgot_password')}
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.rembox}>
+            <CheckBox
+              style={{ paddingLeft: 10 }}
+              value={savePassword}
+              checked={savePassword}
+              onChange={(e) => {
+                rememberPassword(e);
+              }}
+            />
+            <View style={{ paddingLeft: 10 }}>
+              <Text
+                style={{
+                  color: 'black',
+                  fontFamily: 'Poppins-Regular',
+                  fontSize: 17,
+                }}
+              >
+                {t('remember_me')}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 10,
+              padding: 10,
+              alignSelf: 'center',
+            }}
+          >
+            <PrimaryButton
+              text={t('login')}
+              onPress={() => {
+                handleLogin();
+              }}
+              isDisabled={isDisabled}
+            />
+          </View>
+        </>
+      )}
     </SafeAreaView>
   );
 };

@@ -171,7 +171,7 @@ const App = () => {
   useEffect(() => {
     // changeNavigationBarColor('white', { barStyle: 'light-content' });
     hideNavigationBar();
-  });
+  }, []);
 
   return (
     <LanguageProvider>

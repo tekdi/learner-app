@@ -5,68 +5,103 @@ import {
   StyleSheet,
   Text,
   Button,
+  ActivityIndicator,
 } from 'react-native';
 import React, { useRef, useEffect, useState } from 'react';
 
 import { WebView } from 'react-native-webview';
 import { Platform } from 'react-native';
-import { playerConfig, queOfflineAll } from './data';
+import { hierarchyContent } from '../../../utils/API/ApiCalls';
+import { qumlPlayerConfig } from './data';
+import Config from 'react-native-config';
+import { Alert } from 'react-native';
 
 const QuMLPlayer = () => {
-  //const questionListUrl = 'https://sunbirdsaas.com/api/question/v1/list';
-  const questionListUrl =
-    'https://egapi-uat.tekdinext.com/mw/events/camp-question-list';
-  const jsonObject = {
-    playerConfig: playerConfig,
-    queOfflineAll: queOfflineAll,
-    questionListUrl: questionListUrl,
-  };
+  const [loading, setLoading] = useState(true);
+  // content id
+  const content_do_id = 'do_113947242352787456122';
+  const [is_valid_file, set_is_valid_file] = useState(null);
+  const questionListUrl = Config.QUESTION_LIST_URL;
   // Determine the correct path to the index.html file based on the platform
   const htmlFilePath = Platform.select({
-    ios: './assets/assets/libs/quml/index.html',
-    android: 'file:///android_asset/libs/quml/index.html',
-    //android: 'http://192.168.31.74:3000/',
+    ios: './assets/assets/libs/sunbird-quml-player/index.html',
+    android: 'file:///android_asset/libs/sunbird-quml-player/index.html',
   });
 
   //set data from react native
   const webviewRef = useRef(null);
-  const saveJavaScript = `
-      (function() {
-          localStorage.setItem('jsonObject', JSON.stringify(${JSON.stringify(
-            jsonObject
-          )}));
-          return true;
-      })();
-  `;
-  const [retrievedData, setRetrievedData] = useState(null);
+  // const [retrievedData, setRetrievedData] = useState(null);
+  // // JavaScript to retrieve localStorage data and send it back to React Native
+  // const retrieveJavaScript = `
+  //     (function() {
+  //         const data = localStorage.getItem('telemetry');
+  //         window.ReactNativeWebView.postMessage(data);
+  //     })();
+  // `;
+  // const handleMessage = (event) => {
+  //   const data = event.nativeEvent.data;
+  //   setRetrievedData(data);
+  // };
 
-  // JavaScript to retrieve localStorage data and send it back to React Native
-  const retrieveJavaScript = `
-      (function() {
-          const data = localStorage.getItem('telemetry');
-          window.ReactNativeWebView.postMessage(data);
-      })();
-  `;
-  const handleMessage = (event) => {
-    const data = event.nativeEvent.data;
-    setRetrievedData(data);
+  const fetchData = async () => {
+    //content read
+    setLoading(true);
+    let content_response = await hierarchyContent(content_do_id);
+    if (content_response == null) {
+      Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
+      set_is_valid_file(false);
+    } else if (content_response?.result?.questionSet) {
+      qumlPlayerConfig.metadata = content_response.result.questionSet;
+      set_is_valid_file(true);
+    } else {
+      set_is_valid_file(false);
+    }
+    setLoading(false);
   };
+
+  const [temp] = useState([]);
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.middle_screen}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  //call content url
+  let injectedJS = `
+    (function() {
+      window.setData('${JSON.stringify(qumlPlayerConfig)}','${questionListUrl}');
+    })();
+  `;
 
   return (
     <View style={styles.container}>
-      <WebView
-        ref={webviewRef}
-        originWhitelist={['*']}
-        source={Platform.OS === 'ios' ? htmlFilePath : { uri: htmlFilePath }}
-        style={styles.webview}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        scalesPageToFit={true}
-        startInLoadingState={true}
-        injectedJavaScript={saveJavaScript}
-        onMessage={handleMessage}
-      />
-      <Button
+      {is_valid_file == false ? (
+        <View style={styles.middle_screen}>
+          <Text>Invalid Player File</Text>
+        </View>
+      ) : (
+        <WebView
+          ref={webviewRef}
+          originWhitelist={['*']}
+          source={Platform.OS === 'ios' ? htmlFilePath : { uri: htmlFilePath }}
+          style={styles.webview}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          scalesPageToFit={true}
+          startInLoadingState={true}
+          allowFileAccessFromFileURLs={true}
+          injectedJavaScript={injectedJS}
+          //injectedJavaScript={saveJavaScript}
+          //onMessage={handleMessage}
+        />
+      )}
+      {/* <Button
         title="Retrieve telemetry Data"
         onPress={() => {
           if (webviewRef.current) {
@@ -74,7 +109,7 @@ const QuMLPlayer = () => {
           }
         }}
       />
-      {retrievedData && <Text>{retrievedData}</Text>}
+      {retrievedData && <Text>{retrievedData}</Text>} */}
     </View>
   );
 };
@@ -85,6 +120,16 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
+  },
+  middle_screen: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 });
 

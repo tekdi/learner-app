@@ -4,8 +4,6 @@ export const registerSchema = async (data) => {
   try {
     // Fix field order and labels
 
-    console.log(JSON.stringify(data));
-
     const schema = [
       {
         formNumber: 1,
@@ -164,6 +162,24 @@ export const registerSchema = async (data) => {
               maxLength: 16,
               match: true,
             },
+          },
+        ],
+      },
+      {
+        formNumber: 7,
+        question: '',
+        fields: [
+          {
+            type: 'plain_text',
+          },
+        ],
+      },
+      {
+        formNumber: 8,
+        question: '',
+        fields: [
+          {
+            type: 'tc_text',
           },
         ],
       },

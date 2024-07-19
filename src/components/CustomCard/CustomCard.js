@@ -8,6 +8,7 @@ import {
 import React, { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CustomCards = ({
   field,
@@ -17,18 +18,24 @@ const CustomCards = ({
   selectedIds,
   control,
 }) => {
-  const { t } = useTranslation();
+  const { t, setLanguage, language } = useTranslation();
+
+  const changeLanguage = (lng) => {
+    setLanguage(lng);
+  };
 
   const {
     field: { onChange, value },
   } = useController({ name, control });
 
   const handlePress = (name, id) => {
+    console.log('hi');
     setSelectedIds((prevSelectedIds) => ({
       ...prevSelectedIds,
       [name]: id,
     }));
     onChange(id);
+    changeLanguage(id);
   };
   useEffect(() => {
     if (value) {
