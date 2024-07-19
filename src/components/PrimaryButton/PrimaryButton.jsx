@@ -4,7 +4,7 @@ import React from 'react';
 import { Button } from '@ui-kitten/components';
 
 const PrimaryButton = ({ text, onPress,isDisabled,color }) => {
-  console.log({isDisabled});
+  //console.log({isDisabled});
   return (
     <View>
       <Button

@@ -33,27 +33,41 @@
     </div>
     <script type="text/javascript" src="sunbird-quml-player.js"></script>
     <script type="text/javascript">
-      function setData(playerConfig,questionListUrl) 
+      function setData() 
       {
-        //alert(JSON.stringify(playerConfig?.context));
-        //alert(playerConfig);
-        // Need to pass the API URL to fetch the question set
-        //window.questionListUrl = 'https://egapi-uat.tekdinext.com/mw/events/camp-question-list';
-        window.questionListUrl = questionListUrl;
-        const qumlPlayerElement = document.createElement('sunbird-quml-player');
-        //qumlPlayerElement.setAttribute('player-config', JSON.stringify(playerConfig));
-        qumlPlayerElement.setAttribute('player-config', playerConfig);
+        let qumlPlayerConfig=null;
+        let questionListUrl=null;
+        if(localStorage.getItem("qumlPlayerObject")){
+          let jsonObj=JSON.parse(localStorage.getItem("qumlPlayerObject"));
+          qumlPlayerConfig=jsonObj?.qumlPlayerConfig;
+          questionListUrl=jsonObj?.questionListUrl;
+          //alert("in json object "+qumlPlayerConfig);
+          //alert("in json object "+questionListUrl);
+          //alert(JSON.parse(localStorage.getItem("qumlPlayerObject")))
+        }
+        if(qumlPlayerConfig!=null && questionListUrl!=null)
+        {
+          const playerConfig = qumlPlayerConfig;
+          // Need to pass the API URL to fetch the question set
+          //window.questionListUrl = 'https://egapi-uat.tekdinext.com/mw/events/camp-question-list';
+          window.questionListUrl = questionListUrl;
+          const qumlPlayerElement = document.createElement('sunbird-quml-player');
+          qumlPlayerElement.setAttribute('player-config', JSON.stringify(playerConfig));
+          qumlPlayerElement.addEventListener('playerEvent', (event) => {
+            console.log("On playerEvent", event);
+          });
 
-        qumlPlayerElement.addEventListener('playerEvent', (event) => {
-          console.log("On playerEvent", event);
-        });
+          qumlPlayerElement.addEventListener('telemetryEvent', (event) => {
+            console.log("On telemetryEvent", event);
+          });
 
-        qumlPlayerElement.addEventListener('telemetryEvent', (event) => {
-          console.log("On telemetryEvent", event);
-        });
-
-        const myPlayer = document.getElementById("my-player");
-        myPlayer.appendChild(qumlPlayerElement);
+          const myPlayer = document.getElementById("my-player");
+          myPlayer.appendChild(qumlPlayerElement);
+        }
+        else
+        {
+          alert("Invalid playerConfig");
+        }
       }
     </script>
   </body>

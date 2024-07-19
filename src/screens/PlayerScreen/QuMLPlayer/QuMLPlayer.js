@@ -20,6 +20,7 @@ const QuMLPlayer = () => {
   const [loading, setLoading] = useState(true);
   // content id
   const content_do_id = 'do_113947242352787456122';
+  //do_1139076484395663361357
   const [is_valid_file, set_is_valid_file] = useState(null);
   const questionListUrl = Config.QUESTION_LIST_URL;
   // Determine the correct path to the index.html file based on the platform
@@ -74,11 +75,15 @@ const QuMLPlayer = () => {
 
   //call content url
   let injectedJS = `
-    (function() {
-      window.setData('${JSON.stringify(qumlPlayerConfig)}','${questionListUrl}');
-    })();
-  `;
-
+  (function() {
+      localStorage.setItem('qumlPlayerObject', JSON.stringify(${JSON.stringify({
+        qumlPlayerConfig: qumlPlayerConfig,
+        questionListUrl: questionListUrl,
+      })}));
+    window.setData();
+  })();
+`;
+  //console.log('injectedJS', injectedJS);
   return (
     <View style={styles.container}>
       {is_valid_file == false ? (
