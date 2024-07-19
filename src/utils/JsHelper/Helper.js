@@ -87,8 +87,3 @@ export const translateLanguage = (code) => {
 
   return languageMap[code] || 'Unknown Language';
 };
-
-// Usage example
-const languageCode = 'hi';
-const language = translateLanguage(languageCode);
-console.log(language); // Outputs "Hindi"

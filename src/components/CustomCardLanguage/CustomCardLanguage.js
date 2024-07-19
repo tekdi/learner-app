@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from '../../context/LanguageContext';
 
 const CustomCardLanguage = ({
   title,
@@ -9,6 +10,8 @@ const CustomCardLanguage = ({
   value,
   active,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <TouchableOpacity onPress={() => clickEvent(value)}>
       <View style={active ? [styles.cardActive, style] : [styles.card, style]}>
@@ -21,7 +24,7 @@ const CustomCardLanguage = ({
             },
           ]}
         >
-          {title}
+          {t(title.toUpperCase())}
         </Text>
       </View>
     </TouchableOpacity>

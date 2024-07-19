@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, Pressable } from 'react-native';
 import { IndexPath, Layout, Select, SelectItem } from '@ui-kitten/components';
 import { languages } from '../../screens/LanguageScreen/Languages';
 import Logo from '../../assets/images/png/logo.png';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
 
 const Header = () => {
   const [selectedIndex, setSelectedIndex] = useState(new IndexPath(0));
+
+  const navigation = useNavigation();
 
   const onSelect = (index) => {
     setSelectedIndex(index);
     const selectedValue = languages[index.row].value;
     console.log(`Selected value: ${selectedValue}`);
+  };
+
+  const logout = () => {
+    navigation.navigate('LoginSignUpScreen');
   };
 
   return (
@@ -30,7 +37,13 @@ const Header = () => {
         <View style={styles.center}>
           <Image style={styles.image} source={Logo} resizeMode="contain" />
         </View>
-        <Icon name="bell-o" color="black" size={30} style={styles.icon} />
+        <Pressable
+          onPress={() => {
+            logout();
+          }}
+        >
+          <Icon name="logout" color="black" size={30} style={styles.icon} />
+        </Pressable>
       </View>
     </Layout>
   );

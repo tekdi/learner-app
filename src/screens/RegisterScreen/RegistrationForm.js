@@ -8,6 +8,8 @@ import {
   Platform,
   Alert,
   ScrollView,
+  SafeAreaView,
+  Text,
 } from 'react-native';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -25,6 +27,8 @@ import { useTranslation } from '../../context/LanguageContext';
 import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
 import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
 import { translateLanguage } from '../../utils/JsHelper/Helper';
+import PlainText from '../../components/PlainText/PlainText';
+import PlainTcText from '../../components/PlainText/PlainTcText';
 
 const buildYupSchema = (form) => {
   const shape = {};
@@ -104,9 +108,8 @@ const RegistrationForm = ({ schema }) => {
   const navigation = useNavigation();
   const [selectedIds, setSelectedIds] = useState({});
   const [currentForm, setCurrentForm] = useState(1);
+  const [isDisable, setIsDisable] = useState(true);
   const currentschema = stepSchema[currentForm - 1];
-
-  console.log(translateLanguage(language));
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -204,6 +207,18 @@ const RegistrationForm = ({ schema }) => {
               />
             </View>
           );
+        case 'plain_text':
+          return (
+            <View style={styles.inputContainer} key={field.name}>
+              <PlainText text="terms_and_conditions" />
+            </View>
+          );
+        case 'tc_text':
+          return (
+            <View style={styles.inputContainer} key={field.name}>
+              <PlainTcText isDisable={isDisable} setIsDisable={setIsDisable} />
+            </View>
+          );
         default:
           return null;
       }
@@ -253,13 +268,40 @@ const RegistrationForm = ({ schema }) => {
           </View>
         ))}
       <View style={styles.buttonContainer}>
-        {currentForm < schema?.length ? (
+        {currentForm !== 7 && currentForm < schema?.length ? (
           <PrimaryButton
             text={t('continue')}
             onPress={handleSubmit(nextForm)}
           />
+        ) : currentForm === 7 ? (
+          <SafeAreaView
+            style={{
+              justifyContent: 'space-between',
+              height: 150,
+            }}
+          >
+            <PrimaryButton
+              text={t('I_am_18_or_older')}
+              onPress={handleSubmit(nextForm)}
+              color={'#FFFFFF'}
+            />
+            <PrimaryButton
+              text={t('I_am_under_18')}
+              onPress={handleSubmit(nextForm)}
+              color={'#FFFFFF'}
+            />
+          </SafeAreaView>
         ) : (
-          <PrimaryButton text={t('finish')} onPress={handleSubmit(onSubmit)} />
+          <>
+            <PrimaryButton
+              isDisabled={isDisable}
+              text={t('create_account')}
+              onPress={handleSubmit(onSubmit)}
+            />
+            <Text style={{ color: 'black', marginVertical: 10 }}>
+              {t('T&C_13')}
+            </Text>
+          </>
         )}
       </View>
     </KeyboardAvoidingView>
