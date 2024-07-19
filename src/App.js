@@ -97,7 +97,8 @@ const App = () => {
   useEffect(() => {
     // changeNavigationBarColor('white', { barStyle: 'light-content' });
     hideNavigationBar();
-  });
+  }, []);
+
   return (
     <LanguageProvider>
       {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
