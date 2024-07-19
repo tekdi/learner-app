@@ -14,7 +14,7 @@ const EndUrls = {
   get_form: API_URL + '/user/v1/form/read?context=USERS&contextType=STUDENT',
 
   //content url
-  quml_hierarchy: `${CONTENT_URL}/learner/questionset/v1/hierarchy/`, //pass do id at end
+  hierarchy_content: `${CONTENT_URL}/learner/questionset/v1/hierarchy/`, //pass do id at end
   quml_question_list: `${CONTENT_URL}/api/question/v1/list`,
   read_content: `${CONTENT_URL}/api/content/v1/read/`, //pass do id at end
   

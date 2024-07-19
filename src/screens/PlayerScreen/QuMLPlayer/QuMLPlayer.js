@@ -13,7 +13,9 @@ import { Platform } from 'react-native';
 import { playerConfig, queOfflineAll } from './data';
 
 const QuMLPlayer = () => {
-  const questionListUrl = 'https://sunbirdsaas.com/api/question/v1/list';
+  //const questionListUrl = 'https://sunbirdsaas.com/api/question/v1/list';
+  const questionListUrl =
+    'https://egapi-uat.tekdinext.com/mw/events/camp-question-list';
   const jsonObject = {
     playerConfig: playerConfig,
     queOfflineAll: queOfflineAll,
