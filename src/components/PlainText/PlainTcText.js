@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import { CheckBox } from '@ui-kitten/components';
+import HorizontalLine from '../HorizontalLine/HorizontalLine';
 
 const PlainTcText = ({ setIsDisable, isDisable }) => {
   const { t } = useTranslation();
@@ -21,7 +22,12 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
 
   return (
     <SafeAreaView>
-      <Text style={styles.text1}>{t('T&C')}</Text>
+      <Text style={styles.text1}>
+        {t('T&C')}{' '}
+        <Text style={{ fontWeight: 'bold' }}>{t('create_account')}</Text>{' '}
+        {t('button')}
+      </Text>
+
       <ScrollView
         style={styles.scroll}
         onScroll={handleScroll}
@@ -41,18 +47,19 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
         <Text style={styles.text2}>{t('office_adrress')}</Text>
         <Text style={styles.text2}>{t('office_email')}</Text>
         <Text style={styles.text2}>{t('office_phone')}</Text>
+        <HorizontalLine />
+        <View style={styles.view}>
+          <CheckBox
+            disabled={!isScrollEnd}
+            checked={checked}
+            onChange={(nextChecked) => {
+              setChecked(nextChecked);
+              setIsDisable(!isDisable); // Enable or perform additional action
+            }}
+          />
+          <Text style={[styles.text3]}>{t('T&C_12')}</Text>
+        </View>
       </ScrollView>
-      <View style={styles.view}>
-        <CheckBox
-          disabled={!isScrollEnd}
-          checked={checked}
-          onChange={(nextChecked) => {
-            setChecked(nextChecked);
-            setIsDisable(!isDisable); // Enable or perform additional action
-          }}
-        />
-        <Text style={[styles.text3]}>{t('T&C_12')}</Text>
-      </View>
     </SafeAreaView>
   );
 };
@@ -68,7 +75,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
     textAlign: 'justify',
     color: 'black',
-    fontSize: 14,
+    fontSize: 12,
     paddingVertical: 10,
     paddingRight: 10,
     flexWrap: 'wrap',
@@ -77,7 +84,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
     textAlign: 'justify',
     color: 'black',
-    fontSize: 14,
+    fontSize: 12,
     flexWrap: 'wrap',
     width: 340,
     marginLeft: 10,
@@ -87,9 +94,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+
   scroll: {
-    borderWidth: 1,
-    height: 310,
+    marginTop: 10,
+    height: 300,
   },
 });
 

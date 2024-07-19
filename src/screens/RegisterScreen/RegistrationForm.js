@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  ScrollView,
   SafeAreaView,
   Text,
 } from 'react-native';
@@ -20,6 +19,7 @@ import CustomCards from '../../components/CustomCard/CustomCard';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
 
 //multi language
 import { useTranslation } from '../../context/LanguageContext';
@@ -155,11 +155,11 @@ const RegistrationForm = ({ schema }) => {
     );
   };
   const renderFields = (fields) => {
-    return fields?.map((field, index) => {
+    return fields?.map((field) => {
       switch (field.type) {
         case 'text':
           return (
-            <View key={field?.name} style={styles.inputContainer}>
+            <View key={field.name} style={styles.inputContainer}>
               <CustomTextField
                 field={field}
                 control={control}
@@ -169,7 +169,7 @@ const RegistrationForm = ({ schema }) => {
           );
         case 'password':
           return (
-            <View key={field?.name} style={styles.inputContainer}>
+            <View key={field.name} style={styles.inputContainer}>
               <CustomPasswordTextField
                 field={field}
                 control={control}
@@ -181,7 +181,7 @@ const RegistrationForm = ({ schema }) => {
         case 'drop_down':
         case 'radio':
           return (
-            <View style={styles.inputContainer} key={field.name}>
+            <View key={field.name} style={styles.inputContainer}>
               <CustomCards
                 field={field}
                 name={field.name}
@@ -196,7 +196,7 @@ const RegistrationForm = ({ schema }) => {
         case 'multipleCard':
         case 'checkbox':
           return (
-            <View style={styles.inputContainer} key={field.name}>
+            <View key={field.name} style={styles.inputContainer}>
               <InterestedCardsComponent
                 field={field}
                 name={field.name}
@@ -209,13 +209,13 @@ const RegistrationForm = ({ schema }) => {
           );
         case 'plain_text':
           return (
-            <View style={styles.inputContainer} key={field.name}>
+            <View key={field.name} style={styles.inputContainer}>
               <PlainText text="terms_and_conditions" />
             </View>
           );
         case 'tc_text':
           return (
-            <View style={styles.inputContainer} key={field.name}>
+            <View key={field.name} style={styles.inputContainer}>
               <PlainTcText isDisable={isDisable} setIsDisable={setIsDisable} />
             </View>
           );
@@ -234,6 +234,7 @@ const RegistrationForm = ({ schema }) => {
   const prevForm = () => {
     if (currentForm > 1) {
       setCurrentForm(currentForm - 1);
+      setIsDisable(true);
     } else {
       navigation.goBack();
     }
@@ -262,11 +263,12 @@ const RegistrationForm = ({ schema }) => {
       />
       {schema
         ?.filter((form) => form.formNumber === currentForm)
-        ?.map((form, index) => (
-          <View style={{ top: 20, position: 'relative' }} key={index}>
+        ?.map((form) => (
+          <View style={{ top: 20, position: 'relative' }} key={form.formNumber}>
             {renderFields(form.fields)}
           </View>
         ))}
+
       <View style={styles.buttonContainer}>
         {currentForm !== 7 && currentForm < schema?.length ? (
           <PrimaryButton
@@ -337,4 +339,9 @@ const styles = StyleSheet.create({
   },
   backbutton: {},
 });
+
+RegistrationForm.propTypes = {
+  schema: PropTypes.any,
+};
+
 export default RegistrationForm;
