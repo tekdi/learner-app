@@ -4,7 +4,6 @@ import React from 'react';
 import { Button } from '@ui-kitten/components';
 
 const PrimaryButton = ({ text, onPress,isDisabled,color }) => {
-  console.log({isDisabled});
   return (
     <View>
       <Button
@@ -31,7 +30,8 @@ const PrimaryButton = ({ text, onPress,isDisabled,color }) => {
 PrimaryButton.propTypes = {
   text: PropTypes.string,
   onPress: PropTypes.func,
-  isDisabled:PropTypes.bool
+  isDisabled:PropTypes.bool,
+  color:PropTypes.string
 };
 const styles = StyleSheet.create({
   buttontext: {
