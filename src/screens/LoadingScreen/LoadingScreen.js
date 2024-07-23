@@ -2,6 +2,8 @@ import { View, Image, StyleSheet } from 'react-native';
 import React, { useEffect } from 'react';
 import Logo from '../../assets/images/png/logo-with-tagline.png';
 import { Spinner } from '@ui-kitten/components';
+import PropTypes from 'prop-types';
+
 const LoadingScreen = ({ navigation }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -27,6 +29,11 @@ const LoadingScreen = ({ navigation }) => {
     </View>
   );
 };
+
+LoadingScreen.propTypes = {
+  navigation: PropTypes.string,
+};
+
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',

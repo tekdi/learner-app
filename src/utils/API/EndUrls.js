@@ -11,6 +11,7 @@ const EndUrls = {
   get_current_token: API_URL + '/user/v1/auth',
   refresh_token: API_URL + '/user/v1/auth/refresh',
   get_form: API_URL + '/user/v1/form/read?context=USERS&contextType=STUDENT',
+  userExist: API_URL + `/user/v1/check`,
 };
 
 export default EndUrls;

@@ -26,6 +26,7 @@ export const login = async (params = {}) => {
     return handleResponseException(e);
   }
 };
+
 export const refreshToken = async (params = {}) => {
   try {
     const result = await post(`${EndUrls.refresh_token}`, params, {
@@ -67,6 +68,23 @@ export const getStudentForm = async () => {
     });
     if (result) {
       return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+
+export const userExist = async (params = {}) => {
+  try {
+    const result = await post(`${EndUrls.userExist}`, params, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (result?.data) {
+      return result?.data;
     } else {
       return {};
     }

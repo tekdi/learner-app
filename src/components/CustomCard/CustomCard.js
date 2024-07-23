@@ -5,10 +5,10 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CustomCards = ({
   field,
@@ -18,30 +18,30 @@ const CustomCards = ({
   selectedIds,
   control,
 }) => {
-  const { t, setLanguage, language } = useTranslation();
-
-  const changeLanguage = (lng) => {
-    setLanguage(lng);
-  };
+  const { t } = useTranslation();
 
   const {
     field: { onChange, value },
   } = useController({ name, control });
 
+  useEffect(() => {
+    if (value) {
+      onChange({ value: value?.value, fieldId: field?.fieldId });
+    }
+  }, [field]);
+
   const handlePress = (name, id) => {
-    console.log('hi');
     setSelectedIds((prevSelectedIds) => ({
       ...prevSelectedIds,
       [name]: id,
     }));
-    onChange(id);
-    changeLanguage(id);
+    onChange({ value: id, fieldId: field?.fieldId || null });
   };
   useEffect(() => {
     if (value) {
       setSelectedIds((prevSelectedIds) => ({
         ...prevSelectedIds,
-        [name]: value,
+        [name]: { value: value?.value, fieldId: field?.fieldId },
       }));
     }
   }, [value]);
@@ -55,7 +55,8 @@ const CustomCards = ({
               onPress={() => handlePress(name, option.value)}
               style={[
                 styles.card,
-                selectedIds[name] === option.value && styles.selectedCard,
+                selectedIds[name]?.value === option.value &&
+                  styles.selectedCard,
               ]}
             >
               <Text
@@ -65,7 +66,7 @@ const CustomCards = ({
                     fontSize: 20,
                     fontFamily: 'Poppins-Regular',
                   },
-                  selectedIds[name] === option.value && {
+                  selectedIds[name]?.value === option.value && {
                     fontFamily: 'Poppins-Medium',
                   },
                 ]}
@@ -81,6 +82,15 @@ const CustomCards = ({
       </ScrollView>
     </View>
   );
+};
+
+CustomCards.propTypes = {
+  field: PropTypes.any,
+  name: PropTypes.any,
+  errors: PropTypes.any,
+  setSelectedIds: PropTypes.any,
+  selectedIds: PropTypes.any,
+  control: PropTypes.any,
 };
 
 const styles = StyleSheet.create({

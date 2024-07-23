@@ -25,17 +25,26 @@ const InterestedCardsComponent = ({
 
   const handlePress = (name, id) => {
     const newSelectedIds = { ...selectedIds };
-    if (newSelectedIds[name] && newSelectedIds[name].includes(id)) {
-      newSelectedIds[name] = newSelectedIds[name].filter((item) => item !== id);
+    if (newSelectedIds[name]?.value?.includes(id)) {
+      newSelectedIds[name] = {
+        ...newSelectedIds[name],
+        value: newSelectedIds[name].value.filter((item) => item !== id),
+      };
     } else {
       if (!newSelectedIds[name]) {
-        newSelectedIds[name] = [];
+        newSelectedIds[name] = { value: [] };
       }
-      newSelectedIds[name].push(id);
+      newSelectedIds[name] = {
+        ...newSelectedIds[name],
+        value: [...newSelectedIds[name].value, id],
+      };
     }
 
     setSelectedIds(newSelectedIds);
-    onChange(newSelectedIds[name]); // Trigger validation
+    onChange({
+      value: newSelectedIds[name].value,
+      fieldId: field?.fieldId || null,
+    });
   };
 
   useEffect(() => {
@@ -46,9 +55,9 @@ const InterestedCardsComponent = ({
       }));
     }
   }, [value]);
+
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.title}>{field.label}</Text> */}
       <ScrollView>
         <View style={styles.cardContainer}>
           {field.options.map((item) => (
@@ -62,8 +71,7 @@ const InterestedCardsComponent = ({
               <View
                 style={[
                   styles.card,
-                  selectedIds[name] &&
-                    selectedIds[name].includes(item.value) &&
+                  selectedIds[name]?.value?.includes(item.value) &&
                     styles.selectedCard,
                 ]}
               >
@@ -73,7 +81,9 @@ const InterestedCardsComponent = ({
           ))}
         </View>
         {errors[name] && (
-          <Text style={styles.error}>{errors[name].message}</Text>
+          <Text style={styles.error}>
+            {errors[name]?.value?.message || errors[name]?.message}
+          </Text>
         )}
       </ScrollView>
     </View>
@@ -89,12 +99,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
     fontSize: 18,
     padding: 10,
-  },
-  title: {
-    color: 'black',
-    fontFamily: 'Poppins-Regular',
-    fontSize: 15,
-    paddingLeft: 10,
   },
   cardContainer: {
     flexWrap: 'wrap',

@@ -14,7 +14,6 @@ const Header = () => {
   const onSelect = (index) => {
     setSelectedIndex(index);
     const selectedValue = languages[index.row].value;
-    console.log(`Selected value: ${selectedValue}`);
   };
 
   const logout = () => {
