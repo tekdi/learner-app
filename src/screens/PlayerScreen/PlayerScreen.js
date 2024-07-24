@@ -90,6 +90,13 @@ const PlayerScreen = () => {
             nav.navigate('EpubPlayerOffline');
           }}
         />
+        <View style={{ padding: 10 }}></View>
+        <PrimaryButton
+          text={'ECML Player: Online'}
+          onPress={() => {
+            nav.navigate('ECMLPlayer');
+          }}
+        />
       </ScrollView>
     </View>
   );

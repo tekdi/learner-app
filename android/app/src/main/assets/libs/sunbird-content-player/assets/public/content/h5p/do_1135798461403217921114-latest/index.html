@@ -1,0 +1,56 @@
+<html>
+
+<head>
+    <link type="text/css" rel="stylesheet" media="all" href="styles/h5p.css" />
+    <link type="text/css" rel="stylesheet" media="all" href="styles/container.css" />
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="js/h5p-standalone-main.min.js"></script>
+    <script type="text/javascript" src="js/htmlinterface.js"></script>
+    <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+
+    <script type="text/javascript">
+    (function($) {
+        $(function() {
+            $('.h5p-container').h5p({
+                frameJs: 'js/h5p-standalone-frame.min.js',
+                frameCss: 'styles/h5p.css',
+                h5pContent: './content'
+            });
+        });
+    })(H5P.jQuery);
+
+    //setup listener for any xAPI statements and long OE_INTERACT
+    H5P.externalDispatcher.on('xAPI', function(event) {
+        RI.logTelemetryXapi(event);
+    });
+
+    </script>
+</head>
+
+<body>
+    <div class="h5p-container mainContainer">
+    </div>
+</body>
+<script type="text/javascript">
+var onDomIsRendered = function(domString) {
+    return new Promise(function(resolve, reject) {
+        function waitUntil() {
+            setTimeout(function() {
+                if ($('iframe').contents().find('body').children().length > 0) {
+                    resolve($(domString));
+                } else {
+                    waitUntil();
+                }
+            }, 100);
+        }
+        //start the loop
+        waitUntil();
+    });
+};
+
+onDomIsRendered(".h5p-content >.h5p-actions").then(function(element) {
+    $('iframe').contents().find('.h5p-actions').remove();
+})
+</script>
+
+</html>
