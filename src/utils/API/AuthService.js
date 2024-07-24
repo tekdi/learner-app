@@ -26,6 +26,7 @@ export const login = async (params = {}) => {
     return handleResponseException(e);
   }
 };
+
 export const refreshToken = async (params = {}) => {
   try {
     const result = await post(`${EndUrls.refresh_token}`, params, {
@@ -67,6 +68,50 @@ export const getStudentForm = async () => {
     });
     if (result) {
       return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+
+export const userExist = async (params = {}) => {
+  try {
+    const result = await post(`${EndUrls.userExist}`, params, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (result?.data) {
+      return result?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+
+export const registerUser = async (params = {}) => {
+  try {
+    const method = 'POST'; // Define the HTTP method
+    const url = `${EndUrls.learner_register}`; // Define the URL
+    const headers = await getHeaders(); // Get headers
+
+    // Log the cURL command
+    console.log('cURL Command:');
+    console.log(
+      `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(params)}'`
+    );
+
+    // Make the actual request
+    const result = await post(url, params, {
+      headers: headers || {},
+    });
+
+    if (result?.data) {
+      return result?.data;
     } else {
       return {};
     }

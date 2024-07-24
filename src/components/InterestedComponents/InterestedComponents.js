@@ -8,6 +8,7 @@ import {
 import React, { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
+import PropTypes from 'prop-types';
 
 const InterestedCardsComponent = ({
   field,
@@ -25,17 +26,26 @@ const InterestedCardsComponent = ({
 
   const handlePress = (name, id) => {
     const newSelectedIds = { ...selectedIds };
-    if (newSelectedIds[name] && newSelectedIds[name].includes(id)) {
-      newSelectedIds[name] = newSelectedIds[name].filter((item) => item !== id);
+    if (newSelectedIds[name]?.value?.includes(id)) {
+      newSelectedIds[name] = {
+        ...newSelectedIds[name],
+        value: newSelectedIds[name].value.filter((item) => item !== id),
+      };
     } else {
       if (!newSelectedIds[name]) {
-        newSelectedIds[name] = [];
+        newSelectedIds[name] = { value: [] };
       }
-      newSelectedIds[name].push(id);
+      newSelectedIds[name] = {
+        ...newSelectedIds[name],
+        value: [...newSelectedIds[name].value, id],
+      };
     }
 
     setSelectedIds(newSelectedIds);
-    onChange(newSelectedIds[name]); // Trigger validation
+    onChange({
+      value: newSelectedIds[name].value,
+      fieldId: field?.fieldId || null,
+    });
   };
 
   useEffect(() => {
@@ -46,12 +56,12 @@ const InterestedCardsComponent = ({
       }));
     }
   }, [value]);
+
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.title}>{field.label}</Text> */}
       <ScrollView>
         <View style={styles.cardContainer}>
-          {field.options.map((item) => (
+          {field?.options?.map((item) => (
             <TouchableOpacity
               key={item.value}
               onPress={() => {
@@ -62,8 +72,7 @@ const InterestedCardsComponent = ({
               <View
                 style={[
                   styles.card,
-                  selectedIds[name] &&
-                    selectedIds[name].includes(item.value) &&
+                  selectedIds[name]?.value?.includes(item.value) &&
                     styles.selectedCard,
                 ]}
               >
@@ -73,11 +82,22 @@ const InterestedCardsComponent = ({
           ))}
         </View>
         {errors[name] && (
-          <Text style={styles.error}>{errors[name].message}</Text>
+          <Text style={styles.error}>
+            {errors[name]?.value?.message || errors[name]?.message}
+          </Text>
         )}
       </ScrollView>
     </View>
   );
+};
+
+InterestedCardsComponent.propTypes = {
+  field: PropTypes.object,
+  control: PropTypes.object,
+  errors: PropTypes.object,
+  name: PropTypes.string,
+  setSelectedIds: PropTypes.func,
+  selectedIds: PropTypes.any,
 };
 
 const styles = StyleSheet.create({
@@ -89,12 +109,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
     fontSize: 18,
     padding: 10,
-  },
-  title: {
-    color: 'black',
-    fontFamily: 'Poppins-Regular',
-    fontSize: 15,
-    paddingLeft: 10,
   },
   cardContainer: {
     flexWrap: 'wrap',

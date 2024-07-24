@@ -1,8 +1,15 @@
 import React, { useEffect } from 'react';
-import { BackHandler, StyleSheet, Text, View } from 'react-native';
+import {
+  BackHandler,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import Header from '../../components/Layout/Header';
 import { backAction } from '../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const Dashboard = () => {
   const navigation = useNavigation();
@@ -16,12 +23,15 @@ const Dashboard = () => {
   }, [navigation]);
 
   return (
-    <>
+    <SafeAreaView>
       <Header />
       <View style={styles.view}>
-        <Text style={styles.text}>Dashboard</Text>
+        <View>
+          <Text></Text>
+          <Icon name="logout" color="black" size={30} style={styles.icon} />
+        </View>
       </View>
-    </>
+    </SafeAreaView>
   );
 };
 

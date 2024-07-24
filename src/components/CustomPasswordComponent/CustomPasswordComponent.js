@@ -10,6 +10,17 @@ import { Controller } from 'react-hook-form';
 import { IconRegistry, Icon } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { useTranslation } from '../../context/LanguageContext';
+import PropTypes from 'prop-types';
+
+const EyeIcon = ({ setHidden, hidden }) => (
+  <TouchableOpacity
+    onPress={() => {
+      setHidden(!hidden);
+    }}
+  >
+    <Icon name={hidden ? 'eye-off-outline' : 'eye-outline'} />
+  </TouchableOpacity>
+);
 
 const CustomPasswordTextField = ({
   position = 'static',
@@ -20,15 +31,7 @@ const CustomPasswordTextField = ({
 }) => {
   const [hidden, setHidden] = useState(true);
   const { t } = useTranslation();
-  const EyeIcon = (props) => (
-    <TouchableOpacity
-      onPress={() => {
-        setHidden(!hidden);
-      }}
-    >
-      <Icon name={hidden ? 'eye-off-outline' : 'eye-outline'} {...props} />
-    </TouchableOpacity>
-  );
+
   return (
     <Controller
       key={key}
@@ -59,7 +62,7 @@ const CustomPasswordTextField = ({
             </Text>
           </View>
           <View style={styles.overlap2}>
-            <EyeIcon />
+            <EyeIcon setHidden={setHidden} hidden={hidden} />
           </View>
           {errors[field.name] && (
             <Text
@@ -79,6 +82,20 @@ const CustomPasswordTextField = ({
     />
   );
 };
+
+CustomPasswordTextField.propTypes = {
+  position: PropTypes.string,
+  key: PropTypes.any,
+  field: PropTypes.object,
+  control: PropTypes.object,
+  errors: PropTypes.object,
+};
+
+EyeIcon.propTypes = {
+  setHidden: PropTypes.func,
+  hidden: PropTypes.bool,
+};
+
 export default CustomPasswordTextField;
 const styles = StyleSheet.create({
   container: {

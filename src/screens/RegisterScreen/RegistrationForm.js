@@ -26,13 +26,15 @@ import { useTranslation } from '../../context/LanguageContext';
 
 import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
 import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
-import { translateLanguage } from '../../utils/JsHelper/Helper';
+import { saveToken, translateLanguage } from '../../utils/JsHelper/Helper';
 import PlainText from '../../components/PlainText/PlainText';
 import PlainTcText from '../../components/PlainText/PlainTcText';
+import { transformPayload } from './TransformPayload';
+import { registerUser, userExist } from '../../utils/API/AuthService';
+import { getAccessToken } from '../../utils/API/ApiCalls';
 
-const buildYupSchema = (form) => {
+const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
-  const { t } = useTranslation();
   form.fields.forEach((field) => {
     if (field.validation) {
       let validator;
@@ -69,27 +71,60 @@ const buildYupSchema = (form) => {
               `${t(field.name)} ${t('can_only_contain_letters')}`
             );
           }
+          if (field.name === 'username' && currentForm === 6) {
+            validator = validator.test(
+              'userExist',
+              `${t('username_already_exists')}`,
+              async (value) => {
+                const payload = { username: value };
+                const exists = await userExist(payload);
+                return !exists?.data?.data;
+              }
+            );
+          }
           break;
         case 'drop_down':
         case 'radio':
-          validator = yup
-            .string()
-            .required(`${t(field.name)} ${t('is_required')}`);
+          validator = yup.lazy((value) =>
+            typeof value === 'object'
+              ? yup.object({
+                  value: yup
+                    .string()
+                    .required(`${t(field.name)} ${t('is_required')}`),
+                })
+              : yup.string().required(`${t(field.name)} ${t('is_required')}`)
+          );
           break;
         // Add other field types as needed...
         case 'multipleCard':
         case 'checkbox':
-          validator = yup
-            .array()
-            .min(
-              field.validation.minSelection,
-              `${t('Choose_at_least')} ${field.validation.minSelection}`
-            )
-            .required(`${t(field.name)} selection is required`)
-            .max(
-              field.validation.maxSelection,
-              `${t('max')} ${t(field.validation.maxSelection)} ${t('can_only_contain_letters')}`
-            );
+          validator = yup.lazy((value) =>
+            typeof value === 'object'
+              ? yup.object({
+                  value: yup
+                    .array()
+                    .min(
+                      field.validation.minSelection,
+                      `${t('Choose_at_least')} ${field.validation.minSelection}`
+                    )
+                    .max(
+                      field.validation.maxSelection,
+                      `${t('max')} ${t(field.validation.maxSelection)} ${t('can_only_contain_letters')}`
+                    )
+                    .required(`${t(field.name)} selection is required`),
+                })
+              : yup
+                  .array()
+                  .min(
+                    field.validation.minSelection,
+                    `${t('Choose_at_least')} ${field.validation.minSelection}`
+                  )
+                  .max(
+                    field.validation.maxSelection,
+                    `${t('max')} ${t(field.validation.maxSelection)} ${t('can_only_contain_letters')}`
+                  )
+                  .required(`${t(field.name)} selection is required`)
+          );
           break;
         default:
       }
@@ -104,56 +139,66 @@ const RegistrationForm = ({ schema }) => {
   const { t, language } = useTranslation();
   //dynamic schema for json object validation
 
-  const stepSchema = schema?.map(buildYupSchema);
   const navigation = useNavigation();
   const [selectedIds, setSelectedIds] = useState({});
-  const [currentForm, setCurrentForm] = useState(1);
   const [isDisable, setIsDisable] = useState(true);
+  const [currentForm, setCurrentForm] = useState(1);
+
+  const stepSchema = schema?.map((form) =>
+    buildYupSchema(form, currentForm, t)
+  );
+
   const currentschema = stepSchema[currentForm - 1];
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const data = await getDataFromStorage();
-  //   };
-
-  //   fetchData();
-  // }, []);
 
   const {
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(currentschema),
     defaultValues: {
-      // firstname: '',
+      // first_name: '',
       // lastname: '',
-      // username: '',
       // password: '',
       // repeatpassword: '',
       // multiplecards: [],
-      preferred_language: translateLanguage(language),
+      username: '',
+      preferred_language: {
+        value: translateLanguage(language),
+        fieldId: '',
+      },
     },
   });
 
-  const onSubmit = (data) => {
-    Alert.alert(
-      'JSON PAYLOAD',
-      JSON.stringify(data),
-      [
-        {
-          text: 'Cancel',
-          onPress: () => {},
-          style: 'cancel',
-        },
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate('LoginSignUpScreen'), // Replace 'TargetScreen' with your screen name
-        },
-      ],
-      { cancelable: false }
-    );
+  const onSubmit = async (data) => {
+    const payload = await transformPayload(data);
+    const token = await getAccessToken();
+    await saveToken(token);
+    const register = await registerUser(payload);
+    console.log('dddd', register?.params?.status);
+    if (register?.params?.status === 'failed') {
+      Alert.alert(
+        'Error',
+        'something_went_wrong_try_again_later',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {},
+            style: 'cancel',
+          },
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('LoginSignUpScreen'), // Replace 'TargetScreen' with your screen name
+          },
+        ],
+        { cancelable: false }
+      );
+    } else {
+      navigation.navigate('Dashboard');
+    }
   };
+
   const renderFields = (fields) => {
     return fields?.map((field) => {
       switch (field.type) {
@@ -210,13 +255,26 @@ const RegistrationForm = ({ schema }) => {
         case 'plain_text':
           return (
             <View key={field.name} style={styles.inputContainer}>
-              <PlainText text="terms_and_conditions" />
+              <PlainText
+                text="terms_and_conditions"
+                CustomCards
+                field={field}
+                name={field.name}
+                errors={errors}
+                control={control}
+              />
             </View>
           );
         case 'tc_text':
           return (
             <View key={field.name} style={styles.inputContainer}>
-              <PlainTcText isDisable={isDisable} setIsDisable={setIsDisable} />
+              <PlainTcText
+                isDisable={isDisable}
+                setIsDisable={setIsDisable}
+                field={field}
+                name={field.name}
+                control={control}
+              />
             </View>
           );
         default:
@@ -228,6 +286,12 @@ const RegistrationForm = ({ schema }) => {
   const nextForm = (data) => {
     if (currentForm < schema?.length) {
       setCurrentForm(currentForm + 1);
+    }
+
+    if (currentForm === 3) {
+      const randomThreeDigitNumber = Math.floor(Math.random() * 900) + 100;
+      const fullName = `${data.first_name}${data.last_name}${randomThreeDigitNumber}`;
+      setValue('username', fullName);
     }
   };
 
@@ -270,41 +334,14 @@ const RegistrationForm = ({ schema }) => {
         ))}
 
       <View style={styles.buttonContainer}>
-        {currentForm !== 7 && currentForm < schema?.length ? (
-          <PrimaryButton
-            text={t('continue')}
-            onPress={handleSubmit(nextForm)}
-          />
-        ) : currentForm === 7 ? (
-          <SafeAreaView
-            style={{
-              justifyContent: 'space-between',
-              height: 150,
-            }}
-          >
-            <PrimaryButton
-              text={t('I_am_18_or_older')}
-              onPress={handleSubmit(nextForm)}
-              color={'#FFFFFF'}
-            />
-            <PrimaryButton
-              text={t('I_am_under_18')}
-              onPress={handleSubmit(nextForm)}
-              color={'#FFFFFF'}
-            />
-          </SafeAreaView>
-        ) : (
-          <>
-            <PrimaryButton
-              isDisabled={isDisable}
-              text={t('create_account')}
-              onPress={handleSubmit(onSubmit)}
-            />
-            <Text style={{ color: 'black', marginVertical: 10 }}>
-              {t('T&C_13')}
-            </Text>
-          </>
-        )}
+        <RenderBtn
+          currentForm={currentForm}
+          schema={schema}
+          handleSubmit={handleSubmit}
+          nextForm={nextForm}
+          onSubmit={onSubmit}
+          isDisable={isDisable}
+        />
       </View>
     </KeyboardAvoidingView>
   );
@@ -345,3 +382,61 @@ RegistrationForm.propTypes = {
 };
 
 export default RegistrationForm;
+
+const RenderBtn = ({
+  currentForm,
+  schema,
+  handleSubmit,
+  nextForm,
+  onSubmit,
+  isDisable,
+}) => {
+  const { t } = useTranslation();
+
+  const renderContent = () => {
+    if (currentForm !== 7 && currentForm < schema?.length) {
+      return (
+        <PrimaryButton text={t('continue')} onPress={handleSubmit(nextForm)} />
+      );
+    } else if (currentForm === 7) {
+      return (
+        <SafeAreaView style={{ justifyContent: 'space-between', height: 150 }}>
+          <PrimaryButton
+            text={t('I_am_18_or_older')}
+            onPress={handleSubmit(nextForm)}
+            color={'#FFFFFF'}
+          />
+          <PrimaryButton
+            text={t('I_am_under_18')}
+            onPress={handleSubmit(nextForm)}
+            color={'#FFFFFF'}
+          />
+        </SafeAreaView>
+      );
+    } else {
+      return (
+        <>
+          <PrimaryButton
+            isDisabled={isDisable}
+            text={t('create_account')}
+            onPress={handleSubmit(onSubmit)}
+          />
+          <Text style={{ color: 'black', marginVertical: 10 }}>
+            {t('T&C_13')}
+          </Text>
+        </>
+      );
+    }
+  };
+
+  return <View style={styles.buttonContainer}>{renderContent()}</View>;
+};
+
+RenderBtn.propTypes = {
+  schema: PropTypes.any,
+  currentForm: PropTypes.number,
+  handleSubmit: PropTypes.func,
+  nextForm: PropTypes.func,
+  onSubmit: PropTypes.func,
+  isDisable: PropTypes.any,
+};

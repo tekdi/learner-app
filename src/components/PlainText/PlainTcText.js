@@ -3,6 +3,7 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import { CheckBox } from '@ui-kitten/components';
 import HorizontalLine from '../HorizontalLine/HorizontalLine';
+import PropTypes from 'prop-types';
 
 const PlainTcText = ({ setIsDisable, isDisable }) => {
   const { t } = useTranslation();
@@ -62,6 +63,11 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
       </ScrollView>
     </SafeAreaView>
   );
+};
+
+PlainTcText.propTypes = {
+  setIsDisable: PropTypes.func,
+  isDisable: PropTypes.bool,
 };
 
 const styles = StyleSheet.create({
