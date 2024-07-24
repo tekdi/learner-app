@@ -3,6 +3,7 @@ import { useState, React } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { TouchableWithoutFeedback } from '@ui-kitten/components/devsupport';
 import { useTranslation } from '../../context/LanguageContext';
+import PropTypes from 'prop-types';
 
 const LoginTextField = ({ text, position = 'static', onChangeText, value }) => {
   const [passwordView, setPasswordView] = useState(false);
@@ -35,6 +36,13 @@ const LoginTextField = ({ text, position = 'static', onChangeText, value }) => {
       )}
     </View>
   );
+};
+
+LoginTextField.propTypes = {
+  text: PropTypes.string,
+  onChangeText: PropTypes.func,
+  value: PropTypes.string,
+  position: PropTypes.string,
 };
 
 const styles = StyleSheet.create({

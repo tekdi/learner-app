@@ -8,13 +8,21 @@ import {
 import React from 'react';
 import Logo from '../../assets/images/png/form.png';
 import { useTranslation } from '../../context/LanguageContext';
+import PropTypes from 'prop-types';
+import FastImage from '@changwoolab/react-native-fast-image';
 
 const HeaderComponent = ({ question, questionIndex, totalForms }) => {
   const { t } = useTranslation();
   return (
     <KeyboardAvoidingView style={styles.container}>
       <View style={styles.block}>
-        <Image style={styles.image} source={Logo} resizeMode="contain" />
+        {/* <Image style={styles.image} source={Logo} resizeMode="contain" /> */}
+        <FastImage
+          style={styles.image}
+          source={require('../../assets/images/gif/pen_paper.gif')}
+          resizeMode={FastImage.resizeMode.contain}
+          priority={FastImage.priority.high} // Set the priority here
+        />
         <View style={styles.textContainer}>
           <Text style={styles.text1}>
             {questionIndex}/{totalForms}
@@ -26,11 +34,17 @@ const HeaderComponent = ({ question, questionIndex, totalForms }) => {
   );
 };
 
+HeaderComponent.propTypes = {
+  question: PropTypes.string,
+  questionIndex: PropTypes.number,
+  totalForms: PropTypes.number,
+};
+
 const styles = StyleSheet.create({
   image: {
     margin: 20,
-    height: 90,
-    width: 70,
+    height: 60,
+    width: 60,
   },
   container: {
     backgroundColor: 'white',

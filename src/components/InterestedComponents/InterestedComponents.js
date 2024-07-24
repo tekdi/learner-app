@@ -8,6 +8,7 @@ import {
 import React, { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
+import PropTypes from 'prop-types';
 
 const InterestedCardsComponent = ({
   field,
@@ -60,7 +61,7 @@ const InterestedCardsComponent = ({
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.cardContainer}>
-          {field.options.map((item) => (
+          {field?.options?.map((item) => (
             <TouchableOpacity
               key={item.value}
               onPress={() => {
@@ -88,6 +89,15 @@ const InterestedCardsComponent = ({
       </ScrollView>
     </View>
   );
+};
+
+InterestedCardsComponent.propTypes = {
+  field: PropTypes.object,
+  control: PropTypes.object,
+  errors: PropTypes.object,
+  name: PropTypes.string,
+  setSelectedIds: PropTypes.func,
+  selectedIds: PropTypes.any,
 };
 
 const styles = StyleSheet.create({

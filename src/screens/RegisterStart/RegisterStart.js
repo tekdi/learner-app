@@ -4,7 +4,7 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
-import UserImage from '../../assets/images/gif/face.gif';
+import FastImage from '@changwoolab/react-native-fast-image';
 
 const RegisterStart = () => {
   //multi language setup
@@ -27,7 +27,12 @@ const RegisterStart = () => {
       </TouchableOpacity>
       {/* Icon png here */}
       <View style={styles.container_image}>
-        <Image style={styles.image} source={UserImage} resizeMode="contain" />
+        <FastImage
+          style={styles.gif_image}
+          source={require('../../assets/images/gif/face.gif')}
+          resizeMode={FastImage.resizeMode.contain}
+          priority={FastImage.priority.high} // Set the priority here
+        />
         <Text style={styles.title}>{t('form_start_lable')}</Text>
       </View>
       <View style={styles.buttonContainer}>
@@ -60,7 +65,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginBottom: 16,
   },
-  image: {
+  gif_image: {
     height: 80,
     width: 80,
   },

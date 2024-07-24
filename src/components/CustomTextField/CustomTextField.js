@@ -2,6 +2,7 @@ import { View, StyleSheet, TextInput, Text } from 'react-native';
 import React from 'react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
+import PropTypes from 'prop-types';
 
 const CustomTextField = ({
   position = 'static',
@@ -59,6 +60,16 @@ const CustomTextField = ({
     />
   );
 };
+
+CustomTextField.propTypes = {
+  position: PropTypes.string,
+  key: PropTypes.any,
+  field: PropTypes.object,
+  control: PropTypes.object,
+  errors: PropTypes.object,
+  secureTextEntry: PropTypes.any,
+};
+
 export default CustomTextField;
 const styles = StyleSheet.create({
   container: {

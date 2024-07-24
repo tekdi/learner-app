@@ -1,15 +1,22 @@
 // LanguageContext.js
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import PropTypes from 'prop-types';
 
 // Import your translations
-import en from './locales/en.json'; //english
-import hi from './locales/hi.json'; //hindi
-import ma from './locales/ma.json'; //marathi
-import ba from './locales/ba.json'; //bangla
-import te from './locales/te.json'; //telugu
-import ka from './locales/ka.json'; //kannada
-import gu from './locales/gu.json'; //gujarati
+import en from './locales/en.json'; // English
+import hi from './locales/hi.json'; // Hindi
+import ma from './locales/ma.json'; // Marathi
+import ba from './locales/ba.json'; // Bangla
+import te from './locales/te.json'; // Telugu
+import ka from './locales/ka.json'; // Kannada
+import gu from './locales/gu.json'; // Gujarati
 
 const translations = {
   en,
@@ -56,13 +63,20 @@ export const LanguageProvider = ({ children }) => {
 
   const t = (key) => translations[language][key] || key;
 
+  const value = useMemo(
+    () => ({ language, setLanguage: handleLanguageChange, t }),
+    [language]
+  );
+
   return (
-    <LanguageContext.Provider
-      value={{ language, setLanguage: handleLanguageChange, t }}
-    >
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );
+};
+
+LanguageProvider.propTypes = {
+  children: PropTypes.any,
 };
 
 export const useTranslation = () => useContext(LanguageContext);

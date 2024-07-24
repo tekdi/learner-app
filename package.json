@@ -24,6 +24,7 @@
     "release_prod_apk": "export ENVFILE=.env.prod && cd android && ./gradlew clean && cd .. && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/ && rm -rf android/app/src/main/res/drawable-* && rm -rf android/app/src/main/res/raw/* && cd android && ./gradlew assembleRelease && cd .."
   },
   "dependencies": {
+    "@changwoolab/react-native-fast-image": "^8.6.7",
     "@eva-design/eva": "^2.2.0",
     "@hookform/resolvers": "^3.7.0",
     "@react-native-async-storage/async-storage": "^1.23.1",

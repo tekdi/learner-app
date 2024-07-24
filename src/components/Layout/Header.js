@@ -13,7 +13,7 @@ const Header = () => {
 
   const onSelect = (index) => {
     setSelectedIndex(index);
-    const selectedValue = languages[index.row].value;
+    // const selectedValue = languages[index.row].value;
   };
 
   const logout = () => {

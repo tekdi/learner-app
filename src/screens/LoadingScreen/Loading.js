@@ -1,5 +1,5 @@
-import { View, Image, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
-import React, { useEffect } from 'react';
+import { View, Image, StyleSheet, SafeAreaView } from 'react-native';
+import React from 'react';
 import Logo from '../../assets/images/png/logo-with-tagline.png';
 import { Spinner } from '@ui-kitten/components';
 

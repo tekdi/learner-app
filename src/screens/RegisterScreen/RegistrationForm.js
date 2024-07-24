@@ -26,11 +26,12 @@ import { useTranslation } from '../../context/LanguageContext';
 
 import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
 import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
-import { translateLanguage } from '../../utils/JsHelper/Helper';
+import { saveToken, translateLanguage } from '../../utils/JsHelper/Helper';
 import PlainText from '../../components/PlainText/PlainText';
 import PlainTcText from '../../components/PlainText/PlainTcText';
 import { transformPayload } from './TransformPayload';
-import { userExist } from '../../utils/API/AuthService';
+import { registerUser, userExist } from '../../utils/API/AuthService';
+import { getAccessToken } from '../../utils/API/ApiCalls';
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -172,23 +173,30 @@ const RegistrationForm = ({ schema }) => {
 
   const onSubmit = async (data) => {
     const payload = await transformPayload(data);
-    console.log(JSON.stringify(payload));
-    Alert.alert(
-      'JSON PAYLOAD',
-      JSON.stringify(payload),
-      [
-        {
-          text: 'Cancel',
-          onPress: () => {},
-          style: 'cancel',
-        },
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate('LoginSignUpScreen'), // Replace 'TargetScreen' with your screen name
-        },
-      ],
-      { cancelable: false }
-    );
+    const token = await getAccessToken();
+    await saveToken(token);
+    const register = await registerUser(payload);
+    console.log('dddd', register?.params?.status);
+    if (register?.params?.status === 'failed') {
+      Alert.alert(
+        'Error',
+        'something_went_wrong_try_again_later',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {},
+            style: 'cancel',
+          },
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('LoginSignUpScreen'), // Replace 'TargetScreen' with your screen name
+          },
+        ],
+        { cancelable: false }
+      );
+    } else {
+      navigation.navigate('Dashboard');
+    }
   };
 
   const renderFields = (fields) => {
@@ -282,7 +290,7 @@ const RegistrationForm = ({ schema }) => {
 
     if (currentForm === 3) {
       const randomThreeDigitNumber = Math.floor(Math.random() * 900) + 100;
-      const fullName = `${data.first_name}.${data.last_name}${randomThreeDigitNumber}`;
+      const fullName = `${data.first_name}${data.last_name}${randomThreeDigitNumber}`;
       setValue('username', fullName);
     }
   };
@@ -326,41 +334,14 @@ const RegistrationForm = ({ schema }) => {
         ))}
 
       <View style={styles.buttonContainer}>
-        {currentForm !== 7 && currentForm < schema?.length ? (
-          <PrimaryButton
-            text={t('continue')}
-            onPress={handleSubmit(nextForm)}
-          />
-        ) : currentForm === 7 ? (
-          <SafeAreaView
-            style={{
-              justifyContent: 'space-between',
-              height: 150,
-            }}
-          >
-            <PrimaryButton
-              text={t('I_am_18_or_older')}
-              onPress={handleSubmit(nextForm)}
-              color={'#FFFFFF'}
-            />
-            <PrimaryButton
-              text={t('I_am_under_18')}
-              onPress={handleSubmit(nextForm)}
-              color={'#FFFFFF'}
-            />
-          </SafeAreaView>
-        ) : (
-          <>
-            <PrimaryButton
-              isDisabled={isDisable}
-              text={t('create_account')}
-              onPress={handleSubmit(onSubmit)}
-            />
-            <Text style={{ color: 'black', marginVertical: 10 }}>
-              {t('T&C_13')}
-            </Text>
-          </>
-        )}
+        <RenderBtn
+          currentForm={currentForm}
+          schema={schema}
+          handleSubmit={handleSubmit}
+          nextForm={nextForm}
+          onSubmit={onSubmit}
+          isDisable={isDisable}
+        />
       </View>
     </KeyboardAvoidingView>
   );
@@ -401,3 +382,61 @@ RegistrationForm.propTypes = {
 };
 
 export default RegistrationForm;
+
+const RenderBtn = ({
+  currentForm,
+  schema,
+  handleSubmit,
+  nextForm,
+  onSubmit,
+  isDisable,
+}) => {
+  const { t } = useTranslation();
+
+  const renderContent = () => {
+    if (currentForm !== 7 && currentForm < schema?.length) {
+      return (
+        <PrimaryButton text={t('continue')} onPress={handleSubmit(nextForm)} />
+      );
+    } else if (currentForm === 7) {
+      return (
+        <SafeAreaView style={{ justifyContent: 'space-between', height: 150 }}>
+          <PrimaryButton
+            text={t('I_am_18_or_older')}
+            onPress={handleSubmit(nextForm)}
+            color={'#FFFFFF'}
+          />
+          <PrimaryButton
+            text={t('I_am_under_18')}
+            onPress={handleSubmit(nextForm)}
+            color={'#FFFFFF'}
+          />
+        </SafeAreaView>
+      );
+    } else {
+      return (
+        <>
+          <PrimaryButton
+            isDisabled={isDisable}
+            text={t('create_account')}
+            onPress={handleSubmit(onSubmit)}
+          />
+          <Text style={{ color: 'black', marginVertical: 10 }}>
+            {t('T&C_13')}
+          </Text>
+        </>
+      );
+    }
+  };
+
+  return <View style={styles.buttonContainer}>{renderContent()}</View>;
+};
+
+RenderBtn.propTypes = {
+  schema: PropTypes.any,
+  currentForm: PropTypes.number,
+  handleSubmit: PropTypes.func,
+  nextForm: PropTypes.func,
+  onSubmit: PropTypes.func,
+  isDisable: PropTypes.any,
+};
