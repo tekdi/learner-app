@@ -1,10 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
+import PropTypes from 'prop-types';
 
 const PlainText = ({ text }) => {
   const { t } = useTranslation();
   return <Text style={styles.text2}>{t(text)}</Text>;
+};
+
+PlainText.propTypes = {
+  text: PropTypes.string,
 };
 
 const styles = StyleSheet.create({

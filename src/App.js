@@ -1,14 +1,6 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import LoadingScreen from './screens/LoadingScreen/LoadingScreen';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import LanguageScreen from './screens/LanguageScreen/LanguageScreen';
 import { ApplicationProvider } from '@ui-kitten/components';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { default as SimpleIcon } from 'react-native-vector-icons/SimpleLineIcons';
-import { default as MaterialIcons } from 'react-native-vector-icons/MaterialCommunityIcons';
 //importing all designs from eva as eva
 import * as eva from '@eva-design/eva';
 //importing custom theme for UI Kitten
@@ -340,17 +332,5 @@ const App = () => {
     </LanguageProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  icon: {
-    marginBottom: 5,
-  },
-  footer: {
-    height: 70, // Set the height of the tab bar
-    paddingBottom: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default App;

@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import Header from '../../components/Layout/Header';
 
-const Profile = (props) => {
+const Profile = () => {
   return (
-    <>
+    <SafeAreaView>
       <Header />
       <View
         style={{
@@ -16,7 +16,7 @@ const Profile = (props) => {
       >
         <Text style={{ color: 'black' }}>Profile</Text>
       </View>
-    </>
+    </SafeAreaView>
   );
 };
 
@@ -34,6 +34,6 @@ const styles = StyleSheet.create({
   },
 });
 
-Profile.propTypes = {};
+// Profile.propTypes = {};
 
 export default Profile;

@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
-import { login } from '../../utils/API/ApiCalls';
+import PropTypes from 'prop-types';
 
 const SecondaryButton = ({onPress}) => {
   //multi language setup
@@ -15,6 +15,13 @@ const SecondaryButton = ({onPress}) => {
     </View>
   );
 };
+
+SecondaryButton.propTypes = {
+  
+  onPress: PropTypes.func,
+  
+};
+
 const styles = StyleSheet.create({
   buttontext: {
     textAlign: 'center',

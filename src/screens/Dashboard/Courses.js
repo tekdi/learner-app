@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Header from '../../components/Layout/Header';
 
-const Courses = (props) => {
+const Courses = () => {
   return (
     <>
       <Header />
@@ -34,6 +34,6 @@ const styles = StyleSheet.create({
   },
 });
 
-Courses.propTypes = {};
+// Courses.propTypes = {};
 
 export default Courses;

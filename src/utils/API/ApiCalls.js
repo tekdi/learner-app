@@ -2,7 +2,7 @@ import EndUrls from './EndUrls';
 import axios from 'axios';
 
 export const getAccessToken = async () => {
-  const url = EndUrls.get_token;
+  const url = EndUrls.login;
   let data = JSON.stringify({
     username: 'test1',
     password: '12345',

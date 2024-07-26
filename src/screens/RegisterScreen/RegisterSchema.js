@@ -171,6 +171,10 @@ export const registerSchema = async (data) => {
         fields: [
           {
             type: 'plain_text',
+            label: '',
+            name: '',
+            coreField: '',
+            fieldId: null,
           },
         ],
       },
@@ -180,6 +184,10 @@ export const registerSchema = async (data) => {
         fields: [
           {
             type: 'tc_text',
+            label: '',
+            name: '',
+            coreField: '',
+            fieldId: null,
           },
         ],
       },

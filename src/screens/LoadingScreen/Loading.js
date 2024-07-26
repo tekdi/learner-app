@@ -1,11 +1,12 @@
-import { View, Image, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
-import React, { useEffect } from 'react';
+import { View, Image, StyleSheet, SafeAreaView } from 'react-native';
+import React from 'react';
 import Logo from '../../assets/images/png/logo-with-tagline.png';
 import { Spinner } from '@ui-kitten/components';
 
-const Loading = () => {
+const Loading = (style) => {
+  console.log({ style });
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { top: style?.style?.top || 0 }]}>
       <View style={styles.container}>
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         <Spinner size="large" style={{ borderColor: '#635E57' }} />

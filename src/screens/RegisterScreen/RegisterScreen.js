@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import RegistrationForm from './RegistrationForm';
-// import { schema } from './RegistrationSchema';
-import { useNavigation } from '@react-navigation/native';
 import { getStudentForm } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { registerSchema } from './RegisterSchema';
 
 const RegisterScreen = () => {
-  const nav = useNavigation();
-
   const [mainSchema, setMainSchema] = useState([]);
   const [loading, setLoading] = useState(true);
 

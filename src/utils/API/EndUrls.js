@@ -18,6 +18,8 @@ const EndUrls = {
   quml_question_list: `${CONTENT_URL}/api/question/v1/list`,
   read_content: `${CONTENT_URL}/api/content/v1/read/`, //pass do id at end
   
+  userExist: API_URL + `/user/v1/check`,
+  contentList: `https://sunbirdsaas.com/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
 };
 
 export default EndUrls;
