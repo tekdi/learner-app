@@ -119,3 +119,64 @@ export const registerUser = async (params = {}) => {
     return handleResponseException(e);
   }
 };
+export const contentListApi = async (params = {}) => {
+  try {
+    const method = 'POST'; // Define the HTTP method
+    const url = `${EndUrls.contentList}`; // Define the URL
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    const payload = {
+      request: {
+        filters: {
+          se_boards: ["Prerak's Corner"],
+          se_mediums: ['Hindi'],
+          se_gradeLevels: ['General'],
+          primaryCategory: ['Digital Textbook', 'eTextbook', 'Course'],
+          channel: [],
+          visibility: [],
+        },
+        limit: 100,
+        fields: [
+          'name',
+          'appIcon',
+          'medium',
+          'subject',
+          'resourceType',
+          'contentType',
+          'organisation',
+          'topic',
+          'mimeType',
+          'trackable',
+          'gradeLevel',
+          'se_boards',
+          'se_subjects',
+          'se_mediums',
+          'se_gradeLevels',
+        ],
+        facets: [
+          'subject',
+          'primaryCategory',
+          'medium',
+          'banner',
+          'additionalCategories',
+          'search',
+          'ContinueLearning',
+        ],
+      },
+    };
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};

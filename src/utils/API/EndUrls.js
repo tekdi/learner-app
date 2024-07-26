@@ -12,6 +12,7 @@ const EndUrls = {
   refresh_token: API_URL + '/user/v1/auth/refresh',
   get_form: API_URL + '/user/v1/form/read?context=USERS&contextType=STUDENT',
   userExist: API_URL + `/user/v1/check`,
+  contentList: `https://sunbirdsaas.com/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
 };
 
 export default EndUrls;

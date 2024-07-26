@@ -5,22 +5,22 @@ import { useTranslation } from '../context/LanguageContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { default as SimpleIcon } from 'react-native-vector-icons/SimpleLineIcons';
 import { default as MaterialIcons } from 'react-native-vector-icons/MaterialCommunityIcons';
-import Dashboard from '../screens/Dashboard/Dashboard';
+import DashboardStack from './DashboardStack';
 import Courses from '../screens/Dashboard/Courses';
 import Profile from '../screens/Dashboard/Profile';
 
+const Tab = createBottomTabNavigator();
+
 const TabScreen = () => {
   const { t } = useTranslation();
-  const Tab = createBottomTabNavigator();
 
   return (
     <Tab.Navigator
-      initialRouteName="Dashboard"
+      initialRouteName="DashboardStack"
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ focused }) => {
-          // Set icon based on route name
-          if (route.name === 'Content') {
+          if (route.name === 'DashboardStack') {
             return (
               <Icon
                 name="my-library-books"
@@ -45,20 +45,19 @@ const TabScreen = () => {
               />
             );
           }
-          // Return the icon component
         },
         tabBarStyle: styles.footer,
-        tabBarActiveTintColor: '#987100', // Color for active tab
-        tabBarInactiveTintColor: 'gray', // Color for inactive tab
+        tabBarActiveTintColor: '#987100',
+        tabBarInactiveTintColor: 'gray',
       })}
     >
       <Tab.Screen
-        name="Content"
-        component={Dashboard}
+        name="DashboardStack"
+        component={DashboardStack}
         options={{ tabBarLabel: t('content') }}
       />
       <Tab.Screen
-        name={t('Courses')}
+        name="Courses"
         component={Courses}
         options={{ tabBarLabel: t('courses') }}
       />
@@ -72,11 +71,8 @@ const TabScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  icon: {
-    marginBottom: 5,
-  },
   footer: {
-    height: 70, // Set the height of the tab bar
+    height: 70,
     paddingBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',
