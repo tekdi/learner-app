@@ -24,7 +24,6 @@ export const contentPlayerConfig = {
     },
   },
   config: {
-    showEndPage: true,
     traceId: '123456',
     sideMenu: {
       showShare: false,

@@ -21,7 +21,7 @@ import Orientation from 'react-native-orientation-locker';
 const desktopUserAgent =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
 
-const ECMLPlayer = () => {
+const H5PPlayer = () => {
   useEffect(() => {
     // Lock the screen to landscape mode
     Orientation.lockToLandscape();
@@ -41,7 +41,8 @@ const ECMLPlayer = () => {
   // Determine the correct path to the index.html file based on the platform
   const htmlFilePath = Platform.select({
     ios: './assets/assets/libs/sunbird-content-player/index.html',
-    android: 'file:///android_asset/libs/sunbird-content-player/index_ecml_old.html',
+    android:
+      'file:///android_asset/libs/sunbird-content-player/index_h5p.html',
   });
 
   //set data from react native
@@ -72,7 +73,6 @@ const ECMLPlayer = () => {
       'application/vnd.ekstep.ecml-archive'
     ) {
       contentPlayerConfig.metadata = content_response.result.content;
-      contentPlayerConfig.data = content_response.result.content?.body;
       set_is_valid_file(true);
     } else {
       set_is_valid_file(false);
@@ -169,4 +169,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ECMLPlayer;
+export default H5PPlayer;

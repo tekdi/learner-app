@@ -36,6 +36,8 @@ import VideoPlayerOffline from './screens/PlayerScreen/VideoPlayer/VideoPlayerOf
 import EpubPlayer from './screens/PlayerScreen/EpubPlayer/EpubPlayer';
 import EpubPlayerOffline from './screens/PlayerScreen/EpubPlayer/EpubPlayerOffline';
 import ECMLPlayer from './screens/PlayerScreen/ECMLPlayer/ECMLPlayer';
+import H5PPlayer from './screens/PlayerScreen/H5PPlayer/H5PPlayer';
+import HTMLPlayer from './screens/PlayerScreen/HTMLPlayer/HTMLPlayer';
 import { PermissionsAndroid, Platform } from 'react-native';
 
 async function checkAndRequestStoragePermission() {
@@ -269,6 +271,26 @@ const App = () => {
             <Stack.Screen
               name="ECMLPlayer"
               component={ECMLPlayer}
+              options={{
+                headerShown: false,
+                headerBackground: () => (
+                  <View style={{ backgroundColor: 'white', flex: 1 }}></View>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="H5PPlayer"
+              component={H5PPlayer}
+              options={{
+                headerShown: false,
+                headerBackground: () => (
+                  <View style={{ backgroundColor: 'white', flex: 1 }}></View>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="HTMLPlayer"
+              component={HTMLPlayer}
               options={{
                 headerShown: false,
                 headerBackground: () => (

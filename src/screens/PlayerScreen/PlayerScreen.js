@@ -7,7 +7,7 @@ import {
   Text,
 } from 'react-native';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
@@ -16,7 +16,19 @@ import Logo from '../../assets/images/png/logo.png';
 
 import { WebView } from 'react-native-webview';
 
+import Orientation from 'react-native-orientation-locker';
+
 const PlayerScreen = () => {
+  useEffect(() => {
+    // Lock the screen to landscape mode
+    Orientation.lockToPortrait();
+
+    // Unlock orientation when component is unmounted
+    return () => {
+      Orientation.unlockAllOrientations();
+    };
+  }, []);
+
   //multi language setup
   const { t } = useTranslation();
 
@@ -95,6 +107,20 @@ const PlayerScreen = () => {
           text={'ECML Player: Online'}
           onPress={() => {
             nav.navigate('ECMLPlayer');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <PrimaryButton
+          text={'H5P Player: Online'}
+          onPress={() => {
+            nav.navigate('H5PPlayer');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <PrimaryButton
+          text={'HTML Player: Online'}
+          onPress={() => {
+            nav.navigate('HTMLPlayer');
           }}
         />
       </ScrollView>
