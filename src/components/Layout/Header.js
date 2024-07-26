@@ -1,31 +1,40 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Image, Pressable } from 'react-native';
-import { IndexPath, Layout, Select, SelectItem } from '@ui-kitten/components';
-import { languages } from '../../screens/LanguageScreen/Languages';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Image, Pressable, SafeAreaView } from 'react-native';
+import { IndexPath, Select, SelectItem } from '@ui-kitten/components';
 import Logo from '../../assets/images/png/logo.png';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
+import { languages } from '../../screens/LanguageScreen/Languages';
+import { useTranslation } from '../../context/LanguageContext';
 
 const Header = () => {
   const [selectedIndex, setSelectedIndex] = useState(new IndexPath(0));
-
+  const [value, setValue] = useState(languages[selectedIndex.row].value);
   const navigation = useNavigation();
+
+  const { setLanguage, language } = useTranslation();
 
   const onSelect = (index) => {
     setSelectedIndex(index);
-    // const selectedValue = languages[index.row].value;
+    const selectedValue = languages[index.row].value;
+    setValue(selectedValue);
+    setLanguage(selectedValue);
   };
 
   const logout = () => {
     navigation.navigate('LoginSignUpScreen');
   };
 
+  useEffect(() => {
+    setValue(language);
+  }, []);
+
   return (
-    <Layout style={styles.layout}>
+    <SafeAreaView style={styles.layout}>
       <View style={styles.container}>
         <Select
-          selectedIndex={selectedIndex}
-          value={languages[selectedIndex.row].value}
+          // selectedIndex={selectedIndex}
+          value={value}
           onSelect={onSelect}
           style={styles.select}
         >
@@ -36,15 +45,11 @@ const Header = () => {
         <View style={styles.center}>
           <Image style={styles.image} source={Logo} resizeMode="contain" />
         </View>
-        <Pressable
-          onPress={() => {
-            logout();
-          }}
-        >
+        <Pressable onPress={logout}>
           <Icon name="logout" color="black" size={30} style={styles.icon} />
         </Pressable>
       </View>
-    </Layout>
+    </SafeAreaView>
   );
 };
 

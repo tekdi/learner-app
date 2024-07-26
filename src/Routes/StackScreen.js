@@ -6,7 +6,6 @@ import LanguageScreen from '../screens/LanguageScreen/LanguageScreen';
 import RegisterScreen from '../screens/RegisterScreen/RegisterScreen';
 import LoginSignUpScreen from '../screens/LoginSignUpScreen/LoginSignUpScreen';
 import RegisterStart from '../screens/RegisterStart/RegisterStart';
-import ContinueRegisterScreen from '../screens/ContinueRegisterScreen/ContinueRegisterScreen';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
 import { View } from 'react-native';
 

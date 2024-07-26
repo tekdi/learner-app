@@ -56,6 +56,7 @@
   "courses":"Courses",
   "profile":"Profile",
   "usersname":"Customize Your Username",
+  "username":"Username",
   "password":"Password",
   "forgot_password":"Forgot Password",
   "remember_me":"Remember Me",
@@ -90,5 +91,16 @@
   "T&C_12":"I have read and agree to the Privacy Policy.and I consent to the collection and use of my personal data as described in the Consent Form.",
   "T&C_13":"You can request for data deletion, updating, or changes any time from the contact details provided in ‘Data & Privacy Center in the profile page.",
   "username_already_exists":"Username already exists",
-  "something_went_wrong_try_again_later":"Something went wrong, please try again later."
+  "something_went_wrong_try_again_later":"Something went wrong, please try again later.",
+  "Learning_Content":"Learning Content",
+  "Update_your_preferences_to_get_the_best_picks_just_for_you":"Update your preferences to get the best picks just for you!",
+  "Based_on_Your_Interests":"Based on Your Interests",
+  "view_all":"View All",
+  "Financial_Literacy":"Financial Literacy",
+  "Continue_Learning":"Continue Learning",
+  "Preferences":"Preferences",
+  "Food_Production":"Food Production",
+  "Conceptual_Thinking":"Conceptual Thinking",
+  "Todays_Top_Pick":"Today's Top Pick",
+  "Art":"Art"
 }
