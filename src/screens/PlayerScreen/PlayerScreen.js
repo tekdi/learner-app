@@ -137,6 +137,20 @@ const PlayerScreen = () => {
             nav.navigate('HTMLPlayer');
           }}
         />
+        <View style={{ padding: 10 }}></View>
+        <PrimaryButton
+          text={'HTML Player: Offline'}
+          onPress={() => {
+            nav.navigate('HTMLPlayerOffline');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <PrimaryButton
+          text={'Youtube Player: Online'}
+          onPress={() => {
+            nav.navigate('YoutubePlayer');
+          }}
+        />
       </ScrollView>
     </View>
   );

@@ -73,11 +73,11 @@ const ECMLPlayer = () => {
   //   setRetrievedData(data);
   // };
 
-  const fetchData = async () => {
+  const fetchData = async (contentObj) => {
     //content read
     setLoading(true);
     set_loading_text('Reading Content...');
-    let contentObj = await getData(content_do_id, 'json');
+    //let contentObj = await getData(content_do_id, 'json');
     if (contentObj == null) {
       //download failed
       Alert.alert('Error', 'Server Not Available', [{ text: 'OK' }]);
@@ -197,7 +197,8 @@ const ECMLPlayer = () => {
                     console.log(`Unzipped to ${path}`);
                     //store content obj
                     //console.log(contentObj);
-                    await storeData(content_do_id, contentObj, 'json');
+                    //await storeData(content_do_id, contentObj, 'json');
+                    await fetchData(contentObj);
                   } catch (error) {
                     console.error(`Error extracting zip file: ${error}`);
                   }
@@ -232,7 +233,6 @@ const ECMLPlayer = () => {
           );
           console.log('display error', err);
         }
-        await fetchData();
       } else {
         set_is_valid_file(false);
       }
@@ -289,6 +289,8 @@ const ECMLPlayer = () => {
           allowUniversalAccessFromFileURLs={true}
           allowingReadAccessToURL={true}
           mixedContentMode={'always'}
+          allowsFullscreenVideo={true}
+          mediaPlaybackRequiresUserAction={false}
           injectedJavaScript={injectedJS}
           //injectedJavaScript={saveJavaScript}
           //onMessage={handleMessage}

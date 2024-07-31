@@ -231,6 +231,8 @@ const H5PPlayerOffline = () => {
           );
           console.log('display error', err);
         }
+      } else {
+        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
       }
     }
     //content read
@@ -290,6 +292,8 @@ const H5PPlayerOffline = () => {
           allowUniversalAccessFromFileURLs={true}
           allowingReadAccessToURL={true}
           mixedContentMode={'always'}
+          allowsFullscreenVideo={true}
+          mediaPlaybackRequiresUserAction={false}
           injectedJavaScript={injectedJS}
           //injectedJavaScript={saveJavaScript}
           //onMessage={handleMessage}

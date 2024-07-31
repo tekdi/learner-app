@@ -214,6 +214,8 @@ const VideoPlayerOffline = () => {
           );
           console.log('display error', err);
         }
+      } else {
+        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
       }
     }
     //content read
@@ -263,10 +265,22 @@ const VideoPlayerOffline = () => {
           domStorageEnabled={true}
           scalesPageToFit={true}
           startInLoadingState={true}
-          allowFileAccessFromFileURLs={true}
+          allowFileAccess={true}
+          allowUniversalAccessFromFileURLs={true}
+          allowingReadAccessToURL={true}
+          mixedContentMode={'always'}
+          allowsFullscreenVideo={true}
+          mediaPlaybackRequiresUserAction={false}
           injectedJavaScript={injectedJS}
           //injectedJavaScript={saveJavaScript}
           //onMessage={handleMessage}
+          onMessage={(event) => {
+            console.log(event.nativeEvent.data);
+          }}
+          onError={(syntheticEvent) => {
+            const { nativeEvent } = syntheticEvent;
+            console.warn('WebView error: ', nativeEvent);
+          }}
         />
       )}
 

@@ -96,10 +96,22 @@ const VideoPlayer = () => {
           domStorageEnabled={true}
           scalesPageToFit={true}
           startInLoadingState={true}
-          allowFileAccessFromFileURLs={true}
+          allowFileAccess={true}
+          allowUniversalAccessFromFileURLs={true}
+          allowingReadAccessToURL={true}
+          mixedContentMode={'always'}
+          allowsFullscreenVideo={true}
+          mediaPlaybackRequiresUserAction={false}
           injectedJavaScript={injectedJS}
           //injectedJavaScript={saveJavaScript}
           //onMessage={handleMessage}
+          onMessage={(event) => {
+            console.log(event.nativeEvent.data);
+          }}
+          onError={(syntheticEvent) => {
+            const { nativeEvent } = syntheticEvent;
+            console.warn('WebView error: ', nativeEvent);
+          }}
         />
       )}
       {/* <Button
