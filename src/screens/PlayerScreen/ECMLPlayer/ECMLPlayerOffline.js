@@ -30,26 +30,27 @@ import Orientation from 'react-native-orientation-locker';
 const desktopUserAgent =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
 
-const H5PPlayer = () => {
+const ECMLPlayerOffline = () => {
   useEffect(() => {
     // Lock the screen to landscape mode
-    //Orientation.lockToLandscape();
+    Orientation.lockToLandscape();
 
     // Unlock orientation when component is unmounted
     return () => {
-      //Orientation.unlockAllOrientations();
+      Orientation.unlockAllOrientations();
     };
   }, []);
 
   const [loading, setLoading] = useState(true);
   // content id
-  const content_do_id = 'do_1135798461403217921114'; //h5p
-  //const content_do_id = 'do_11407096734258790412082'; //h5p
+  //const content_do_id = 'do_11390133433760972812037'; //ecml
+  const content_do_id = 'do_11390133433760972812037'; //ecml
   const content_file = `${RNFS.DocumentDirectoryPath}/${content_do_id}`;
-  const streamingPath = `${content_file}/assets/public/content/h5p/${content_do_id}-latest`;
+  const streamingPath = `${content_file}`;
   // console.log('rnfs DocumentDirectoryPath', RNFS.DocumentDirectoryPath);
   // console.log('rnfs ExternalDirectoryPath', RNFS.ExternalDirectoryPath);
   const [is_valid_file, set_is_valid_file] = useState(null);
+  const [is_download, set_is_download] = useState(null);
   const [progress, setProgress] = useState(0);
   const [loading_text, set_loading_text] = useState('');
   // Determine the correct path to the index.html file based on the platform
@@ -79,18 +80,19 @@ const H5PPlayer = () => {
     set_loading_text('Reading Content...');
     let contentObj = await getData(content_do_id, 'json');
     if (contentObj == null) {
-      //download failed
-      Alert.alert('Error', 'Server Not Available', [{ text: 'OK' }]);
+      set_is_download(true);
     } else {
       let filePath = '';
-      if (contentObj?.mimeType == 'application/vnd.ekstep.h5p-archive') {
+      if (contentObj?.mimeType == 'application/vnd.ekstep.ecml-archive') {
         filePath = `${content_file}.zip`;
       }
       if (filePath != '') {
         try {
           contentPlayerConfig.metadata = contentObj;
-          contentPlayerConfig.data = '';
-          contentPlayerConfig.context = { host: `file://${content_file}` };
+          contentPlayerConfig.data = contentObj?.body;
+          contentPlayerConfig.context = {
+            host: `file://${content_file}/assets`,
+          };
           //console.log('contentPlayerConfig set', contentPlayerConfig);
           set_is_valid_file(true);
         } catch (e) {
@@ -99,6 +101,7 @@ const H5PPlayer = () => {
       } else {
         set_is_valid_file(false);
       }
+      set_is_download(false);
     }
     set_loading_text('');
     setLoading(false);
@@ -106,7 +109,7 @@ const H5PPlayer = () => {
 
   const [temp] = useState([]);
   useEffect(() => {
-    downloadContent();
+    fetchData();
   }, []);
 
   const downloadContent = async () => {
@@ -121,7 +124,7 @@ const H5PPlayer = () => {
     } else {
       let contentObj = content_response?.result?.content;
       let filePath = '';
-      if (contentObj?.mimeType == 'application/vnd.ekstep.h5p-archive') {
+      if (contentObj?.mimeType == 'application/vnd.ekstep.ecml-archive') {
         filePath = `${content_file}.zip`;
       }
       if (filePath != '') {
@@ -230,13 +233,11 @@ const H5PPlayer = () => {
           );
           console.log('display error', err);
         }
-        await fetchData();
-      } else {
-        set_is_valid_file(false);
       }
     }
     //content read
     setLoading(false);
+    await fetchData();
   };
 
   if (loading) {
@@ -244,7 +245,7 @@ const H5PPlayer = () => {
       <View style={styles.middle_screen}>
         <ActivityIndicator size="large" color="#0000ff" />
         {progress > 0 && progress < 100 ? (
-          <Text>{`Loading: ${progress.toFixed(2)}%`}</Text>
+          <Text>{`Downloading: ${progress.toFixed(2)}%`}</Text>
         ) : loading_text != '' ? (
           <Text>{loading_text}</Text>
         ) : (
@@ -271,6 +272,10 @@ const H5PPlayer = () => {
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
           <Text>Invalid Player File</Text>
+        </View>
+      ) : is_download == true ? (
+        <View style={styles.middle_screen}>
+          <Button title="Download Content" onPress={() => downloadContent()} />
         </View>
       ) : (
         <WebView
@@ -331,4 +336,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default H5PPlayer;
+export default ECMLPlayerOffline;

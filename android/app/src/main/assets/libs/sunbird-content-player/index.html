@@ -22,10 +22,8 @@
       ></iframe>
     </div>
     <script type="text/javascript">
-      alert("hello 1");
       function setData() 
       {
-        alert("hello 2");
         var previewContentIframe = document.getElementById(
           "previewContentIframe"
         );
@@ -34,12 +32,12 @@
           if(localStorage.getItem("contentPlayerObject")){
             let jsonObj=JSON.parse(localStorage.getItem("contentPlayerObject"));
             contentPlayerConfig=jsonObj?.contentPlayerConfig;
-            alert("in json object "+contentPlayerConfig);
-            alert(JSON.parse(localStorage.getItem("contentPlayerObject")))
+            //alert("in json object "+JSON.stringify(contentPlayerConfig));
+            //alert(localStorage.getItem("contentPlayerObject"));
           }
           if(contentPlayerConfig!=null)
           {
-            alert("valid playerConfig");
+            //alert("valid playerConfig");
             previewContentIframe.contentWindow.initializePreview(contentPlayerConfig);
           }
           else

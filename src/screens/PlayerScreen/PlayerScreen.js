@@ -111,9 +111,23 @@ const PlayerScreen = () => {
         />
         <View style={{ padding: 10 }}></View>
         <PrimaryButton
+          text={'ECML Player: Offline'}
+          onPress={() => {
+            nav.navigate('ECMLPlayerOffline');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <PrimaryButton
           text={'H5P Player: Online'}
           onPress={() => {
             nav.navigate('H5PPlayer');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <PrimaryButton
+          text={'H5P Player: Offline'}
+          onPress={() => {
+            nav.navigate('H5PPlayerOffline');
           }}
         />
         <View style={{ padding: 10 }}></View>
