@@ -11,6 +11,7 @@ import { View } from 'react-native';
 
 import PlayerScreen from '../screens/PlayerScreen/PlayerScreen';
 import QuMLPlayer from '../screens/PlayerScreen/QuMLPlayer/QuMLPlayer';
+import QuMLPlayerOffline from '../screens/PlayerScreen/QuMLPlayer/QuMLPlayerOffline';
 import PdfPlayer from '../screens/PlayerScreen/PdfPlayer/PdfPlayer';
 import PdfPlayerOffline from '../screens/PlayerScreen/PdfPlayer/PdfPlayerOffline';
 import VideoPlayer from '../screens/PlayerScreen/VideoPlayer/VideoPlayer';
@@ -81,6 +82,13 @@ const StackScreen = (props) => {
       <Stack.Screen
         name="QuMLPlayer"
         component={QuMLPlayer}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="QuMLPlayerOffline"
+        component={QuMLPlayerOffline}
         options={{
           headerShown: true,
         }}

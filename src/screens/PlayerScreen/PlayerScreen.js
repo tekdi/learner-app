@@ -62,6 +62,13 @@ const PlayerScreen = () => {
         />
         <View style={{ padding: 10 }}></View>
         <PrimaryButton
+          text={'QuML Player: Offline'}
+          onPress={() => {
+            nav.navigate('QuMLPlayerOffline');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+        <PrimaryButton
           text={'Pdf Player: Online'}
           onPress={() => {
             nav.navigate('PdfPlayer');

@@ -148,11 +148,9 @@ const YoutubePlayer = () => {
             console.log('please grant permission');
           }
         } catch (err) {
-          Alert.alert(
-            'Error Catch',
-            `Failed to download file: ${JSON.stringify(err)}`,
-            [{ text: 'OK' }]
-          );
+          Alert.alert('Error Catch', `Failed to download file: ${err}`, [
+            { text: 'OK' },
+          ]);
           console.log('display error', err);
         }
       } else {
