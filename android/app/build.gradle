@@ -142,6 +142,9 @@ dependencies {
     //for react native config env : dev uat prod
     implementation project(':react-native-config')
 
+    //for file path provider
+    implementation project(':react-native-fs')
+
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {

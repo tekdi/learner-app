@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -6,18 +7,15 @@ import {
   Image,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
 import { Layout, Text } from '@ui-kitten/components';
+import { useNavigation } from '@react-navigation/native';
 import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
-import { languages } from './Languages';
-import { useNavigation } from '@react-navigation/native';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
-//import env variables
-
-//multi language
-import { useTranslation } from '../../context/LanguageContext';
 import CustomCardLanguage from '../../components/CustomCardLanguage/CustomCardLanguage';
+import { languages } from './Languages';
+// Multi-language context
+import { useTranslation } from '../../context/LanguageContext';
 import {
   getRefreshToken,
   getSavedToken,
@@ -29,9 +27,8 @@ import Loading from '../LoadingScreen/Loading';
 import FastImage from '@changwoolab/react-native-fast-image';
 
 const LanguageScreen = () => {
-  //multi language setup
-  const { t, setLanguage, language } = useTranslation();
   const navigation = useNavigation();
+  const { t, setLanguage, language } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const changeLanguage = (lng) => {
@@ -86,7 +83,6 @@ const LanguageScreen = () => {
         backgroundColor="transparent"
       />
       <Layout style={styles.container}>
-        {/* Icon png here */}
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         {/* Text Samples here */}
         <View style={{ alignItems: 'center', flexDirection: 'row' }}>
@@ -105,7 +101,6 @@ const LanguageScreen = () => {
         <Text category="p1" style={styles.description}>
           {t('select_language')}
         </Text>
-        {/* List of Languages */}
         <View>
           <FlatList
             showsVerticalScrollIndicator={false}

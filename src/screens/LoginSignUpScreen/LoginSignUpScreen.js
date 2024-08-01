@@ -45,6 +45,12 @@ const LoginSignUpScreen = () => {
             nav.navigate('LoginScreen');
           }}
         />
+        <View style={{ padding: 10 }}></View>
+        <PrimaryButton
+        text={'PlayerScreen'}
+        onPress={() => {
+          nav.navigate('PlayerScreen');}}
+          />
       </View>
     </View>
   );
