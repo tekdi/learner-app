@@ -19,7 +19,6 @@ const ViewAllContent = ({ route }) => {
   const navigation = useNavigation();
   const { title, data } = route.params;
   // const data = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-  console.log({ data });
   return (
     <SafeAreaView>
       <Header />

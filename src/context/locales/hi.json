@@ -97,10 +97,20 @@
   "Financial_Literacy":"वित्तीय साक्षरता",
   "Continue_Learning":"सीखना जारी रखें",
   "Preferences":"वरीयताएँ",
-
   "Food_Production":"खाद्य उत्पादन",
   "Conceptual_Thinking":"अवधारणात्मक सोच",
   "Todays_Top_Pick":"आज का शीर्ष चयन",
-  "Art":"कला"
-
+  "Art":"कला",
+  "Assessments":"मूल्यांकन",
+  "PreTest":"प्री टेस्ट",
+  "PostTest":"पोस्ट टेस्ट",
+  "Inprogress":"प्रगति में",
+  "Overallscore":"समग्र स्कोर:",
+  "completed":"पूरा किया",
+  "submitted_On":"प्रस्तुत किया गया :",
+  "reading":"पढ़ना।",
+  "out_of":" में से",
+  "correct_answers":"सही जवाब",
+  "take_the_test":"टेस्ट लें।",
+  "not_started":"शुरू नहीं किया गया"
 }

@@ -7,12 +7,12 @@ import * as eva from '@eva-design/eva';
 import theme from './assets/themes/theme.json';
 //multiple language
 import { LanguageProvider } from './context/LanguageContext'; // Adjust path as needed
-import { hideNavigationBar } from 'react-native-navigation-bar-color';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/StackScreen';
 
 const App = () => {
   useEffect(() => {
-    hideNavigationBar();
+    changeNavigationBarColor('white', { barStyle: 'light-content' });
   }, []);
 
   return (

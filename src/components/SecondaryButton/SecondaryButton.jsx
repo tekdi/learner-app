@@ -3,14 +3,13 @@ import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
-const SecondaryButton = ({onPress}) => {
+const SecondaryButton = ({onPress,text}) => {
   //multi language setup
   const { t } = useTranslation();
-
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text style={styles.buttontext}>{t('already_login')}</Text>
+        <Text style={styles.buttontext}>{t(text)}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -19,15 +18,17 @@ const SecondaryButton = ({onPress}) => {
 SecondaryButton.propTypes = {
   
   onPress: PropTypes.func,
-  
+  text: PropTypes.string
 };
 
 const styles = StyleSheet.create({
   buttontext: {
     textAlign: 'center',
-    fontSize: 17,
+    fontSize: 16,
+    width:"100%",
     color: 'black',
-    width: '100%',
+    padding:10,
+    paddingHorizontal:20,
     fontFamily: 'Poppins-Medium',
   },
   button: {
@@ -36,7 +37,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderColor: 'black',
     borderWidth: 2,
-    height: 50,
     justifyContent: 'center',
   },
 });

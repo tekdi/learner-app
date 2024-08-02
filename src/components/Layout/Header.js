@@ -1,18 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Image, Pressable, SafeAreaView } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Image,
+  Pressable,
+  SafeAreaView,
+  StatusBar,
+} from 'react-native';
 import { IndexPath, Select, SelectItem } from '@ui-kitten/components';
 import Logo from '../../assets/images/png/logo.png';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { languages } from '../../screens/LanguageScreen/Languages';
 import { useTranslation } from '../../context/LanguageContext';
+import { deleteSavedItem } from '../../utils/JsHelper/Helper';
 
 const Header = () => {
-  const [selectedIndex, setSelectedIndex] = useState(new IndexPath(0));
-  const [value, setValue] = useState(languages[selectedIndex.row].value);
   const navigation = useNavigation();
-
   const { setLanguage, language } = useTranslation();
+  const [selectedIndex, setSelectedIndex] = useState();
+  const [value, setValue] = useState();
+
+  useEffect(() => {
+    // Set the initial value based on the current language
+    const currentLanguageIndex = languages.findIndex(
+      (lang) => lang.value === language
+    );
+    if (currentLanguageIndex >= 0) {
+      setSelectedIndex(new IndexPath(currentLanguageIndex));
+      setValue(language);
+    }
+  }, [language]); // Include language as a dependency
 
   const onSelect = (index) => {
     setSelectedIndex(index);
@@ -21,25 +39,28 @@ const Header = () => {
     setLanguage(selectedValue);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await deleteSavedItem('refreshToken');
+    await deleteSavedItem('token');
     navigation.navigate('LoginSignUpScreen');
   };
 
-  useEffect(() => {
-    setValue(language);
-  }, []);
-
   return (
     <SafeAreaView style={styles.layout}>
+      <StatusBar
+        barStyle="dark-content"
+        translucent={true}
+        backgroundColor="transparent"
+      />
       <View style={styles.container}>
         <Select
-          // selectedIndex={selectedIndex}
+          selectedIndex={selectedIndex} // Set the selected index
           value={value}
           onSelect={onSelect}
           style={styles.select}
         >
-          {languages?.map((option, index) => (
-            <SelectItem key={option.value} title={option.value} />
+          {languages.map((option) => (
+            <SelectItem key={option.value} title={option.title} />
           ))}
         </Select>
         <View style={styles.center}>
@@ -57,8 +78,8 @@ const styles = StyleSheet.create({
   layout: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'transparent',
-    top: 40,
+    backgroundColor: 'white',
+    paddingTop: 40,
     width: '100%',
   },
   container: {

@@ -13,6 +13,9 @@ const EndUrls = {
   get_form: API_URL + '/user/v1/form/read?context=USERS&contextType=STUDENT',
   userExist: API_URL + `/user/v1/check`,
   contentList: `https://sunbirdsaas.com/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
+  cohort: API_URL + `/user/v1/cohort/mycohorts`,
+  AssessmentList: `https://sunbirdsaas.com/api/content/v1/search?orgdetails=orgName,email&licenseDetails=name,description,url`,
+  trackAssessment: `https://tracking-pratham.tekdinext.com/tracking-assessment/v1/list`,
 };
 
 export default EndUrls;

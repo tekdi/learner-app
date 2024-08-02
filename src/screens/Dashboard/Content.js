@@ -116,6 +116,7 @@ const Content = () => {
                 viewAllLink={() =>
                   navigation.navigate('ViewAll', {
                     title: 'Based_on_Your_Interests',
+                    data: data,
                   })
                 }
                 ContentData={data}
@@ -126,6 +127,7 @@ const Content = () => {
                 viewAllLink={() =>
                   navigation.navigate('ViewAll', {
                     title: 'Conceptual_Thinking',
+                    data: data,
                   })
                 }
                 ContentData={data}
@@ -137,7 +139,12 @@ const Content = () => {
                 title={'Todays_Top_Pick'}
                 description={'Art'}
                 style={{ titlecolor: '#785913' }}
-                viewAllLink={() => navigation.navigate('ViewAll')}
+                viewAllLink={() =>
+                  navigation.navigate('ViewAll', {
+                    title: 'Todays_Top_Pick',
+                    data: data,
+                  })
+                }
                 ContentData={data}
               />
               <HorizontalLine />
