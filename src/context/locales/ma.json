@@ -100,6 +100,17 @@
   "Food_Production":"अन्न उत्पादन",
   "Conceptual_Thinking":"संकल्पनात्मक विचार",
   "Todays_Top_Pick":"आजची सर्वोच्च निवड",
-  "Art":"कला"
-
+  "Art":"कला",
+  "Assessments":"मूल्यमापन",
+  "PreTest":"प्री टेस्ट",
+  "PostTest":"पोस्ट टेस्ट",
+  "Inprogress":"प्रगतीपथावर",
+  "Overallscore":"एकूण गुणांक:",
+  "completed":"पूर्ण झाले.",
+  "submitted_On":"वर सादर केले :",
+  "reading":"वाचन",
+  "out_of":"पैकी",
+  "correct_answers":"योग्य उत्तरे",
+  "take_the_test":"चाचणी घ्या",
+  "not_started":"सुरू केले नाही"
 }

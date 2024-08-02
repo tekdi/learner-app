@@ -4,7 +4,6 @@ import Logo from '../../assets/images/png/logo-with-tagline.png';
 import { Spinner } from '@ui-kitten/components';
 
 const Loading = (style) => {
-  console.log({ style });
   return (
     <SafeAreaView style={[styles.safeArea, { top: style?.style?.top || 0 }]}>
       <View style={styles.container}>

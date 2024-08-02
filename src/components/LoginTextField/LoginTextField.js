@@ -11,6 +11,7 @@ const LoginTextField = ({ text, position = 'static', onChangeText, value }) => {
   return (
     <View style={styles.container}>
       <TextInput
+        autoCapitalize="none" // Ensures keyboard stays in lowercase
         secureTextEntry={text === 'password' && !passwordView}
         onChangeText={onChangeText}
         value={value}
