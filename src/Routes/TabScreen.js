@@ -8,6 +8,8 @@ import { default as MaterialIcons } from 'react-native-vector-icons/MaterialComm
 import DashboardStack from './DashboardStack';
 import Courses from '../screens/Dashboard/Courses';
 import Profile from '../screens/Dashboard/Profile';
+import Assessment from '../screens/Assessment/Assessment';
+import AssessmentStack from './AssessmentStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -36,6 +38,14 @@ const TabScreen = () => {
                 size={30}
               />
             );
+          } else if (route.name === 'AssessmentStack') {
+            return (
+              <SimpleIcon
+                name="note"
+                color={focused ? '#987100' : 'black'}
+                size={30}
+              />
+            );
           } else if (route.name === 'Profile') {
             return (
               <MaterialIcons
@@ -55,6 +65,11 @@ const TabScreen = () => {
         name="DashboardStack"
         component={DashboardStack}
         options={{ tabBarLabel: t('content') }}
+      />
+      <Tab.Screen
+        name="AssessmentStack"
+        component={AssessmentStack}
+        options={{ tabBarLabel: t('Assessment') }}
       />
       <Tab.Screen
         name="Courses"

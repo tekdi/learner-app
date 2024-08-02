@@ -79,8 +79,8 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    // changeNavigationBarColor('white', { barStyle: 'light-content' });
-    hideNavigationBar();
+    changeNavigationBarColor('white', { barStyle: 'light-content' });
+    // hideNavigationBar();
   }, []);
 
   return (

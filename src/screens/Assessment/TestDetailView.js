@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
+  Alert,
   FlatList,
   Pressable,
   SafeAreaView,
@@ -48,10 +49,27 @@ const TestDetailView = ({ route }) => {
 
   const navigation = useNavigation();
 
-  console.log({ time, publishDate, data });
-
   const handlethis = () => {
-    navigation.goBack();
+    console.log({ data });
+    // navigation.goBack();
+    Alert.alert(
+      `IL_UNIQUE_ID : ${data?.IL_UNIQUE_ID}`,
+      `mimeType : ${data?.mimeType}`,
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            navigation.goBack();
+          }, // Replace 'TargetScreen' with your screen name
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   return (
@@ -110,7 +128,7 @@ const TestDetailView = ({ route }) => {
         </View>
       </ScrollView>
       <View style={styles.bottom}>
-        <PrimaryButton text={'start_test'} onPress={handlethis} />
+        <PrimaryButton text={'start_test'} onPress={() => handlethis()} />
       </View>
     </SafeAreaView>
   );

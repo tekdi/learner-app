@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   BackHandler,
   Image,
   SafeAreaView,
@@ -12,20 +13,19 @@ import Header from '../../components/Layout/Header';
 import { backAction } from '../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
-import ContentCard from '../../components/ContentCard/ContentCard';
 import ScrollViewLayout from '../../components/Layout/ScrollViewLayout';
 import { useTranslation } from '../../context/LanguageContext';
 import wave from '../../assets/images/png/wave.png';
 import ContentBox from '../../components/ContentBox/ContentBox';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
-import { contentListApi } from '../../utils/API/AuthService';
-import Loading from '../LoadingScreen/Loading';
+import { contentListApi, getAccessToken } from '../../utils/API/AuthService';
 
 const Content = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
+  const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,26 +43,28 @@ const Content = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await contentListApi();
+      const user_Info = await getAccessToken();
+      setUserInfo(user_Info);
       setData(data?.content);
       setLoading(false);
     };
     fetchData();
   }, []);
 
-  // const data = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-
   return (
     <SafeAreaView>
       <Header />
       <View style={styles.view}>
         {loading ? (
-          <Loading style={{ top: 300 }} />
+          <ActivityIndicator style={{ top: 300 }} />
         ) : (
-          <>
+          <SafeAreaView>
             <Text style={styles.text}>{t('Learning_Content')}</Text>
             <View style={styles.view2}>
               <Image source={wave} resizeMode="contain" />
-              <Text style={styles.text2}>{t('welcome')}, Ameya!</Text>
+              <Text style={styles.text2}>
+                {t('welcome')}, {userInfo?.result?.name} !
+              </Text>
             </View>
             <ScrollViewLayout horizontalScroll={false}>
               <ContentBox
@@ -149,7 +151,7 @@ const Content = () => {
               />
               <HorizontalLine />
             </ScrollViewLayout>
-          </>
+          </SafeAreaView>
         )}
       </View>
     </SafeAreaView>
@@ -158,7 +160,6 @@ const Content = () => {
 
 const styles = StyleSheet.create({
   view: {
-    top: 40,
     width: '100%',
     //backgroundColor: 'white',
     padding: 15,
