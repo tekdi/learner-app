@@ -12,6 +12,16 @@ export const getDataFromStorage = async (value) => {
   }
 };
 
+// Save Refresh Token
+
+export const setDataInStorage = async (name, data) => {
+  try {
+    await AsyncStorage.setItem(name, data);
+  } catch (e) {
+    console.error('Error saving credentials:', e);
+  }
+};
+
 // Save Token
 export const saveToken = async (data) => {
   try {
@@ -86,4 +96,24 @@ export const translateLanguage = (code) => {
   };
 
   return languageMap[code] || 'Unknown Language';
+};
+
+export const checkAssessmentStatus = async (data, uniqueAssessmentsId) => {
+  const contentIdsInData = data?.map((item) => item.contentId);
+  const matchedIds = uniqueAssessmentsId.filter((id) =>
+    contentIdsInData.includes(id)
+  );
+  if (matchedIds.length === 0) {
+    return 'not_started';
+  } else if (matchedIds.length < contentIdsInData.length) {
+    return 'inprogress';
+  } else {
+    return 'completed';
+  }
+};
+
+export const convertSecondsToMinutes = (seconds) => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}`;
 };

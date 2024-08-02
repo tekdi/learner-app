@@ -35,30 +35,6 @@ const LanguageScreen = () => {
     setLanguage(lng);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = await getSavedToken();
-      const refresh_token = await getRefreshToken();
-      if (token?.token) {
-        const current_token = await getAccessToken();
-        if (current_token === 'successful') {
-          // navigation.navigate('Dashboard');
-        } else {
-          const data = await refreshToken({
-            refresh_token: refresh_token?.token,
-          });
-          await saveToken(data?.access_token);
-          await saveRefreshToken(data?.refresh_token);
-          navigation.navigate('Dashboard');
-        }
-      } else {
-        setLoading(false);
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
-
   const renderItem = ({ item }) => (
     <CustomCardLanguage
       key={item.value}

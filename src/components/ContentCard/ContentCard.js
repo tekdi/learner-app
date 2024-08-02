@@ -6,7 +6,6 @@ import FastImage from '@changwoolab/react-native-fast-image';
 const ContentCard = ({ onPress, style, title, description }) => {
   const { width } = Dimensions.get('window');
   const cardWidth = (width - 60) / 2; // Adjust width based on screen size and desired spacing
-  console.log({ description });
   return (
     <Pressable
       onPress={onPress}

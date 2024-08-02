@@ -8,6 +8,7 @@ import LoginSignUpScreen from '../screens/LoginSignUpScreen/LoginSignUpScreen';
 import RegisterStart from '../screens/RegisterStart/RegisterStart';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
 import { View } from 'react-native';
+import TestDetailView from '../screens/Assessment/TestDetailView';
 
 import PlayerScreen from '../screens/PlayerScreen/PlayerScreen';
 import QuMLPlayer from '../screens/PlayerScreen/QuMLPlayer/QuMLPlayer';
@@ -35,7 +36,7 @@ const StackScreen = (props) => {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
-      initialRouteName="LanguageScreen"
+      initialRouteName="LoadingScreen"
     >
       <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
       <Stack.Screen name="LanguageScreen" component={LanguageScreen} />
@@ -65,6 +66,11 @@ const StackScreen = (props) => {
       <Stack.Screen
         name="Dashboard"
         component={TabScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="TestDetailView"
+        component={TestDetailView}
         options={{ headerShown: false }}
       />
 

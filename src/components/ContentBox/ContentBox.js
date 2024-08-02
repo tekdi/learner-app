@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes, { bool } from 'prop-types';
 import {
+  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -23,8 +24,25 @@ const ContentBox = ({
 }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const handlePress = () => {
-    console.log('Card pressed!');
+  const handlePress = (item) => {
+    console.log('Card pressed!', item);
+    Alert.alert(
+      `Content-Type : ${item?.contentType}`,
+      `mimeType : ${item?.mimeType}`,
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {}, // Replace 'TargetScreen' with your screen name
+        },
+      ],
+      { cancelable: false }
+    );
+
     // navigation.navigate('Preference');
   };
 
@@ -59,7 +77,7 @@ const ContentBox = ({
             return (
               <ContentCard
                 key={item?.name}
-                onPress={handlePress}
+                onPress={() => handlePress(item)}
                 title={item?.name}
                 description={item?.mimeType}
                 appIcon={item?.appIcon}
@@ -77,6 +95,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     height: 300,
     paddingTop: 20,
+    marginVertical: 10,
   },
 
   title: {
