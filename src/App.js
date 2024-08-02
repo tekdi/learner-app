@@ -10,9 +10,77 @@ import { LanguageProvider } from './context/LanguageContext'; // Adjust path as 
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/StackScreen';
 
+import { PermissionsAndroid, Platform } from 'react-native';
+
+async function checkAndRequestStoragePermission() {
+  if (Platform.OS === 'android' && Platform.Version >= 33) {
+    const permissions = [
+      PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+      PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
+      PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO,
+    ];
+    const granted = await PermissionsAndroid.requestMultiple(permissions);
+
+    const allGranted = permissions.every(
+      (permission) => granted[permission] === PermissionsAndroid.RESULTS.GRANTED
+    );
+
+    if (!allGranted) {
+      Alert.alert(
+        'Permission Denied',
+        'Storage permission is required to download files. The app will now exit.',
+        [{ text: 'OK', onPress: () => BackHandler.exitApp() }]
+      );
+      return false;
+    }
+  } else {
+    const hasWritePermission = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+    );
+    const hasReadPermission = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+    );
+
+    if (!hasWritePermission || !hasReadPermission) {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      ]);
+
+      if (
+        granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] !==
+          PermissionsAndroid.RESULTS.GRANTED ||
+        granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] !==
+          PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        Alert.alert(
+          'Permission Denied',
+          'Storage permission is required to download files. The app will now exit.',
+          [{ text: 'OK', onPress: () => BackHandler.exitApp() }]
+        );
+        return false;
+      }
+    }
+  }
+  return true;
+}
 const App = () => {
   useEffect(() => {
-    changeNavigationBarColor('white', { barStyle: 'light-content' });
+    const initializeApp = async () => {
+      const hasPermission = await checkAndRequestStoragePermission();
+      if (!hasPermission) {
+        // Exit the app if permissions are denied
+        BackHandler.exitApp();
+        return;
+      }
+    };
+
+    initializeApp();
+  }, []);
+
+  useEffect(() => {
+    // changeNavigationBarColor('white', { barStyle: 'light-content' });
+    hideNavigationBar();
   }, []);
 
   return (

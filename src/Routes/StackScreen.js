@@ -10,6 +10,22 @@ import LoginScreen from '../screens/LoginScreen/LoginScreen';
 import { View } from 'react-native';
 import TestDetailView from '../screens/Assessment/TestDetailView';
 
+import PlayerScreen from '../screens/PlayerScreen/PlayerScreen';
+import QuMLPlayer from '../screens/PlayerScreen/QuMLPlayer/QuMLPlayer';
+import PdfPlayer from '../screens/PlayerScreen/PdfPlayer/PdfPlayer';
+import PdfPlayerOffline from '../screens/PlayerScreen/PdfPlayer/PdfPlayerOffline';
+import VideoPlayer from '../screens/PlayerScreen/VideoPlayer/VideoPlayer';
+import VideoPlayerOffline from '../screens/PlayerScreen/VideoPlayer/VideoPlayerOffline';
+import EpubPlayer from '../screens/PlayerScreen/EpubPlayer/EpubPlayer';
+import EpubPlayerOffline from '../screens/PlayerScreen/EpubPlayer/EpubPlayerOffline';
+import ECMLPlayer from '../screens/PlayerScreen/ECMLPlayer/ECMLPlayer';
+import ECMLPlayerOffline from '../screens/PlayerScreen/ECMLPlayer/ECMLPlayerOffline';
+import H5PPlayer from '../screens/PlayerScreen/H5PPlayer/H5PPlayer';
+import H5PPlayerOffline from '../screens/PlayerScreen/H5PPlayer/H5PPlayerOffline';
+import HTMLPlayer from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayer';
+import HTMLPlayerOffline from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayerOffline';
+import YoutubePlayer from '../screens/PlayerScreen/YoutubePlayer/YoutubePlayer';
+
 const StackScreen = (props) => {
   const Stack = createNativeStackNavigator();
 
@@ -56,6 +72,115 @@ const StackScreen = (props) => {
         name="TestDetailView"
         component={TestDetailView}
         options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="PlayerScreen"
+        component={PlayerScreen}
+        options={{
+          headerShown: false,
+          headerBackground: () => (
+            <View style={{ backgroundColor: 'white', flex: 1 }}></View>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="QuMLPlayer"
+        component={QuMLPlayer}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="PdfPlayer"
+        component={PdfPlayer}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="PdfPlayerOffline"
+        component={PdfPlayerOffline}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="VideoPlayer"
+        component={VideoPlayer}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="VideoPlayerOffline"
+        component={VideoPlayerOffline}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="EpubPlayer"
+        component={EpubPlayer}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="EpubPlayerOffline"
+        component={EpubPlayerOffline}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="ECMLPlayer"
+        component={ECMLPlayer}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="ECMLPlayerOffline"
+        component={ECMLPlayerOffline}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="H5PPlayer"
+        component={H5PPlayer}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="H5PPlayerOffline"
+        component={H5PPlayerOffline}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="HTMLPlayer"
+        component={HTMLPlayer}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="HTMLPlayerOffline"
+        component={HTMLPlayerOffline}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="YoutubePlayer"
+        component={YoutubePlayer}
+        options={{
+          headerShown: true,
+        }}
       />
     </Stack.Navigator>
   );

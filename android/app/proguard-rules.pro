@@ -8,3 +8,7 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# for external packages webview sunbird content player
+-keep class * extends android.webkit.WebView { *; }
+-keepclassmembers class * extends android.webkit.WebView { *; }
