@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   ActivityIndicator,
@@ -16,7 +16,7 @@ import {
   getCohort,
   trackAssessment,
 } from '../../utils/API/AuthService';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   checkAssessmentStatus,
   setDataInStorage,
@@ -29,44 +29,47 @@ const Assessment = (props) => {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getAccessToken();
-      const user_id = data?.result?.userId;
-      const cohort = await getCohort({ user_id });
-      const board = cohort?.cohortData?.[0]?.customField?.find(
-        (field) => field.label === 'State'
-      );
-      if (board) {
-        const boardName = board.value;
-        const assessmentList = await assessmentListApi({ boardName });
-        const uniqueAssessments = [
-          ...new Set(
-            assessmentList?.QuestionSet?.map((item) => item.assessment1)
-          ),
-        ];
-        const uniqueAssessmentsId = [
-          ...new Set(
-            assessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
-          ),
-        ];
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        setLoading(true);
+        const data = await getAccessToken();
+        const user_id = data?.result?.userId;
+        const cohort = await getCohort({ user_id });
+        const board = cohort?.cohortData?.[0]?.customField?.find(
+          (field) => field.label === 'State'
+        );
+        if (board) {
+          const boardName = board.value;
+          const assessmentList = await assessmentListApi({ boardName });
+          const uniqueAssessments = [
+            ...new Set(
+              assessmentList?.QuestionSet?.map((item) => item.assessment1)
+            ),
+          ];
+          const uniqueAssessmentsId = [
+            ...new Set(
+              assessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
+            ),
+          ];
 
-        const assessmentData = await trackAssessment({ user_id });
-        const getStatus = await checkAssessmentStatus(
-          assessmentData,
-          uniqueAssessmentsId
-        );
-        setStatus(getStatus);
-        await setDataInStorage(
-          'QuestionSet',
-          JSON.stringify(assessmentList?.QuestionSet)
-        );
-        setAssessments(uniqueAssessments);
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, [navigation]);
+          const assessmentData = await trackAssessment({ user_id });
+          const getStatus = await checkAssessmentStatus(
+            assessmentData,
+            uniqueAssessmentsId
+          );
+          setStatus(getStatus);
+          await setDataInStorage(
+            'QuestionSet',
+            JSON.stringify(assessmentList?.QuestionSet)
+          );
+          setAssessments(uniqueAssessments);
+        }
+        setLoading(false);
+      };
+      fetchData();
+    }, [navigation])
+  );
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

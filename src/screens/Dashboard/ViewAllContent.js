@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
+  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -19,6 +20,26 @@ const ViewAllContent = ({ route }) => {
   const navigation = useNavigation();
   const { title, data } = route.params;
   // const data = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+
+  const handlePress = (item) => {
+    Alert.alert(
+      `Content-Type : ${item?.contentType}`,
+      `mimeType : ${item?.mimeType}`,
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {}, // Replace 'TargetScreen' with your screen name
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   return (
     <SafeAreaView>
       <Header />
@@ -49,7 +70,7 @@ const ViewAllContent = ({ route }) => {
             return (
               <ContentCard
                 key={item?.name}
-                //   onPress={handlePress}
+                onPress={() => handlePress(item)}
                 title={item?.name}
                 description={item?.contentType}
                 appIcon={item?.appIcon}
