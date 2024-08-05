@@ -232,7 +232,7 @@ export const assessmentListApi = async (params = {}) => {
     const result = await post(url, payload, {
       headers: headers || {},
     });
-
+    console.log('result', result);
     if (result) {
       return result?.data?.result;
     } else {

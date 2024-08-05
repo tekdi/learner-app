@@ -43,6 +43,7 @@ const Content = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await contentListApi();
+      //console.log('data', data);
       const user_Info = await getAccessToken();
       setUserInfo(user_Info);
       setData(data?.content);
