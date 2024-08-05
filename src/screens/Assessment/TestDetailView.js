@@ -52,7 +52,7 @@ const TestDetailView = ({ route }) => {
   const handlethis = () => {
     console.log({ data });
     // navigation.goBack();
-    Alert.alert(
+    /*Alert.alert(
       `IL_UNIQUE_ID : ${data?.IL_UNIQUE_ID}`,
       `mimeType : ${data?.mimeType}`,
       [
@@ -69,7 +69,12 @@ const TestDetailView = ({ route }) => {
         },
       ],
       { cancelable: false }
-    );
+    );*/
+    navigation.navigate('StandAlonePlayer', {
+      content_do_id: data?.IL_UNIQUE_ID,
+      content_mime_type: data?.mimeType,
+      isOffline: false,
+    });
   };
 
   return (

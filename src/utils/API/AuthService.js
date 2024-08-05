@@ -236,7 +236,7 @@ export const assessmentListApi = async (params = {}) => {
       },
       headers: headers || {},
     });
-
+    console.log('result', result);
     if (result) {
       return result?.data?.result;
     } else {

@@ -95,3 +95,45 @@ export const hierarchyContent = async (content_do_id) => {
 
   return api_response;
 };
+
+//list question
+export const listQuestion = async (url, identifiers) => {
+  let data = JSON.stringify({
+    request: {
+      search: {
+        identifier: identifiers,
+      },
+    },
+  });
+
+  let api_response = null;
+
+  let config = {
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: url,
+    headers: {
+      Accept: 'application/json, text/plain, */*',
+      'Accept-Language': 'en-US,en;q=0.5',
+      'Accept-Encoding': 'gzip, deflate, br, zstd',
+      'Content-Type': 'application/json',
+      Connection: 'keep-alive',
+      'Sec-Fetch-Dest': 'empty',
+      'Sec-Fetch-Mode': 'cors',
+      'Sec-Fetch-Site': 'cross-site',
+    },
+    data: data,
+  };
+
+  await axios
+    .request(config)
+    .then((response) => {
+      //console.log(JSON.stringify(response.data));
+      api_response = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  return api_response;
+};

@@ -12,6 +12,7 @@ import TestDetailView from '../screens/Assessment/TestDetailView';
 
 import PlayerScreen from '../screens/PlayerScreen/PlayerScreen';
 import QuMLPlayer from '../screens/PlayerScreen/QuMLPlayer/QuMLPlayer';
+import QuMLPlayerOffline from '../screens/PlayerScreen/QuMLPlayer/QuMLPlayerOffline';
 import PdfPlayer from '../screens/PlayerScreen/PdfPlayer/PdfPlayer';
 import PdfPlayerOffline from '../screens/PlayerScreen/PdfPlayer/PdfPlayerOffline';
 import VideoPlayer from '../screens/PlayerScreen/VideoPlayer/VideoPlayer';
@@ -25,6 +26,7 @@ import H5PPlayerOffline from '../screens/PlayerScreen/H5PPlayer/H5PPlayerOffline
 import HTMLPlayer from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayer';
 import HTMLPlayerOffline from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayerOffline';
 import YoutubePlayer from '../screens/PlayerScreen/YoutubePlayer/YoutubePlayer';
+import StandAlonePlayer from '../screens/PlayerScreen/StandAlonePlayer/StandAlonePlayer';
 
 const StackScreen = (props) => {
   const Stack = createNativeStackNavigator();
@@ -87,6 +89,13 @@ const StackScreen = (props) => {
       <Stack.Screen
         name="QuMLPlayer"
         component={QuMLPlayer}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="QuMLPlayerOffline"
+        component={QuMLPlayerOffline}
         options={{
           headerShown: true,
         }}
@@ -178,6 +187,13 @@ const StackScreen = (props) => {
       <Stack.Screen
         name="YoutubePlayer"
         component={YoutubePlayer}
+        options={{
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="StandAlonePlayer"
+        component={StandAlonePlayer}
         options={{
           headerShown: true,
         }}
