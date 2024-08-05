@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -16,20 +16,12 @@ import CustomCardLanguage from '../../components/CustomCardLanguage/CustomCardLa
 import { languages } from './Languages';
 // Multi-language context
 import { useTranslation } from '../../context/LanguageContext';
-import {
-  getRefreshToken,
-  getSavedToken,
-  saveRefreshToken,
-  saveToken,
-} from '../../utils/JsHelper/Helper';
-import { getAccessToken, refreshToken } from '../../utils/API/AuthService';
-import Loading from '../LoadingScreen/Loading';
+
 import FastImage from '@changwoolab/react-native-fast-image';
 
 const LanguageScreen = () => {
   const navigation = useNavigation();
   const { t, setLanguage, language } = useTranslation();
-  const [loading, setLoading] = useState(false);
 
   const changeLanguage = (lng) => {
     setLanguage(lng);
@@ -49,9 +41,7 @@ const LanguageScreen = () => {
     navigation.navigate('LoginSignUpScreen');
   };
 
-  return loading ? (
-    <Loading />
-  ) : (
+  return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar
         barStyle="dark-content"

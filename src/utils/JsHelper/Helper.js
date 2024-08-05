@@ -30,6 +30,13 @@ export const saveToken = async (data) => {
     console.error('Error saving credentials:', e);
   }
 };
+export const saveAccessToken = async (data) => {
+  try {
+    await AsyncStorage.setItem('Accesstoken', data);
+  } catch (e) {
+    console.error('Error saving credentials:', e);
+  }
+};
 
 // Get Saved Token
 export const getSavedToken = async () => {

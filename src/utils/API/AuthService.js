@@ -1,9 +1,9 @@
-import { getSavedToken } from '../JsHelper/Helper';
+import { getDataFromStorage, getSavedToken } from '../JsHelper/Helper';
 import EndUrls from './EndUrls';
 import { get, handleResponseException, post } from './RestClient';
 
 const getHeaders = async () => {
-  const token = await getSavedToken();
+  const token = await getDataFromStorage('Accesstoken');
   // console.log('token', token?.token);
   return {
     'Content-Type': 'application/json',
@@ -201,7 +201,7 @@ export const getCohort = async ({ user_id }) => {
 
 export const assessmentListApi = async (params = {}) => {
   try {
-    const url = `${EndUrls.AssessmentList}`; // Define the URL
+    const url = `${EndUrls.contentSearch}`; // Define the URL
     const headers = {
       'Content-Type': 'application/json',
     };
@@ -230,6 +230,10 @@ export const assessmentListApi = async (params = {}) => {
 
     // Make the actual request
     const result = await post(url, payload, {
+      params: {
+        orgdetails: 'orgName,email',
+        licenseDetails: 'name,description,url',
+      },
       headers: headers || {},
     });
     console.log('result', result);
