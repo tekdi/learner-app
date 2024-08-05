@@ -12,7 +12,11 @@ import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
 import { login } from '../../utils/API/AuthService';
-import { saveRefreshToken, saveToken } from '../../utils/JsHelper/Helper';
+import {
+  saveAccessToken,
+  saveRefreshToken,
+  saveToken,
+} from '../../utils/JsHelper/Helper';
 import LoginTextField from '../../components/LoginTextField/LoginTextField';
 import { useTranslation } from '../../context/LanguageContext';
 import Loading from '../LoadingScreen/Loading';
@@ -23,7 +27,7 @@ const LoginScreen = () => {
 
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const [savePassword, setSavePassword] = useState(false);
+  const [savePassword, setSavePassword] = useState(true);
   const [isDisabled, setIsDisabled] = useState(true);
   const [errmsg, setErrmsg] = useState('');
   const [loading, setLoading] = useState(false);
@@ -45,13 +49,17 @@ const LoginScreen = () => {
     };
     const data = await login(payload);
     if (data?.params?.status !== 'failed') {
-      if (savePassword) {
-        await saveToken(data?.access_token);
-        await saveRefreshToken(data?.refresh_token);
+      if (savePassword && data?.access_token) {
+        await saveToken(data?.access_token || '');
+        await saveRefreshToken(data?.refresh_token || '');
+        navigation.navigate('Dashboard');
+      } else if (data?.access_token) {
         navigation.navigate('Dashboard');
       } else {
-        navigation.navigate('Dashboard');
+        setErrmsg('Network_Error_Try_Again_Later');
+        setLoading(false);
       }
+      await saveAccessToken(data?.access_token || '');
       setLoading(false);
     } else {
       setErrmsg(data?.params?.errmsg);

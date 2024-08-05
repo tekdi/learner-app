@@ -17,11 +17,11 @@ const EndUrls = {
   hierarchy_content: `${CONTENT_URL}/learner/questionset/v1/hierarchy/`, //pass do id at end
   quml_question_list: `${CONTENT_URL}/api/question/v1/list`,
   read_content: `${CONTENT_URL}/api/content/v1/read/`, //pass do id at end
-  
+
   userExist: API_URL + `/user/v1/check`,
-  contentList: `https://sunbirdsaas.com/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
+  contentList: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
   cohort: API_URL + `/user/v1/cohort/mycohorts`,
-  AssessmentList: `https://sunbirdsaas.com/api/content/v1/search?orgdetails=orgName,email&licenseDetails=name,description,url`,
+  contentSearch: `${CONTENT_URL}/content/v1/search`,
   trackAssessment: `https://tracking-pratham.tekdinext.com/tracking-assessment/v1/list`,
 };
 
