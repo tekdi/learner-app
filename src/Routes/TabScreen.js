@@ -3,12 +3,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
 import { useTranslation } from '../context/LanguageContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { default as SimpleIcon } from 'react-native-vector-icons/SimpleLineIcons';
-import { default as MaterialIcons } from 'react-native-vector-icons/MaterialCommunityIcons';
+import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DashboardStack from './DashboardStack';
 import Courses from '../screens/Dashboard/Courses';
 import Profile from '../screens/Dashboard/Profile';
-import Assessment from '../screens/Assessment/Assessment';
 import AssessmentStack from './AssessmentStack';
 
 const Tab = createBottomTabNavigator();

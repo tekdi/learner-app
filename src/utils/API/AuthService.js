@@ -4,10 +4,10 @@ import { get, handleResponseException, post } from './RestClient';
 
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
-  // console.log('token', token?.token);
+  // console.log('token', token?.data);
   return {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token?.token}`,
+    Authorization: `Bearer ${token?.data}`,
   };
 };
 

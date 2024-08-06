@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Image,
   SafeAreaView,
+  Pressable,
 } from 'react-native';
 import { useState, React, useEffect } from 'react';
 import { CheckBox } from '@ui-kitten/components';
@@ -28,6 +29,7 @@ const LoginScreen = () => {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [savePassword, setSavePassword] = useState(true);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [errmsg, setErrmsg] = useState('');
   const [loading, setLoading] = useState(false);
@@ -40,6 +42,9 @@ const LoginScreen = () => {
   };
   const rememberPassword = (value) => {
     setSavePassword(value);
+  };
+  const acceptTermsandCondtions = (value) => {
+    setAcceptTerms(value);
   };
   const handleLogin = async () => {
     setLoading(true);
@@ -68,12 +73,12 @@ const LoginScreen = () => {
   };
 
   useEffect(() => {
-    if (userName.length > 0 && password.length > 0) {
+    if (userName.length > 0 && password.length > 0 && acceptTerms) {
       setIsDisabled(false);
     } else {
       setIsDisabled(true);
     }
-  }, [userName, password]);
+  }, [userName, password, acceptTerms]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -140,6 +145,42 @@ const LoginScreen = () => {
               >
                 {t('remember_me')}
               </Text>
+            </View>
+          </View>
+          <View style={[styles.rembox, { paddingTop: 20 }]}>
+            <CheckBox
+              style={{ paddingLeft: 10 }}
+              value={acceptTerms}
+              checked={acceptTerms}
+              onChange={(e) => {
+                acceptTermsandCondtions(e);
+              }}
+            />
+            <View style={{ paddingLeft: 10 }}>
+              <Text
+                style={{
+                  color: 'black',
+                  fontFamily: 'Poppins-Regular',
+                  fontSize: 17,
+                }}
+              >
+                {t('Read_T_&_C')}
+              </Text>
+              <Pressable
+                onPress={() => {
+                  navigation.navigate('TermsAndCondition');
+                }}
+              >
+                <Text
+                  style={{
+                    color: '#0D599E',
+                    fontFamily: 'Poppins-Regular',
+                    fontSize: 17,
+                  }}
+                >
+                  {t('terms_and_conditions2')}
+                </Text>
+              </Pressable>
             </View>
           </View>
           <View

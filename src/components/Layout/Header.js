@@ -17,7 +17,7 @@ import { deleteSavedItem } from '../../utils/JsHelper/Helper';
 
 const Header = () => {
   const navigation = useNavigation();
-  const { setLanguage, language } = useTranslation();
+  const { setLanguage, language, t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState();
   const [value, setValue] = useState();
 
@@ -55,12 +55,15 @@ const Header = () => {
       <View style={styles.container}>
         <Select
           selectedIndex={selectedIndex} // Set the selected index
-          value={value}
+          value={value?.toUpperCase()}
           onSelect={onSelect}
           style={styles.select}
         >
-          {languages.map((option) => (
-            <SelectItem key={option.value} title={option.title} />
+          {languages?.map((option) => (
+            <SelectItem
+              key={option.value}
+              title={t(option?.title.toUpperCase())}
+            />
           ))}
         </Select>
         <View style={styles.center}>
