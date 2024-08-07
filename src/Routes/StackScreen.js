@@ -7,6 +7,7 @@ import RegisterScreen from '../screens/RegisterScreen/RegisterScreen';
 import LoginSignUpScreen from '../screens/LoginSignUpScreen/LoginSignUpScreen';
 import RegisterStart from '../screens/RegisterStart/RegisterStart';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
+import TermsAndCondition from '../screens/LoginScreen/TermsAndCondition';
 import { View } from 'react-native';
 import TestDetailView from '../screens/Assessment/TestDetailView';
 
@@ -27,6 +28,7 @@ import HTMLPlayer from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayer';
 import HTMLPlayerOffline from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayerOffline';
 import YoutubePlayer from '../screens/PlayerScreen/YoutubePlayer/YoutubePlayer';
 import StandAlonePlayer from '../screens/PlayerScreen/StandAlonePlayer/StandAlonePlayer';
+import Assessment from '../screens/Assessment/Assessment';
 
 const StackScreen = (props) => {
   const Stack = createNativeStackNavigator();
@@ -67,7 +69,7 @@ const StackScreen = (props) => {
 
       <Stack.Screen
         name="Dashboard"
-        component={TabScreen}
+        component={Assessment} // Changed to Assessment for now
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -196,6 +198,13 @@ const StackScreen = (props) => {
         component={StandAlonePlayer}
         options={{
           headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="TermsAndCondition"
+        component={TermsAndCondition}
+        options={{
+          headerShown: false,
         }}
       />
     </Stack.Navigator>

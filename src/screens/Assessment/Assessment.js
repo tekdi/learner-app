@@ -35,10 +35,12 @@ const Assessment = (props) => {
         setLoading(true);
         const data = await getAccessToken();
         const user_id = data?.result?.userId;
+        // console.log({ user_id });
         const cohort = await getCohort({ user_id });
         const board = cohort?.cohortData?.[0]?.customField?.find(
           (field) => field.label === 'State'
         );
+        // console.log({ board });
         if (board) {
           const boardName = board.value;
           const assessmentList = await assessmentListApi({ boardName });
@@ -52,7 +54,7 @@ const Assessment = (props) => {
               assessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
             ),
           ];
-
+          console.log(assessmentList?.QuestionSet);
           const assessmentData = await trackAssessment({ user_id });
           const getStatus = await checkAssessmentStatus(
             assessmentData,
@@ -61,7 +63,7 @@ const Assessment = (props) => {
           setStatus(getStatus);
           await setDataInStorage(
             'QuestionSet',
-            JSON.stringify(assessmentList?.QuestionSet)
+            JSON.stringify(assessmentList?.QuestionSet) || ''
           );
           setAssessments(uniqueAssessments);
         }
@@ -97,7 +99,7 @@ const Assessment = (props) => {
               })
             ) : (
               <Text style={{ fontSize: 16, color: '#000' }}>
-                {t('NO_DATA_FOUND')}
+                {t('no_data_found')}
               </Text>
             )}
           </View>

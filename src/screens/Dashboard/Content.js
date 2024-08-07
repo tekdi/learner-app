@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   BackHandler,
@@ -10,8 +10,11 @@ import {
   View,
 } from 'react-native';
 import Header from '../../components/Layout/Header';
-import { backAction } from '../../utils/JsHelper/Helper';
-import { useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useNavigationState,
+} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
 import ScrollViewLayout from '../../components/Layout/ScrollViewLayout';
 import { useTranslation } from '../../context/LanguageContext';
@@ -28,13 +31,28 @@ const Content = () => {
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    BackHandler.addEventListener('backAction', backAction);
+  const routeName = useNavigationState((state) => {
+    const route = state.routes[state.index];
+    return route.name;
+  });
 
-    return () => {
-      BackHandler.removeEventListener('backAction', backAction);
-    };
-  }, [navigation]);
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (routeName === 'Content') {
+          BackHandler.exitApp();
+          return true;
+        }
+        return false;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, [routeName])
+  );
 
   const handlePress = () => {
     navigation.navigate('Preference');
@@ -43,7 +61,6 @@ const Content = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await contentListApi();
-      //console.log('data', data);
       const user_Info = await getAccessToken();
       setUserInfo(user_Info);
       setData(data?.content);

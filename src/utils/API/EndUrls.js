@@ -21,7 +21,7 @@ const EndUrls = {
   userExist: API_URL + `/user/v1/check`,
   contentList: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
   cohort: API_URL + `/user/v1/cohort/mycohorts`,
-  contentSearch: `${CONTENT_URL}/content/v1/search`,
+  contentSearch: `${CONTENT_URL}/api/content/v1/search`,
   trackAssessment: `https://tracking-pratham.tekdinext.com/tracking-assessment/v1/list`,
 };
 
