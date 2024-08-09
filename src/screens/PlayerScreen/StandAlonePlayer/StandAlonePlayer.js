@@ -444,7 +444,14 @@ const StandAlonePlayer = ({ route }) => {
               }
             )}));
             window.setData();
-        })();`
+        })();
+        
+        
+            (function() {
+              console.log = function(message) {
+                window.ReactNativeWebView.postMessage(message);
+              };
+            })();`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
         content_mime_type == 'application/vnd.ekstep.html-archive' ||
         content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
@@ -502,7 +509,7 @@ const StandAlonePlayer = ({ route }) => {
           //injectedJavaScript={saveJavaScript}
           //onMessage={handleMessage}
           onMessage={(event) => {
-            console.log(event.nativeEvent.data);
+            console.log('WebView message: ', event.nativeEvent.data);
           }}
           onError={(syntheticEvent) => {
             const { nativeEvent } = syntheticEvent;
