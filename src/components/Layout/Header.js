@@ -39,10 +39,10 @@ const Header = () => {
     setLanguage(selectedValue);
   };
 
-  const logout = async () => {
-    await deleteSavedItem('refreshToken');
-    await deleteSavedItem('token');
-    navigation.navigate('LoginSignUpScreen');
+  const profile = async () => {
+    // await deleteSavedItem('refreshToken');
+    // await deleteSavedItem('token');
+    navigation.navigate('Profile');
   };
 
   return (
@@ -69,8 +69,17 @@ const Header = () => {
         <View style={styles.center}>
           <Image style={styles.image} source={Logo} resizeMode="contain" />
         </View>
-        <Pressable onPress={logout}>
-          <Icon name="logout" color="black" size={30} style={styles.icon} />
+        <Pressable
+          onPress={() => {
+            profile();
+          }}
+        >
+          <Icon
+            name="account-circle"
+            color="black"
+            size={30}
+            style={styles.icon}
+          />
         </Pressable>
       </View>
     </SafeAreaView>

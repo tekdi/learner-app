@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BackHandler } from 'react-native';
+import { getAccessToken } from '../API/AuthService';
 
 // Get Saved Data from AsyncStorage
 
@@ -43,6 +44,16 @@ export const getSavedToken = async () => {
   try {
     const token = await AsyncStorage.getItem('token');
     return { token };
+  } catch (e) {
+    console.error('Error retrieving credentials:', e);
+  }
+};
+
+// Get UserId From Storage
+export const getUserId = async () => {
+  try {
+    const data = await getAccessToken();
+    return data?.result?.userId;
   } catch (e) {
     console.error('Error retrieving credentials:', e);
   }
@@ -106,16 +117,18 @@ export const translateLanguage = (code) => {
 };
 
 export const checkAssessmentStatus = async (data, uniqueAssessmentsId) => {
+  // console.log({ data });
   const contentIdsInData = data?.map((item) => item.contentId);
   const matchedIds = uniqueAssessmentsId.filter((id) =>
     contentIdsInData.includes(id)
   );
+  // console.log({ contentIdsInData, matchedIds });
   if (matchedIds.length === 0) {
     return 'not_started';
-  } else if (matchedIds.length < contentIdsInData.length) {
-    return 'inprogress';
+  } else if (matchedIds.length === uniqueAssessmentsId.length) {
+    return 'competed';
   } else {
-    return 'completed';
+    return 'inprogress';
   }
 };
 

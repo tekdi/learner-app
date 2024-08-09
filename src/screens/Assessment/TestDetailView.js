@@ -105,11 +105,11 @@ const TestDetailView = ({ route }) => {
             <Text style={styles.textXam}>{data?.description}</Text>
           </View>
           <View>
-            <Text style={styles.textmed}>{t('Test_Medium')}</Text>
+            <Text style={styles.textmed}>{t('test_medium')}</Text>
             <Text style={styles.mediumText}>{data?.medium?.[0]}</Text>
           </View>
           <View>
-            <Text style={styles.textmed}>{t('Board')}</Text>
+            <Text style={styles.textmed}>{t('board')}</Text>
             <Text style={styles.mediumText}>{data?.board}</Text>
           </View>
         </View>
@@ -120,7 +120,7 @@ const TestDetailView = ({ route }) => {
               { fontWeight: '500', paddingVertical: 20, fontSize: 18 },
             ]}
           >
-            {t('General_Instructions')}
+            {t('general_instructions')}
           </Text>
           {instructions.map((item) => {
             return (
@@ -133,7 +133,7 @@ const TestDetailView = ({ route }) => {
         </View>
       </ScrollView>
       <View style={styles.bottom}>
-        <PrimaryButton text={'start_test'} onPress={() => handlethis()} />
+        <PrimaryButton text={t('start_test')} onPress={() => handlethis()} />
       </View>
     </SafeAreaView>
   );
