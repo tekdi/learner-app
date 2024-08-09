@@ -15,29 +15,8 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
-
-const questions = [
-  { id: 1, text: 'Question 1' },
-  { id: 2, text: 'Question 2' },
-  { id: 3, text: 'Question 3' },
-  { id: 4, text: 'Question 4' },
-  { id: 5, text: 'Question 5' },
-  { id: 6, text: 'Question 6' },
-  { id: 7, text: 'Question 7' },
-  { id: 8, text: 'Question 8' },
-  { id: 9, text: 'Question 9' },
-  { id: 10, text: 'Question 10' },
-  { id: 11, text: 'Question 11' },
-  { id: 12, text: 'Question 12' },
-  { id: 13, text: 'Question 13' },
-  { id: 14, text: 'Question 14' },
-  { id: 15, text: 'Question 15' },
-  { id: 16, text: 'Question 16' },
-  { id: 17, text: 'Question 17' },
-  { id: 18, text: 'Question 18' },
-  { id: 19, text: 'Question 19' },
-  { id: 20, text: 'Question 20' },
-];
+import { ScoreData } from './testData';
+import moment from 'moment';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -46,10 +25,15 @@ const AnswerKeyView = ({ route }) => {
   const { t } = useTranslation();
   const { title } = route.params;
   const { height } = Dimensions.get('window');
+  const passedItems = ScoreData?.score_details.filter(
+    (item) => item.pass === 'Yes'
+  );
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(questions.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(
+    ScoreData?.score_details?.length / ITEMS_PER_PAGE
+  );
 
   const handleNext = () => {
     if (currentPage < totalPages) {
@@ -64,13 +48,16 @@ const AnswerKeyView = ({ route }) => {
   };
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, questions.length);
-  const currentQuestions = questions.slice(startIndex, endIndex);
+  const endIndex = Math.min(
+    startIndex + ITEMS_PER_PAGE,
+    ScoreData?.score_details.length
+  );
+  const currentQuestions = ScoreData?.score_details.slice(startIndex, endIndex);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Header />
-      <View style={{ top: 40, padding: 20, flex: 1 }}>
+      <View style={{ padding: 20, flex: 1 }}>
         <View
           style={{
             flexDirection: 'row',
@@ -95,25 +82,41 @@ const AnswerKeyView = ({ route }) => {
         <View style={styles.container}>
           <View>
             <Text style={styles.submitText}>
-              {t('submitted_On')} 2 Feb, 2024
+              {t('submitted_On')}
+              {moment(ScoreData?.lastAttemptedOn).format('DD-MM-YYYY')}
             </Text>
             <View style={styles.readView}>
               <Text style={styles.readText}>{t('reading')}</Text>
-              <Text style={styles.readText}>210/250</Text>
+              <Text style={styles.readText}>
+                {ScoreData?.totalScore}/{ScoreData.totalMaxScore}
+              </Text>
             </View>
-            <HorizontalLine />
+            <View style={{ borderBottomWidth: 1 }}></View>
             <Text
               style={[styles.submitText, { fontSize: 16, marginVertical: 20 }]}
             >
-              42 {t('out_of')} 50 {t('correct_answers')}
+              {passedItems?.length} {t('out_of')}{' '}
+              {ScoreData?.score_details.length} {t('correct_answers')}
             </Text>
           </View>
           <FlatList
             data={currentQuestions}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.questionId}
             renderItem={({ item }) => (
               <View style={styles.questionContainer}>
-                <Text style={styles.questionText}>{item.text}</Text>
+                <Text style={styles.questionText}>{item.queTitle}</Text>
+                <Text
+                  style={[
+                    styles.questionText,
+                    { color: item?.pass == 'Yes' ? 'green' : 'red' },
+                  ]}
+                >
+                  Ans.{' '}
+                  {JSON.parse(item?.resValue)?.[0]
+                    ?.label.replace(/<\/?[^>]+(>|$)/g, '')
+                    .replace(/^\d+\.\s*/, '')}
+                </Text>
+                {/* {console.log(JSON.parse(item?.resValue)?.[0]?.label)} */}
               </View>
             )}
             contentContainerStyle={{ paddingBottom: 20 }}
@@ -135,7 +138,7 @@ const AnswerKeyView = ({ route }) => {
 
           <Text
             style={[styles.pageText, { flex: 2 }]}
-          >{`${startIndex + 1}-${endIndex} of ${questions.length}`}</Text>
+          >{`${startIndex + 1}-${endIndex} of ${ScoreData?.score_details.length}`}</Text>
           <TouchableOpacity
             style={{ flex: 1, alignItems: 'center' }}
             onPress={handleNext}

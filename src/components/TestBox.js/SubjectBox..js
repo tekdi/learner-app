@@ -18,7 +18,6 @@ const SubjectBox = ({ name, disabled, data }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
-  const publishDate = moment(data?.lastPublishedOn).format('DD-MM-YYYY');
   // const IL_UNIQUE_ID = data?.IL_UNIQUE_ID;
   // console.log('time', IL_UNIQUE_ID);
 
@@ -32,15 +31,38 @@ const SubjectBox = ({ name, disabled, data }) => {
         <View style={styles.card}>
           <View style={styles.rightContainer}>
             <Text style={styles.preTestText}>{t(name)}</Text>
-            <Text style={[styles.preTestText, { color: '#7C766F' }]}>
-              {publishDate}
-            </Text>
-
-            <View>
-              <Text style={{ color: '#000' }}>{time}</Text>
-            </View>
+            {disabled ? (
+              <Text style={[styles.preTestText, { color: '#7C766F' }]}>
+                {t('not_started')}
+              </Text>
+            ) : (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ color: '#000' }}>
+                  {data?.totalScore}/{data?.totalMaxScore}
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginLeft: 20,
+                  }}
+                >
+                  <Icon name="circle" size={8} color="#7C766F" />
+                  <Text
+                    style={[
+                      styles.preTestText,
+                      { color: '#7C766F', marginLeft: 5 },
+                    ]}
+                  >
+                    {moment(data?.lastAttemptedOn).format('DD-MM-YYYY')}
+                  </Text>
+                </View>
+              </View>
+            )}
           </View>
-          {data && (
+          {data?.lastAttemptedOn ? (
+            <Icon name="chevron-right" size={24} color="black" />
+          ) : (
             <SecondaryButton
               onPress={() => {
                 navigation.navigate('TestDetailView', {
