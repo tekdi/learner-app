@@ -13,12 +13,14 @@ import TestBox from '../../components/TestBox.js/TestBox';
 import {
   assessmentListApi,
   getAccessToken,
+  getAssessmentStatus,
   getCohort,
   trackAssessment,
 } from '../../utils/API/AuthService';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   checkAssessmentStatus,
+  getUserId,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 
@@ -34,33 +36,48 @@ const Assessment = (props) => {
       const fetchData = async () => {
         setLoading(true);
         const data = await getAccessToken();
-        const user_id = data?.result?.userId;
-        // console.log({ user_id });
+        const user_id = await getUserId();
         const cohort = await getCohort({ user_id });
+        const cohort_id = cohort?.cohortData?.[0]?.cohortId;
+        await setDataInStorage('cohortId', cohort_id);
         const board = cohort?.cohortData?.[0]?.customField?.find(
-          (field) => field.label === 'State'
+          (field) => field.label === 'STATES'
         );
-        // console.log({ board });
         if (board) {
           const boardName = board.value;
           const assessmentList = await assessmentListApi({ boardName });
+
+          // Extract pretest or posttest from assessmentList (content)
           const uniqueAssessments = [
             ...new Set(
               assessmentList?.QuestionSet?.map((item) => item.assessment1)
             ),
           ];
+
+          // Extract DO_id from assessmentList (content)
           const uniqueAssessmentsId = [
             ...new Set(
               assessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
             ),
           ];
-          console.log(assessmentList?.QuestionSet);
-          const assessmentData = await trackAssessment({ user_id });
+          // const uniqueAssessmentsId = [
+          //   'do_11388361673153740812077',
+          //   'do_11388361673153740812071',
+          // ];
+          console.log({ uniqueAssessmentsId });
+          const assessmentStatusData =
+            (await getAssessmentStatus({
+              user_id,
+              cohort_id,
+              uniqueAssessmentsId,
+            })) || [];
           const getStatus = await checkAssessmentStatus(
-            assessmentData,
+            assessmentStatusData,
             uniqueAssessmentsId
           );
           setStatus(getStatus);
+
+          console.log(getStatus);
           await setDataInStorage(
             'QuestionSet',
             JSON.stringify(assessmentList?.QuestionSet) || ''

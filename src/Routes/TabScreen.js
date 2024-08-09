@@ -7,7 +7,7 @@ import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DashboardStack from './DashboardStack';
 import Courses from '../screens/Dashboard/Courses';
-import Profile from '../screens/Dashboard/Profile';
+import Profile from '../screens/Profile/Profile';
 import AssessmentStack from './AssessmentStack';
 
 const Tab = createBottomTabNavigator();

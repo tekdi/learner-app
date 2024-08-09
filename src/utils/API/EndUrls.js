@@ -5,6 +5,7 @@ import Config from 'react-native-config';
 
 const API_URL = Config.API_URL;
 const CONTENT_URL = Config.CONTENT_URL;
+const tracking_assessment = Config.tracking_assessment;
 
 const EndUrls = {
   login: API_URL + '/user/v1/auth/login',
@@ -22,7 +23,11 @@ const EndUrls = {
   contentList: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
   cohort: API_URL + `/user/v1/cohort/mycohorts`,
   contentSearch: `${CONTENT_URL}/api/content/v1/search`,
-  trackAssessment: `https://tracking-pratham.tekdinext.com/tracking-assessment/v1/list`,
+  trackAssessment: `${tracking_assessment}/tracking-assessment/v1/list`,
+  AssessmentCreate: `${tracking_assessment}/tracking-assessment/v1/create`,
+  AssessmentStatus: `${tracking_assessment}/tracking-assessment/v1/search/status`,
+  AssessmentSearch: `${tracking_assessment}/tracking-assessment/v1/search`,
+  profileDetails: `${API_URL}/user/v1/list`,
 };
 
 export default EndUrls;
