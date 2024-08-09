@@ -333,17 +333,22 @@ export const getProfileDetails = async (params = {}) => {
 };
 export const getAssessmentStatus = async (params = {}) => {
   try {
-    console.log({ params });
     const url = `${EndUrls.AssessmentStatus}`; // Define the URL
     const headers = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
     const payload = {
-      userId: params?.user_id,
-      contentId: params?.uniqueAssessmentsId,
-      batchId: params?.cohort_id,
+      userId: 'fb6b2e58-0f14-4d4f-90e4-bae092e7a328',
+      contentId: ['do_11388361673153740812077', 'do_1138836167315374081207d'],
+      batchId: 'batch123',
     };
+
+    // const payload = {
+    //   userId: params?.user_id,
+    //   contentId: params?.uniqueAssessmentsId,
+    //   batchId: params?.cohort_id,
+    // };
 
     // console.log(
     //   `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`

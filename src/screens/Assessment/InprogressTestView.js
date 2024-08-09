@@ -4,8 +4,15 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 import Header from '../../components/Layout/Header';
 import AssessmentHeader from './AssessmentHeader';
 import { useTranslation } from '../../context/LanguageContext';
-import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  getLastMatchingData,
+  getUserId,
+} from '../../utils/JsHelper/Helper';
 import SubjectBox from '../../components/TestBox.js/SubjectBox.';
+import { getAssessmentStatus } from '../../utils/API/AuthService';
+import { QuestionSetData } from './testData';
+import ActiveLoading from '../LoadingScreen/ActiveLoading';
 
 const instructions = [
   {
@@ -30,17 +37,67 @@ const instructions = [
   },
 ];
 
+function mergeDataWithQuestionSet(questionSet, datatest) {
+  datatest.forEach((dataItem) => {
+    // Find the matching object in questionSet based on IL_UNIQUE_ID and contentId
+    const matchingQuestionSetItem = questionSet.find(
+      (question) => question.IL_UNIQUE_ID === dataItem.contentId
+    );
+
+    // If a match is found, add the properties from datatest to the questionSet item
+    if (matchingQuestionSetItem) {
+      matchingQuestionSetItem.totalMaxScore = dataItem.totalMaxScore;
+      matchingQuestionSetItem.timeSpent = dataItem.timeSpent;
+      matchingQuestionSetItem.totalScore = dataItem.totalScore;
+      matchingQuestionSetItem.lastAttemptedOn = dataItem.lastAttemptedOn;
+    }
+  });
+
+  return questionSet;
+}
+
 const InprogressTestView = ({ route }) => {
   const { title } = route.params;
   const { t } = useTranslation();
 
   const [questionsets, setQuestionsets] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await getDataFromStorage('QuestionSet');
+      const cohort_id = await getDataFromStorage('cohortId');
+      const user_id = await getUserId();
       const parseData = JSON.parse(data?.data);
-      setQuestionsets(parseData);
+      // setQuestionsets(parseData);
+      // Extract DO_id from assessmentList (content)
+
+      // const uniqueAssessmentsId = [
+      //   ...new Set(parseData?.map((item) => item.IL_UNIQUE_ID)),
+      // ];
+      const uniqueAssessmentsId = [
+        'do_11388361673153740812077',
+        'do_11388361673153740812071',
+      ];
+
+      const testdata = QuestionSetData;
+      // Get data of exam if given
+      const assessmentStatusData =
+        (await getAssessmentStatus({
+          user_id,
+          cohort_id,
+          uniqueAssessmentsId,
+        })) || [];
+
+      const datatest = await getLastMatchingData(
+        assessmentStatusData,
+        uniqueAssessmentsId
+      );
+
+      const finalData = mergeDataWithQuestionSet(testdata, datatest);
+      setQuestionsets(finalData);
+      // console.log(JSON.stringify(finalData));
+      setLoading(false);
     };
     fetchData();
   }, []);
@@ -53,12 +110,14 @@ const InprogressTestView = ({ route }) => {
         <Text style={styles.text}>{t('assessment_instructions')}</Text>
         {questionsets?.map((item) => {
           return (
-            <SubjectBox
-              key={item?.IL_UNIQUE_ID}
-              disabled
-              name={item?.subject?.[0]?.toUpperCase()}
-              data={item}
-            />
+            <>
+              <SubjectBox
+                key={item?.IL_UNIQUE_ID}
+                disabled={item?.lastAttemptedOn ? false : true}
+                name={item?.subject?.[0]?.toUpperCase()}
+                data={item}
+              />
+            </>
           );
         })}
         <View style={styles.note}>
@@ -76,7 +135,9 @@ const InprogressTestView = ({ route }) => {
     </View>
   );
 
-  return (
+  return loading ? (
+    <ActiveLoading />
+  ) : (
     <FlatList
       data={instructions}
       keyExtractor={(item) => item.id.toString()}
