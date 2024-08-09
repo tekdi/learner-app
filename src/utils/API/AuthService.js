@@ -7,6 +7,7 @@ const getHeaders = async () => {
   // console.log('token', token?.data);
   return {
     'Content-Type': 'application/json',
+    Accept: 'application/json',
     Authorization: `Bearer ${token?.data}`,
   };
 };
@@ -16,6 +17,7 @@ export const login = async (params = {}) => {
     const result = await post(`${EndUrls.login}`, params, {
       headers: {
         'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
     });
     if (result?.data) {
@@ -30,11 +32,22 @@ export const login = async (params = {}) => {
 
 export const refreshToken = async (params = {}) => {
   try {
-    const result = await post(`${EndUrls.refresh_token}`, params, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    // Construct the cURL command
+    const url = `${EndUrls.refresh_token}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    const headersString = Object.entries(headers)
+      .map(([key, value]) => `-H "${key}: ${value}"`)
+      .join(' ');
+
+    const dataString = JSON.stringify(params);
+    const curlCommand = `curl -X POST ${headersString} -d '${dataString}' ${url}`;
+    // console.log('cURL command:', curlCommand);
+
+    const result = await post(url, params, { headers });
+
     if (result?.data) {
       return result?.data?.result;
     } else {
@@ -82,6 +95,7 @@ export const userExist = async (params = {}) => {
     const result = await post(`${EndUrls.userExist}`, params, {
       headers: {
         'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
     });
     if (result?.data) {
@@ -125,6 +139,7 @@ export const contentListApi = async (params = {}) => {
     const url = `${EndUrls.contentList}`; // Define the URL
     const headers = {
       'Content-Type': 'application/json',
+      Accept: 'application/json',
     };
     const payload = {
       request: {
@@ -204,6 +219,7 @@ export const assessmentListApi = async (params = {}) => {
     const url = `${EndUrls.contentSearch}`; // Define the URL
     const headers = {
       'Content-Type': 'application/json',
+      Accept: 'application/json',
     };
     const payload = {
       request: {
@@ -236,7 +252,7 @@ export const assessmentListApi = async (params = {}) => {
       },
       headers: headers || {},
     });
-    console.log('result', result);
+    // console.log('result', result);
     if (result) {
       return result?.data?.result;
     } else {
@@ -252,6 +268,7 @@ export const trackAssessment = async (params = {}) => {
     const url = `${EndUrls.trackAssessment}`; // Define the URL
     const headers = {
       'Content-Type': 'application/json',
+      Accept: 'application/json',
     };
     const payload = {
       filters: {
@@ -275,6 +292,70 @@ export const trackAssessment = async (params = {}) => {
 
     if (result) {
       return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const getProfileDetails = async (params = {}) => {
+  try {
+    const url = `${EndUrls.profileDetails}`; // Define the URL
+    const headers = await getHeaders();
+    const payload = {
+      limit: 0,
+      filters: {
+        role: 'Learner',
+        userId: params?.userId,
+      },
+      sort: ['createdAt', 'asc'],
+      offset: 0,
+    };
+
+    // console.log(
+    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const getAssessmentStatus = async (params = {}) => {
+  try {
+    console.log({ params });
+    const url = `${EndUrls.AssessmentStatus}`; // Define the URL
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    const payload = {
+      userId: params?.user_id,
+      contentId: params?.uniqueAssessmentsId,
+      batchId: params?.cohort_id,
+    };
+
+    // console.log(
+    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result?.data) {
+      return result?.data?.data;
     } else {
       return {};
     }

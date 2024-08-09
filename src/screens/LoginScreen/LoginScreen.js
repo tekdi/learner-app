@@ -53,6 +53,7 @@ const LoginScreen = () => {
       password: password,
     };
     const data = await login(payload);
+    console.log({ payload, data });
     if (data?.params?.status !== 'failed') {
       if (savePassword && data?.access_token) {
         await saveToken(data?.access_token || '');
@@ -193,9 +194,7 @@ const LoginScreen = () => {
           >
             <PrimaryButton
               text={t('login')}
-              onPress={() => {
-                handleLogin();
-              }}
+              onPress={handleLogin}
               isDisabled={isDisabled}
             />
           </View>

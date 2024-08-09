@@ -70,7 +70,7 @@ const InprogressTestView = ({ route }) => {
             { fontWeight: '500', paddingVertical: 20, fontSize: 18 },
           ]}
         >
-          {t('General_Instructions')}
+          {t('general_instructions')}
         </Text>
       </View>
     </View>

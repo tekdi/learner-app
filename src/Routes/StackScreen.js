@@ -9,8 +9,6 @@ import RegisterStart from '../screens/RegisterStart/RegisterStart';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
 import TermsAndCondition from '../screens/LoginScreen/TermsAndCondition';
 import { View } from 'react-native';
-import TestDetailView from '../screens/Assessment/TestDetailView';
-
 import PlayerScreen from '../screens/PlayerScreen/PlayerScreen';
 import QuMLPlayer from '../screens/PlayerScreen/QuMLPlayer/QuMLPlayer';
 import QuMLPlayerOffline from '../screens/PlayerScreen/QuMLPlayer/QuMLPlayerOffline';
@@ -28,7 +26,8 @@ import HTMLPlayer from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayer';
 import HTMLPlayerOffline from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayerOffline';
 import YoutubePlayer from '../screens/PlayerScreen/YoutubePlayer/YoutubePlayer';
 import StandAlonePlayer from '../screens/PlayerScreen/StandAlonePlayer/StandAlonePlayer';
-import Assessment from '../screens/Assessment/Assessment';
+import Profile from '../screens/Profile/Profile';
+import AssessmentStack from './AssessmentStack';
 
 const StackScreen = (props) => {
   const Stack = createNativeStackNavigator();
@@ -69,12 +68,7 @@ const StackScreen = (props) => {
 
       <Stack.Screen
         name="Dashboard"
-        component={Assessment} // Changed to Assessment for now
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="TestDetailView"
-        component={TestDetailView}
+        component={AssessmentStack} // Changed to Assessment for now
         options={{ headerShown: false }}
       />
 
@@ -203,6 +197,14 @@ const StackScreen = (props) => {
       <Stack.Screen
         name="TermsAndCondition"
         component={TermsAndCondition}
+        options={{
+          headerShown: false,
+        }}
+      />
+      {/* StackScreen for Assessment for now */}
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
         options={{
           headerShown: false,
         }}
