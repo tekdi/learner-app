@@ -108,16 +108,14 @@ const InprogressTestView = ({ route }) => {
       <AssessmentHeader testText={title} />
       <View style={styles.container}>
         <Text style={styles.text}>{t('assessment_instructions')}</Text>
-        {questionsets?.map((item) => {
+        {questionsets?.map((item, index) => {
           return (
-            <>
-              <SubjectBox
-                key={item?.IL_UNIQUE_ID}
-                disabled={item?.lastAttemptedOn ? false : true}
-                name={item?.subject?.[0]?.toUpperCase()}
-                data={item}
-              />
-            </>
+            <SubjectBox
+              key={index}
+              disabled={item?.lastAttemptedOn ? false : true}
+              name={item?.subject?.[0]?.toUpperCase()}
+              data={item}
+            />
           );
         })}
         <View style={styles.note}>
@@ -143,7 +141,7 @@ const InprogressTestView = ({ route }) => {
       keyExtractor={(item) => item.id.toString()}
       ListHeaderComponent={renderHeader}
       renderItem={({ item }) => (
-        <View style={styles.itemContainer}>
+        <View key={item.id.toString()} style={styles.itemContainer}>
           <Text style={styles.bullet}>•</Text>
           <Text style={styles.itemText}>{t(item.title)}</Text>
         </View>
