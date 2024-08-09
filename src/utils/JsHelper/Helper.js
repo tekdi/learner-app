@@ -117,7 +117,7 @@ export const translateLanguage = (code) => {
 };
 
 export const checkAssessmentStatus = async (data, uniqueAssessmentsId) => {
-  // console.log({ data });
+  // console.log({ data, uniqueAssessmentsId });
   const contentIdsInData = data?.map((item) => item.contentId);
   const matchedIds = uniqueAssessmentsId.filter((id) =>
     contentIdsInData.includes(id)
@@ -130,6 +130,22 @@ export const checkAssessmentStatus = async (data, uniqueAssessmentsId) => {
   } else {
     return 'inprogress';
   }
+};
+
+export const getLastMatchingData = async (data, uniqueAssessmentsId) => {
+  const result = [];
+
+  uniqueAssessmentsId.forEach((id) => {
+    // Filter the data array to find all objects with the matching uniqueAssessmentsId
+    const matchingData = data.filter((item) => item.contentId === id);
+
+    // If matching data exists, get the last item in the array
+    if (matchingData.length > 0) {
+      result.push(matchingData[matchingData.length - 1]);
+    }
+  });
+
+  return result;
 };
 
 export const convertSecondsToMinutes = (seconds) => {

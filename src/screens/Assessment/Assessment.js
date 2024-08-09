@@ -20,6 +20,7 @@ import {
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   checkAssessmentStatus,
+  getLastMatchingData,
   getUserId,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
@@ -55,22 +56,27 @@ const Assessment = (props) => {
           ];
 
           // Extract DO_id from assessmentList (content)
-          const uniqueAssessmentsId = [
-            ...new Set(
-              assessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
-            ),
-          ];
           // const uniqueAssessmentsId = [
-          //   'do_11388361673153740812077',
-          //   'do_11388361673153740812071',
+          //   ...new Set(
+          //     assessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
+          //   ),
           // ];
-          console.log({ uniqueAssessmentsId });
+          const uniqueAssessmentsId = [
+            'do_11388361673153740812077',
+            'do_11388361673153740812071',
+          ];
           const assessmentStatusData =
             (await getAssessmentStatus({
               user_id,
               cohort_id,
               uniqueAssessmentsId,
             })) || [];
+          // console.log({ assessmentStatusData });
+          const datatest = await getLastMatchingData(
+            assessmentStatusData,
+            uniqueAssessmentsId
+          );
+          console.log({ datatest });
           const getStatus = await checkAssessmentStatus(
             assessmentStatusData,
             uniqueAssessmentsId
