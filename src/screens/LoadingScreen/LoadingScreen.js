@@ -1,4 +1,4 @@
-import { View, Image, StyleSheet, StatusBar } from 'react-native';
+import { View, Image, StyleSheet, StatusBar, Text } from 'react-native';
 import React, { useEffect } from 'react';
 import Logo from '../../assets/images/png/logo-with-tagline.png';
 import { Spinner } from '@ui-kitten/components';
@@ -11,6 +11,8 @@ import {
   saveToken,
 } from '../../utils/JsHelper/Helper';
 import { getAccessToken, refreshToken } from '../../utils/API/AuthService';
+
+import DeviceInfo from 'react-native-device-info'; // Import DeviceInfo
 
 const LoadingScreen = ({ navigation }) => {
   useEffect(() => {
@@ -37,6 +39,10 @@ const LoadingScreen = ({ navigation }) => {
     fetchData();
   }, [navigation]);
 
+  // Get the version and build number
+  const version = DeviceInfo.getVersion(); // e.g., "1.0.1"
+  const buildNumber = DeviceInfo.getBuildNumber(); // e.g., "2"
+
   return (
     <View style={styles.container}>
       <StatusBar
@@ -47,6 +53,9 @@ const LoadingScreen = ({ navigation }) => {
       <View style={styles.content}>
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         <Spinner size="large" style={{ borderColor: '#635E57' }} />
+        <Text style={styles.versionText}>
+          Version {version} (Build {buildNumber})
+        </Text>
       </View>
     </View>
   );

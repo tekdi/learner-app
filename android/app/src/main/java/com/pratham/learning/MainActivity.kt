@@ -1,4 +1,4 @@
-package com.learnerapp
+package com.pratham.learning
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
