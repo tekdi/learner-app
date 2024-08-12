@@ -40,7 +40,10 @@ const Assessment = (props) => {
         const user_id = await getUserId();
         const cohort = await getCohort({ user_id });
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-        await setDataInStorage('cohortId', cohort_id);
+        console.log('user_id', user_id);
+        console.log('cohort_id', cohort_id);
+        await setDataInStorage('cohortId', cohort_id?.data);
+        await setDataInStorage('userId', user_id?.data);
         const board = cohort?.cohortData?.[0]?.customField?.find(
           (field) => field.label === 'STATES'
         );
