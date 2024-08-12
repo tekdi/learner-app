@@ -129,18 +129,34 @@ const StandAlonePlayer = ({ route }) => {
 
   //set data from react native
   const webviewRef = useRef(null);
-  // const [retrievedData, setRetrievedData] = useState(null);
-  // // JavaScript to retrieve localStorage data and send it back to React Native
-  // const retrieveJavaScript = `
-  //     (function() {
-  //         const data = localStorage.getItem('telemetry');
-  //         window.ReactNativeWebView.postMessage(data);
-  //     })();
-  // `;
-  // const handleMessage = (event) => {
-  //   const data = event.nativeEvent.data;
-  //   setRetrievedData(data);
-  // };
+  const [retrievedData, setRetrievedData] = useState(null);
+  // JavaScript to retrieve localStorage data and send it back to React Native
+  const retrieveJavaScript = `
+      (function() {
+          const data = localStorage.getItem('totalDuration');
+          window.ReactNativeWebView.postMessage(data);
+      })();
+  `;
+  const injectedJavaScript = `
+  (function() {
+    const localStorageData = JSON.stringify(localStorage);
+    window.ReactNativeWebView.postMessage(localStorageData);
+  })();
+  true;
+`;
+  const handleNavigationStateChange = (navState) => {
+    console.log('Current URL:', navState.url);
+  };
+  const onMessage = (event) => {
+    const localStorageData = JSON.parse(event.nativeEvent.data);
+    console.log('LocalStorage Data: ', localStorageData);
+    // Do something with the localStorage data
+  };
+  const handleMessage = (event) => {
+    const data = event.nativeEvent.data;
+    console.log('data', data);
+    setRetrievedData(data);
+  };
 
   const fetchDataQuml = async () => {
     //content read
@@ -500,25 +516,31 @@ const StandAlonePlayer = ({ route }) => {
           mediaPlaybackRequiresUserAction={false}
           injectedJavaScript={injectedJS}
           //injectedJavaScript={saveJavaScript}
-          //onMessage={handleMessage}
-          onMessage={(event) => {
-            console.log(event.nativeEvent.data);
-          }}
+          onMessage={onMessage}
+          // onMessage={(event) => {
+          //   if (event.nativeEvent.data == 'On telemetryEvent') {
+          //     console.log('WebView message: ', event.nativeEvent.data);
+          //     if (webviewRef.current) {
+          //       webviewRef.current.injectJavaScript(retrieveJavaScript);
+          //     }
+          //   }
+          // }}
           onError={(syntheticEvent) => {
             const { nativeEvent } = syntheticEvent;
             console.warn('WebView error: ', nativeEvent);
           }}
+          onNavigationStateChange={handleNavigationStateChange}
         />
       )}
       {/* <Button
-          title="Retrieve telemetry Data"
-          onPress={() => {
-            if (webviewRef.current) {
-              webviewRef.current.injectJavaScript(retrieveJavaScript);
-            }
-          }}
-        />
-        {retrievedData && <Text>{retrievedData}</Text>} */}
+        title="Retrieve telemetry Data"
+        onPress={() => {
+          if (webviewRef.current) {
+            webviewRef.current.injectJavaScript(injectedJavaScript);
+          }
+        }}
+      />
+      {retrievedData && <Text>{retrievedData}</Text>} */}
     </View>
   );
 };

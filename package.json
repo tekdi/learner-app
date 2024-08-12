@@ -10,7 +10,7 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "prettier-check": "prettier --check \"src/**/*.{js,jsx,ts,tsx}\"",
-    "android:launch": " cd .. && adb shell am start -n com.learnerapp/.MainActivity",
+    "android:launch": " cd .. && adb shell am start -n com.pratham.learning/.MainActivity",
     "android:dev": "ENVFILE=.env.dev && cd android && ./gradlew assembleDevDebug && ./gradlew installDevDebug -PreactNativeDevServerPort=8081 && npm run android:launch",
     "android:uat": "ENVFILE=.env.uat && cd android && ./gradlew assembleUatDebug && ./gradlew installUatDebug -PreactNativeDevServerPort=8081 && npm run android:launch",
     "android:prod": "ENVFILE=.env.prod && cd android && ./gradlew assembleProdDebug && ./gradlew installProdDebug -PreactNativeDevServerPort=8081 && npm run android:launch",
@@ -20,8 +20,12 @@
     "android:prod_debug_apk": "export ENVFILE=.env.prod && npm run android:debug",
     "android:release": "cd android && ./gradlew clean && cd .. && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/ && rm -rf android/app/src/main/res/drawable-* && rm -rf android/app/src/main/res/raw/* && cd android && ./gradlew assembleRelease && cd ..",
     "android:dev_release_apk": "export ENVFILE=.env.dev && npm run android:release",
-    "android:uat_release_apk": "export ENVFILE=.env.uat && cd android && ./gradlew clean && cd .. && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/ && rm -rf android/app/src/main/res/drawable-* && rm -rf android/app/src/main/res/raw/* && cd android && ./gradlew assembleRelease && cd ..",
-    "android:prod_release_apk": "export ENVFILE=.env.prod && cd android && ./gradlew clean && cd .. && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/ && rm -rf android/app/src/main/res/drawable-* && rm -rf android/app/src/main/res/raw/* && cd android && ./gradlew assembleRelease && cd .."
+    "android:uat_release_apk": "export ENVFILE=.env.uat && npm run android:release",
+    "android:prod_release_apk": "export ENVFILE=.env.prod && npm run android:release",
+    "android:signed": "cd android && ./gradlew clean && cd .. && react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/ && rm -rf android/app/src/main/res/drawable-* && rm -rf android/app/src/main/res/raw/* && cd android && ./gradlew bundleRelease && cd ..",
+    "android:dev_signed_bundle_aab": "export ENVFILE=.env.dev && npm run android:signed",
+    "android:uat_signed_bundle_aab": "export ENVFILE=.env.uat && npm run android:signed",
+    "android:prod_signed_bundle_aab": "export ENVFILE=.env.prod && npm run android:signed"
   },
   "dependencies": {
     "@changwoolab/react-native-fast-image": "^8.6.7",
@@ -46,6 +50,7 @@
     "react-hook-form": "^7.52.1",
     "react-native": "0.74.2",
     "react-native-config": "^1.5.2",
+    "react-native-device-info": "^11.1.0",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.17.1",
     "react-native-navigation-bar-color": "^2.0.2",

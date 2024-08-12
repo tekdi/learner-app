@@ -1,8 +1,8 @@
-# Learner App
+# Pratham Learning App
 
 ## Project Overview
 
-Welcome to LearnerApp, a React Native application created using the React Native Community CLI. This project provides a starting point for building a mobile application using React Native.
+Welcome to Pratham Learning App, a React Native application created using the React Native Community CLI. This project provides a starting point for building a mobile application using React Native.
 
 ## Prerequisites
 
