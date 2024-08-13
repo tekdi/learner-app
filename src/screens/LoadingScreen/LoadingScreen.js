@@ -14,7 +14,14 @@ import { getAccessToken, refreshToken } from '../../utils/API/AuthService';
 
 import DeviceInfo from 'react-native-device-info'; // Import DeviceInfo
 
+//for react native config env : dev uat prod
+import Config from 'react-native-config';
+
+import uuid from 'react-native-uuid';
+
 const LoadingScreen = ({ navigation }) => {
+  const myUUID = uuid.v4();
+  console.log('Generated UUID:', myUUID);
   useEffect(() => {
     const fetchData = async () => {
       const token = await getSavedToken();
@@ -52,9 +59,12 @@ const LoadingScreen = ({ navigation }) => {
       />
       <View style={styles.content}>
         <Image style={styles.image} source={Logo} resizeMode="contain" />
-        <Spinner size="large" style={{ borderColor: '#635E57' }} />
+        <Spinner size="large" style={styles.spinner} />
+      </View>
+      <View style={styles.footer}>
         <Text style={styles.versionText}>
-          Version {version} (Build {buildNumber})
+          Version {version} (Build {buildNumber}){' '}
+          {Config.ENV != 'PROD' ? Config.ENV : ''}
         </Text>
       </View>
     </View>
@@ -81,6 +91,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     height: 100,
     width: '100%',
+  },
+  spinner: {
+    borderColor: '#635E57',
+  },
+  footer: {
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 20, // Adjust this to increase/decrease the space from the bottom edge
+  },
+  versionText: {
+    textAlign: 'center',
+    color: '#888', // Adjust text color as needed
   },
 });
 

@@ -1,5 +1,6 @@
 import EndUrls from './EndUrls';
 import axios from 'axios';
+import uuid from 'react-native-uuid';
 
 export const getAccessToken = async () => {
   const url = EndUrls.login;
@@ -136,4 +137,81 @@ export const listQuestion = async (url, identifiers) => {
     });
 
   return api_response;
+};
+
+export const assessmentTracking = async (
+  scoreDetailsString,
+  identifierWithoutImg,
+  maxScore,
+  seconds,
+  userId,
+  batchId
+) => {
+  const attemptId = uuid.v4();
+  let scoreDetails;
+  try {
+    scoreDetails = scoreDetailsString;
+  } catch (e) {
+    console.error('Error parsing scoreDetails string', e);
+    throw new Error('Invalid scoreDetails format');
+  }
+
+  // Calculate the total score
+  let totalScore = 0;
+  if (Array.isArray(scoreDetails)) {
+    totalScore = scoreDetails.reduce((sectionTotal, section) => {
+      const sectionScore = section.data.reduce((itemTotal, item) => {
+        return itemTotal + (item.score || 0);
+      }, 0);
+      return sectionTotal + sectionScore;
+    }, 0);
+  } else {
+    console.error('Parsed scoreDetails is not an array');
+    throw new Error('Invalid scoreDetails format');
+  }
+
+  try {
+    const url = EndUrls.AssessmentCreate;
+
+    let data = JSON.stringify({
+      userId: userId,
+      courseId: identifierWithoutImg,
+      batchId: batchId,
+      contentId: identifierWithoutImg,
+      attemptId: attemptId,
+      assessmentSummary: scoreDetailsString,
+      totalMaxScore: maxScore || 0,
+      totalScore: totalScore || 0,
+      lastAttemptedOn: new Date().toISOString(),
+      timeSpent: seconds || 0,
+    });
+
+    let api_response = null;
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: data,
+    };
+    console.log('config', config);
+
+    await axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+        api_response = { response: response.data, data: data };
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    return api_response;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Assessment Submission Failed'
+    );
+  }
 };

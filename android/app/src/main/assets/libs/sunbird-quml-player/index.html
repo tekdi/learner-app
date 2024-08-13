@@ -49,6 +49,10 @@
         {
           const playerConfig = qumlPlayerConfig;
           let sectionContent = qumlPlayerConfig.metadata;
+          const identifierWithoutImg = sectionContent.identifier.replace(".img", "");
+          const maxScore = sectionContent.maxScore;
+          let trackData = [];
+          let apiCalled = false;
           // Need to pass the API URL to fetch the question set
           //window.questionListUrl = 'https://egapi-uat.tekdinext.com/mw/events/camp-question-list';
           window.questionListUrl = questionListUrl;
@@ -60,7 +64,6 @@
 
           qumlPlayerElement.addEventListener('telemetryEvent', (event) => {
             console.log("On telemetryEvent", event);
-            console.log("Telemetry Event", event?.detail);
             const data = event?.detail;
             let telemetry = {};
 
@@ -133,15 +136,15 @@
                 return acc;
               }, []);
 
-              scoreDetails = JSON.stringify(newFormatData);
+              //scoreDetails = JSON.stringify(newFormatData);
+              scoreDetails = newFormatData;
 
               const secondsString = localStorage.getItem("totalDuration");
               const seconds = Number(secondsString);
 
               try {
-                console.log("api call do");
-                //chnge route
-                window.href="/testcomplete";
+                let result_submit={scoreDetails:scoreDetails,identifierWithoutImg:identifierWithoutImg,maxScore:maxScore,seconds:seconds};
+                window.ReactNativeWebView.postMessage(JSON.stringify(result_submit));
               } catch (error) {
                 console.error("Error submitting assessment:", error);
               }

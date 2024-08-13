@@ -6,13 +6,19 @@ import {
   Text,
   Button,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { PermissionsAndroid } from 'react-native';
 import React, { useRef, useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 import { WebView } from 'react-native-webview';
 import { Platform } from 'react-native';
-import { readContent, hierarchyContent } from '../../../utils/API/ApiCalls';
+import {
+  readContent,
+  hierarchyContent,
+  assessmentTracking,
+} from '../../../utils/API/ApiCalls';
 import {
   qumlPlayerConfig,
   contentPlayerConfig,
@@ -20,7 +26,6 @@ import {
   videoPlayerConfig,
   epubPlayerConfig,
 } from './data';
-import { Alert } from 'react-native';
 import {
   getData,
   loadFileAsBlob,
@@ -31,12 +36,14 @@ import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
 
 import Orientation from 'react-native-orientation-locker';
+import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
 
 // User-Agent string for a desktop browser (e.g., Chrome on Windows)
 const desktopUserAgent =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
 
 const StandAlonePlayer = ({ route }) => {
+  const navigation = useNavigation();
   const { content_do_id, content_mime_type, isOffline } = route.params;
   console.log('content_do_id', content_do_id);
   console.log('content_mime_type', content_mime_type);
@@ -89,7 +96,7 @@ const StandAlonePlayer = ({ route }) => {
       : ''
   );
   const [lib_file] = useState(
-    isOffline == true ||
+    isOffline == true &&
       content_mime_type == 'application/vnd.sunbird.questionset'
       ? 'index_o.html'
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
@@ -129,33 +136,72 @@ const StandAlonePlayer = ({ route }) => {
 
   //set data from react native
   const webviewRef = useRef(null);
-  const [retrievedData, setRetrievedData] = useState(null);
-  // JavaScript to retrieve localStorage data and send it back to React Native
-  const retrieveJavaScript = `
-      (function() {
-          const data = localStorage.getItem('totalDuration');
-          window.ReactNativeWebView.postMessage(data);
-      })();
-  `;
-  const injectedJavaScript = `
-  (function() {
-    const localStorageData = JSON.stringify(localStorage);
-    window.ReactNativeWebView.postMessage(localStorageData);
-  })();
-  true;
-`;
+  // webview event
   const handleNavigationStateChange = (navState) => {
     console.log('Current URL:', navState.url);
   };
-  const onMessage = (event) => {
-    const localStorageData = JSON.parse(event.nativeEvent.data);
-    console.log('LocalStorage Data: ', localStorageData);
-    // Do something with the localStorage data
-  };
-  const handleMessage = (event) => {
-    const data = event.nativeEvent.data;
-    console.log('data', data);
-    setRetrievedData(data);
+  const handleMessage = async (event) => {
+    //for assessment
+    if (content_mime_type == 'application/vnd.sunbird.questionset') {
+      try {
+        const data = event.nativeEvent.data;
+        let jsonObj = JSON.parse(data);
+        let scoreDetails = jsonObj.scoreDetails;
+        let identifierWithoutImg = jsonObj.identifierWithoutImg;
+        let maxScore = jsonObj.maxScore;
+        let seconds = jsonObj.seconds;
+        // console.log('scoreDetails', scoreDetails);
+        // console.log('identifierWithoutImg', identifierWithoutImg);
+        // console.log('maxScore', maxScore);
+        // console.log('seconds', seconds);
+        let userId = 'fb6b2e58-0f14-4d4f-90e4-bae092e7a951';
+        let batchId = 'batch_new';
+        let create_assessment = await assessmentTracking(
+          scoreDetails,
+          identifierWithoutImg,
+          maxScore,
+          seconds,
+          userId,
+          batchId
+        );
+        if (
+          create_assessment &&
+          create_assessment?.response?.responseCode == 201
+        ) {
+          let exam_data = JSON.parse(create_assessment?.data);
+          const percentage =
+            (exam_data?.totalScore / exam_data?.totalMaxScore) * 100;
+          const roundedPercentage = percentage.toFixed(2); // Rounds to 2 decimal places
+
+          Alert.alert(
+            'Success', // Title of the alert
+            `You got ${exam_data?.totalScore} out of ${exam_data?.totalMaxScore}. Percentage= ${roundedPercentage}%`, // Message of the alert
+            [
+              {
+                text: 'OK', // Text for the "OK" button
+                onPress: () => navigation.goBack(), // Action to take when "OK" is pressed
+              },
+            ],
+            { cancelable: true } // Determines if the alert is dismissable by tapping outside
+          );
+        } else {
+          Alert.alert(
+            'Error', // Title of the alert
+            'Resubmit Result', // Message of the alert
+            [
+              {
+                text: 'OK', // Text for the "OK" button
+                onPress: () => handleMessage(event), // Action to take when "OK" is pressed
+              },
+            ],
+            { cancelable: true } // Determines if the alert is dismissable by tapping outside
+          );
+        }
+      } catch (e) {
+        console.log('error', e);
+      }
+      //setRetrievedData(data);
+    }
   };
 
   const fetchDataQuml = async () => {
@@ -515,16 +561,7 @@ const StandAlonePlayer = ({ route }) => {
           allowsFullscreenVideo={true}
           mediaPlaybackRequiresUserAction={false}
           injectedJavaScript={injectedJS}
-          //injectedJavaScript={saveJavaScript}
-          onMessage={onMessage}
-          // onMessage={(event) => {
-          //   if (event.nativeEvent.data == 'On telemetryEvent') {
-          //     console.log('WebView message: ', event.nativeEvent.data);
-          //     if (webviewRef.current) {
-          //       webviewRef.current.injectJavaScript(retrieveJavaScript);
-          //     }
-          //   }
-          // }}
+          onMessage={handleMessage}
           onError={(syntheticEvent) => {
             const { nativeEvent } = syntheticEvent;
             console.warn('WebView error: ', nativeEvent);
@@ -532,15 +569,6 @@ const StandAlonePlayer = ({ route }) => {
           onNavigationStateChange={handleNavigationStateChange}
         />
       )}
-      {/* <Button
-        title="Retrieve telemetry Data"
-        onPress={() => {
-          if (webviewRef.current) {
-            webviewRef.current.injectJavaScript(injectedJavaScript);
-          }
-        }}
-      />
-      {retrievedData && <Text>{retrievedData}</Text>} */}
     </View>
   );
 };

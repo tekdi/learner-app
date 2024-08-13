@@ -50,7 +50,7 @@ const TestDetailView = ({ route }) => {
   const navigation = useNavigation();
 
   const handlethis = () => {
-    console.log({ data });
+    console.log('content detail', { data });
     // navigation.goBack();
     /*Alert.alert(
       `IL_UNIQUE_ID : ${data?.IL_UNIQUE_ID}`,
