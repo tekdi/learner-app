@@ -192,7 +192,7 @@ const StackScreen = (props) => {
         name="StandAlonePlayer"
         component={StandAlonePlayer}
         options={{
-          headerShown: true,
+          headerShown: false,
         }}
       />
       <Stack.Screen
