@@ -14,12 +14,18 @@ const getHeaders = async () => {
 
 export const login = async (params = {}) => {
   try {
+    console.log('hi', EndUrls.login);
     const result = await post(`${EndUrls.login}`, params, {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
     });
+    console.log(`curl -X POST '${EndUrls.login}' \
+    -H 'Content-Type: application/json' \
+    -H 'Accept: application/json' \
+    -d '${params}'
+    `);
     if (result?.data) {
       return result?.data?.result;
     } else {

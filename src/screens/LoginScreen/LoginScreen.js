@@ -54,6 +54,7 @@ const LoginScreen = () => {
       password: password,
     };
     const data = await login(payload);
+    console.log({ data });
     if (data?.params?.status !== 'failed') {
       if (savePassword && data?.access_token) {
         await saveToken(data?.access_token || '');
@@ -174,7 +175,7 @@ const LoginScreen = () => {
           </View>
           <View
             style={{
-              top: 100,
+              top: 150,
               alignSelf: 'center',
             }}
           >

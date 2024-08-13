@@ -53,8 +53,6 @@ const AssessmentHeader = ({
           </View>
         ) : (
           <View style={styles.scoreContainer}>
-            <Octicons name="dash" size={24} color="#4D4639" />
-
             <Text style={[styles.scoreText, { marginLeft: 10 }]}>
               {t('not_started')}
             </Text>
