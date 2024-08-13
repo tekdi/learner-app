@@ -70,7 +70,36 @@ export const readContent = async (content_do_id) => {
 
 //hierarchy content
 export const hierarchyContent = async (content_do_id) => {
+  console.log({ content_do_id });
   const url = EndUrls.hierarchy_content + content_do_id;
+
+  let api_response = null;
+
+  let config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: url,
+    headers: {
+      accept: '*/*',
+      'Content-Type': 'application/json',
+    },
+  };
+
+  await axios
+    .request(config)
+    .then((response) => {
+      //console.log(JSON.stringify(response.data));
+      api_response = response.data;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  return api_response;
+};
+export const courseDetails = async (content_do_id) => {
+  console.log({ content_do_id });
+  const url = EndUrls.course_details + content_do_id;
 
   let api_response = null;
 
@@ -197,7 +226,8 @@ export const assessmentTracking = async (
       },
       data: data,
     };
-    console.log('config', config);
+    // console.log('config', config);
+    // console.log('data', data);
 
     await axios
       .request(config)

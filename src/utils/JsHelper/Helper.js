@@ -134,10 +134,12 @@ export const checkAssessmentStatus = async (data, uniqueAssessmentsId) => {
 
 export const getLastMatchingData = async (data, uniqueAssessmentsId) => {
   const result = [];
-
+  // console.log(data?.[0]?.assessments);
   uniqueAssessmentsId.forEach((id) => {
     // Filter the data array to find all objects with the matching uniqueAssessmentsId
-    const matchingData = data.filter((item) => item.contentId === id);
+    const matchingData = data?.[0]?.assessments.filter(
+      (item) => item.contentId === id
+    );
 
     // If matching data exists, get the last item in the array
     if (matchingData.length > 0) {

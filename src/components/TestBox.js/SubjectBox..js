@@ -12,9 +12,11 @@ import { useTranslation } from '../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 import SecondaryButton from '../SecondaryButton/SecondaryButton';
 import { convertSecondsToMinutes } from '../../utils/JsHelper/Helper';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment';
 
 const SubjectBox = ({ name, disabled, data }) => {
+  // console.log({ data });
   const { t } = useTranslation();
   const navigation = useNavigation();
   const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
@@ -22,7 +24,10 @@ const SubjectBox = ({ name, disabled, data }) => {
   // console.log('time', IL_UNIQUE_ID);
 
   const handlePress = () => {
-    navigation.navigate('AnswerKeyView', { title: name });
+    navigation.navigate('AnswerKeyView', {
+      title: name,
+      contentId: data?.IL_UNIQUE_ID,
+    });
   };
 
   return (
@@ -61,7 +66,7 @@ const SubjectBox = ({ name, disabled, data }) => {
             )}
           </View>
           {data?.lastAttemptedOn ? (
-            <Icon name="chevron-right" size={24} color="black" />
+            <MaterialIcons name="navigate-next" size={32} color="black" />
           ) : (
             <SecondaryButton
               onPress={() => {
@@ -89,7 +94,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: '#D0C5B4',
     borderRadius: 8,
     alignItems: 'center',
     marginVertical: 10,

@@ -19,6 +19,7 @@ import {
   saveToken,
 } from '../../utils/JsHelper/Helper';
 import LoginTextField from '../../components/LoginTextField/LoginTextField';
+import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
 import { useTranslation } from '../../context/LanguageContext';
 import Loading from '../LoadingScreen/Loading';
 
@@ -53,7 +54,7 @@ const LoginScreen = () => {
       password: password,
     };
     const data = await login(payload);
-    console.log({ payload, data });
+    console.log({ data });
     if (data?.params?.status !== 'failed') {
       if (savePassword && data?.access_token) {
         await saveToken(data?.access_token || '');
@@ -116,7 +117,7 @@ const LoginScreen = () => {
               <Text style={{ color: 'red', top: -10, left: 20 }}>{errmsg}</Text>
             )}
           </View>
-          <TouchableOpacity style={{ paddingLeft: 20, marginBottom: 30 }}>
+          {/* <TouchableOpacity style={{ paddingLeft: 20, marginBottom: 30 }}>
             <Text
               style={{
                 color: '#0D599E',
@@ -126,16 +127,9 @@ const LoginScreen = () => {
             >
               {t('forgot_password')}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <View style={styles.rembox}>
-            <CheckBox
-              style={{ paddingLeft: 10 }}
-              value={savePassword}
-              checked={savePassword}
-              onChange={(e) => {
-                rememberPassword(e);
-              }}
-            />
+            <CustomCheckbox value={savePassword} onChange={setSavePassword} />
             <View style={{ paddingLeft: 10 }}>
               <Text
                 style={{
@@ -149,14 +143,9 @@ const LoginScreen = () => {
             </View>
           </View>
           <View style={[styles.rembox, { paddingTop: 20 }]}>
-            <CheckBox
-              style={{ paddingLeft: 10 }}
-              value={acceptTerms}
-              checked={acceptTerms}
-              onChange={(e) => {
-                acceptTermsandCondtions(e);
-              }}
-            />
+            <View style={styles.controlContainer}>
+              <CustomCheckbox value={acceptTerms} onChange={setAcceptTerms} />
+            </View>
             <View style={{ paddingLeft: 10 }}>
               <Text
                 style={{
@@ -186,9 +175,7 @@ const LoginScreen = () => {
           </View>
           <View
             style={{
-              position: 'absolute',
-              bottom: 10,
-              padding: 10,
+              top: 150,
               alignSelf: 'center',
             }}
           >
@@ -223,6 +210,17 @@ const styles = StyleSheet.create({
   rembox: {
     alignContent: 'center',
     flexDirection: 'row',
+  },
+  checkbox: {
+    margin: 2,
+    color: 'red',
+    backgroundColor: 'red',
+  },
+  controlContainer: {
+    borderRadius: 4,
+    margin: 2,
+    // borderWidth: 1,
+    height: 25,
   },
 });
 export default LoginScreen;

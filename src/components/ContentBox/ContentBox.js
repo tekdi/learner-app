@@ -26,24 +26,8 @@ const ContentBox = ({
   const navigation = useNavigation();
   const handlePress = (item) => {
     console.log('Card pressed!', item);
-    Alert.alert(
-      `Content-Type : ${item?.contentType}`,
-      `mimeType : ${item?.mimeType}`,
-      [
-        {
-          text: 'Cancel',
-          onPress: () => {},
-          style: 'cancel',
-        },
-        {
-          text: 'OK',
-          onPress: () => {}, // Replace 'TargetScreen' with your screen name
-        },
-      ],
-      { cancelable: false }
-    );
 
-    // navigation.navigate('Preference');
+    navigation.navigate('ContentList', { do_id: item?.identifier });
   };
 
   return (
@@ -73,13 +57,14 @@ const ContentBox = ({
           </View>
         </View>
         <ScrollViewLayout horizontalScroll={true}>
-          {ContentData?.map((item) => {
+          {ContentData?.map((item, index) => {
             return (
               <ContentCard
-                key={item?.name}
+                key={index}
                 onPress={() => handlePress(item)}
                 title={item?.name}
                 description={item?.mimeType}
+                item={item}
                 appIcon={item?.appIcon}
               />
             );

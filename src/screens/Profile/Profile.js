@@ -12,7 +12,11 @@ import Header from '../../components/Layout/Header';
 import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { getAccessToken, getProfileDetails } from '../../utils/API/AuthService';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  CommonActions,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import Label from '../../components/Label/Label';
 import TextField from '../../components/TextField/TextField';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
@@ -47,8 +51,16 @@ const Profile = (props) => {
     const fetchData = async () => {
       await deleteSavedItem('refreshToken');
       await deleteSavedItem('token');
-      navigation.replace('LoginScreen');
+
+      // Reset the navigation stack and navigate to LoginSignUpScreen
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'LoginScreen' }],
+        })
+      );
     };
+
     fetchData();
   };
 
@@ -88,7 +100,7 @@ const Profile = (props) => {
               </View>
               <View>
                 <Label text={`${t('enrollment_number')}`} />
-                <TextField text={''} />
+                <TextField text={userData?.username} />
               </View>
               <View>
                 <Label text={`${t('contact_number')}`} />
