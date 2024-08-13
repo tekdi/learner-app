@@ -7,6 +7,8 @@ import {
   Button,
   ActivityIndicator,
   Alert,
+  StatusBar,
+  SafeAreaView,
 } from 'react-native';
 import { PermissionsAndroid } from 'react-native';
 import React, { useRef, useEffect, useState } from 'react';
@@ -86,31 +88,30 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
-        ? 'sunbird-pdf-player'
-        : content_mime_type == 'application/vnd.sunbird.questionset'
-          ? 'sunbird-quml-player'
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? 'sunbird-video-player'
-            : content_mime_type == 'application/epub'
-              ? 'sunbird-epub-player'
-              : ''
+      ? 'sunbird-pdf-player'
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? 'sunbird-quml-player'
+      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
+      ? 'sunbird-video-player'
+      : content_mime_type == 'application/epub'
+      ? 'sunbird-epub-player'
+      : ''
   );
   const [lib_file] = useState(
     isOffline == true &&
       content_mime_type == 'application/vnd.sunbird.questionset'
       ? 'index_o.html'
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/pdf' ||
-          content_mime_type == 'application/vnd.sunbird.questionset' ||
-          content_mime_type == 'video/mp4' ||
-          content_mime_type == 'video/webm' ||
-          content_mime_type == 'video/x-youtube' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'application/epub'
-        ? 'index.html'
-        : ''
+        content_mime_type == 'application/pdf' ||
+        content_mime_type == 'application/vnd.sunbird.questionset' ||
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'video/x-youtube' ||
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'application/epub'
+      ? 'index.html'
+      : ''
   );
 
   const [loading, setLoading] = useState(true);
@@ -119,10 +120,10 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
       ? `${content_file}`
       : content_mime_type == 'application/vnd.ekstep.html-archive'
-        ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
-        : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-          ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
-          : ``;
+      ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
+      : content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
+      : ``;
   // console.log('rnfs DocumentDirectoryPath', RNFS.DocumentDirectoryPath);
   // console.log('rnfs ExternalDirectoryPath', RNFS.ExternalDirectoryPath);
   const [is_valid_file, set_is_valid_file] = useState(null);
@@ -330,13 +331,13 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? downloadContent()
       : content_mime_type == 'application/pdf' ||
-          content_mime_type == 'video/mp4' ||
-          content_mime_type == 'video/webm' ||
-          content_mime_type == 'application/epub'
-        ? fetchDataPdfVideoEpub()
-        : content_mime_type == 'application/vnd.sunbird.questionset'
-          ? fetchDataQuml()
-          : '';
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'application/epub'
+      ? fetchDataPdfVideoEpub()
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? fetchDataQuml()
+      : '';
   }, []);
 
   const downloadContent = async () => {
@@ -439,11 +440,11 @@ const StandAlonePlayer = ({ route }) => {
                       'application/vnd.ekstep.ecml-archive'
                         ? fetchDataEcml(contentObj)
                         : contentObj?.mimeType ==
-                              'application/vnd.ekstep.html-archive' ||
-                            contentObj?.mimeType ==
-                              'application/vnd.ekstep.h5p-archive'
-                          ? await fetchDataHtmlH5pYoutube(contentObj)
-                          : '';
+                            'application/vnd.ekstep.html-archive' ||
+                          contentObj?.mimeType ==
+                            'application/vnd.ekstep.h5p-archive'
+                        ? await fetchDataHtmlH5pYoutube(contentObj)
+                        : '';
                     } catch (error) {
                       console.error(`Error extracting zip file: ${error}`);
                     }
@@ -513,10 +514,10 @@ const StandAlonePlayer = ({ route }) => {
             window.setData();
         })();`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'video/x-youtube'
-        ? `(function() {
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'video/x-youtube'
+      ? `(function() {
         localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
           {
             contentPlayerConfig: contentPlayerConfig,
@@ -524,23 +525,23 @@ const StandAlonePlayer = ({ route }) => {
         )}));
         window.setData();
         })();`
-        : content_mime_type == 'application/pdf'
-          ? `(function() {
+      : content_mime_type == 'application/pdf'
+      ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
         })();`
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? `(function() {
+      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
+      ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
         })();`
-            : content_mime_type == 'application/epub'
-              ? `(function() {
+      : content_mime_type == 'application/epub'
+      ? `(function() {
         window.setData('${JSON.stringify(epubPlayerConfig)}');
         })();`
-              : ``;
+      : ``;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
           <Text>Invalid Player File</Text>
@@ -575,13 +576,14 @@ const StandAlonePlayer = ({ route }) => {
           onNavigationStateChange={handleNavigationStateChange}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Removes top padding for Android
   },
   webview: {
     flex: 1,
