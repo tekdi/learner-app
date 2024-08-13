@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -11,28 +11,56 @@ import {
   Dimensions,
 } from 'react-native';
 import Header from '../../components/Layout/Header';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
-import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
-import { ScoreData } from './testData';
 import moment from 'moment';
+import { getAssessmentAnswerKey } from '../../utils/API/AuthService';
+import { getDataFromStorage, getUserId } from '../../utils/JsHelper/Helper';
 
 const ITEMS_PER_PAGE = 10;
 
 const AnswerKeyView = ({ route }) => {
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const { title } = route.params;
+  const { title, contentId } = route.params;
   const { height } = Dimensions.get('window');
-  const passedItems = ScoreData?.score_details.filter(
+
+  const [scoreData, setScoreData] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const cohort = await getDataFromStorage('cohortId');
+        const cohort_id = cohort?.data;
+        const user_id = await getUserId();
+        const data = await getAssessmentAnswerKey({
+          user_id,
+          cohort_id,
+          contentId,
+        });
+        setScoreData(data?.[0]);
+      };
+      fetchData();
+    }, [navigation])
+  );
+
+  const passedItems = scoreData?.score_details?.filter(
     (item) => item.pass === 'Yes'
   );
 
-  const [currentPage, setCurrentPage] = useState(1);
-
   const totalPages = Math.ceil(
-    ScoreData?.score_details?.length / ITEMS_PER_PAGE
+    scoreData?.score_details?.length / ITEMS_PER_PAGE
+  );
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = Math.min(
+    startIndex + ITEMS_PER_PAGE,
+    scoreData?.score_details.length
+  );
+  const currentQuestions = scoreData?.score_details?.slice(
+    startIndex,
+    endIndex
   );
 
   const handleNext = () => {
@@ -46,13 +74,6 @@ const AnswerKeyView = ({ route }) => {
       setCurrentPage(currentPage - 1);
     }
   };
-
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = Math.min(
-    startIndex + ITEMS_PER_PAGE,
-    ScoreData?.score_details.length
-  );
-  const currentQuestions = ScoreData?.score_details.slice(startIndex, endIndex);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -83,12 +104,12 @@ const AnswerKeyView = ({ route }) => {
           <View>
             <Text style={styles.submitText}>
               {t('submitted_On')}
-              {moment(ScoreData?.lastAttemptedOn).format('DD-MM-YYYY')}
+              {moment(scoreData?.lastAttemptedOn).format('DD-MM-YYYY')}
             </Text>
             <View style={styles.readView}>
               <Text style={styles.readText}>{t('reading')}</Text>
               <Text style={styles.readText}>
-                {ScoreData?.totalScore}/{ScoreData.totalMaxScore}
+                {scoreData?.totalScore}/{scoreData?.totalMaxScore}
               </Text>
             </View>
             <View style={{ borderBottomWidth: 1 }}></View>
@@ -96,22 +117,24 @@ const AnswerKeyView = ({ route }) => {
               style={[styles.submitText, { fontSize: 16, marginVertical: 20 }]}
             >
               {passedItems?.length} {t('out_of')}{' '}
-              {ScoreData?.score_details.length} {t('correct_answers')}
+              {scoreData?.score_details?.length} {t('correct_answers')}
             </Text>
           </View>
           <FlatList
             data={currentQuestions}
             keyExtractor={(item) => item.questionId}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <View style={styles.questionContainer}>
-                <Text style={styles.questionText}>{item.queTitle}</Text>
+                <Text style={styles.questionText}>
+                  {`Q. ${index + 1})`} {item.queTitle}
+                </Text>
                 <Text
                   style={[
                     styles.questionText,
                     { color: item?.pass == 'Yes' ? 'green' : 'red' },
                   ]}
                 >
-                  Ans.{' '}
+                  {`Ans. `}
                   {JSON.parse(item?.resValue)?.[0]
                     ?.label.replace(/<\/?[^>]+(>|$)/g, '')
                     .replace(/^\d+\.\s*/, '')}
@@ -138,7 +161,7 @@ const AnswerKeyView = ({ route }) => {
 
           <Text
             style={[styles.pageText, { flex: 2 }]}
-          >{`${startIndex + 1}-${endIndex} of ${ScoreData?.score_details.length}`}</Text>
+          >{`${startIndex + 1}-${endIndex} of ${scoreData?.score_details.length}`}</Text>
           <TouchableOpacity
             style={{ flex: 1, alignItems: 'center' }}
             onPress={handleNext}
@@ -165,7 +188,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop: 20,
     borderWidth: 1,
-    backgroundColor: '#f8efe7',
+    borderColor: '#D0C5B4',
     borderRadius: 10,
     flex: 0.9,
   },
@@ -177,6 +200,7 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 18,
     color: 'black',
+    marginVertical: 5,
   },
   navigationContainer: {
     flexDirection: 'row',

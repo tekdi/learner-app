@@ -48,10 +48,19 @@ const LoginSignUpScreen = () => {
         />
         <View style={{ padding: 10 }}></View>
         <PrimaryButton
-        text={'PlayerScreen'}
-        onPress={() => {
-          nav.navigate('PlayerScreen');}}
-          />
+          text={'PlayerScreen'}
+          onPress={() => {
+            nav.navigate('PlayerScreen');
+          }}
+        />
+        <View style={{ padding: 10 }}></View>
+
+        <PrimaryButton
+          text={'Content'}
+          onPress={() => {
+            nav.navigate('DashboardStack');
+          }}
+        />
       </View>
     </View>
   );

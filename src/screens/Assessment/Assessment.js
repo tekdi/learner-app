@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   ActivityIndicator,
+  BackHandler,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -17,13 +18,12 @@ import {
   getCohort,
   trackAssessment,
 } from '../../utils/API/AuthService';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
-  checkAssessmentStatus,
-  getLastMatchingData,
-  getUserId,
-  setDataInStorage,
-} from '../../utils/JsHelper/Helper';
+  useNavigation,
+  useFocusEffect,
+  useNavigationState,
+} from '@react-navigation/native';
+import { getUserId, setDataInStorage } from '../../utils/JsHelper/Helper';
 
 const Assessment = (props) => {
   const { t } = useTranslation();
@@ -31,6 +31,29 @@ const Assessment = (props) => {
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
+  const [percentage, setPercentage] = useState('');
+  const routeName = useNavigationState((state) => {
+    const route = state.routes[state.index];
+    return route.name;
+  });
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (routeName === 'Content') {
+          BackHandler.exitApp();
+          return true;
+        }
+        return false;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, [routeName])
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -40,10 +63,9 @@ const Assessment = (props) => {
         const user_id = await getUserId();
         const cohort = await getCohort({ user_id });
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-        console.log('user_id', user_id);
-        console.log('cohort_id', cohort_id);
-        await setDataInStorage('cohortId', cohort_id?.data);
-        await setDataInStorage('userId', user_id?.data);
+
+        await setDataInStorage('cohortId', cohort_id);
+        await setDataInStorage('userId', user_id);
         const board = cohort?.cohortData?.[0]?.customField?.find(
           (field) => field.label === 'STATES'
         );
@@ -59,15 +81,17 @@ const Assessment = (props) => {
           ];
 
           // Extract DO_id from assessmentList (content)
-          // const uniqueAssessmentsId = [
-          //   ...new Set(
-          //     assessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
-          //   ),
-          // ];
           const uniqueAssessmentsId = [
-            'do_11388361673153740812077',
-            'do_11388361673153740812071',
+            ...new Set(
+              assessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
+            ),
           ];
+          // console.log({ uniqueAssessmentsId });
+
+          // const uniqueAssessmentsId = [
+          //   'do_11388361673153740812077',
+          //   'do_11388361673153740812071',
+          // ];
           const assessmentStatusData =
             (await getAssessmentStatus({
               user_id,
@@ -75,18 +99,11 @@ const Assessment = (props) => {
               uniqueAssessmentsId,
             })) || [];
           // console.log({ assessmentStatusData });
-          const datatest = await getLastMatchingData(
-            assessmentStatusData,
-            uniqueAssessmentsId
-          );
-          console.log({ datatest });
-          const getStatus = await checkAssessmentStatus(
-            assessmentStatusData,
-            uniqueAssessmentsId
-          );
-          setStatus(getStatus);
+          // console.log('sss', assessmentStatusData?.[0]?.percentageString);
 
-          console.log(getStatus);
+          setStatus(assessmentStatusData?.[0]?.status || 'not_started');
+          setPercentage(assessmentStatusData?.[0]?.percentageString || '');
+
           await setDataInStorage(
             'QuestionSet',
             JSON.stringify(assessmentList?.QuestionSet) || ''
@@ -100,7 +117,7 @@ const Assessment = (props) => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <Header />
       {loading ? (
         <View style={{ flex: 1, justifyContent: 'center' }}>
@@ -115,13 +132,20 @@ const Assessment = (props) => {
               marginVertical: 20,
               justifyContent: 'space-between',
               backgroundColor: '#FBF4E4',
-              paddingVertical: 20,
+              paddingVertical: 30,
               paddingHorizontal: 10,
             }}
           >
             {assessments.length > 0 ? (
               assessments?.map((item) => {
-                return <TestBox key={item} testText={item} status={status} />;
+                return (
+                  <TestBox
+                    key={item}
+                    testText={item}
+                    status={status}
+                    percentage={percentage}
+                  />
+                );
               })
             ) : (
               <Text style={{ fontSize: 16, color: '#000' }}>
@@ -139,9 +163,9 @@ Assessment.propTypes = {};
 
 const styles = StyleSheet.create({
   container: {
-    padding: 15,
+    paddingVertical: 15,
   },
-  text: { fontSize: 26, color: 'black', fontWeight: '500' },
+  text: { fontSize: 26, color: 'black', fontWeight: '500', marginLeft: 20 },
 });
 
 export default Assessment;

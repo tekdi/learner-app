@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
@@ -37,22 +38,22 @@ const IconConditions = ({ status, styles }) => {
   );
 };
 
-const StatusCondition = ({ status, styles, t }) => {
+const StatusCondition = ({ status, styles, t, percentage }) => {
   let content;
 
   switch (status) {
-    case 'completed':
+    case 'Completed':
       content = (
         <View style={styles.scoreContainer}>
           <Text style={styles.scoreText}>
             {t('Overallscore')}
-            <Text style={{ color: '#1A8825' }}> 88%</Text>
+            <Text style={{ color: '#1A8825' }}> {percentage}</Text>
           </Text>
           <Text style={styles.smileyText}>😄</Text>
         </View>
       );
       break;
-    case 'inprogress':
+    case 'In_Progress':
       content = (
         <View style={styles.scoreContainer}>
           <Text style={styles.scoreText}>{t('Inprogress')}</Text>
@@ -70,12 +71,12 @@ const StatusCondition = ({ status, styles, t }) => {
   return <View>{content}</View>;
 };
 
-const TestBox = ({ testText, status }) => {
+const TestBox = ({ testText, status, percentage }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
   const handlePress = () => {
-    navigation.navigate('InprogressTestView', { title: testText });
+    navigation.navigate('TestView', { title: testText });
   };
 
   return (
@@ -86,10 +87,15 @@ const TestBox = ({ testText, status }) => {
           <View style={styles.rightContainer}>
             <Text style={styles.preTestText}>{t(testText)}</Text>
 
-            <StatusCondition status={status} styles={styles} t={t} />
+            <StatusCondition
+              status={status}
+              styles={styles}
+              t={t}
+              percentage={percentage}
+            />
           </View>
           <View style={styles.rightArrow}>
-            <Icon name="chevron-right" size={24} color="black" />
+            <MaterialIcons name="navigate-next" size={32} color="black" />
           </View>
         </View>
       </TouchableOpacity>
@@ -100,6 +106,7 @@ const TestBox = ({ testText, status }) => {
 TestBox.propTypes = {
   testText: PropTypes.string,
   status: PropTypes.string,
+  percentage: PropTypes.string,
 };
 IconConditions.propTypes = {
   status: PropTypes.string,
@@ -115,7 +122,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: '#D0C5B4',
     borderRadius: 8,
     alignItems: 'center',
     marginVertical: 10,

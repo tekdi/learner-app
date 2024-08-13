@@ -28,6 +28,7 @@ import YoutubePlayer from '../screens/PlayerScreen/YoutubePlayer/YoutubePlayer';
 import StandAlonePlayer from '../screens/PlayerScreen/StandAlonePlayer/StandAlonePlayer';
 import Profile from '../screens/Profile/Profile';
 import AssessmentStack from './AssessmentStack';
+import DashboardStack from './DashboardStack';
 
 const StackScreen = (props) => {
   const Stack = createNativeStackNavigator();
@@ -208,6 +209,12 @@ const StackScreen = (props) => {
         options={{
           headerShown: false,
         }}
+      />
+
+      <Stack.Screen
+        name="DashboardStack"
+        component={DashboardStack} // Changed to Assessment for now
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
