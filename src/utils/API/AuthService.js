@@ -144,40 +144,38 @@ export const contentListApi = async (params = {}) => {
     const payload = {
       request: {
         filters: {
-          se_boards: ["Prerak's Corner"],
-          se_mediums: ['Hindi'],
-          se_gradeLevels: ['General'],
-          primaryCategory: ['Digital Textbook', 'eTextbook', 'Course'],
-          channel: [],
-          visibility: [],
+          primaryCategory: ['course'],
+          visibility: ['Default', 'Parent'],
         },
         limit: 100,
+        sort_by: {
+          lastPublishedOn: 'desc',
+        },
         fields: [
           'name',
           'appIcon',
+          'mimeType',
+          'gradeLevel',
+          'identifier',
           'medium',
+          'pkgVersion',
+          'board',
           'subject',
           'resourceType',
+          'primaryCategory',
           'contentType',
+          'channel',
           'organisation',
-          'topic',
-          'mimeType',
           'trackable',
-          'gradeLevel',
-          'se_boards',
-          'se_subjects',
-          'se_mediums',
-          'se_gradeLevels',
         ],
         facets: [
-          'subject',
+          'se_boards',
+          'se_gradeLevels',
+          'se_subjects',
+          'se_mediums',
           'primaryCategory',
-          'medium',
-          'banner',
-          'additionalCategories',
-          'search',
-          'ContinueLearning',
         ],
+        offset: 0,
       },
     };
 
@@ -338,17 +336,44 @@ export const getAssessmentStatus = async (params = {}) => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
+
     const payload = {
-      userId: 'fb6b2e58-0f14-4d4f-90e4-bae092e7a328',
-      contentId: ['do_11388361673153740812077', 'do_1138836167315374081207d'],
-      batchId: 'batch123',
+      userId: [params?.user_id],
+      contentId: params?.uniqueAssessmentsId,
+      batchId: params?.cohort_id,
     };
 
-    // const payload = {
-    //   userId: params?.user_id,
-    //   contentId: params?.uniqueAssessmentsId,
-    //   batchId: params?.cohort_id,
-    // };
+    // console.log(
+    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result?.data) {
+      return result?.data?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const getAssessmentAnswerKey = async (params = {}) => {
+  try {
+    const url = `${EndUrls.AssessmentSearch}`; // Define the URL
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+
+    const payload = {
+      userId: params?.user_id,
+      contentId: params?.contentId,
+      batchId: params?.cohort_id,
+    };
 
     // console.log(
     //   `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`

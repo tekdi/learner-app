@@ -6,7 +6,13 @@ import { useTranslation } from '../../context/LanguageContext';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import { useNavigation } from '@react-navigation/native';
 
-const AssessmentHeader = ({ testText, data }) => {
+const AssessmentHeader = ({
+  testText,
+  questionsets,
+  status,
+  percentage,
+  completedCount,
+}) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   return (
@@ -28,22 +34,32 @@ const AssessmentHeader = ({ testText, data }) => {
       </View>
       <View style={styles.rightContainer}>
         <Text style={styles.preTestText}>{t(testText)}</Text>
-        {/* {!data ? (
+        {status === 'Completed' ? (
           <View style={styles.scoreContainer}>
             <Text style={styles.scoreText}>
-              {t('Overallscore')} <Text style={{ color: '#1A8825' }}> 88%</Text>
+              {t('Overallscore')}{' '}
+              <Text style={{ color: '#1A8825' }}> {percentage}</Text>
             </Text>
             <Text style={styles.smileyText}>😄</Text>
           </View>
-        ) : (
+        ) : status === 'In_Progress' ? (
           <View style={styles.scoreContainer}>
             <Icon name="circle-o" size={24} color="#4D4639" />
 
             <Text style={[styles.scoreText, { marginLeft: 10 }]}>
-              {t('Inprogress')} `(0 out of {data?.length} completed)`
+              {t('Inprogress')} `({completedCount} {t('out_of')}{' '}
+              {questionsets?.length} {t('completed')})`
             </Text>
           </View>
-        )} */}
+        ) : (
+          <View style={styles.scoreContainer}>
+            <Octicons name="dash" size={24} color="#4D4639" />
+
+            <Text style={[styles.scoreText, { marginLeft: 10 }]}>
+              {t('not_started')}
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );

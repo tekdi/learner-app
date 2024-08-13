@@ -56,31 +56,33 @@ function mergeDataWithQuestionSet(questionSet, datatest) {
   return questionSet;
 }
 
-const InprogressTestView = ({ route }) => {
+const TestView = ({ route }) => {
   const { title } = route.params;
   const { t } = useTranslation();
 
   const [questionsets, setQuestionsets] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [status, setStatus] = useState('');
+  const [percentage, setPercentage] = useState('');
+  const [completedCount, setCompletedCount] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
       const data = await getDataFromStorage('QuestionSet');
-      const cohort_id = await getDataFromStorage('cohortId');
+      const cohort = await getDataFromStorage('cohortId');
+      const cohort_id = cohort?.data;
       const user_id = await getUserId();
       const parseData = JSON.parse(data?.data);
       // setQuestionsets(parseData);
       // Extract DO_id from assessmentList (content)
 
-      // const uniqueAssessmentsId = [
-      //   ...new Set(parseData?.map((item) => item.IL_UNIQUE_ID)),
-      // ];
       const uniqueAssessmentsId = [
-        'do_11388361673153740812077',
-        'do_11388361673153740812071',
+        ...new Set(parseData?.map((item) => item.IL_UNIQUE_ID)),
       ];
+      // const uniqueAssessmentsId = [
+      //   'do_11388361673153740812077',
+      //   'do_11388361673153740812071',
+      // ];
 
-      const testdata = QuestionSetData;
       // Get data of exam if given
       const assessmentStatusData =
         (await getAssessmentStatus({
@@ -89,12 +91,16 @@ const InprogressTestView = ({ route }) => {
           uniqueAssessmentsId,
         })) || [];
 
+      // console.log(JSON.stringify(assessmentStatusData));
+      setStatus(assessmentStatusData?.[0]?.status || 'not_started');
+      setPercentage(assessmentStatusData?.[0]?.percentageString || '');
+      setCompletedCount(assessmentStatusData?.[0]?.assessments.length || 0);
       const datatest = await getLastMatchingData(
         assessmentStatusData,
         uniqueAssessmentsId
       );
 
-      const finalData = mergeDataWithQuestionSet(testdata, datatest);
+      const finalData = mergeDataWithQuestionSet(parseData, datatest);
       setQuestionsets(finalData);
       // console.log(JSON.stringify(finalData));
       setLoading(false);
@@ -105,7 +111,13 @@ const InprogressTestView = ({ route }) => {
   const renderHeader = () => (
     <View>
       <Header />
-      <AssessmentHeader testText={title} />
+      <AssessmentHeader
+        testText={title}
+        status={status}
+        percentage={percentage}
+        completedCount={completedCount}
+        questionsets={questionsets}
+      />
       <View style={styles.container}>
         <Text style={styles.text}>{t('assessment_instructions')}</Text>
         {questionsets?.map((item, index) => {
@@ -151,7 +163,7 @@ const InprogressTestView = ({ route }) => {
   );
 };
 
-InprogressTestView.propTypes = {
+TestView.propTypes = {
   route: PropTypes.any,
 };
 
@@ -182,4 +194,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InprogressTestView;
+export default TestView;
