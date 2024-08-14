@@ -65,19 +65,22 @@ const SubjectBox = ({ name, disabled, data }) => {
               </View>
             )}
           </View>
-          {data?.lastAttemptedOn ? (
-            <MaterialIcons name="navigate-next" size={32} color="black" />
-          ) : (
-            <SecondaryButton
-              onPress={() => {
-                navigation.navigate('TestDetailView', {
-                  title: name,
-                  data: data,
-                });
-              }}
-              text={'take_the_test'}
-            />
-          )}
+          <View style={{ marginRight: 10 }}>
+            {data?.lastAttemptedOn ? (
+              <MaterialIcons name="navigate-next" size={32} color="black" />
+            ) : (
+              <SecondaryButton
+                onPress={() => {
+                  navigation.navigate('TestDetailView', {
+                    title: name,
+                    data: data,
+                  });
+                }}
+                style={styles.btn}
+                text={'take_the_test'}
+              />
+            )}
+          </View>
         </View>
       </TouchableOpacity>
     </SafeAreaView>
@@ -99,7 +102,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 10,
     backgroundColor: 'white',
-    padding: 10,
+    padding: 5,
   },
 
   rightContainer: {
@@ -130,6 +133,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end',
     marginRight: 20,
+  },
+  btn: {
+    fontSize: 14,
   },
 });
 

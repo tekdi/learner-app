@@ -38,9 +38,12 @@ const AssessmentHeader = ({
           <View style={styles.scoreContainer}>
             <Text style={styles.scoreText}>
               {t('Overallscore')}{' '}
-              <Text style={{ color: '#1A8825' }}> {percentage}</Text>
+              <Text style={{ color: percentage > 35 ? '#1A8825' : 'red' }}>
+                {' '}
+                {percentage}%
+              </Text>
             </Text>
-            <Text style={styles.smileyText}>😄</Text>
+            <Text style={styles.smileyText}>{percentage > 35 && `😄`}</Text>
           </View>
         ) : status === 'In_Progress' ? (
           <View style={styles.scoreContainer}>
@@ -53,9 +56,7 @@ const AssessmentHeader = ({
           </View>
         ) : (
           <View style={styles.scoreContainer}>
-            <Text style={[styles.scoreText, { marginLeft: 10 }]}>
-              {t('not_started')}
-            </Text>
+            <Text style={[styles.scoreText]}>{t('not_started')}</Text>
           </View>
         )}
       </View>
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#EDE1CF',
-    paddingVertical: 15,
+    paddingVertical: 10,
   },
   leftContainer: {
     flex: 1,
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   preTestText: {
-    fontSize: 22,
+    fontSize: 18,
     color: '#4D4639',
     fontWeight: '500',
   },

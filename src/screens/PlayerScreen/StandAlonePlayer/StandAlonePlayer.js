@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { PermissionsAndroid } from 'react-native';
 import React, { useRef, useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
 import { WebView } from 'react-native-webview';
 import { Platform } from 'react-native';
@@ -192,7 +192,13 @@ const StandAlonePlayer = ({ route }) => {
             [
               {
                 text: 'OK', // Text for the "OK" button
-                onPress: () => navigation.replace('Dashboard'), // Action to take when "OK" is pressed
+                onPress: () =>
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 0,
+                      routes: [{ name: 'Dashboard' }],
+                    })
+                  ), // Action to take when "OK" is pressed
               },
             ],
             { cancelable: true } // Determines if the alert is dismissable by tapping outside

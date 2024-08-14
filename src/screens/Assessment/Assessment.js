@@ -102,7 +102,7 @@ const Assessment = (props) => {
           // console.log('sss', assessmentStatusData?.[0]?.percentageString);
 
           setStatus(assessmentStatusData?.[0]?.status || 'not_started');
-          setPercentage(assessmentStatusData?.[0]?.percentageString || '');
+          setPercentage(assessmentStatusData?.[0]?.percentage || '');
 
           await setDataInStorage(
             'QuestionSet',
