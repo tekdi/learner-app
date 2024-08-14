@@ -1,6 +1,5 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-
 import {
   View,
   Text,
@@ -9,6 +8,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import Header from '../../components/Layout/Header';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -18,11 +18,13 @@ import moment from 'moment';
 import { getAssessmentAnswerKey } from '../../utils/API/AuthService';
 import { getDataFromStorage, getUserId } from '../../utils/JsHelper/Helper';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
+import RenderHtml from 'react-native-render-html';
 
 const ITEMS_PER_PAGE = 10;
 
 const AnswerKeyView = ({ route }) => {
   const navigation = useNavigation();
+  const { width } = useWindowDimensions();
   const { t } = useTranslation();
   const { title, contentId } = route.params;
   const { height } = Dimensions.get('window');
@@ -30,6 +32,7 @@ const AnswerKeyView = ({ route }) => {
   const [scoreData, setScoreData] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const flatListRef = useRef(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -68,13 +71,15 @@ const AnswerKeyView = ({ route }) => {
 
   const handleNext = () => {
     if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+      setCurrentPage((prev) => prev + 1);
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     }
   };
 
   const handlePrev = () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      setCurrentPage((prev) => prev - 1);
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     }
   };
 
@@ -130,13 +135,21 @@ const AnswerKeyView = ({ route }) => {
               </Text>
             </View>
             <FlatList
+              ref={flatListRef}
               data={currentQuestions}
               keyExtractor={(item) => item.questionId}
               renderItem={({ item, index }) => (
                 <View style={styles.questionContainer}>
-                  <Text style={styles.questionText}>
-                    {`Q. ${index + 1})`} {item.queTitle}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={styles.questionText}>
+                      {`Q. ${startIndex + index + 1})`}
+                    </Text>
+                    <RenderHtml
+                      contentWidth={width}
+                      baseStyle={baseStyle}
+                      source={{ html: item.queTitle }}
+                    />
+                  </View>
                   <Text
                     style={[
                       styles.questionText,
@@ -146,9 +159,8 @@ const AnswerKeyView = ({ route }) => {
                     {`Ans. `}
                     {JSON.parse(item?.resValue)?.[0]
                       ?.label.replace(/<\/?[^>]+(>|$)/g, '')
-                      .replace(/^\d+\.\s*/, '')}
+                      .replace(/^\d+\.\s*/, '') || 'NA'}
                   </Text>
-                  {/* {console.log(JSON.parse(item?.resValue)?.[0]?.label)} */}
                 </View>
               )}
               contentContainerStyle={{ paddingBottom: 20 }}
@@ -193,6 +205,12 @@ AnswerKeyView.propTypes = {
   route: PropTypes.any,
 };
 
+const baseStyle = {
+  color: '#000',
+  fontSize: 14,
+  wordWrap: 'break-word', // This ensures the text breaks within words if needed
+};
+
 const styles = StyleSheet.create({
   container: {
     padding: 20,
@@ -208,9 +226,10 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   questionText: {
-    fontSize: 18,
+    fontSize: 14,
     color: 'black',
     marginVertical: 5,
+    marginRight: 10,
   },
   navigationContainer: {
     flexDirection: 'row',

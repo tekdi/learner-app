@@ -30,12 +30,19 @@ const SubjectBox = ({ name, disabled, data }) => {
     });
   };
 
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
+
   return (
     <SafeAreaView>
       <TouchableOpacity disabled={disabled} onPress={handlePress}>
         <View style={styles.card}>
           <View style={styles.rightContainer}>
-            <Text style={styles.preTestText}>{t(name)}</Text>
+            <Text style={styles.preTestText}>
+              {t(capitalizeFirstLetter(name))}
+            </Text>
             {disabled ? (
               <Text style={[styles.preTestText, { color: '#7C766F' }]}>
                 {t('not_started')}
@@ -59,7 +66,7 @@ const SubjectBox = ({ name, disabled, data }) => {
                       { color: '#7C766F', marginLeft: 5 },
                     ]}
                   >
-                    {moment(data?.lastAttemptedOn).format('DD-MM-YYYY')}
+                    {moment(data?.lastAttemptedOn).format('DD MMM, YYYY')}
                   </Text>
                 </View>
               </View>

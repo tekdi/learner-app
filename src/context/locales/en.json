@@ -148,5 +148,6 @@
   "invalid_username_or_password":"Invalid Username or Password",
   "network_error_try_again_later":"Network error try again later",
   "log_in":"Log In",
-"login_with_the_cred":"Log in with the credentials provided to you"
+  "login_with_the_cred":"Log in with the credentials provided to you",
+  "total_marks":"Total Marks"
 }

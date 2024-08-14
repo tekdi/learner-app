@@ -316,9 +316,9 @@ export const getProfileDetails = async (params = {}) => {
       offset: 0,
     };
 
-    console.log(
-      `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
+    // );
 
     // Make the actual request
     const result = await post(url, payload, {

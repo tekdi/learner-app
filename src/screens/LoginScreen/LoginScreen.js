@@ -22,6 +22,7 @@ import LoginTextField from '../../components/LoginTextField/LoginTextField';
 import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
 import { useTranslation } from '../../context/LanguageContext';
 import Loading from '../LoadingScreen/Loading';
+import Logo from '../../assets/images/png/logo.png';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -88,6 +89,8 @@ const LoginScreen = () => {
         <Loading />
       ) : (
         <>
+          <Image style={styles.image} source={Logo} resizeMode="contain" />
+
           <TouchableOpacity
             style={styles.backbutton}
             onPress={() => {
@@ -110,7 +113,7 @@ const LoginScreen = () => {
               {t('back')}
             </Text>
           </TouchableOpacity>
-          <View style={{ paddingVertical: 15 }}>
+          <View style={{ paddingVertical: 5 }}>
             <Text style={[styles.text, { fontSize: 23, fontWeight: '500' }]}>
               {t('login')}
             </Text>
@@ -124,7 +127,6 @@ const LoginScreen = () => {
               onChangeText={onChangeText}
               value={userName}
             />
-            <View style={{ padding: 10 }}></View>
             <LoginTextField
               text="password"
               onChangeText={onChangePassword}
@@ -194,7 +196,7 @@ const LoginScreen = () => {
           </View>
           <View
             style={{
-              top: 150,
+              top: 50,
               alignSelf: 'center',
             }}
           >
@@ -224,7 +226,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   textfieldbox: {
-    marginTop: 40,
+    marginTop: 10,
   },
   rembox: {
     alignContent: 'center',
@@ -244,6 +246,11 @@ const styles = StyleSheet.create({
   text: {
     marginVertical: 10,
     color: '#000',
+  },
+  image: {
+    height: 50,
+    width: 50,
+    marginBottom: 10,
   },
 });
 export default LoginScreen;
