@@ -69,7 +69,7 @@ const LoginScreen = () => {
       await saveAccessToken(data?.access_token || '');
       setLoading(false);
     } else {
-      setErrmsg(data?.params?.errmsg);
+      setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));
       setLoading(false);
     }
   };
@@ -114,7 +114,9 @@ const LoginScreen = () => {
               value={password}
             />
             {errmsg !== '' && (
-              <Text style={{ color: 'red', top: -10, left: 20 }}>{errmsg}</Text>
+              <Text style={{ color: 'red', top: -10, left: 20 }}>
+                {t(errmsg)}
+              </Text>
             )}
           </View>
           {/* <TouchableOpacity style={{ paddingLeft: 20, marginBottom: 30 }}>

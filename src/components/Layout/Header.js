@@ -55,7 +55,7 @@ const Header = () => {
       <View style={styles.container}>
         <Select
           selectedIndex={selectedIndex} // Set the selected index
-          value={value?.toUpperCase()}
+          value={t(value)}
           onSelect={onSelect}
           style={styles.select}
         >

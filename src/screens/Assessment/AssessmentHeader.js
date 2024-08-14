@@ -38,9 +38,12 @@ const AssessmentHeader = ({
           <View style={styles.scoreContainer}>
             <Text style={styles.scoreText}>
               {t('Overallscore')}{' '}
-              <Text style={{ color: '#1A8825' }}> {percentage}</Text>
+              <Text style={{ color: percentage > 35 ? '#1A8825' : 'red' }}>
+                {' '}
+                {percentage}%
+              </Text>
             </Text>
-            <Text style={styles.smileyText}>😄</Text>
+            <Text style={styles.smileyText}>{percentage > 35 && `😄`}</Text>
           </View>
         ) : status === 'In_Progress' ? (
           <View style={styles.scoreContainer}>

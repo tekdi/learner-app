@@ -136,5 +136,15 @@
   "contact_number":"संपर्क संख्या",
   "class":"वर्ग",
   "last_passed_grade":"अंतिम उत्तीर्ण ग्रेड",
-  "age":"आयु"
+  "age":"आयु",
+  "en":"EN",
+  "hi":"हि",
+  "ma":"मा",
+  "ba":"বা",
+  "te":"తె.",
+  "ka":"ಕಾ.",
+  "gu":"ગુ",
+  "invalid_username_or_password":"अमान्य उपयोगकर्ता नाम या कूटशब्द",
+  "network_error_try_again_later":"नेटवर्क त्रुटि बाद में फिर से प्रयास करें"
+
 }

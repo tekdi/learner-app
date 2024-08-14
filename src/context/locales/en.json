@@ -139,5 +139,15 @@
   "contact_number":"Contact Number",
   "class":"Class",
   "last_passed_grade":"Last Passed Grade",
-  "age":"Age"
+  "age":"Age",
+  "en":"EN",
+  "hi":"हि",
+  "ma":"मा",
+  "ba":"বা",
+  "te":"తె.",
+  "ka":"ಕಾ.",
+  "gu":"ગુ",
+  "invalid_username_or_password":"Invalid Username or Password",
+  "network_error_try_again_later":"Network error try again later"
+
 }

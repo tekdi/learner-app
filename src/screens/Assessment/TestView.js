@@ -93,7 +93,7 @@ const TestView = ({ route }) => {
 
       // console.log(JSON.stringify(assessmentStatusData));
       setStatus(assessmentStatusData?.[0]?.status || 'not_started');
-      setPercentage(assessmentStatusData?.[0]?.percentageString || '');
+      setPercentage(assessmentStatusData?.[0]?.percentage || '');
       setCompletedCount(assessmentStatusData?.[0]?.assessments.length || 0);
       const datatest = await getLastMatchingData(
         assessmentStatusData,
