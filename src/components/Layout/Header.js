@@ -60,10 +60,7 @@ const Header = () => {
           style={styles.select}
         >
           {languages?.map((option) => (
-            <SelectItem
-              key={option.value}
-              title={t(option?.title.toUpperCase())}
-            />
+            <SelectItem key={option.value} title={t(option?.title)} />
           ))}
         </Select>
         <View style={styles.center}>

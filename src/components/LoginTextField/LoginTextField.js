@@ -50,7 +50,6 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     alignItems: 'flex-start',
-    paddingBottom: 5,
     paddingLeft: 10,
     paddingRight: 10,
     backgroundColor: 'white',

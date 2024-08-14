@@ -50,8 +50,8 @@ const AssessmentHeader = ({
             <Icon name="circle-o" size={24} color="#4D4639" />
 
             <Text style={[styles.scoreText, { marginLeft: 10 }]}>
-              {t('Inprogress')} `({completedCount} {t('out_of')}{' '}
-              {questionsets?.length} {t('completed')})`
+              {t('Inprogress')} ({completedCount} {t('out_of')}{' '}
+              {questionsets?.length} {t('completed')})
             </Text>
           </View>
         ) : (

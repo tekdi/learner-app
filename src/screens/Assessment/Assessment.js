@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   ActivityIndicator,
@@ -37,84 +37,80 @@ const Assessment = (props) => {
     return route.name;
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        if (routeName === 'Content') {
-          BackHandler.exitApp();
-          return true;
-        }
-        return false;
-      };
+  useEffect(() => {
+    const onBackPress = () => {
+      if (routeName === 'Content') {
+        BackHandler.exitApp();
+        return true;
+      }
+      return false;
+    };
 
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
-      return () => {
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-      };
-    }, [routeName])
-  );
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    };
+  }, [routeName]);
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchData = async () => {
-        setLoading(true);
-        const data = await getAccessToken();
-        const user_id = await getUserId();
-        const cohort = await getCohort({ user_id });
-        const cohort_id = cohort?.cohortData?.[0]?.cohortId;
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const data = await getAccessToken();
+      const user_id = await getUserId();
+      const cohort = await getCohort({ user_id });
+      const cohort_id = cohort?.cohortData?.[0]?.cohortId;
 
-        await setDataInStorage('cohortId', cohort_id);
-        await setDataInStorage('userId', user_id);
-        const board = cohort?.cohortData?.[0]?.customField?.find(
-          (field) => field.label === 'STATES'
+      await setDataInStorage('cohortId', cohort_id);
+      await setDataInStorage('userId', user_id);
+      const board = cohort?.cohortData?.[0]?.customField?.find(
+        (field) => field.label === 'STATES'
+      );
+      if (board) {
+        const boardName = board.value;
+        const assessmentList = await assessmentListApi({ boardName });
+
+        // Extract pretest or posttest from assessmentList (content)
+        const uniqueAssessments = [
+          ...new Set(
+            assessmentList?.QuestionSet?.map((item) => item.assessment1)
+          ),
+        ];
+
+        // Extract DO_id from assessmentList (content)
+        const uniqueAssessmentsId = [
+          ...new Set(
+            assessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
+          ),
+        ];
+        // console.log({ uniqueAssessmentsId });
+
+        // const uniqueAssessmentsId = [
+        //   'do_11388361673153740812077',
+        //   'do_11388361673153740812071',
+        // ];
+        const assessmentStatusData =
+          (await getAssessmentStatus({
+            user_id,
+            cohort_id,
+            uniqueAssessmentsId,
+          })) || [];
+        // console.log({ assessmentStatusData });
+        // console.log('sss', assessmentStatusData?.[0]?.percentageString);
+
+        setStatus(assessmentStatusData?.[0]?.status || 'not_started');
+        setPercentage(assessmentStatusData?.[0]?.percentage || '');
+
+        await setDataInStorage(
+          'QuestionSet',
+          JSON.stringify(assessmentList?.QuestionSet) || ''
         );
-        if (board) {
-          const boardName = board.value;
-          const assessmentList = await assessmentListApi({ boardName });
-
-          // Extract pretest or posttest from assessmentList (content)
-          const uniqueAssessments = [
-            ...new Set(
-              assessmentList?.QuestionSet?.map((item) => item.assessment1)
-            ),
-          ];
-
-          // Extract DO_id from assessmentList (content)
-          const uniqueAssessmentsId = [
-            ...new Set(
-              assessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
-            ),
-          ];
-          // console.log({ uniqueAssessmentsId });
-
-          // const uniqueAssessmentsId = [
-          //   'do_11388361673153740812077',
-          //   'do_11388361673153740812071',
-          // ];
-          const assessmentStatusData =
-            (await getAssessmentStatus({
-              user_id,
-              cohort_id,
-              uniqueAssessmentsId,
-            })) || [];
-          // console.log({ assessmentStatusData });
-          // console.log('sss', assessmentStatusData?.[0]?.percentageString);
-
-          setStatus(assessmentStatusData?.[0]?.status || 'not_started');
-          setPercentage(assessmentStatusData?.[0]?.percentage || '');
-
-          await setDataInStorage(
-            'QuestionSet',
-            JSON.stringify(assessmentList?.QuestionSet) || ''
-          );
-          setAssessments(uniqueAssessments);
-        }
-        setLoading(false);
-      };
-      fetchData();
-    }, [navigation])
-  );
+        setAssessments(uniqueAssessments);
+      }
+      setLoading(false);
+    };
+    fetchData();
+  }, [navigation]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>

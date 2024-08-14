@@ -23,26 +23,45 @@ import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 import { deleteSavedItem } from '../../utils/JsHelper/Helper';
 const Profile = (props) => {
   const { t } = useTranslation();
-
   const [userData, setUserData] = useState();
+  const [userDetails, setUserDetails] = useState();
   const [loading, setLoading] = useState(true);
-
   const navigation = useNavigation();
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchData = async () => {
-        const data = await getAccessToken();
-        const result = await getProfileDetails({
-          userId: data?.result?.userId,
-        });
+  const createNewObject = (customFields, labels) => {
+    const result = {};
+    customFields.forEach((field) => {
+      if (labels.includes(field.label)) {
+        result[field.label] = field.value;
+      }
+    });
+    setUserDetails(result);
+    return result;
+  };
 
-        setUserData(result?.getUserDetails?.[0]);
-        setLoading(false);
-      };
-      fetchData();
-    }, [navigation])
-  );
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getAccessToken();
+      const result = await getProfileDetails({
+        userId: data?.result?.userId,
+      });
+      const requiredLabels = [
+        'GENDER',
+        'CLASS_OR_LAST_PASSED_GRADE',
+        'BLOCKS',
+        'AGE',
+      ];
+      const customFields = result?.getUserDetails?.[0]?.customFields;
+      createNewObject(customFields, requiredLabels);
+      setUserData(result?.getUserDetails?.[0]);
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
 
   const handleLogout = () => {
     const fetchData = async () => {
@@ -79,7 +98,7 @@ const Profile = (props) => {
             </TouchableOpacity> */}
           </View>
           <View style={styles.view2}>
-            <TextField text={userData?.name} />
+            <TextField text={capitalizeFirstLetter(userData?.name)} />
             <TextField
               text={userData?.username}
               style={{ color: '#4A4640', fontSize: 14 }}
@@ -93,7 +112,7 @@ const Profile = (props) => {
             <View style={styles.viewBox}>
               <View>
                 <Label text={`${t('block')}, ${t('unit')}`} />
-                <TextField text={userData?.customFields?.[1]?.value} />
+                <TextField text={userDetails?.BLOCKS} />
               </View>
               <View>
                 <Label text={`${t('enrollment_number')}`} />
@@ -105,15 +124,15 @@ const Profile = (props) => {
               </View>
               <View>
                 <Label text={`${t('class')} (${t('last_passed_grade')})`} />
-                <TextField text={''} />
+                <TextField text={userDetails?.CLASS_OR_LAST_PASSED_GRADE} />
               </View>
               <View>
                 <Label text={`${t('age')} `} />
-                <TextField text={userData?.customFields?.[3]?.value} />
+                <TextField text={userDetails?.AGE} />
               </View>
               <View>
                 <Label text={`${t('gender')} `} />
-                <TextField text={userData?.customFields?.[2]?.value} />
+                <TextField text={userDetails?.GENDER} />
               </View>
             </View>
           </View>

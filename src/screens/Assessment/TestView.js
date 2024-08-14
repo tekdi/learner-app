@@ -144,15 +144,15 @@ const TestView = ({ route }) => {
           >
             {t('general_instructions')}
           </Text>
+          {instructions?.map((item) => {
+            return (
+              <View key={item.id.toString()} style={styles.itemContainer}>
+                <Text style={styles.bullet}>•</Text>
+                <Text style={styles.itemText}>{t(item.title)}</Text>
+              </View>
+            );
+          })}
         </View>
-        {instructions.map((item) => {
-          return (
-            <View key={item.id.toString()} style={styles.itemContainer}>
-              <Text style={styles.bullet}>•</Text>
-              <Text style={styles.itemText}>{t(item.title)}</Text>
-            </View>
-          );
-        })}
       </ScrollView>
     </View>
   );
@@ -163,7 +163,11 @@ TestView.propTypes = {
 };
 
 const styles = StyleSheet.create({
-  container: { paddingHorizontal: 20, paddingTop: 5 },
+  container: {
+    paddingHorizontal: 20,
+    paddingTop: 5,
+    backgroundColor: '#FBF4E4',
+  },
   text: { color: '#000', fontSize: 14, paddingVertical: 10 },
   note: {
     padding: 10,
