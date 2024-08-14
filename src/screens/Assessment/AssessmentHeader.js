@@ -56,9 +56,7 @@ const AssessmentHeader = ({
           </View>
         ) : (
           <View style={styles.scoreContainer}>
-            <Text style={[styles.scoreText, { marginLeft: 10 }]}>
-              {t('not_started')}
-            </Text>
+            <Text style={[styles.scoreText]}>{t('not_started')}</Text>
           </View>
         )}
       </View>
