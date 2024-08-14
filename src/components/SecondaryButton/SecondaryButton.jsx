@@ -3,13 +3,13 @@ import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
-const SecondaryButton = ({onPress,text}) => {
+const SecondaryButton = ({onPress,text,style}) => {
   //multi language setup
   const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text style={styles.buttontext}>{t(text)}</Text>
+        <Text style={[styles.buttontext,style]}>{t(text)}</Text>
       </TouchableOpacity>
     </View>
   );

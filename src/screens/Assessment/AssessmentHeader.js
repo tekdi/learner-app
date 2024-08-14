@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#EDE1CF',
-    paddingVertical: 15,
+    paddingVertical: 10,
   },
   leftContainer: {
     flex: 1,
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   preTestText: {
-    fontSize: 22,
+    fontSize: 18,
     color: '#4D4639',
     fontWeight: '500',
   },

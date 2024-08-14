@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Header from '../../components/Layout/Header';
 import AssessmentHeader from './AssessmentHeader';
 import { useTranslation } from '../../context/LanguageContext';
@@ -108,58 +108,53 @@ const TestView = ({ route }) => {
     fetchData();
   }, []);
 
-  const renderHeader = () => (
-    <View>
-      <Header />
-      <AssessmentHeader
-        testText={title}
-        status={status}
-        percentage={percentage}
-        completedCount={completedCount}
-        questionsets={questionsets}
-      />
-      <View style={styles.container}>
-        <Text style={styles.text}>{t('assessment_instructions')}</Text>
-        {questionsets?.map((item, index) => {
-          return (
-            <SubjectBox
-              key={index}
-              disabled={item?.lastAttemptedOn ? false : true}
-              name={item?.subject?.[0]?.toUpperCase()}
-              data={item}
-            />
-          );
-        })}
-        <View style={styles.note}>
-          <Text style={styles.text}>{t('assessment_note')}</Text>
-        </View>
-        <Text
-          style={[
-            styles.text,
-            { fontWeight: '500', paddingVertical: 20, fontSize: 18 },
-          ]}
-        >
-          {t('general_instructions')}
-        </Text>
-      </View>
-    </View>
-  );
-
   return loading ? (
     <ActiveLoading />
   ) : (
-    <FlatList
-      data={instructions}
-      keyExtractor={(item) => item.id.toString()}
-      ListHeaderComponent={renderHeader}
-      renderItem={({ item }) => (
-        <View key={item.id.toString()} style={styles.itemContainer}>
-          <Text style={styles.bullet}>•</Text>
-          <Text style={styles.itemText}>{t(item.title)}</Text>
+    <View style={{ flex: 2 }}>
+      <Header />
+      <ScrollView style={{ flex: 1 }}>
+        <AssessmentHeader
+          testText={title}
+          status={status}
+          percentage={percentage}
+          completedCount={completedCount}
+          questionsets={questionsets}
+        />
+        <View style={styles.container}>
+          <Text style={styles.text}>{t('assessment_instructions')}</Text>
+          {questionsets?.map((item, index) => {
+            return (
+              <SubjectBox
+                key={index}
+                disabled={item?.lastAttemptedOn ? false : true}
+                name={item?.subject?.[0]?.toUpperCase()}
+                data={item}
+              />
+            );
+          })}
+          <View style={styles.note}>
+            <Text style={styles.text}>{t('assessment_note')}</Text>
+          </View>
+          <Text
+            style={[
+              styles.text,
+              { fontWeight: '500', paddingVertical: 20, fontSize: 18 },
+            ]}
+          >
+            {t('general_instructions')}
+          </Text>
         </View>
-      )}
-      contentContainerStyle={{ backgroundColor: '#fbf5e6', flexGrow: 1 }}
-    />
+        {instructions.map((item) => {
+          return (
+            <View key={item.id.toString()} style={styles.itemContainer}>
+              <Text style={styles.bullet}>•</Text>
+              <Text style={styles.itemText}>{t(item.title)}</Text>
+            </View>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 };
 
@@ -168,8 +163,8 @@ TestView.propTypes = {
 };
 
 const styles = StyleSheet.create({
-  container: { paddingHorizontal: 20, paddingTop: 20 },
-  text: { color: '#000', fontSize: 16, paddingVertical: 10 },
+  container: { paddingHorizontal: 20, paddingTop: 5 },
+  text: { color: '#000', fontSize: 14, paddingVertical: 10 },
   note: {
     padding: 10,
     backgroundColor: '#FFDEA1',
