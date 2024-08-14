@@ -143,6 +143,14 @@ const StandAlonePlayer = ({ route }) => {
     console.log('Current URL:', navState.url);
   };
   const handleMessage = async (event) => {
+    // const data = event.nativeEvent.data;
+    // let jsonObj = JSON.parse(data);
+    // let data_obj = jsonObj.data;
+    // if (data_obj) {
+    //   console.log('####################');
+    //   console.log('data_obj', JSON.stringify(data_obj));
+    //   console.log('####################');
+    // }
     //for assessment
     if (content_mime_type == 'application/vnd.sunbird.questionset') {
       try {
@@ -169,7 +177,6 @@ const StandAlonePlayer = ({ route }) => {
           userId,
           batchId
         );
-
         if (
           create_assessment &&
           create_assessment?.response?.responseCode == 201
@@ -178,7 +185,6 @@ const StandAlonePlayer = ({ route }) => {
           const percentage =
             (exam_data?.totalScore / exam_data?.totalMaxScore) * 100;
           const roundedPercentage = percentage.toFixed(2); // Rounds to 2 decimal places
-
           Alert.alert(
             'Success', // Title of the alert
             `You got ${exam_data?.totalScore} out of ${exam_data?.totalMaxScore}. Percentage= ${roundedPercentage}%`, // Message of the alert
