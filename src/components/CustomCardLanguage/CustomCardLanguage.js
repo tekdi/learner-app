@@ -24,7 +24,7 @@ const CustomCardLanguage = ({
             },
           ]}
         >
-          {t(title.toUpperCase())}
+          {t(title)}
         </Text>
       </View>
     </TouchableOpacity>

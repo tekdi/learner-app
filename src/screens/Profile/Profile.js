@@ -32,7 +32,6 @@ const Profile = (props) => {
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
-        console.log('hi');
         const data = await getAccessToken();
         const result = await getProfileDetails({
           userId: data?.result?.userId,

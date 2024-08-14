@@ -3,13 +3,13 @@
   "choose_language": "आइए अपनी भाषा चुनें",
   "select_language": "आरंभ करने के लिए वह भाषा चुनें जिसमें आप सबसे अधिक सहज महसूस करते हैं",
   "english": "English",
-  "HINDI": "हिंदी",
-  "MARATHI": "मराठी",
-  "BENGALI": "বাংলা",
-  "BANGLA": "বাংলা",
-  "TELUGU": "తెలుగు",
-  "KANNADA": "ಕನ್ನಡ",
-  "GUJARATI": "ગુજરાતી",
+  "hindi": "हिंदी",
+  "marathi": "मराठी",
+  "bengali": "বাংলা",
+  "bangla": "বাংলা",
+  "telugu": "తెలుగు",
+  "kannada": "ಕನ್ನಡ",
+  "gujarati": "ગુજરાતી",
   "language_help": "आप बाद में कभी भी भाषा बदल सकते हैं",
   "continue": "जारी रखें",
   "back": "पीछे",
@@ -37,7 +37,6 @@
   "HEALTH": "स्वास्थ्य",
   "ART": "कला",
   "MUSIC": "संगीत",
-  "ENGLISH": "अंग्रेज़ी",
   "FINANCIAL_LITERACY": "वित्तीय साक्षरता",
   "CONCEPTUAL_THINKING": "अवधारणात्मक सोच",
   "ENVIRONMENT": "पर्यावरण",
@@ -145,6 +144,7 @@
   "ka":"ಕಾ.",
   "gu":"ગુ",
   "invalid_username_or_password":"अमान्य उपयोगकर्ता नाम या कूटशब्द",
-  "network_error_try_again_later":"नेटवर्क त्रुटि बाद में फिर से प्रयास करें"
-
+  "network_error_try_again_later":"नेटवर्क त्रुटि बाद में फिर से प्रयास करें",
+  "log_in":"लॉग इन",
+"login_with_the_cred":"आपको दिए गए क्रेडेंशियल्स के साथ लॉग इन करें"
 }

@@ -91,7 +91,7 @@ const LoginScreen = () => {
           <TouchableOpacity
             style={styles.backbutton}
             onPress={() => {
-              navigation.navigate('LoginSignUpScreen');
+              navigation.navigate('LanguageScreen');
             }}
           >
             <Image
@@ -99,8 +99,25 @@ const LoginScreen = () => {
               resizeMode="contain"
               style={{ width: 30, height: 30 }}
             />
-            {/* <Text>Back</Text> */}
+            <Text
+              style={{
+                color: '#000',
+                fontSize: 20,
+                fontWeight: '500',
+                marginLeft: 10,
+              }}
+            >
+              {t('back')}
+            </Text>
           </TouchableOpacity>
+          <View style={{ paddingVertical: 15 }}>
+            <Text style={[styles.text, { fontSize: 23, fontWeight: '500' }]}>
+              {t('login')}
+            </Text>
+            <Text style={[styles.text, { fontSize: 18 }]}>
+              {t('login_with_the_cred')}
+            </Text>
+          </View>
           <View style={styles.textfieldbox}>
             <LoginTextField
               text="username"
@@ -193,7 +210,7 @@ const LoginScreen = () => {
   );
 };
 const styles = StyleSheet.create({
-  backbutton: {},
+  backbutton: { flexDirection: 'row', alignItems: 'center' },
   container: {
     flex: 1,
     height: '100%',
@@ -223,6 +240,10 @@ const styles = StyleSheet.create({
     margin: 2,
     // borderWidth: 1,
     height: 25,
+  },
+  text: {
+    marginVertical: 10,
+    color: '#000',
   },
 });
 export default LoginScreen;
