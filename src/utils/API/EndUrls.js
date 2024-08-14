@@ -26,8 +26,7 @@ const EndUrls = {
   trackAssessment: `${tracking_assessment}/v1/tracking/assessment/list`,
   AssessmentCreate: `${tracking_assessment}/v1/tracking/assessment/create`,
   AssessmentStatus: `${tracking_assessment}/v1/tracking/assessment/search/status`,
-  AssessmentSearch: `${tracking_assessment}/v1/tracking/assessment/search
-  `,
+  AssessmentSearch: `${tracking_assessment}/v1/tracking/assessment/search`,
   profileDetails: `${API_URL}/user/v1/list`,
 };
 
