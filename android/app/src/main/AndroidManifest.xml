@@ -4,9 +4,13 @@ package="com.pratham.learning">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- for file download and storage-->
+    <!-- for file download and storage
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    no need as we download in secure storage-->
     <!-- added android:requestLegacyExternalStorage="true" for api level 30 higher targeted device-->
     <application
       android:name=".MainApplication"
@@ -15,7 +19,6 @@ package="com.pratham.learning">
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme"
-      
       android:requestLegacyExternalStorage="true">
       <activity
         android:name=".MainActivity"

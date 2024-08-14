@@ -77,7 +77,8 @@
 
             if (telemetry?.eid === "ASSESS") {
               const edata = telemetry?.edata;
-
+              //add && edata?.resvalues.length > 0 in condition if only get response of attempt question
+              //remove && edata?.resvalues.length > 0 in condition if get data of skipped question also
               if (edata?.resvalues && edata?.resvalues.length > 0) {
                 const existingDataIndex = trackData.findIndex(
                   (e) => e?.item?.id === edata?.item?.id

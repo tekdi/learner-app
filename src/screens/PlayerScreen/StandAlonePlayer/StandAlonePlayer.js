@@ -20,6 +20,7 @@ import {
   readContent,
   hierarchyContent,
   assessmentTracking,
+  listQuestion,
 } from '../../../utils/API/ApiCalls';
 import {
   qumlPlayerConfig,
@@ -27,6 +28,7 @@ import {
   pdfPlayerConfig,
   videoPlayerConfig,
   epubPlayerConfig,
+  questionsData,
 } from './data';
 import {
   getData,
@@ -88,31 +90,28 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
-        ? 'sunbird-pdf-player'
-        : content_mime_type == 'application/vnd.sunbird.questionset'
-          ? 'sunbird-quml-player'
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? 'sunbird-video-player'
-            : content_mime_type == 'application/epub'
-              ? 'sunbird-epub-player'
-              : ''
+      ? 'sunbird-pdf-player'
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? 'sunbird-quml-player'
+      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
+      ? 'sunbird-video-player'
+      : content_mime_type == 'application/epub'
+      ? 'sunbird-epub-player'
+      : ''
   );
   const [lib_file] = useState(
-    isOffline == true &&
-      content_mime_type == 'application/vnd.sunbird.questionset'
+    content_mime_type == 'application/vnd.sunbird.questionset'
       ? 'index_o.html'
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/pdf' ||
-          content_mime_type == 'application/vnd.sunbird.questionset' ||
-          content_mime_type == 'video/mp4' ||
-          content_mime_type == 'video/webm' ||
-          content_mime_type == 'video/x-youtube' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'application/epub'
-        ? 'index.html'
-        : ''
+        content_mime_type == 'application/pdf' ||
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'video/x-youtube' ||
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'application/epub'
+      ? 'index.html'
+      : ''
   );
 
   const [loading, setLoading] = useState(true);
@@ -121,13 +120,14 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
       ? `${content_file}`
       : content_mime_type == 'application/vnd.ekstep.html-archive'
-        ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
-        : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-          ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
-          : ``;
+      ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
+      : content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
+      : `${content_file}/${content_do_id}.json`;
   // console.log('rnfs DocumentDirectoryPath', RNFS.DocumentDirectoryPath);
   // console.log('rnfs ExternalDirectoryPath', RNFS.ExternalDirectoryPath);
   const [is_valid_file, set_is_valid_file] = useState(null);
+  const [is_download, set_is_download] = useState(null);
   const questionListUrl = Config.QUESTION_LIST_URL;
   const [progress, setProgress] = useState(0);
   const [loading_text, set_loading_text] = useState('');
@@ -144,6 +144,14 @@ const StandAlonePlayer = ({ route }) => {
     console.log('Current URL:', navState.url);
   };
   const handleMessage = async (event) => {
+    // const data = event.nativeEvent.data;
+    // let jsonObj = JSON.parse(data);
+    // let data_obj = jsonObj.data;
+    // if (data_obj) {
+    //   console.log('####################');
+    //   console.log('data_obj', JSON.stringify(data_obj));
+    //   console.log('####################');
+    // }
     //for assessment
     if (content_mime_type == 'application/vnd.sunbird.questionset') {
       try {
@@ -170,7 +178,6 @@ const StandAlonePlayer = ({ route }) => {
           userId,
           batchId
         );
-
         if (
           create_assessment &&
           create_assessment?.response?.responseCode == 201
@@ -179,7 +186,6 @@ const StandAlonePlayer = ({ route }) => {
           const percentage =
             (exam_data?.totalScore / exam_data?.totalMaxScore) * 100;
           const roundedPercentage = percentage.toFixed(2); // Rounds to 2 decimal places
-
           Alert.alert(
             'Success', // Title of the alert
             `You got ${exam_data?.totalScore} out of ${exam_data?.totalMaxScore}. Percentage= ${roundedPercentage}%`, // Message of the alert
@@ -220,16 +226,43 @@ const StandAlonePlayer = ({ route }) => {
   const fetchDataQuml = async () => {
     //content read
     setLoading(true);
-    let content_response = await hierarchyContent(content_do_id);
-    if (content_response == null) {
-      Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
-      set_is_valid_file(false);
-    } else if (content_response?.result?.questionSet) {
-      qumlPlayerConfig.metadata = content_response.result.questionSet;
-      set_is_valid_file(true);
+    set_loading_text('Reading Content...');
+    let contentObj = await getData(content_do_id, 'json');
+    if (contentObj == null) {
+      set_is_download(true);
     } else {
-      set_is_valid_file(false);
+      let filePath = '';
+      if (contentObj?.mimeType == 'application/vnd.sunbird.questionset') {
+        filePath = `${content_file}`;
+      }
+      if (filePath != '') {
+        try {
+          //get file content
+          const content = await RNFS.readFile(streamingPath, 'utf8');
+          if (content) {
+            try {
+              let file_content = JSON.parse(content);
+              //console.log('file_content', JSON.stringify(file_content));
+              //console.log('file_content', file_content);
+              questionsData.questions_data = file_content;
+              qumlPlayerConfig.metadata = contentObj;
+              //console.log('qumlPlayerConfig set', qumlPlayerConfig);
+              set_is_valid_file(true);
+            } catch (e) {
+              set_is_download(true);
+            }
+          } else {
+            set_is_download(true);
+          }
+        } catch (e) {
+          set_is_valid_file(false);
+        }
+      } else {
+        set_is_valid_file(false);
+      }
+      set_is_download(false);
     }
+    set_loading_text('');
     setLoading(false);
   };
 
@@ -338,13 +371,13 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? downloadContent()
       : content_mime_type == 'application/pdf' ||
-          content_mime_type == 'video/mp4' ||
-          content_mime_type == 'video/webm' ||
-          content_mime_type == 'application/epub'
-        ? fetchDataPdfVideoEpub()
-        : content_mime_type == 'application/vnd.sunbird.questionset'
-          ? fetchDataQuml()
-          : '';
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'application/epub'
+      ? fetchDataPdfVideoEpub()
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? downloadContentQuML()
+      : '';
   }, []);
 
   const downloadContent = async () => {
@@ -447,11 +480,11 @@ const StandAlonePlayer = ({ route }) => {
                       'application/vnd.ekstep.ecml-archive'
                         ? fetchDataEcml(contentObj)
                         : contentObj?.mimeType ==
-                              'application/vnd.ekstep.html-archive' ||
-                            contentObj?.mimeType ==
-                              'application/vnd.ekstep.h5p-archive'
-                          ? await fetchDataHtmlH5pYoutube(contentObj)
-                          : '';
+                            'application/vnd.ekstep.html-archive' ||
+                          contentObj?.mimeType ==
+                            'application/vnd.ekstep.h5p-archive'
+                        ? await fetchDataHtmlH5pYoutube(contentObj)
+                        : '';
                     } catch (error) {
                       console.error(`Error extracting zip file: ${error}`);
                     }
@@ -493,6 +526,115 @@ const StandAlonePlayer = ({ route }) => {
     setLoading(false);
   };
 
+  const downloadContentQuML = async () => {
+    //content read
+    setLoading(true);
+    set_loading_text('Reading Content...');
+    //get data online
+    let content_response = await hierarchyContent(content_do_id);
+    if (content_response == null) {
+      Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
+      set_is_valid_file(false);
+    } else {
+      let contentObj = content_response?.result?.questionSet;
+      let filePath = '';
+      if (contentObj?.mimeType == 'application/vnd.sunbird.questionset') {
+        filePath = `${content_file}`;
+      }
+      if (filePath != '') {
+        //create file and store object in local
+        try {
+          //console.log('permission got');
+          try {
+            //create directory
+            set_loading_text('Creating Folder...');
+            await RNFS.mkdir(filePath);
+            console.log('folder created successfully:', filePath);
+            //create directory and add json file in it
+            set_loading_text('Downloading questionset...');
+            //downlaod here
+            let childNodes = contentObj?.childNodes;
+            //console.log('childNodes', childNodes);
+            let removeNodes = [];
+            if (contentObj?.children) {
+              for (let i = 0; i < contentObj.children.length; i++) {
+                if (contentObj.children[i]?.identifier) {
+                  removeNodes.push(contentObj.children[i].identifier);
+                }
+              }
+            }
+            //console.log('removeNodes', removeNodes);
+            let identifiers = childNodes.filter(
+              (item) => !removeNodes.includes(item)
+            );
+            //console.log('identifiers', identifiers);
+            let questions = [];
+            const chunks = [];
+            let chunkSize = 10;
+            for (let i = 0; i < identifiers.length; i += chunkSize) {
+              chunks.push(identifiers.slice(i, i + chunkSize));
+            }
+            console.log('chunks', chunks);
+            for (const chunk of chunks) {
+              let response_question = await listQuestion(
+                questionListUrl,
+                chunk
+              );
+              if (response_question?.result?.questions) {
+                for (
+                  let i = 0;
+                  i < response_question.result.questions.length;
+                  i++
+                ) {
+                  questions.push(response_question.result.questions[i]);
+                }
+                //console.log('chunk', chunk);
+                //console.log('response_question', response_question);
+              }
+            }
+            console.log('questions', questions.length);
+            console.log('identifiers', identifiers.length);
+            if (questions.length == identifiers.length) {
+              let question_result = {
+                questions: questions,
+                count: questions.length,
+              };
+              let file_content = { result: question_result };
+              set_loading_text('Creating File...');
+              await RNFS.writeFile(
+                streamingPath,
+                JSON.stringify(file_content),
+                'utf8'
+              );
+              console.log('file created successfully:', streamingPath);
+              //store content obj
+              //console.log(contentObj);
+              await storeData(content_do_id, contentObj, 'json');
+            } else {
+              Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+            }
+            //end download
+          } catch (error) {
+            Alert.alert('Error Catch', `Failed to create file: ${error}`, [
+              { text: 'OK' },
+            ]);
+            console.error('Error creating file:', error);
+          }
+        } catch (err) {
+          Alert.alert('Error Catch', `Failed to create file: ${err}`, [
+            { text: 'OK' },
+          ]);
+          console.log('display error', err);
+        }
+      } else {
+        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+      }
+    }
+    //content read
+    setLoading(false);
+    await fetchDataQuml();
+  };
+
   if (loading) {
     return (
       <View style={styles.middle_screen}>
@@ -515,16 +657,21 @@ const StandAlonePlayer = ({ route }) => {
             localStorage.setItem('qumlPlayerObject', JSON.stringify(${JSON.stringify(
               {
                 qumlPlayerConfig: qumlPlayerConfig,
-                questionListUrl: questionListUrl,
+                questionListUrl: '/list/questions',
+              }
+            )}));
+            localStorage.setItem('questions_data', JSON.stringify(${JSON.stringify(
+              {
+                questions_data: questionsData.questions_data,
               }
             )}));
             window.setData();
         })();`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'video/x-youtube'
-        ? `(function() {
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'video/x-youtube'
+      ? `(function() {
         localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
           {
             contentPlayerConfig: contentPlayerConfig,
@@ -532,20 +679,19 @@ const StandAlonePlayer = ({ route }) => {
         )}));
         window.setData();
         })();`
-        : content_mime_type == 'application/pdf'
-          ? `(function() {
+      : content_mime_type == 'application/pdf'
+      ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
         })();`
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? `(function() {
+      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
+      ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
         })();`
-            : content_mime_type == 'application/epub'
-              ? `(function() {
+      : content_mime_type == 'application/epub'
+      ? `(function() {
         window.setData('${JSON.stringify(epubPlayerConfig)}');
         })();`
-              : ``;
+      : ``;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -553,6 +699,19 @@ const StandAlonePlayer = ({ route }) => {
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
           <Text>Invalid Player File</Text>
+        </View>
+      ) : is_download == true ? (
+        <View style={styles.middle_screen}>
+          <Button
+            title="Download Content"
+            onPress={() => {
+              if (content_mime_type == 'application/vnd.sunbird.questionset') {
+                downloadContentQuML();
+              } else {
+                downloadContent();
+              }
+            }}
+          />
         </View>
       ) : (
         <WebView

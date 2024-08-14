@@ -9,8 +9,9 @@ import theme from './assets/themes/theme.json';
 import { LanguageProvider } from './context/LanguageContext'; // Adjust path as needed
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/StackScreen';
+import { BackHandler } from 'react-native';
 
-import { PermissionsAndroid, Platform } from 'react-native';
+import { PermissionsAndroid, Platform, Alert } from 'react-native';
 
 async function checkAndRequestStoragePermission() {
   if (Platform.OS === 'android' && Platform.Version >= 33) {
@@ -66,16 +67,15 @@ async function checkAndRequestStoragePermission() {
 }
 const App = () => {
   useEffect(() => {
-    const initializeApp = async () => {
-      const hasPermission = await checkAndRequestStoragePermission();
-      if (!hasPermission) {
-        // Exit the app if permissions are denied
-        BackHandler.exitApp();
-        return;
-      }
-    };
-
-    initializeApp();
+    // const initializeApp = async () => {
+    //   const hasPermission = await checkAndRequestStoragePermission();
+    //   if (!hasPermission) {
+    //     // Exit the app if permissions are denied
+    //     BackHandler.exitApp();
+    //     return;
+    //   }
+    // };
+    // initializeApp();
   }, []);
 
   useEffect(() => {
