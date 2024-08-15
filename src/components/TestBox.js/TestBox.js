@@ -12,6 +12,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
+import globalStyles from '../../utils/Helper/Style';
 
 const IconConditions = ({ status, styles }) => {
   let iconName;
@@ -44,8 +45,8 @@ const StatusCondition = ({ status, styles, t, percentage }) => {
   switch (status) {
     case 'Completed':
       content = (
-        <View style={styles.scoreContainer}>
-          <Text style={styles.scoreText}>
+        <View style={globalStyles.flexrow}>
+          <Text style={globalStyles.subHeading}>
             {t('Overallscore')}
             <Text style={{ color: percentage > 35 ? '#1A8825' : 'red' }}>
               {' '}
@@ -58,15 +59,15 @@ const StatusCondition = ({ status, styles, t, percentage }) => {
       break;
     case 'In_Progress':
       content = (
-        <View style={styles.scoreContainer}>
-          <Text style={styles.scoreText}>{t('Inprogress')}</Text>
+        <View style={globalStyles.flexrow}>
+          <Text style={globalStyles.subHeading}>{t('Inprogress')}</Text>
         </View>
       );
       break;
     default:
       content = (
-        <View style={styles.scoreContainer}>
-          <Text style={styles.scoreText}>{t('not_started')}</Text>
+        <View style={globalStyles.flexrow}>
+          <Text style={globalStyles.subHeading}>{t('not_started')}</Text>
         </View>
       );
   }
@@ -88,7 +89,7 @@ const TestBox = ({ testText, status, percentage }) => {
         <View style={styles.card}>
           <IconConditions status={status} styles={styles} />
           <View style={styles.rightContainer}>
-            <Text style={styles.preTestText}>{t(testText)}</Text>
+            <Text style={globalStyles.subHeading}>{t(testText)}</Text>
 
             <StatusCondition
               status={status}
@@ -119,6 +120,7 @@ StatusCondition.propTypes = {
   status: PropTypes.string,
   styles: PropTypes.object,
   t: PropTypes.any,
+  percentage: PropTypes.any,
 };
 
 const styles = StyleSheet.create({
@@ -145,20 +147,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     // borderWidth: 1,
   },
-  preTestText: {
-    fontSize: 16,
-    color: '#000',
-    fontWeight: '500',
-  },
-  scoreContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  scoreText: {
-    fontSize: 14,
-    color: '#000',
-    fontWeight: '500',
-  },
+
   smileyText: {
     fontSize: 16,
     marginLeft: 5,

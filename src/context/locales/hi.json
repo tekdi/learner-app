@@ -147,6 +147,8 @@
   "network_error_try_again_later":"नेटवर्क त्रुटि बाद में फिर से प्रयास करें",
   "log_in":"लॉग इन",
   "login_with_the_cred":"आपको दिए गए क्रेडेंशियल्स के साथ लॉग इन करें",
-  "total_marks":"कुल अंक"
-
+  "total_marks":"कुल अंक",
+  "full_name":"पूरा नाम",
+  "State":"राज्य",
+  "district":"जिला"
 }

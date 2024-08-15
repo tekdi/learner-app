@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Header from '../../components/Layout/Header';
 import AssessmentHeader from './AssessmentHeader';
 import { useTranslation } from '../../context/LanguageContext';
@@ -11,8 +11,8 @@ import {
 } from '../../utils/JsHelper/Helper';
 import SubjectBox from '../../components/TestBox.js/SubjectBox.';
 import { getAssessmentStatus } from '../../utils/API/AuthService';
-import { QuestionSetData } from './testData';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
+import globalStyles from '../../utils/Helper/Style';
 
 const instructions = [
   {
@@ -111,7 +111,7 @@ const TestView = ({ route }) => {
   return loading ? (
     <ActiveLoading />
   ) : (
-    <View style={{ flex: 2 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Header />
       <ScrollView style={{ flex: 1 }}>
         <AssessmentHeader
@@ -122,24 +122,26 @@ const TestView = ({ route }) => {
           questionsets={questionsets}
         />
         <View style={styles.container}>
-          <Text style={styles.text}>{t('assessment_instructions')}</Text>
+          <Text style={globalStyles.text}>{t('assessment_instructions')}</Text>
           {questionsets?.map((item, index) => {
             return (
               <SubjectBox
                 key={index}
-                disabled={item?.lastAttemptedOn ? false : true}
+                disabled={!item?.lastAttemptedOn}
                 name={item?.subject?.[0]?.toUpperCase()}
                 data={item}
               />
             );
           })}
           <View style={styles.note}>
-            <Text style={styles.text}>{t('assessment_note')}</Text>
+            <Text style={[globalStyles.text, { fontWeight: '700' }]}>
+              {t('assessment_note')}
+            </Text>
           </View>
           <Text
             style={[
-              styles.text,
-              { fontWeight: '500', paddingVertical: 20, fontSize: 18 },
+              globalStyles.subHeading,
+              { fontWeight: '700', paddingVertical: 20 },
             ]}
           >
             {t('general_instructions')}
@@ -147,14 +149,14 @@ const TestView = ({ route }) => {
           {instructions?.map((item) => {
             return (
               <View key={item.id.toString()} style={styles.itemContainer}>
-                <Text style={styles.bullet}>•</Text>
-                <Text style={styles.itemText}>{t(item.title)}</Text>
+                <Text style={styles.bullet}>{'\u2022'}</Text>
+                <Text style={[globalStyles.subHeading]}>{t(item.title)}</Text>
               </View>
             );
           })}
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -168,7 +170,6 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     backgroundColor: '#FBF4E4',
   },
-  text: { color: '#000', fontSize: 14, paddingVertical: 10 },
   note: {
     padding: 10,
     backgroundColor: '#FFDEA1',
@@ -176,20 +177,14 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: 20, // match the padding of container
-    // borderWidth: 1,
   },
   bullet: {
-    fontSize: 20,
+    fontSize: 32,
     marginRight: 10,
     color: '#000',
-  },
-  itemText: {
-    fontSize: 16,
-    color: '#000',
-    // textAlign: 'justify',
-    margin: 5,
+    top: -10,
   },
 });
 

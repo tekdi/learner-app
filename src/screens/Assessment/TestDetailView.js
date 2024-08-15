@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Alert,
-  FlatList,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -15,8 +13,11 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
-import { convertSecondsToMinutes } from '../../utils/JsHelper/Helper';
-import moment from 'moment';
+import {
+  capitalizeFirstLetter,
+  convertSecondsToMinutes,
+} from '../../utils/JsHelper/Helper';
+import globalStyles from '../../utils/Helper/Style';
 
 const instructions = [
   {
@@ -44,32 +45,11 @@ const instructions = [
 const TestDetailView = ({ route }) => {
   const { title, data } = route.params;
   const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
-  const publishDate = moment(data?.lastPublishedOn).format('DD-MM-YYYY');
   const { t } = useTranslation();
 
   const navigation = useNavigation();
 
   const handlethis = () => {
-    console.log('content detail', { data });
-    // navigation.goBack();
-    /*Alert.alert(
-      `IL_UNIQUE_ID : ${data?.IL_UNIQUE_ID}`,
-      `mimeType : ${data?.mimeType}`,
-      [
-        {
-          text: 'Cancel',
-          onPress: () => {},
-          style: 'cancel',
-        },
-        {
-          text: 'OK',
-          onPress: () => {
-            navigation.goBack();
-          }, // Replace 'TargetScreen' with your screen name
-        },
-      ],
-      { cancelable: false }
-    );*/
     navigation.navigate('StandAlonePlayer', {
       content_do_id: data?.IL_UNIQUE_ID,
       content_mime_type: data?.mimeType,
@@ -80,7 +60,9 @@ const TestDetailView = ({ route }) => {
   return (
     <SafeAreaView style={{ paddingTop: 40, flex: 1 }}>
       <View style={styles.View}>
-        <Text style={styles.text}>{t(title)}</Text>
+        <Text style={globalStyles.heading}>
+          {t(capitalizeFirstLetter(title))}
+        </Text>
         <Pressable
           onPress={() => {
             navigation.goBack();
@@ -89,9 +71,9 @@ const TestDetailView = ({ route }) => {
           <Icon name="xmark" color="black" size={30} style={styles.icon} />
         </Pressable>
       </View>
-      <ScrollView style={styles.mapContainer}>
+      <ScrollView>
         <View style={styles.testcard}>
-          <View style={styles.testcardContainer}>
+          <View style={[globalStyles.flexrow, { marginBottom: 10 }]}>
             <View>
               <Text style={styles.texttime}>{time}</Text>
             </View>
@@ -102,7 +84,9 @@ const TestDetailView = ({ route }) => {
           </View>
           <HorizontalLine />
           <View>
-            <Text style={styles.textXam}>{data?.description}</Text>
+            <Text style={[globalStyles.text, { marginTop: 10 }]}>
+              {data?.description}
+            </Text>
           </View>
           <View>
             <Text style={styles.textmed}>{t('test_medium')}</Text>
@@ -116,17 +100,17 @@ const TestDetailView = ({ route }) => {
         <View style={{ paddingHorizontal: 20 }}>
           <Text
             style={[
-              styles.text,
-              { fontWeight: '500', paddingVertical: 20, fontSize: 18 },
+              globalStyles.subHeading,
+              { fontWeight: '700', paddingVertical: 20 },
             ]}
           >
             {t('general_instructions')}
           </Text>
           {instructions.map((item) => {
             return (
-              <View key={item?.title} style={styles.itemContainer}>
-                <Text style={styles.bullet}>•</Text>
-                <Text style={styles.itemText}>{t(item.title)}</Text>
+              <View key={item.id.toString()} style={styles.itemContainer}>
+                <Text style={styles.bullet}>{'\u2022'}</Text>
+                <Text style={[globalStyles.subHeading]}>{t(item.title)}</Text>
               </View>
             );
           })}
@@ -144,28 +128,18 @@ TestDetailView.propTypes = {
 };
 
 const styles = StyleSheet.create({
-  itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20, // match the padding of container
-    // borderWidth: 1,
-  },
   bullet: {
-    fontSize: 20,
+    fontSize: 32,
     marginRight: 10,
     color: '#000',
+    top: -10,
   },
-  itemText: {
-    fontSize: 16,
-    color: '#000',
-    // textAlign: 'justify',
-    margin: 5,
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingHorizontal: 20, // match the padding of container
   },
-  text: {
-    fontSize: 26,
-    color: '#000',
-    fontWeight: '500',
-  },
+
   View: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -193,21 +167,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
   },
-  testcardContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    marginBottom: 10,
-  },
+
   texttime: {
     fontSize: 50,
-    fontWeight: '500',
+    fontWeight: '700',
+    fontFamily: 'Poppins-Regular',
     color: '#DAA200',
     marginRight: 10,
   },
   textMin: {
     fontSize: 18,
-    fontWeight: '500',
+    fontFamily: 'Poppins-Regular',
+    fontWeight: '700',
     color: '#DAA200',
     flexWrap: 'wrap',
     width: '90%', // Add this line to make sure the text wraps within the container
@@ -220,12 +191,14 @@ const styles = StyleSheet.create({
   textmed: {
     fontSize: 16,
     marginTop: 10,
+    fontFamily: 'Poppins-Regular',
     color: '#7C766F',
   },
   mediumText: {
     fontSize: 16,
     marginTop: 10,
     color: '#000',
+    fontFamily: 'Poppins-Regular',
     fontWeight: '500',
   },
 

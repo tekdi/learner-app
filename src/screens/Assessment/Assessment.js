@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  ActivityIndicator,
   BackHandler,
   SafeAreaView,
   StyleSheet,
@@ -16,14 +15,11 @@ import {
   getAccessToken,
   getAssessmentStatus,
   getCohort,
-  trackAssessment,
 } from '../../utils/API/AuthService';
-import {
-  useNavigation,
-  useFocusEffect,
-  useNavigationState,
-} from '@react-navigation/native';
+import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { getUserId, setDataInStorage } from '../../utils/JsHelper/Helper';
+import globalStyles from '../../utils/Helper/Style';
+import ActiveLoading from '../LoadingScreen/ActiveLoading';
 
 const Assessment = (props) => {
   const { t } = useTranslation();
@@ -56,7 +52,7 @@ const Assessment = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const data = await getAccessToken();
+      // const data = await getAccessToken();
       const user_id = await getUserId();
       const cohort = await getCohort({ user_id });
       const cohort_id = cohort?.cohortData?.[0]?.cohortId;
@@ -116,22 +112,14 @@ const Assessment = (props) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <Header />
       {loading ? (
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <ActivityIndicator size="large" />
-        </View>
+        <ActiveLoading />
       ) : (
-        <View style={styles.container}>
-          <Text style={styles.text}>{t('Assessments')}</Text>
+        <View>
+          <Text style={[globalStyles.heading, { padding: 20 }]}>
+            {t('Assessments')}
+          </Text>
 
-          <View
-            style={{
-              marginVertical: 20,
-              justifyContent: 'space-between',
-              backgroundColor: '#FBF4E4',
-              paddingVertical: 30,
-              paddingHorizontal: 10,
-            }}
-          >
+          <View style={styles.card}>
             {assessments.length > 0 ? (
               assessments?.map((item) => {
                 return (
@@ -144,9 +132,7 @@ const Assessment = (props) => {
                 );
               })
             ) : (
-              <Text style={{ fontSize: 16, color: '#000' }}>
-                {t('no_data_found')}
-              </Text>
+              <Text style={globalStyles.subHeading}>{t('no_data_found')}</Text>
             )}
           </View>
         </View>
@@ -158,10 +144,12 @@ const Assessment = (props) => {
 Assessment.propTypes = {};
 
 const styles = StyleSheet.create({
-  container: {
-    paddingVertical: 15,
+  card: {
+    justifyContent: 'space-between',
+    backgroundColor: '#FBF4E4',
+    paddingVertical: 30,
+    paddingHorizontal: 20,
   },
-  text: { fontSize: 26, color: 'black', fontWeight: '500', marginLeft: 20 },
 });
 
 export default Assessment;
