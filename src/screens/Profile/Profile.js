@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   SafeAreaView,
@@ -12,25 +12,22 @@ import Header from '../../components/Layout/Header';
 import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { getAccessToken, getProfileDetails } from '../../utils/API/AuthService';
-import {
-  CommonActions,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import Label from '../../components/Label/Label';
 import TextField from '../../components/TextField/TextField';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
-import { deleteSavedItem } from '../../utils/JsHelper/Helper';
+import {
+  capitalizeFirstLetter,
+  deleteSavedItem,
+} from '../../utils/JsHelper/Helper';
+import globalStyles from '../../utils/Helper/Style';
+
 const Profile = (props) => {
   const { t } = useTranslation();
   const [userData, setUserData] = useState();
   const [userDetails, setUserDetails] = useState();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
-  const capitalizeFirstLetter = (str) => {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  };
 
   const createNewObject = (customFields, labels) => {
     const result = {};
@@ -52,6 +49,8 @@ const Profile = (props) => {
       const requiredLabels = [
         'GENDER',
         'CLASS_OR_LAST_PASSED_GRADE',
+        'STATES',
+        'DISTRICTS',
         'BLOCKS',
         'AGE',
       ];
@@ -86,9 +85,9 @@ const Profile = (props) => {
       {loading ? (
         <ActiveLoading />
       ) : (
-        <ScrollView>
+        <ScrollView style={globalStyles.container}>
           <View style={styles.view}>
-            <Text style={styles.text}>{t('my_profile')}</Text>
+            <Text style={globalStyles.heading}>{t('my_profile')}</Text>
             {/* <TouchableOpacity
               onPress={() => {
                 navigation.replace('ProfileMenu');
@@ -97,22 +96,20 @@ const Profile = (props) => {
               <Icon name="menu" color="black" size={30} />
             </TouchableOpacity> */}
           </View>
-          <View style={styles.view2}>
-            <TextField text={capitalizeFirstLetter(userData?.name)} />
-            <TextField
-              text={userData?.username}
-              style={{ color: '#4A4640', fontSize: 14 }}
-            />
-          </View>
-          <View style={{ padding: 20 }}>
-            <TextField
-              text={t('second_chance_program')}
-              style={{ color: '#4A4640', fontSize: 18 }}
-            />
+
+          <View>
             <View style={styles.viewBox}>
               <View>
-                <Label text={`${t('block')}, ${t('unit')}`} />
-                <TextField text={userDetails?.BLOCKS} />
+                <Label text={`${t('full_name')}`} />
+                <TextField text={capitalizeFirstLetter(userData?.name)} />
+              </View>
+              <View>
+                <Label
+                  text={`${t('state')}, ${t('district')}, ${t('block')}, ${t('unit')}`}
+                />
+                <TextField
+                  text={`${userDetails?.STATES}, ${userDetails?.DISTRICTS}, ${userDetails?.BLOCKS}`}
+                />
               </View>
               <View>
                 <Label text={`${t('enrollment_number')}`} />
@@ -144,11 +141,10 @@ const Profile = (props) => {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginHorizontal: 20,
                 marginBottom: 40,
               }}
             >
-              <Text style={{ color: '#000', fontSize: 24, padding: 10 }}>
+              <Text style={[globalStyles.heading2, { padding: 10 }]}>
                 {t('logout')}
               </Text>
               <Icon name="logout" color="black" size={30} style={styles.icon} />
@@ -162,31 +158,24 @@ const Profile = (props) => {
 
 Profile.propTypes = {};
 
-styles = StyleSheet.create({
+const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
   view: {
-    padding: 20,
+    padding: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  view2: {
-    padding: 20,
-    backgroundColor: '#F8EFDA',
-  },
+
   viewBox: {
     borderWidth: 1,
     borderRadius: 20,
-    marginVertical: 20,
+    marginBottom: 20,
     padding: 20,
+    borderColor: '#D0C5B4',
   },
-  text: {
-    fontSize: 30,
-    color: '#000',
-  },
-  icon: {},
 });
 
 export default Profile;

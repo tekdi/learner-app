@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Pressable,
   SafeAreaView,
@@ -9,9 +9,7 @@ import {
 } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/FontAwesome6';
-import { CheckBox } from '@ui-kitten/components';
-import PropTypes from 'prop-types';
-import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
+
 import { useNavigation } from '@react-navigation/native';
 
 const TermsAndCondition = () => {

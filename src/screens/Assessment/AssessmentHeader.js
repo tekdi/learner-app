@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // or another icon lib
 import { useTranslation } from '../../context/LanguageContext';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import { useNavigation } from '@react-navigation/native';
+import globalStyles from '../../utils/Helper/Style';
 
 const AssessmentHeader = ({
   testText,
@@ -33,10 +34,10 @@ const AssessmentHeader = ({
         </TouchableOpacity>
       </View>
       <View style={styles.rightContainer}>
-        <Text style={styles.preTestText}>{t(testText)}</Text>
+        <Text style={globalStyles.subHeading}>{t(testText)}</Text>
         {status === 'Completed' ? (
-          <View style={styles.scoreContainer}>
-            <Text style={styles.scoreText}>
+          <View style={globalStyles.flexrow}>
+            <Text style={globalStyles.subHeading}>
               {t('Overallscore')}{' '}
               <Text style={{ color: percentage > 35 ? '#1A8825' : 'red' }}>
                 {' '}
@@ -46,17 +47,17 @@ const AssessmentHeader = ({
             <Text style={styles.smileyText}>{percentage > 35 && `😄`}</Text>
           </View>
         ) : status === 'In_Progress' ? (
-          <View style={styles.scoreContainer}>
+          <View style={globalStyles.flexrow}>
             <Icon name="circle-o" size={24} color="#4D4639" />
 
-            <Text style={[styles.scoreText, { marginLeft: 10 }]}>
+            <Text style={[globalStyles.subHeading, { marginLeft: 10 }]}>
               {t('Inprogress')} ({completedCount} {t('out_of')}{' '}
               {questionsets?.length} {t('completed')})
             </Text>
           </View>
         ) : (
-          <View style={styles.scoreContainer}>
-            <Text style={[styles.scoreText]}>{t('not_started')}</Text>
+          <View style={globalStyles.flexrow}>
+            <Text style={[globalStyles.subHeading]}>{t('not_started')}</Text>
           </View>
         )}
       </View>
@@ -66,7 +67,10 @@ const AssessmentHeader = ({
 
 AssessmentHeader.propTypes = {
   testText: PropTypes.string,
-  data: PropTypes.any,
+  questionsets: PropTypes.any,
+  status: PropTypes.string,
+  percentage: PropTypes.any,
+  completedCount: PropTypes.any,
 };
 
 const styles = StyleSheet.create({
@@ -83,24 +87,8 @@ const styles = StyleSheet.create({
   },
   rightContainer: {
     flex: 4,
-    marginLeft: 10,
   },
-  preTestText: {
-    fontSize: 18,
-    color: '#4D4639',
-    fontWeight: '500',
-  },
-  scoreContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-    color: '#4D4639',
-  },
-  scoreText: {
-    fontSize: 14,
-    color: '#000',
-    fontWeight: '500',
-  },
+
   smileyText: {
     fontSize: 16,
     marginLeft: 5,

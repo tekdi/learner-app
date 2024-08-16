@@ -6,6 +6,7 @@ import {
   Pressable,
   SafeAreaView,
   StatusBar,
+  TouchableOpacity,
 } from 'react-native';
 import { IndexPath, Select, SelectItem } from '@ui-kitten/components';
 import Logo from '../../assets/images/png/logo.png';
@@ -63,9 +64,15 @@ const Header = () => {
             <SelectItem key={option.value} title={t(option?.title)} />
           ))}
         </Select>
-        <View style={styles.center}>
-          <Image style={styles.image} source={Logo} resizeMode="contain" />
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.replace('Dashboard');
+          }}
+        >
+          <View style={styles.center}>
+            <Image style={styles.image} source={Logo} resizeMode="contain" />
+          </View>
+        </TouchableOpacity>
         <Pressable
           onPress={() => {
             profile();

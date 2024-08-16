@@ -16,9 +16,14 @@ import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
 import moment from 'moment';
 import { getAssessmentAnswerKey } from '../../utils/API/AuthService';
-import { getDataFromStorage, getUserId } from '../../utils/JsHelper/Helper';
+import {
+  capitalizeFirstLetter,
+  getDataFromStorage,
+  getUserId,
+} from '../../utils/JsHelper/Helper';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import RenderHtml from 'react-native-render-html';
+import globalStyles from '../../utils/Helper/Style';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -89,14 +94,8 @@ const AnswerKeyView = ({ route }) => {
       {loading ? (
         <ActiveLoading />
       ) : (
-        <View style={{ padding: 20, flex: 1 }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: 20,
-            }}
-          >
+        <SafeAreaView style={globalStyles.container}>
+          <View style={globalStyles.flexrow}>
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
@@ -105,29 +104,38 @@ const AnswerKeyView = ({ route }) => {
               <Icon
                 name="arrow-left"
                 style={{ marginHorizontal: 10 }}
-                color={'#0D599E'}
+                color={'#4D4639'}
                 size={30}
               />
             </TouchableOpacity>
-            <Text style={styles.text}>{t(title)}</Text>
+            <Text style={globalStyles.heading}>
+              {t(capitalizeFirstLetter(title))}
+            </Text>
           </View>
           <View style={styles.container}>
             <View>
-              <Text style={styles.submitText}>
+              <Text style={[globalStyles.text, { color: '#7C766F' }]}>
                 {t('submitted_On')}
-                {moment(scoreData?.lastAttemptedOn).format('DD-MM-YYYY')}
+                {moment(scoreData?.lastAttemptedOn).format('DD MMM, YYYY')}
               </Text>
-              <View style={styles.readView}>
-                <Text style={styles.readText}>{t('total_marks')}</Text>
-                <Text style={styles.readText}>
+              <View
+                style={[
+                  globalStyles.flexrow,
+                  { justifyContent: 'space-between', marginVertical: 10 },
+                ]}
+              >
+                <Text style={[globalStyles.subHeading, { fontWeight: '700' }]}>
+                  {t('total_marks')}
+                </Text>
+                <Text style={[globalStyles.subHeading, { fontWeight: '700' }]}>
                   {scoreData?.totalScore}/{scoreData?.totalMaxScore}
                 </Text>
               </View>
               <View style={{ borderBottomWidth: 1 }}></View>
               <Text
                 style={[
-                  styles.submitText,
-                  { fontSize: 16, marginVertical: 20 },
+                  globalStyles.text,
+                  { marginVertical: 20, color: '#7C766F' },
                 ]}
               >
                 {passedItems?.length} {t('out_of')}{' '}
@@ -142,7 +150,7 @@ const AnswerKeyView = ({ route }) => {
                 <View style={styles.questionContainer}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={styles.questionText}>
-                      {`Q. ${startIndex + index + 1})`}
+                      {`Q${startIndex + index + 1}.`}
                     </Text>
                     <RenderHtml
                       contentWidth={width}
@@ -181,7 +189,10 @@ const AnswerKeyView = ({ route }) => {
             </TouchableOpacity>
 
             <Text
-              style={[styles.pageText, { flex: 2 }]}
+              style={[
+                globalStyles.subHeading,
+                { flex: 2, textAlign: 'center' },
+              ]}
             >{`${startIndex + 1}-${endIndex} of ${scoreData?.score_details.length}`}</Text>
             <TouchableOpacity
               style={{ flex: 1, alignItems: 'center' }}
@@ -195,7 +206,7 @@ const AnswerKeyView = ({ route }) => {
               />
             </TouchableOpacity>
           </View>
-        </View>
+        </SafeAreaView>
       )}
     </SafeAreaView>
   );
@@ -208,7 +219,8 @@ AnswerKeyView.propTypes = {
 const baseStyle = {
   color: '#000',
   fontSize: 14,
-  wordWrap: 'break-word', // This ensures the text breaks within words if needed
+  fontFamily: 'Poppins-Regular',
+  width: '89%',
 };
 
 const styles = StyleSheet.create({
@@ -236,34 +248,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     marginTop: 20,
-  },
-
-  pageText: {
-    fontSize: 16,
-    color: '#000',
-    alignItems: 'center',
-    textAlign: 'center',
-  },
-  text: {
-    fontSize: 25,
-    color: 'black',
-    marginLeft: 10,
-  },
-  submitText: {
-    fontSize: 14,
-    color: '#7C766F',
-  },
-  readText: {
-    fontSize: 18,
-    color: '#000',
-    fontWeight: '500',
-  },
-  readView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    width: '100%',
   },
 });
 

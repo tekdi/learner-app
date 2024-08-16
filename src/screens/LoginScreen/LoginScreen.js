@@ -6,9 +6,9 @@ import {
   Image,
   SafeAreaView,
   Pressable,
+  ScrollView,
 } from 'react-native';
 import { useState, React, useEffect } from 'react';
-import { CheckBox } from '@ui-kitten/components';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
@@ -23,6 +23,7 @@ import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
 import { useTranslation } from '../../context/LanguageContext';
 import Loading from '../LoadingScreen/Loading';
 import Logo from '../../assets/images/png/logo.png';
+import globalStyles from '../../utils/Helper/Style';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -42,12 +43,7 @@ const LoginScreen = () => {
   const onChangePassword = (e) => {
     setPassword(e.trim());
   };
-  const rememberPassword = (value) => {
-    setSavePassword(value);
-  };
-  const acceptTermsandCondtions = (value) => {
-    setAcceptTerms(value);
-  };
+
   const handleLogin = async () => {
     setLoading(true);
     const payload = {
@@ -84,15 +80,15 @@ const LoginScreen = () => {
   }, [userName, password, acceptTerms]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={globalStyles.container}>
       {loading ? (
         <Loading />
       ) : (
-        <>
-          <Image style={styles.image} source={Logo} resizeMode="contain" />
+        <ScrollView style={styles.scrollView}>
+          <Image style={globalStyles.logo} source={Logo} resizeMode="contain" />
 
           <TouchableOpacity
-            style={styles.backbutton}
+            style={[globalStyles.flexrow, globalStyles.heading]}
             onPress={() => {
               navigation.navigate('LanguageScreen');
             }}
@@ -102,22 +98,17 @@ const LoginScreen = () => {
               resizeMode="contain"
               style={{ width: 30, height: 30 }}
             />
-            <Text
-              style={{
-                color: '#000',
-                fontSize: 20,
-                fontWeight: '500',
-                marginLeft: 10,
-              }}
-            >
+            <Text style={[globalStyles.heading2, { color: '#4D4639' }]}>
               {t('back')}
             </Text>
           </TouchableOpacity>
           <View style={{ paddingVertical: 5 }}>
-            <Text style={[styles.text, { fontSize: 23, fontWeight: '500' }]}>
+            <Text
+              style={[globalStyles.heading, { marginTop: 15, color: 'black' }]}
+            >
               {t('login')}
             </Text>
-            <Text style={[styles.text, { fontSize: 18 }]}>
+            <Text style={[globalStyles.subHeading, { marginVertical: 5 }]}>
               {t('login_with_the_cred')}
             </Text>
           </View>
@@ -149,108 +140,47 @@ const LoginScreen = () => {
               {t('forgot_password')}
             </Text>
           </TouchableOpacity> */}
-          <View style={styles.rembox}>
+          <View style={globalStyles.flexrow}>
             <CustomCheckbox value={savePassword} onChange={setSavePassword} />
-            <View style={{ paddingLeft: 10 }}>
-              <Text
-                style={{
-                  color: 'black',
-                  fontFamily: 'Poppins-Regular',
-                  fontSize: 17,
-                }}
-              >
-                {t('remember_me')}
-              </Text>
+            <View>
+              <Text style={globalStyles.subHeading}>{t('remember_me')}</Text>
             </View>
           </View>
-          <View style={[styles.rembox, { paddingTop: 20 }]}>
-            <View style={styles.controlContainer}>
+          <View style={[globalStyles.flexrow, { paddingTop: 10 }]}>
+            <View>
               <CustomCheckbox value={acceptTerms} onChange={setAcceptTerms} />
             </View>
-            <View style={{ paddingLeft: 10 }}>
-              <Text
-                style={{
-                  color: 'black',
-                  fontFamily: 'Poppins-Regular',
-                  fontSize: 17,
-                }}
-              >
-                {t('Read_T_&_C')}
-              </Text>
+            <View>
+              <Text style={globalStyles.subHeading}>{t('Read_T_&_C')}</Text>
               <Pressable
                 onPress={() => {
                   navigation.navigate('TermsAndCondition');
                 }}
               >
-                <Text
-                  style={{
-                    color: '#0D599E',
-                    fontFamily: 'Poppins-Regular',
-                    fontSize: 17,
-                  }}
-                >
+                <Text style={[globalStyles.subHeading, { color: '#0D599E' }]}>
                   {t('terms_and_conditions2')}
                 </Text>
               </Pressable>
             </View>
           </View>
-          <View
-            style={{
-              top: 50,
-              alignSelf: 'center',
-            }}
-          >
+          <View style={{ marginTop: 50 }}>
             <PrimaryButton
               text={t('login')}
               onPress={handleLogin}
               isDisabled={isDisabled}
             />
           </View>
-        </>
+        </ScrollView>
       )}
     </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({
-  backbutton: { flexDirection: 'row', alignItems: 'center' },
-  container: {
-    flex: 1,
-    height: '100%',
-    paddingTop: 50,
-    padding: 20,
-    backgroundColor: 'white',
-  },
   scrollView: {
-    height: '100%',
-    borderWidth: 1,
     flex: 1,
   },
   textfieldbox: {
-    marginTop: 10,
-  },
-  rembox: {
-    alignContent: 'center',
-    flexDirection: 'row',
-  },
-  checkbox: {
-    margin: 2,
-    color: 'red',
-    backgroundColor: 'red',
-  },
-  controlContainer: {
-    borderRadius: 4,
-    margin: 2,
-    // borderWidth: 1,
-    height: 25,
-  },
-  text: {
-    marginVertical: 10,
-    color: '#000',
-  },
-  image: {
-    height: 50,
-    width: 50,
-    marginBottom: 10,
+    marginTop: 20,
   },
 });
 export default LoginScreen;

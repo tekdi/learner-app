@@ -148,6 +148,8 @@
   "network_error_try_again_later":"नेटवर्क त्रुटी नंतर पुन्हा प्रयत्न करा",
   "log_in":"लॉग इन",
   "login_with_the_cred":"तुम्हाला दिलेल्या प्रमाणपत्रांसह लॉग इन करा",
-  "total_marks":"एकूण गुण"
-
+  "total_marks":"एकूण गुण",
+  "full_name":"पूर्ण नाव",
+  "State":"राज्य",
+  "district":"जिल्हा"
 }
