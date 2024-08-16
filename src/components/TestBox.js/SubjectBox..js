@@ -72,7 +72,7 @@ const SubjectBox = ({ name, disabled, data }) => {
             )}
           </View>
           <View style={{ marginRight: 10, paddingVertical: 10 }}>
-            {!data?.lastAttemptedOn ? (
+            {data?.lastAttemptedOn ? (
               <MaterialIcons name="navigate-next" size={32} color="black" />
             ) : (
               <SecondaryButton
