@@ -152,5 +152,6 @@
   "total_marks":"Total Marks",
   "full_name":"Full Name",
   "state":"State",
-  "district":"Disctrict"
+  "district":"Disctrict",
+  "unanswered":"Unanswered"
 }
