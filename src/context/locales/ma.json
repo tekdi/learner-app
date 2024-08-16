@@ -151,5 +151,7 @@
   "total_marks":"एकूण गुण",
   "full_name":"पूर्ण नाव",
   "State":"राज्य",
-  "district":"जिल्हा"
+  "district":"जिल्हा",
+  "unanswered":"अनुत्तरीत"
+
 }

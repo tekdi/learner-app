@@ -150,5 +150,7 @@
   "total_marks":"कुल अंक",
   "full_name":"पूरा नाम",
   "State":"राज्य",
-  "district":"जिला"
+  "district":"जिला",
+  "unanswered":"अनुत्तरित"
+
 }
