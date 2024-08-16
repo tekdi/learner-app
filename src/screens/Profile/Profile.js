@@ -33,7 +33,8 @@ const Profile = (props) => {
     const result = {};
     customFields.forEach((field) => {
       if (labels.includes(field.label)) {
-        result[field.label] = field.value;
+        console.log(field.value);
+        result[field.label] = field.value || '';
       }
     });
     setUserDetails(result);
@@ -108,7 +109,7 @@ const Profile = (props) => {
                   text={`${t('state')}, ${t('district')}, ${t('block')}, ${t('unit')}`}
                 />
                 <TextField
-                  text={`${userDetails?.STATES}, ${userDetails?.DISTRICTS}, ${userDetails?.BLOCKS}`}
+                  text={`${userDetails?.STATES}  ${userDetails?.DISTRICTS || ''} ${userDetails?.BLOCKS || ''}`}
                 />
               </View>
               <View>

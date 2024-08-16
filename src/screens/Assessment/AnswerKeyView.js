@@ -34,10 +34,17 @@ const AnswerKeyView = ({ route }) => {
   const { title, contentId } = route.params;
   const { height } = Dimensions.get('window');
 
-  const [scoreData, setScoreData] = useState();
+  const [scoreData, setScoreData] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [unansweredCount, setUnansweredCount] = useState('');
   const flatListRef = useRef(null);
+
+  const countEmptyResValues = (data) => {
+    return data.reduce((count, item) => {
+      return item.resValue === '[]' ? count + 1 : count;
+    }, 0);
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -50,6 +57,8 @@ const AnswerKeyView = ({ route }) => {
           cohort_id,
           contentId,
         });
+        const unanswered = countEmptyResValues(data?.[0]?.score_details);
+        setUnansweredCount(unanswered);
         setScoreData(data?.[0]);
         setLoading(false);
       };
@@ -67,7 +76,7 @@ const AnswerKeyView = ({ route }) => {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = Math.min(
     startIndex + ITEMS_PER_PAGE,
-    scoreData?.score_details.length
+    scoreData?.score_details?.length
   );
   const currentQuestions = scoreData?.score_details?.slice(
     startIndex,
@@ -125,7 +134,7 @@ const AnswerKeyView = ({ route }) => {
                 ]}
               >
                 <Text style={[globalStyles.subHeading, { fontWeight: '700' }]}>
-                  {t('total_marks')}
+                  {unansweredCount} {t('unanswered')}
                 </Text>
                 <Text style={[globalStyles.subHeading, { fontWeight: '700' }]}>
                   {scoreData?.totalScore}/{scoreData?.totalMaxScore}
