@@ -11,9 +11,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useTranslation } from '../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 import SecondaryButton from '../SecondaryButton/SecondaryButton';
-import { convertSecondsToMinutes } from '../../utils/JsHelper/Helper';
+import {
+  capitalizeFirstLetter,
+  convertSecondsToMinutes,
+} from '../../utils/JsHelper/Helper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment';
+import globalStyles from '../../utils/Helper/Style';
 
 const SubjectBox = ({ name, disabled, data }) => {
   // console.log({ data });
@@ -30,21 +34,16 @@ const SubjectBox = ({ name, disabled, data }) => {
     });
   };
 
-  const capitalizeFirstLetter = (str) => {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  };
-
   return (
     <SafeAreaView>
       <TouchableOpacity disabled={disabled} onPress={handlePress}>
         <View style={styles.card}>
           <View style={styles.rightContainer}>
-            <Text style={styles.preTestText}>
+            <Text style={globalStyles.subHeading}>
               {t(capitalizeFirstLetter(name))}
             </Text>
             {disabled ? (
-              <Text style={[styles.preTestText, { color: '#7C766F' }]}>
+              <Text style={[globalStyles.subHeading, { color: '#7C766F' }]}>
                 {t('not_started')}
               </Text>
             ) : (
@@ -62,7 +61,7 @@ const SubjectBox = ({ name, disabled, data }) => {
                   <Icon name="circle" size={8} color="#7C766F" />
                   <Text
                     style={[
-                      styles.preTestText,
+                      globalStyles.subHeading,
                       { color: '#7C766F', marginLeft: 5 },
                     ]}
                   >
@@ -72,8 +71,8 @@ const SubjectBox = ({ name, disabled, data }) => {
               </View>
             )}
           </View>
-          <View style={{ marginRight: 10 }}>
-            {data?.lastAttemptedOn ? (
+          <View style={{ marginRight: 10, paddingVertical: 10 }}>
+            {!data?.lastAttemptedOn ? (
               <MaterialIcons name="navigate-next" size={32} color="black" />
             ) : (
               <SecondaryButton
@@ -83,7 +82,7 @@ const SubjectBox = ({ name, disabled, data }) => {
                     data: data,
                   });
                 }}
-                style={styles.btn}
+                style={globalStyles.text}
                 text={'take_the_test'}
               />
             )}
@@ -117,21 +116,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     // borderWidth: 1,
   },
-  preTestText: {
-    fontSize: 16,
-    color: '#000',
-    fontWeight: '500',
-    marginVertical: 5,
-  },
-  scoreContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  scoreText: {
-    fontSize: 14,
-    color: '#000',
-    fontWeight: '500',
-  },
+
   smileyText: {
     fontSize: 16,
     marginLeft: 5,
@@ -140,9 +125,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end',
     marginRight: 20,
-  },
-  btn: {
-    fontSize: 14,
   },
 });
 

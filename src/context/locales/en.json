@@ -126,13 +126,13 @@
   "no_data_found":"No Data Found",
   "my_profile":"My Profile",
   "second_chance_program":"Second Chance Program",
-  "logout":"Logout",
+  "logout":"Log Out",
   "general_instructions":"General Instructions",
   "test_medium":"Test Medium",
   "board":"Board",
   "start_test":"Start Test",
   "block":"Block",
-  "Unit":"Unit",
+  "unit":"Unit",
   "enrollment_number":"Enrollment Number",
   "contact_number":"Contact Number",
   "class":"Class",
@@ -149,5 +149,8 @@
   "network_error_try_again_later":"Network error try again later",
   "log_in":"Log In",
   "login_with_the_cred":"Log in with the credentials provided to you",
-  "total_marks":"Total Marks"
+  "total_marks":"Total Marks",
+  "full_name":"Full Name",
+  "state":"State",
+  "district":"Disctrict"
 }

@@ -155,3 +155,8 @@ export const convertSecondsToMinutes = (seconds) => {
   const remainingSeconds = seconds % 60;
   return `${minutes}`;
 };
+
+export const capitalizeFirstLetter = (str) => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
