@@ -154,6 +154,8 @@ const StandAlonePlayer = ({ route }) => {
     // }
     //for assessment
     if (content_mime_type == 'application/vnd.sunbird.questionset') {
+      setLoading(true);
+      set_loading_text('Sending Result...');
       try {
         const data = event.nativeEvent.data;
         let jsonObj = JSON.parse(data);
@@ -201,7 +203,7 @@ const StandAlonePlayer = ({ route }) => {
                   ), // Action to take when "OK" is pressed
               },
             ],
-            { cancelable: true } // Determines if the alert is dismissable by tapping outside
+            { cancelable: false } // Determines if the alert is dismissable by tapping outside
           );
         } else {
           Alert.alert(
@@ -213,7 +215,7 @@ const StandAlonePlayer = ({ route }) => {
                 onPress: () => handleMessage(event), // Action to take when "OK" is pressed
               },
             ],
-            { cancelable: true } // Determines if the alert is dismissable by tapping outside
+            { cancelable: false } // Determines if the alert is dismissable by tapping outside
           );
         }
       } catch (e) {

@@ -39,8 +39,8 @@ export const qumlPlayerConfig = {
     host: '',
     endpoint: '/data/v3/telemetry',
     userData: {
-      firstName: 'Diptesh',
-      lastName: 'Mukherjee',
+      firstName: '',
+      lastName: '',
     },
   },
   metadata: {},
@@ -51,7 +51,7 @@ export const qumlPlayerConfig = {
       showDownload: false,
       showExit: false,
       showPrint: false,
-      showReplay: true,
+      showReplay: false,
     },
   },
 };
@@ -194,5 +194,3 @@ export const epubPlayerConfig = {
   metadata: {},
   data: {},
 };
-
-
