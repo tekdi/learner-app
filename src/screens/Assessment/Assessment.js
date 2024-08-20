@@ -57,19 +57,6 @@ const Assessment = (props) => {
     };
   }, [routeName]);
 
-  // useEffect(() => {
-  //   const backAction = () => {
-
-  //   };
-
-  //   const backHandler = BackHandler.addEventListener(
-  //     'hardwareBackPress',
-  //     backAction
-  //   );
-
-  //   return () => backHandler.remove();
-  // }, [routeName]);
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
