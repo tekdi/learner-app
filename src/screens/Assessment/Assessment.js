@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
+  Alert,
   BackHandler,
   SafeAreaView,
   StyleSheet,
@@ -35,8 +36,15 @@ const Assessment = (props) => {
 
   useEffect(() => {
     const onBackPress = () => {
-      if (routeName === 'Content') {
-        BackHandler.exitApp();
+      if (routeName === 'Assessment') {
+        Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
+          {
+            text: 'Cancel',
+            onPress: () => null,
+            style: 'cancel',
+          },
+          { text: 'OK', onPress: () => BackHandler.exitApp() },
+        ]);
         return true;
       }
       return false;
@@ -48,6 +56,19 @@ const Assessment = (props) => {
       BackHandler.removeEventListener('hardwareBackPress', onBackPress);
     };
   }, [routeName]);
+
+  // useEffect(() => {
+  //   const backAction = () => {
+
+  //   };
+
+  //   const backHandler = BackHandler.addEventListener(
+  //     'hardwareBackPress',
+  //     backAction
+  //   );
+
+  //   return () => backHandler.remove();
+  // }, [routeName]);
 
   useEffect(() => {
     const fetchData = async () => {

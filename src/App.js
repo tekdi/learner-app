@@ -7,9 +7,10 @@ import * as eva from '@eva-design/eva';
 import theme from './assets/themes/theme.json';
 //multiple language
 import { LanguageProvider } from './context/LanguageContext'; // Adjust path as needed
+import { NetworkProvider } from './context/NetworkContext'; // Adjust path as needed
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/StackScreen';
-import { BackHandler } from 'react-native';
+import { BackHandler, View } from 'react-native';
 
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
 
@@ -84,15 +85,17 @@ const App = () => {
   }, []);
 
   return (
-    <LanguageProvider>
-      {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
+    <NetworkProvider>
+      <LanguageProvider>
+        {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
       work */}
-      <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
-        <NavigationContainer>
-          <StackScreen />
-        </NavigationContainer>
-      </ApplicationProvider>
-    </LanguageProvider>
+        <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+          <NavigationContainer>
+            <StackScreen />
+          </NavigationContainer>
+        </ApplicationProvider>
+      </LanguageProvider>
+    </NetworkProvider>
   );
 };
 
