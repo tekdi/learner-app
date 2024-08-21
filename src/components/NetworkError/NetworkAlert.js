@@ -1,14 +1,30 @@
-import { Image, Modal, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+} from 'react-native';
 import { useInternet } from '../../context/NetworkContext';
 import { useTranslation } from '../../context/LanguageContext';
+
 import globalStyles from '../../utils/Helper/Style';
+
 import lightning from '../../assets/images/png/lightning.png';
 import { Button } from '@ui-kitten/components';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const NetworkAlert = ({ onTryAgain }) => {
+const NetworkAlert = ({ onTryAgain, routes, currentRoute }) => {
   const { isConnected } = useInternet();
   const { t } = useTranslation();
+
+  if (isConnected || !routes.includes(currentRoute)) {
+    return null; // Don't show the modal if connected or the route isn't in the list
+  }
+
+  console.log({ routes, currentRoute });
 
   return (
     <Modal visible={!isConnected} transparent={true} animationType="slide">

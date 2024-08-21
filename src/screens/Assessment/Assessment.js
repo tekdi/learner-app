@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import {
-  Alert,
-  BackHandler,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import Header from '../../components/Layout/Header';
 import TestBox from '../../components/TestBox.js/TestBox';
@@ -32,10 +24,14 @@ const Assessment = (props) => {
   const [status, setStatus] = useState('');
   const [percentage, setPercentage] = useState('');
 
+  // Get the current route name
+  const routeName = useNavigationState(
+    (state) => state.routes[state.index].name
+  );
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      // const data = await getAccessToken();
       const user_id = await getUserId();
       const cohort = await getCohort({ user_id });
       const cohort_id = cohort?.cohortData?.[0]?.cohortId;
@@ -125,7 +121,11 @@ const Assessment = (props) => {
           {/* Use the BackButtonHandler component */}
           <BackButtonHandler exitRoutes={['Assessment']} />
           {/* Display the NoInternetPopup when there's no connection */}
-          <NetworkAlert onTryAgain={tryagain} />
+          <NetworkAlert
+            onTryAgain={tryagain}
+            routes={['Assessment']}
+            currentRoute={routeName}
+          />
         </View>
       )}
     </SafeAreaView>
