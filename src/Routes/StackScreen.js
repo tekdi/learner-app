@@ -26,7 +26,6 @@ import HTMLPlayer from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayer';
 import HTMLPlayerOffline from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayerOffline';
 import YoutubePlayer from '../screens/PlayerScreen/YoutubePlayer/YoutubePlayer';
 import StandAlonePlayer from '../screens/PlayerScreen/StandAlonePlayer/StandAlonePlayer';
-import Profile from '../screens/Profile/Profile';
 import AssessmentStack from './AssessmentStack';
 import DashboardStack from './DashboardStack';
 
@@ -198,14 +197,6 @@ const StackScreen = (props) => {
       <Stack.Screen
         name="TermsAndCondition"
         component={TermsAndCondition}
-        options={{
-          headerShown: false,
-        }}
-      />
-      {/* StackScreen for Assessment for now */}
-      <Stack.Screen
-        name="Profile"
-        component={Profile}
         options={{
           headerShown: false,
         }}

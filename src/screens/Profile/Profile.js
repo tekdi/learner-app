@@ -33,7 +33,6 @@ const Profile = (props) => {
     const result = {};
     customFields.forEach((field) => {
       if (labels.includes(field.label)) {
-        console.log(field.value);
         result[field.label] = field.value || '';
       }
     });

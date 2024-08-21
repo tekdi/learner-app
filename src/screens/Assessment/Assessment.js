@@ -21,6 +21,8 @@ import { useNavigation, useNavigationState } from '@react-navigation/native';
 import { getUserId, setDataInStorage } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
+import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 
 const Assessment = (props) => {
   const { t } = useTranslation();
@@ -29,33 +31,6 @@ const Assessment = (props) => {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [percentage, setPercentage] = useState('');
-  const routeName = useNavigationState((state) => {
-    const route = state.routes[state.index];
-    return route.name;
-  });
-
-  useEffect(() => {
-    const onBackPress = () => {
-      if (routeName === 'Assessment') {
-        Alert.alert('Hold on!', 'Are you sure you want to exit the app?', [
-          {
-            text: 'Cancel',
-            onPress: () => null,
-            style: 'cancel',
-          },
-          { text: 'OK', onPress: () => BackHandler.exitApp() },
-        ]);
-        return true;
-      }
-      return false;
-    };
-
-    BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    };
-  }, [routeName]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,6 +91,10 @@ const Assessment = (props) => {
     fetchData();
   }, [navigation]);
 
+  const tryagain = () => {
+    console.log('tryagain');
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <Header />
@@ -143,6 +122,10 @@ const Assessment = (props) => {
               <Text style={globalStyles.subHeading}>{t('no_data_found')}</Text>
             )}
           </View>
+          {/* Use the BackButtonHandler component */}
+          <BackButtonHandler exitRoutes={['Assessment']} />
+          {/* Display the NoInternetPopup when there's no connection */}
+          <NetworkAlert onTryAgain={tryagain} />
         </View>
       )}
     </SafeAreaView>
