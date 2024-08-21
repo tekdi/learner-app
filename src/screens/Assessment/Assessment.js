@@ -10,11 +10,14 @@ import {
   getCohort,
 } from '../../utils/API/AuthService';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
-import { getUserId, setDataInStorage } from '../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  getUserId,
+  setDataInStorage,
+} from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
-import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 
 const Assessment = (props) => {
   const { t } = useTranslation();
@@ -31,20 +34,17 @@ const Assessment = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      const user_id = await getUserId();
-      const cohort = await getCohort({ user_id });
-      const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-
-      await setDataInStorage('cohortId', cohort_id);
-      await setDataInStorage('userId', user_id);
+      const user_id = await getDataFromStorage('userId');
+      const cohortparse = await getDataFromStorage('cohortData');
+      const cohort = JSON.parse(cohortparse);
+      const cohort_id = await getDataFromStorage('cohortId');
       const board = cohort?.cohortData?.[0]?.customField?.find(
         (field) => field.label === 'STATES'
       );
+
       if (board) {
         const boardName = board.value;
         const assessmentList = await assessmentListApi({ boardName });
-
         // Extract pretest or posttest from assessmentList (content)
         const uniqueAssessments = [
           ...new Set(
@@ -87,10 +87,6 @@ const Assessment = (props) => {
     fetchData();
   }, [navigation]);
 
-  const tryagain = () => {
-    console.log('tryagain');
-  };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <Header />
@@ -120,12 +116,6 @@ const Assessment = (props) => {
           </View>
           {/* Use the BackButtonHandler component */}
           <BackButtonHandler exitRoutes={['Assessment']} />
-          {/* Display the NoInternetPopup when there's no connection */}
-          <NetworkAlert
-            onTryAgain={tryagain}
-            routes={['Assessment']}
-            currentRoute={routeName}
-          />
         </View>
       )}
     </SafeAreaView>

@@ -68,10 +68,9 @@ const TestView = ({ route }) => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await getDataFromStorage('QuestionSet');
-      const cohort = await getDataFromStorage('cohortId');
-      const cohort_id = cohort?.data;
-      const user_id = await getUserId();
-      const parseData = JSON.parse(data?.data);
+      const cohort_id = await getDataFromStorage('cohortId');
+      const user_id = await getDataFromStorage('userId');
+      const parseData = JSON.parse(data);
       // setQuestionsets(parseData);
       // Extract DO_id from assessmentList (content)
 
