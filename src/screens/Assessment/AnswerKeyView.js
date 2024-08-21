@@ -46,6 +46,14 @@ const AnswerKeyView = ({ route }) => {
     }, 0);
   };
 
+  const getLastIndexData = (dataArray) => {
+    if (!Array.isArray(dataArray) || dataArray.length === 0) {
+      return null; // or you can return an empty object or any other default value
+    }
+
+    return dataArray[dataArray.length - 1];
+  };
+
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
@@ -56,10 +64,10 @@ const AnswerKeyView = ({ route }) => {
           cohort_id,
           contentId,
         });
-        // console.log(data?.[0]);
-        const unanswered = countEmptyResValues(data?.[0]?.score_details);
+        const finalData = getLastIndexData(data);
+        const unanswered = countEmptyResValues(finalData?.score_details);
         setUnansweredCount(unanswered);
-        setScoreData(data?.[0]);
+        setScoreData(finalData);
         setLoading(false);
       };
       fetchData();
