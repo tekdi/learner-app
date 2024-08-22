@@ -40,6 +40,7 @@ const LoginScreen = () => {
   const [isDisabled, setIsDisabled] = useState(true);
   const [errmsg, setErrmsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [networkstatus, setNetworkstatus] = useState(true);
 
   const onChangeText = (e) => {
     setUserName(e.trim());
@@ -49,30 +50,34 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
-    setLoading(true);
-    const payload = {
-      username: userName,
-      password: password,
-    };
-    const data = await login(payload);
+    if (isConnected) {
+      setNetworkstatus(true);
+      setLoading(true);
+      const payload = {
+        username: userName,
+        password: password,
+      };
+      const data = await login(payload);
+      if (data?.params?.status !== 'failed') {
+        if (savePassword && data?.access_token) {
+          await saveToken(data?.access_token || '');
+          await saveRefreshToken(data?.refresh_token || '');
+        }
 
-    if (data?.params?.status !== 'failed') {
-      if (savePassword && data?.access_token) {
-        await saveToken(data?.access_token || '');
-        await saveRefreshToken(data?.refresh_token || '');
+        await saveAccessToken(data?.access_token || '');
+        const user_id = await getUserId();
+        await setDataInStorage('userId', user_id);
+        const cohort = await getCohort({ user_id });
+        await setDataInStorage('cohortData', JSON.stringify(cohort));
+        const cohort_id = cohort?.cohortData?.[0]?.cohortId;
+        await setDataInStorage('cohortId', cohort_id);
+        navigation.navigate('Dashboard');
+      } else {
+        setLoading(false);
+        setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));
       }
-
-      await saveAccessToken(data?.access_token || '');
-      const user_id = await getUserId();
-      await setDataInStorage('userId', user_id);
-      const cohort = await getCohort({ user_id });
-      await setDataInStorage('cohortData', JSON.stringify(cohort));
-      const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-      await setDataInStorage('cohortId', cohort_id);
-      navigation.navigate('Dashboard');
     } else {
-      setLoading(false);
-      setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));
+      setNetworkstatus(false);
     }
   };
 
@@ -83,6 +88,10 @@ const LoginScreen = () => {
       setIsDisabled(true);
     }
   }, [userName, password, acceptTerms]);
+
+  const handleRetry = () => {
+    console.log('hi');
+  };
 
   return (
     <SafeAreaView style={globalStyles.container}>
@@ -178,7 +187,7 @@ const LoginScreen = () => {
         </ScrollView>
       )}
 
-      {!isConnected && <NetworkAlert />}
+      <NetworkAlert onTryAgain={handleLogin} isConnected={networkstatus} />
     </SafeAreaView>
   );
 };

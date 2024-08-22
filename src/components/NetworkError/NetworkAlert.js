@@ -16,13 +16,8 @@ import lightning from '../../assets/images/png/lightning.png';
 import { Button } from '@ui-kitten/components';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const NetworkAlert = ({ onTryAgain }) => {
-  const { isConnected } = useInternet();
+const NetworkAlert = ({ isConnected, onTryAgain }) => {
   const { t } = useTranslation();
-
-  if (isConnected) {
-    return null; // Don't show the modal if connected or the route isn't in the list
-  }
 
   return (
     <Modal visible={!isConnected} transparent={true} animationType="slide">
