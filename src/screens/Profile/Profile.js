@@ -19,6 +19,7 @@ import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 import {
   capitalizeFirstLetter,
   deleteSavedItem,
+  getUserId,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 
@@ -31,9 +32,8 @@ const Profile = (props) => {
 
   const createNewObject = (customFields, labels) => {
     const result = {};
-    customFields.forEach((field) => {
+    customFields?.forEach((field) => {
       if (labels.includes(field.label)) {
-        console.log(field.value);
         result[field.label] = field.value || '';
       }
     });
@@ -43,9 +43,9 @@ const Profile = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getAccessToken();
+      const user_id = await getUserId();
       const result = await getProfileDetails({
-        userId: data?.result?.userId,
+        userId: user_id,
       });
       const requiredLabels = [
         'GENDER',
@@ -67,6 +67,9 @@ const Profile = (props) => {
     const fetchData = async () => {
       await deleteSavedItem('refreshToken');
       await deleteSavedItem('token');
+      await deleteSavedItem('userId');
+      await deleteSavedItem('cohortId');
+      await deleteSavedItem('cohortData');
 
       // Reset the navigation stack and navigate to LoginSignUpScreen
       navigation.dispatch(

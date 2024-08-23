@@ -12,11 +12,13 @@ import { useState, React, useEffect } from 'react';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
-import { login } from '../../utils/API/AuthService';
+import { getCohort, login } from '../../utils/API/AuthService';
 import {
+  getUserId,
   saveAccessToken,
   saveRefreshToken,
   saveToken,
+  setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 import LoginTextField from '../../components/LoginTextField/LoginTextField';
 import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
@@ -24,11 +26,13 @@ import { useTranslation } from '../../context/LanguageContext';
 import Loading from '../LoadingScreen/Loading';
 import Logo from '../../assets/images/png/logo.png';
 import globalStyles from '../../utils/Helper/Style';
+import { useInternet } from '../../context/NetworkContext';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
-
+  const { isConnected } = useInternet();
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [savePassword, setSavePassword] = useState(true);
@@ -36,6 +40,7 @@ const LoginScreen = () => {
   const [isDisabled, setIsDisabled] = useState(true);
   const [errmsg, setErrmsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [networkstatus, setNetworkstatus] = useState(true);
 
   const onChangeText = (e) => {
     setUserName(e.trim());
@@ -45,29 +50,34 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
-    setLoading(true);
-    const payload = {
-      username: userName,
-      password: password,
-    };
-    const data = await login(payload);
-    console.log({ data });
-    if (data?.params?.status !== 'failed') {
-      if (savePassword && data?.access_token) {
-        await saveToken(data?.access_token || '');
-        await saveRefreshToken(data?.refresh_token || '');
-        navigation.navigate('Dashboard');
-      } else if (data?.access_token) {
+    if (isConnected) {
+      setNetworkstatus(true);
+      setLoading(true);
+      const payload = {
+        username: userName,
+        password: password,
+      };
+      const data = await login(payload);
+      if (data?.params?.status !== 'failed') {
+        if (savePassword && data?.access_token) {
+          await saveToken(data?.access_token || '');
+          await saveRefreshToken(data?.refresh_token || '');
+        }
+
+        await saveAccessToken(data?.access_token || '');
+        const user_id = await getUserId();
+        await setDataInStorage('userId', user_id);
+        const cohort = await getCohort({ user_id });
+        await setDataInStorage('cohortData', JSON.stringify(cohort));
+        const cohort_id = cohort?.cohortData?.[0]?.cohortId;
+        await setDataInStorage('cohortId', cohort_id);
         navigation.navigate('Dashboard');
       } else {
-        setErrmsg('Network_Error_Try_Again_Later');
         setLoading(false);
+        setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));
       }
-      await saveAccessToken(data?.access_token || '');
-      setLoading(false);
     } else {
-      setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));
-      setLoading(false);
+      setNetworkstatus(false);
     }
   };
 
@@ -78,6 +88,10 @@ const LoginScreen = () => {
       setIsDisabled(true);
     }
   }, [userName, password, acceptTerms]);
+
+  const handleRetry = () => {
+    console.log('hi');
+  };
 
   return (
     <SafeAreaView style={globalStyles.container}>
@@ -172,6 +186,8 @@ const LoginScreen = () => {
           </View>
         </ScrollView>
       )}
+
+      <NetworkAlert onTryAgain={handleLogin} isConnected={networkstatus} />
     </SafeAreaView>
   );
 };

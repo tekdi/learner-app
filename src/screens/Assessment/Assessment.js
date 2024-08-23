@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import {
-  BackHandler,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import Header from '../../components/Layout/Header';
 import TestBox from '../../components/TestBox.js/TestBox';
@@ -17,9 +10,14 @@ import {
   getCohort,
 } from '../../utils/API/AuthService';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
-import { getUserId, setDataInStorage } from '../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  getUserId,
+  setDataInStorage,
+} from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
+import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 
 const Assessment = (props) => {
   const { t } = useTranslation();
@@ -28,44 +26,25 @@ const Assessment = (props) => {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [percentage, setPercentage] = useState('');
-  const routeName = useNavigationState((state) => {
-    const route = state.routes[state.index];
-    return route.name;
-  });
 
-  useEffect(() => {
-    const onBackPress = () => {
-      if (routeName === 'Content') {
-        BackHandler.exitApp();
-        return true;
-      }
-      return false;
-    };
-
-    BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    };
-  }, [routeName]);
+  // Get the current route name
+  const routeName = useNavigationState(
+    (state) => state.routes[state.index].name
+  );
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      // const data = await getAccessToken();
-      const user_id = await getUserId();
-      const cohort = await getCohort({ user_id });
-      const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-
-      await setDataInStorage('cohortId', cohort_id);
-      await setDataInStorage('userId', user_id);
+      const user_id = await getDataFromStorage('userId');
+      const cohortparse = await getDataFromStorage('cohortData');
+      const cohort = JSON.parse(cohortparse);
+      const cohort_id = await getDataFromStorage('cohortId');
       const board = cohort?.cohortData?.[0]?.customField?.find(
         (field) => field.label === 'STATES'
       );
+
       if (board) {
         const boardName = board.value;
         const assessmentList = await assessmentListApi({ boardName });
-
         // Extract pretest or posttest from assessmentList (content)
         const uniqueAssessments = [
           ...new Set(
@@ -135,6 +114,8 @@ const Assessment = (props) => {
               <Text style={globalStyles.subHeading}>{t('no_data_found')}</Text>
             )}
           </View>
+          {/* Use the BackButtonHandler component */}
+          <BackButtonHandler exitRoutes={['Assessment']} />
         </View>
       )}
     </SafeAreaView>

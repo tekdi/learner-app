@@ -153,5 +153,11 @@
   "full_name":"Full Name",
   "state":"State",
   "district":"Disctrict",
-  "unanswered":"Unanswered"
+  "unanswered":"Unanswered",
+  "no_internet_connection":"Oops, No Internet Connection",
+  "make_sure_wifi_or_mobile_data_is_turned_on_and_try_again":"Make sure wifi or mobile data is turned on, and try again.",
+  "try_again":"Try again",
+  "are_you_sure_you_want_to_exit_the_app":"Are you sure you want to exit the app?",
+  "yes":"Yes",
+  "no":"No"
 }

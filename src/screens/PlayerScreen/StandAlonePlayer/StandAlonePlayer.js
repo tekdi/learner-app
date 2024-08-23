@@ -90,28 +90,29 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
-      ? 'sunbird-pdf-player'
-      : content_mime_type == 'application/vnd.sunbird.questionset'
-      ? 'sunbird-quml-player'
-      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
-      ? 'sunbird-video-player'
-      : content_mime_type == 'application/epub'
-      ? 'sunbird-epub-player'
-      : ''
+        ? 'sunbird-pdf-player'
+        : content_mime_type == 'application/vnd.sunbird.questionset'
+          ? 'sunbird-quml-player'
+          : content_mime_type == 'video/mp4' ||
+              content_mime_type == 'video/webm'
+            ? 'sunbird-video-player'
+            : content_mime_type == 'application/epub'
+              ? 'sunbird-epub-player'
+              : ''
   );
   const [lib_file] = useState(
     content_mime_type == 'application/vnd.sunbird.questionset'
       ? 'index_o.html'
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-        content_mime_type == 'application/pdf' ||
-        content_mime_type == 'video/mp4' ||
-        content_mime_type == 'video/webm' ||
-        content_mime_type == 'video/x-youtube' ||
-        content_mime_type == 'application/vnd.ekstep.html-archive' ||
-        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-        content_mime_type == 'application/epub'
-      ? 'index.html'
-      : ''
+          content_mime_type == 'application/pdf' ||
+          content_mime_type == 'video/mp4' ||
+          content_mime_type == 'video/webm' ||
+          content_mime_type == 'video/x-youtube' ||
+          content_mime_type == 'application/vnd.ekstep.html-archive' ||
+          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+          content_mime_type == 'application/epub'
+        ? 'index.html'
+        : ''
   );
 
   const [loading, setLoading] = useState(true);
@@ -120,10 +121,10 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
       ? `${content_file}`
       : content_mime_type == 'application/vnd.ekstep.html-archive'
-      ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
-      : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-      ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
-      : `${content_file}/${content_do_id}.json`;
+        ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
+        : content_mime_type == 'application/vnd.ekstep.h5p-archive'
+          ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
+          : `${content_file}/${content_do_id}.json`;
   // console.log('rnfs DocumentDirectoryPath', RNFS.DocumentDirectoryPath);
   // console.log('rnfs ExternalDirectoryPath', RNFS.ExternalDirectoryPath);
   const [is_valid_file, set_is_valid_file] = useState(null);
@@ -166,10 +167,8 @@ const StandAlonePlayer = ({ route }) => {
         // console.log('maxScore', maxScore);
         // console.log('seconds', seconds);
         // let userId = 'fb6b2e58-0f14-4d4f-90e4-bae092e7a951';
-        const cohort_id = await getDataFromStorage('cohortId');
-        const userId = await getUserId();
-        console.log({ cohort_id, userId });
-        let batchId = cohort_id?.data;
+        const userId = await getDataFromStorage('userId');
+        let batchId = await getDataFromStorage('cohortId');
         let create_assessment = await assessmentTracking(
           scoreDetails,
           identifierWithoutImg,
@@ -371,13 +370,13 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? downloadContent()
       : content_mime_type == 'application/pdf' ||
-        content_mime_type == 'video/mp4' ||
-        content_mime_type == 'video/webm' ||
-        content_mime_type == 'application/epub'
-      ? fetchDataPdfVideoEpub()
-      : content_mime_type == 'application/vnd.sunbird.questionset'
-      ? downloadContentQuML()
-      : '';
+          content_mime_type == 'video/mp4' ||
+          content_mime_type == 'video/webm' ||
+          content_mime_type == 'application/epub'
+        ? fetchDataPdfVideoEpub()
+        : content_mime_type == 'application/vnd.sunbird.questionset'
+          ? downloadContentQuML()
+          : '';
   }, []);
 
   const downloadContent = async () => {
@@ -480,11 +479,11 @@ const StandAlonePlayer = ({ route }) => {
                       'application/vnd.ekstep.ecml-archive'
                         ? fetchDataEcml(contentObj)
                         : contentObj?.mimeType ==
-                            'application/vnd.ekstep.html-archive' ||
-                          contentObj?.mimeType ==
-                            'application/vnd.ekstep.h5p-archive'
-                        ? await fetchDataHtmlH5pYoutube(contentObj)
-                        : '';
+                              'application/vnd.ekstep.html-archive' ||
+                            contentObj?.mimeType ==
+                              'application/vnd.ekstep.h5p-archive'
+                          ? await fetchDataHtmlH5pYoutube(contentObj)
+                          : '';
                     } catch (error) {
                       console.error(`Error extracting zip file: ${error}`);
                     }
@@ -642,7 +641,7 @@ const StandAlonePlayer = ({ route }) => {
         {progress > 0 && progress < 100 ? (
           <Text>{`Loading: ${progress.toFixed(2)}%`}</Text>
         ) : loading_text != '' ? (
-          <Text>{loading_text}</Text>
+          <Text style={{ color: '#000' }}>{loading_text}</Text>
         ) : (
           <></>
         )}
@@ -668,10 +667,10 @@ const StandAlonePlayer = ({ route }) => {
             window.setData();
         })();`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-        content_mime_type == 'application/vnd.ekstep.html-archive' ||
-        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-        content_mime_type == 'video/x-youtube'
-      ? `(function() {
+          content_mime_type == 'application/vnd.ekstep.html-archive' ||
+          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+          content_mime_type == 'video/x-youtube'
+        ? `(function() {
         localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
           {
             contentPlayerConfig: contentPlayerConfig,
@@ -679,19 +678,20 @@ const StandAlonePlayer = ({ route }) => {
         )}));
         window.setData();
         })();`
-      : content_mime_type == 'application/pdf'
-      ? `(function() {
+        : content_mime_type == 'application/pdf'
+          ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
         })();`
-      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
-      ? `(function() {
+          : content_mime_type == 'video/mp4' ||
+              content_mime_type == 'video/webm'
+            ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
         })();`
-      : content_mime_type == 'application/epub'
-      ? `(function() {
+            : content_mime_type == 'application/epub'
+              ? `(function() {
         window.setData('${JSON.stringify(epubPlayerConfig)}');
         })();`
-      : ``;
+              : ``;
 
   return (
     <SafeAreaView style={styles.container}>

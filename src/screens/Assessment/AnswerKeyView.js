@@ -34,10 +34,10 @@ const AnswerKeyView = ({ route }) => {
   const { title, contentId } = route.params;
   const { height } = Dimensions.get('window');
 
-  const [scoreData, setScoreData] = useState('');
+  const [scoreData, setScoreData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [unansweredCount, setUnansweredCount] = useState('');
+  const [unansweredCount, setUnansweredCount] = useState(null);
   const flatListRef = useRef(null);
 
   const countEmptyResValues = (data) => {
@@ -46,20 +46,28 @@ const AnswerKeyView = ({ route }) => {
     }, 0);
   };
 
+  const getLastIndexData = (dataArray) => {
+    if (!Array.isArray(dataArray) || dataArray.length === 0) {
+      return null; // or you can return an empty object or any other default value
+    }
+
+    return dataArray[dataArray.length - 1];
+  };
+
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
-        const cohort = await getDataFromStorage('cohortId');
-        const cohort_id = cohort?.data;
-        const user_id = await getUserId();
+        const cohort_id = await getDataFromStorage('cohortId');
+        const user_id = await getDataFromStorage('userId');
         const data = await getAssessmentAnswerKey({
           user_id,
           cohort_id,
           contentId,
         });
-        const unanswered = countEmptyResValues(data?.[0]?.score_details);
+        const finalData = getLastIndexData(data);
+        const unanswered = countEmptyResValues(finalData?.score_details);
         setUnansweredCount(unanswered);
-        setScoreData(data?.[0]);
+        setScoreData(finalData);
         setLoading(false);
       };
       fetchData();
