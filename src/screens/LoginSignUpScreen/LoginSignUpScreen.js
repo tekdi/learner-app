@@ -46,7 +46,7 @@ const LoginSignUpScreen = () => {
             nav.navigate('LoginScreen');
           }}
         />
-        {/* <View style={{ padding: 10 }}></View>
+        <View style={{ padding: 10 }}></View>
         <PrimaryButton
           text={'PlayerScreen'}
           onPress={() => {
@@ -60,7 +60,7 @@ const LoginSignUpScreen = () => {
           onPress={() => {
             nav.navigate('DashboardStack');
           }}
-        /> */}
+        />
       </View>
     </View>
   );

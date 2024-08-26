@@ -27,7 +27,7 @@ import {
 import LoginTextField from '../../components/LoginTextField/LoginTextField';
 import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
 import { useTranslation } from '../../context/LanguageContext';
-import Loading from '../LoadingScreen/Loading';
+import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import Logo from '../../assets/images/png/logo.png';
 import globalStyles from '../../utils/Helper/Style';
 import { useInternet } from '../../context/NetworkContext';
@@ -95,14 +95,10 @@ const LoginScreen = () => {
     }
   }, [userName, password, acceptTerms]);
 
-  const handleRetry = () => {
-    console.log('hi');
-  };
-
   return (
     <SafeAreaView style={globalStyles.container}>
       {loading ? (
-        <Loading />
+        <ActiveLoading />
       ) : (
         <ScrollView style={styles.scrollView}>
           <Image style={globalStyles.logo} source={Logo} resizeMode="contain" />

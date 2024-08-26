@@ -90,29 +90,28 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
-        ? 'sunbird-pdf-player'
-        : content_mime_type == 'application/vnd.sunbird.questionset'
-          ? 'sunbird-quml-player'
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? 'sunbird-video-player'
-            : content_mime_type == 'application/epub'
-              ? 'sunbird-epub-player'
-              : ''
+      ? 'sunbird-pdf-player'
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? 'sunbird-quml-player'
+      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
+      ? 'sunbird-video-player'
+      : content_mime_type == 'application/epub'
+      ? 'sunbird-epub-player'
+      : ''
   );
   const [lib_file] = useState(
     content_mime_type == 'application/vnd.sunbird.questionset'
       ? 'index_o.html'
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/pdf' ||
-          content_mime_type == 'video/mp4' ||
-          content_mime_type == 'video/webm' ||
-          content_mime_type == 'video/x-youtube' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'application/epub'
-        ? 'index.html'
-        : ''
+        content_mime_type == 'application/pdf' ||
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'video/x-youtube' ||
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'application/epub'
+      ? 'index.html'
+      : ''
   );
 
   const [loading, setLoading] = useState(true);
@@ -121,10 +120,10 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
       ? `${content_file}`
       : content_mime_type == 'application/vnd.ekstep.html-archive'
-        ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
-        : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-          ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
-          : `${content_file}/${content_do_id}.json`;
+      ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
+      : content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
+      : `${content_file}/${content_do_id}.json`;
   // console.log('rnfs DocumentDirectoryPath', RNFS.DocumentDirectoryPath);
   // console.log('rnfs ExternalDirectoryPath', RNFS.ExternalDirectoryPath);
   const [is_valid_file, set_is_valid_file] = useState(null);
@@ -231,6 +230,7 @@ const StandAlonePlayer = ({ route }) => {
     let contentObj = await getData(content_do_id, 'json');
     if (contentObj == null) {
       set_is_download(true);
+      await downloadContentQuML();
     } else {
       let filePath = '';
       if (contentObj?.mimeType == 'application/vnd.sunbird.questionset') {
@@ -251,9 +251,11 @@ const StandAlonePlayer = ({ route }) => {
               set_is_valid_file(true);
             } catch (e) {
               set_is_download(true);
+              await downloadContentQuML();
             }
           } else {
             set_is_download(true);
+            await downloadContentQuML();
           }
         } catch (e) {
           set_is_valid_file(false);
@@ -372,13 +374,13 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? downloadContent()
       : content_mime_type == 'application/pdf' ||
-          content_mime_type == 'video/mp4' ||
-          content_mime_type == 'video/webm' ||
-          content_mime_type == 'application/epub'
-        ? fetchDataPdfVideoEpub()
-        : content_mime_type == 'application/vnd.sunbird.questionset'
-          ? downloadContentQuML()
-          : '';
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'application/epub'
+      ? fetchDataPdfVideoEpub()
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? fetchDataQuml()
+      : '';
   }, []);
 
   const downloadContent = async () => {
@@ -409,109 +411,94 @@ const StandAlonePlayer = ({ route }) => {
         const fileUrl = contentObj?.downloadUrl;
         //console.log('fileUrl', fileUrl);
         try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-              title: 'Storage Permission',
-              message: 'App needs access to storage to download files.',
-              buttonPositive: 'OK',
-            }
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            if (contentObj?.mimeType == 'video/x-youtube') {
-              //console.log('permission got');
-              await fetchDataHtmlH5pYoutube(contentObj);
-            } else {
-              //console.log('permission got');
-              try {
-                const download = RNFS.downloadFile({
-                  fromUrl: fileUrl,
-                  toFile: filePath,
-                  begin: (res) => {
-                    console.log('Download started');
-                  },
-                  progress: (res) => {
-                    const progressPercent =
-                      (res.bytesWritten / res.contentLength) * 100;
-                    setProgress(progressPercent);
-                  },
-                });
-                const result = await download.promise;
-                if (result.statusCode === 200) {
-                  console.log('File downloaded successfully:', filePath);
-                  setProgress(0);
-                  set_loading_text('Unzip content ecar file...');
+          if (contentObj?.mimeType == 'video/x-youtube') {
+            //console.log('permission got');
+            await fetchDataHtmlH5pYoutube(contentObj);
+          } else {
+            //console.log('permission got');
+            try {
+              const download = RNFS.downloadFile({
+                fromUrl: fileUrl,
+                toFile: filePath,
+                begin: (res) => {
+                  console.log('Download started');
+                },
+                progress: (res) => {
+                  const progressPercent =
+                    (res.bytesWritten / res.contentLength) * 100;
+                  setProgress(progressPercent);
+                },
+              });
+              const result = await download.promise;
+              if (result.statusCode === 200) {
+                console.log('File downloaded successfully:', filePath);
+                setProgress(0);
+                set_loading_text('Unzip content ecar file...');
+                // Define the paths
+                const sourcePath = filePath;
+                const targetPath = content_file;
+                try {
+                  // Ensure the target directory exists
+                  await RNFS.mkdir(targetPath);
+                  // Unzip the file
+                  const path = await unzip(sourcePath, targetPath);
+                  console.log(`Unzipped to ${path}`);
+                  //content unzip in content folder
+                  //get content file name
+                  let temp_file_url = contentObj?.artifactUrl;
+                  const dividedArray = temp_file_url.split('artifact');
+                  const file_name =
+                    dividedArray[
+                      dividedArray.length > 0
+                        ? dividedArray.length - 1
+                        : dividedArray.length
+                    ];
                   // Define the paths
-                  const sourcePath = filePath;
-                  const targetPath = content_file;
+                  const sourcePath_internal = `${content_file}/${content_do_id}${file_name}`;
+                  const targetPath_internal = streamingPath;
+
+                  sourcePath_internal.replace('.zip', '');
                   try {
                     // Ensure the target directory exists
-                    await RNFS.mkdir(targetPath);
+                    await RNFS.mkdir(targetPath_internal);
                     // Unzip the file
-                    const path = await unzip(sourcePath, targetPath);
+                    const path = await unzip(
+                      sourcePath_internal,
+                      targetPath_internal
+                    );
                     console.log(`Unzipped to ${path}`);
-                    //content unzip in content folder
-                    //get content file name
-                    let temp_file_url = contentObj?.artifactUrl;
-                    const dividedArray = temp_file_url.split('artifact');
-                    const file_name =
-                      dividedArray[
-                        dividedArray.length > 0
-                          ? dividedArray.length - 1
-                          : dividedArray.length
-                      ];
-                    // Define the paths
-                    const sourcePath_internal = `${content_file}/${content_do_id}${file_name}`;
-                    const targetPath_internal = streamingPath;
-
-                    sourcePath_internal.replace('.zip', '');
-                    try {
-                      // Ensure the target directory exists
-                      await RNFS.mkdir(targetPath_internal);
-                      // Unzip the file
-                      const path = await unzip(
-                        sourcePath_internal,
-                        targetPath_internal
-                      );
-                      console.log(`Unzipped to ${path}`);
-                      //store content obj
-                      //console.log(contentObj);
-                      //await storeData(content_do_id, contentObj, 'json');
-                      contentObj?.mimeType ==
-                      'application/vnd.ekstep.ecml-archive'
-                        ? fetchDataEcml(contentObj)
-                        : contentObj?.mimeType ==
-                              'application/vnd.ekstep.html-archive' ||
-                            contentObj?.mimeType ==
-                              'application/vnd.ekstep.h5p-archive'
-                          ? await fetchDataHtmlH5pYoutube(contentObj)
-                          : '';
-                    } catch (error) {
-                      console.error(`Error extracting zip file: ${error}`);
-                    }
+                    //store content obj
+                    //console.log(contentObj);
+                    //await storeData(content_do_id, contentObj, 'json');
+                    contentObj?.mimeType ==
+                    'application/vnd.ekstep.ecml-archive'
+                      ? fetchDataEcml(contentObj)
+                      : contentObj?.mimeType ==
+                          'application/vnd.ekstep.html-archive' ||
+                        contentObj?.mimeType ==
+                          'application/vnd.ekstep.h5p-archive'
+                      ? await fetchDataHtmlH5pYoutube(contentObj)
+                      : '';
                   } catch (error) {
                     console.error(`Error extracting zip file: ${error}`);
                   }
-                } else {
-                  Alert.alert(
-                    'Error Internal',
-                    `Failed to download file: ${JSON.stringify(result)}`,
-                    [{ text: 'OK' }]
-                  );
-                  console.log('Failed to download file:', result.statusCode);
+                } catch (error) {
+                  console.error(`Error extracting zip file: ${error}`);
                 }
-              } catch (error) {
+              } else {
                 Alert.alert(
-                  'Error Catch',
-                  `Failed to download file: ${error}`,
+                  'Error Internal',
+                  `Failed to download file: ${JSON.stringify(result)}`,
                   [{ text: 'OK' }]
                 );
-                console.error('Error downloading file:', error);
+                console.log('Failed to download file:', result.statusCode);
               }
+            } catch (error) {
+              Alert.alert('Error Catch', `Failed to download file: ${error}`, [
+                { text: 'OK' },
+              ]);
+              console.error('Error downloading file:', error);
             }
-          } else {
-            Alert.alert('Error', `Permission Denied`, [{ text: 'OK' }]);
-            console.log('please grant permission');
           }
         } catch (err) {
           Alert.alert('Error Catch', `Failed to download file: ${err}`, [
@@ -611,6 +598,7 @@ const StandAlonePlayer = ({ route }) => {
               //store content obj
               //console.log(contentObj);
               await storeData(content_do_id, contentObj, 'json');
+              await fetchDataQuml();
             } else {
               Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
             }
@@ -633,7 +621,6 @@ const StandAlonePlayer = ({ route }) => {
     }
     //content read
     setLoading(false);
-    await fetchDataQuml();
   };
 
   if (loading) {
@@ -669,10 +656,10 @@ const StandAlonePlayer = ({ route }) => {
             window.setData();
         })();`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'video/x-youtube'
-        ? `(function() {
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'video/x-youtube'
+      ? `(function() {
         localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
           {
             contentPlayerConfig: contentPlayerConfig,
@@ -680,20 +667,19 @@ const StandAlonePlayer = ({ route }) => {
         )}));
         window.setData();
         })();`
-        : content_mime_type == 'application/pdf'
-          ? `(function() {
+      : content_mime_type == 'application/pdf'
+      ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
         })();`
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? `(function() {
+      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
+      ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
         })();`
-            : content_mime_type == 'application/epub'
-              ? `(function() {
+      : content_mime_type == 'application/epub'
+      ? `(function() {
         window.setData('${JSON.stringify(epubPlayerConfig)}');
         })();`
-              : ``;
+      : ``;
 
   return (
     <SafeAreaView style={styles.container}>

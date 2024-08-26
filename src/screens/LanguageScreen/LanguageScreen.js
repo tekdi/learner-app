@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -19,9 +19,55 @@ import { useTranslation } from '../../context/LanguageContext';
 
 import FastImage from '@changwoolab/react-native-fast-image';
 
+import {
+  getDataFromStorage,
+  getRefreshToken,
+  getSavedToken,
+  saveAccessToken,
+  saveRefreshToken,
+  saveToken,
+} from '../../utils/JsHelper/Helper';
+import { getAccessToken, refreshToken } from '../../utils/API/AuthService';
+import Loading from '../LoadingScreen/Loading';
+import { useInternet } from '../../context/NetworkContext';
+
 const LanguageScreen = () => {
   const navigation = useNavigation();
   const { t, setLanguage, language } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const { isConnected } = useInternet();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = await getDataFromStorage('Accesstoken');
+      //console.log('Accesstoken', token);
+      if (token) {
+        if (isConnected) {
+          const refresh_token = await getRefreshToken();
+          //console.log('refresh_token', refresh_token);
+          const data = await refreshToken({
+            refresh_token: refresh_token,
+          });
+          //console.log('data', data);
+          if (token && data?.access_token) {
+            await saveAccessToken(data?.access_token);
+            await saveRefreshToken(data?.refresh_token);
+            console.log('status successful');
+            navigation.replace('Dashboard');
+          } else {
+            console.log('error');
+            setLoading(false);
+          }
+        } else {
+          navigation.replace('Dashboard');
+        }
+      } else {
+        console.log('no Accesstoken');
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [navigation]);
 
   const changeLanguage = (lng) => {
     setLanguage(lng);
@@ -38,8 +84,15 @@ const LanguageScreen = () => {
   );
 
   const handlethis = () => {
-    navigation.navigate('LoginScreen');
+    //direct login show
+    //navigation.navigate('LoginScreen');
+    //show register and content button
+    navigation.navigate('LoginSignUpScreen');
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
