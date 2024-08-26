@@ -140,7 +140,13 @@ const TestDetailView = ({ route }) => {
       <View style={styles.bottom}>
         <PrimaryButton text={t('start_test')} onPress={() => handlethis()} />
       </View>
-      <NetworkAlert onTryAgain={handlethis} isConnected={networkstatus} />
+      <NetworkAlert
+        onTryAgain={handlethis}
+        isConnected={networkstatus}
+        closeModal={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+      />
     </SafeAreaView>
   );
 };

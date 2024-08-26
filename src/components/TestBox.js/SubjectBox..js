@@ -29,6 +29,7 @@ import { hierarchyContent, listQuestion } from '../../utils/API/ApiCalls';
 import RNFS from 'react-native-fs';
 import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 
 const SubjectBox = ({ name, disabled, data }) => {
   // console.log({ data });
@@ -38,6 +39,7 @@ const SubjectBox = ({ name, disabled, data }) => {
   const [downloadIcon, setDownloadIcon] = useState(download);
   const [downloadStatus, setDownloadStatus] = useState('');
   const questionListUrl = Config.QUESTION_LIST_URL;
+  const [networkstatus, setNetworkstatus] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +63,7 @@ const SubjectBox = ({ name, disabled, data }) => {
     });
   };
   const handleDownload = async () => {
+    setNetworkstatus(true);
     let content_do_id = data?.IL_UNIQUE_ID;
     await downloadContentQuML(content_do_id);
   };
@@ -74,7 +77,8 @@ const SubjectBox = ({ name, disabled, data }) => {
     //get data online
     let content_response = await hierarchyContent(content_do_id);
     if (content_response == null) {
-      Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
+      //Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
+      setNetworkstatus(false);
       setDownloadStatus('download');
       setDownloadIcon(download);
     } else {
@@ -256,6 +260,13 @@ const SubjectBox = ({ name, disabled, data }) => {
           )}
         </View>
       </TouchableOpacity>
+      <NetworkAlert
+        onTryAgain={handleDownload}
+        isConnected={networkstatus}
+        closeModal={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+      />
     </SafeAreaView>
   );
 };
