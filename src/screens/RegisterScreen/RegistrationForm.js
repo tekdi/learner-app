@@ -174,7 +174,7 @@ const RegistrationForm = ({ schema }) => {
   const onSubmit = async (data) => {
     const payload = await transformPayload(data);
     const token = await getAccessToken();
-    await saveToken(token);
+    // await saveToken(token);
     const register = await registerUser(payload);
     if (register?.params?.status === 'failed') {
       Alert.alert(

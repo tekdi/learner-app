@@ -4,8 +4,6 @@ import NetInfo from '@react-native-community/netinfo';
 // Create a Context
 const NetworkContext = createContext();
 
-export const useInternet = () => useContext(NetworkContext);
-
 // Provider component
 export const NetworkProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(true);
@@ -26,3 +24,5 @@ export const NetworkProvider = ({ children }) => {
     </NetworkContext.Provider>
   );
 };
+
+export const useInternet = () => useContext(NetworkContext);

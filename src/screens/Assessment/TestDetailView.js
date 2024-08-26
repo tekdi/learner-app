@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Pressable,
@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
+import { useInternet } from '../../context/NetworkContext';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
@@ -18,6 +19,7 @@ import {
   convertSecondsToMinutes,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 
 const instructions = [
   {
@@ -46,15 +48,23 @@ const TestDetailView = ({ route }) => {
   const { title, data } = route.params;
   const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
   const { t } = useTranslation();
+  const { isConnected } = useInternet();
+  const [networkstatus, setNetworkstatus] = useState(true);
 
   const navigation = useNavigation();
 
   const handlethis = () => {
-    navigation.navigate('StandAlonePlayer', {
-      content_do_id: data?.IL_UNIQUE_ID,
-      content_mime_type: data?.mimeType,
-      isOffline: false,
-    });
+    if (isConnected) {
+      setNetworkstatus(true);
+
+      navigation.navigate('StandAlonePlayer', {
+        content_do_id: data?.IL_UNIQUE_ID,
+        content_mime_type: data?.mimeType,
+        isOffline: false,
+      });
+    } else {
+      setNetworkstatus(false);
+    }
   };
 
   return (
@@ -119,6 +129,7 @@ const TestDetailView = ({ route }) => {
       <View style={styles.bottom}>
         <PrimaryButton text={t('start_test')} onPress={() => handlethis()} />
       </View>
+      <NetworkAlert onTryAgain={handlethis} isConnected={networkstatus} />
     </SafeAreaView>
   );
 };

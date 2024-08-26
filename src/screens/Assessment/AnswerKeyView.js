@@ -20,6 +20,7 @@ import {
   capitalizeFirstLetter,
   getDataFromStorage,
   getUserId,
+  setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import RenderHtml from 'react-native-render-html';
@@ -34,7 +35,7 @@ const AnswerKeyView = ({ route }) => {
   const { title, contentId } = route.params;
   const { height } = Dimensions.get('window');
 
-  const [scoreData, setScoreData] = useState(null);
+  const [scoreData, setScoreData] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [unansweredCount, setUnansweredCount] = useState(null);
@@ -64,7 +65,17 @@ const AnswerKeyView = ({ route }) => {
           cohort_id,
           contentId,
         });
-        const finalData = getLastIndexData(data);
+        if (data?.[0]?.assessmentTrackingId) {
+          await setDataInStorage(
+            `assessmentAnswerKey${contentId}`,
+            JSON.stringify(data) || ''
+          );
+        }
+        const OfflineassessmentAnswerKey = JSON.parse(
+          await getDataFromStorage(`assessmentAnswerKey${contentId}`)
+        );
+        // console.log({ OfflineassessmentAnswerKey });
+        const finalData = getLastIndexData(OfflineassessmentAnswerKey);
         const unanswered = countEmptyResValues(finalData?.score_details);
         setUnansweredCount(unanswered);
         setScoreData(finalData);

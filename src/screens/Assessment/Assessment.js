@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
+import { useInternet } from '../../context/NetworkContext';
 import Header from '../../components/Layout/Header';
 import TestBox from '../../components/TestBox.js/TestBox';
 import {
@@ -21,6 +22,7 @@ import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler
 
 const Assessment = (props) => {
   const { t } = useTranslation();
+  const { isConnected } = useInternet();
   const navigation = useNavigation();
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,6 +33,8 @@ const Assessment = (props) => {
   const routeName = useNavigationState(
     (state) => state.routes[state.index].name
   );
+
+  // console.log({ isConnected });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,39 +50,55 @@ const Assessment = (props) => {
         const boardName = board.value;
         const assessmentList = await assessmentListApi({ boardName });
         // Extract pretest or posttest from assessmentList (content)
+        if (assessmentList?.QuestionSet) {
+          await setDataInStorage(
+            'assessmentList',
+            JSON.stringify(assessmentList) || ''
+          );
+        }
+
+        const OfflineAssessmentList = JSON.parse(
+          await getDataFromStorage('assessmentList')
+        );
+
+        // console.log({ OfflineAssessmentList });
+
         const uniqueAssessments = [
           ...new Set(
-            assessmentList?.QuestionSet?.map((item) => item.assessment1)
+            OfflineAssessmentList?.QuestionSet?.map((item) => item.assessment1)
           ),
         ];
 
         // Extract DO_id from assessmentList (content)
         const uniqueAssessmentsId = [
           ...new Set(
-            assessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
+            OfflineAssessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
           ),
         ];
-        // console.log({ uniqueAssessmentsId });
 
-        // const uniqueAssessmentsId = [
-        //   'do_11388361673153740812077',
-        //   'do_11388361673153740812071',
-        // ];
         const assessmentStatusData =
           (await getAssessmentStatus({
             user_id,
             cohort_id,
             uniqueAssessmentsId,
           })) || [];
-        // console.log({ assessmentStatusData });
-        // console.log('sss', assessmentStatusData?.[0]?.percentageString);
 
-        setStatus(assessmentStatusData?.[0]?.status || 'not_started');
-        setPercentage(assessmentStatusData?.[0]?.percentage || '');
+        if (assessmentStatusData?.[0]?.assessments) {
+          await setDataInStorage(
+            'assessmentStatusData',
+            JSON.stringify(assessmentStatusData) || ''
+          );
+        }
+        const OfflineAssessmentStatusData = JSON.parse(
+          await getDataFromStorage('assessmentStatusData')
+        );
+        console.log({ OfflineAssessmentStatusData });
+        setStatus(OfflineAssessmentStatusData?.[0]?.status || 'not_started');
+        setPercentage(OfflineAssessmentStatusData?.[0]?.percentage || '');
 
         await setDataInStorage(
           'QuestionSet',
-          JSON.stringify(assessmentList?.QuestionSet) || ''
+          JSON.stringify(OfflineAssessmentList?.QuestionSet) || ''
         );
         setAssessments(uniqueAssessments);
       }

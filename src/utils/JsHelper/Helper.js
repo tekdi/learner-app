@@ -74,7 +74,7 @@ export const saveRefreshToken = async (data) => {
 export const getRefreshToken = async () => {
   try {
     const token = await AsyncStorage.getItem('refreshToken');
-    return { token };
+    return token;
   } catch (e) {
     console.error('Error retrieving credentials:', e);
   }
