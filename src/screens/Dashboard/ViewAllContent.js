@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Alert,
+  FlatList,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -22,28 +23,24 @@ const ViewAllContent = ({ route }) => {
   // const data = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
   const handlePress = (item) => {
-    Alert.alert(
-      `Content-Type : ${item?.contentType}`,
-      `mimeType : ${item?.mimeType}`,
-      [
-        {
-          text: 'Cancel',
-          onPress: () => {},
-          style: 'cancel',
-        },
-        {
-          text: 'OK',
-          onPress: () => {}, // Replace 'TargetScreen' with your screen name
-        },
-      ],
-      { cancelable: false }
-    );
+    navigation.navigate('ContentList', { do_id: item?.identifier });
   };
 
+  const renderItem = ({ item }) => (
+    <View style={styles.cardContainer}>
+      <ContentCard
+        onPress={() => handlePress(item)}
+        title={item?.name}
+        description={item?.contentType}
+        appIcon={item?.appIcon}
+      />
+    </View>
+  );
+
   return (
-    <SafeAreaView>
-      <Header />
-      <View style={{ top: 50, padding: 10 }}>
+    <SafeAreaView style={{ flex: 1, padding: 10, top: 60 }}>
+      {/* <Header /> */}
+      <View style={{ marginBottom: 120 }}>
         <View
           style={{
             flexDirection: 'row',
@@ -65,19 +62,15 @@ const ViewAllContent = ({ route }) => {
           </TouchableOpacity>
           <Text style={styles.text}>{t(title)}</Text>
         </View>
-        <ScrollViewLayout horizontalScroll={false}>
-          {data?.map((item) => {
-            return (
-              <ContentCard
-                key={item?.name}
-                onPress={() => handlePress(item)}
-                title={item?.name}
-                description={item?.contentType}
-                appIcon={item?.appIcon}
-              />
-            );
-          })}
-        </ScrollViewLayout>
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item) => item?.identifier}
+          initialNumToRender={10} // Adjust the number of items to render initially
+          maxToRenderPerBatch={10} // Number of items rendered per batch
+          numColumns={2}
+          windowSize={21} // Controls the number of items rendered around the current index
+        />
       </View>
     </SafeAreaView>
   );

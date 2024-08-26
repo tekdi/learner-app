@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
+  Image,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -18,20 +19,28 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment';
 import globalStyles from '../../utils/Helper/Style';
+import download from '../../assets/images/png/download.png';
+import download_inprogress from '../../assets/images/png/download_inprogress.png';
+import download_complete from '../../assets/images/png/download_complete.png';
 
 const SubjectBox = ({ name, disabled, data }) => {
   // console.log({ data });
   const { t } = useTranslation();
   const navigation = useNavigation();
   const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
-  // const IL_UNIQUE_ID = data?.IL_UNIQUE_ID;
-  // console.log('time', IL_UNIQUE_ID);
+  const [downloadIcon, setDownloadIcon] = useState(download);
 
   const handlePress = () => {
     navigation.navigate('AnswerKeyView', {
       title: name,
       contentId: data?.IL_UNIQUE_ID,
     });
+  };
+  const handleDownload = () => {
+    setDownloadIcon(download_inprogress);
+    setTimeout(() => {
+      setDownloadIcon(download_complete);
+    }, 1000);
   };
 
   return (
@@ -82,11 +91,18 @@ const SubjectBox = ({ name, disabled, data }) => {
                     data: data,
                   });
                 }}
-                style={globalStyles.text}
+                style={[globalStyles.text]}
                 text={'take_the_test'}
               />
             )}
           </View>
+          <TouchableOpacity onPress={handleDownload}>
+            <Image
+              style={styles.img}
+              source={downloadIcon}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
         </View>
       </TouchableOpacity>
     </SafeAreaView>
@@ -125,6 +141,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end',
     marginRight: 20,
+  },
+  img: {
+    width: 30,
+    height: 30,
+    marginHorizontal: 10,
   },
 });
 

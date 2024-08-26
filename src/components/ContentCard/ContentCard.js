@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Dimensions, Pressable, StyleSheet, Text } from 'react-native';
+import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
 import FastImage from '@changwoolab/react-native-fast-image';
 
-const ContentCard = ({ onPress, style, title, description }) => {
+const ContentCard = ({ onPress, style, title, description, appIcon }) => {
   const { width } = Dimensions.get('window');
   const cardWidth = (width - 60) / 2; // Adjust width based on screen size and desired spacing
   return (
@@ -24,7 +24,11 @@ const ContentCard = ({ onPress, style, title, description }) => {
 
       <FastImage
         style={styles.image}
-        source={require('../../assets/images/png/book.png')}
+        source={
+          appIcon
+            ? { uri: appIcon, priority: FastImage.priority.high }
+            : require('../../assets/images/png/book.png')
+        }
         resizeMode={FastImage.resizeMode.cover}
         priority={FastImage.priority.high} // Set the priority here
       />

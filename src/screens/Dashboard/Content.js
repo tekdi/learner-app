@@ -70,8 +70,8 @@ const Content = () => {
   }, []);
 
   return (
-    <SafeAreaView>
-      <Header />
+    <SafeAreaView style={{ flex: 1, top: 40 }}>
+      {/* <Header /> */}
       <View style={styles.view}>
         {loading ? (
           <ActivityIndicator style={{ top: 300 }} />

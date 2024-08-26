@@ -63,7 +63,7 @@ const Profile = (props) => {
   const handleLogout = () => {
     const fetchData = async () => {
       await deleteSavedItem('refreshToken');
-      await deleteSavedItem('token');
+      await deleteSavedItem('Accesstoken');
       await deleteSavedItem('userId');
       await deleteSavedItem('cohortId');
       await deleteSavedItem('cohortData');
