@@ -16,14 +16,26 @@ import lightning from '../../assets/images/png/lightning.png';
 import { Button } from '@ui-kitten/components';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const NetworkAlert = ({ isConnected, onTryAgain }) => {
+const NetworkAlert = ({ isConnected, onTryAgain, closeModal }) => {
   const { t } = useTranslation();
 
   return (
-    <Modal visible={!isConnected} transparent={true} animationType="slide">
-      <View style={styles.modalContainer}>
+    <Modal
+      visible={!isConnected}
+      transparent={true}
+      animationType="slide"
+      onclo
+    >
+      <TouchableOpacity
+        style={styles.modalContainer}
+        activeOpacity={1}
+        onPress={closeModal} // Close the modal when pressing outside the alert box
+      >
         <View style={styles.alertBox}>
-          <View style={styles.alertSubBox}>
+          <TouchableOpacity
+            activeOpacity={1} // Prevent closing the modal when clicking inside the alert box
+            style={styles.alertSubBox}
+          >
             <Image style={styles.img} source={lightning} resizeMode="contain" />
 
             <Text style={[globalStyles.subHeading, { fontWeight: '700' }]}>
@@ -37,7 +49,7 @@ const NetworkAlert = ({ isConnected, onTryAgain }) => {
             >
               {t('make_sure_wifi_or_mobile_data_is_turned_on_and_try_again')}
             </Text>
-          </View>
+          </TouchableOpacity>
           <View style={styles.btnbox}>
             <Button status="primary" style={styles.btn} onPress={onTryAgain}>
               {() => (
@@ -51,7 +63,7 @@ const NetworkAlert = ({ isConnected, onTryAgain }) => {
             </Button>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 };

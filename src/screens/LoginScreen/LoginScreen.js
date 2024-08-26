@@ -189,7 +189,13 @@ const LoginScreen = () => {
         </ScrollView>
       )}
 
-      <NetworkAlert onTryAgain={handleLogin} isConnected={networkstatus} />
+      <NetworkAlert
+        onTryAgain={handleLogin}
+        isConnected={networkstatus}
+        closeModal={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+      />
     </SafeAreaView>
   );
 };
