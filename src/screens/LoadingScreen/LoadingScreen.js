@@ -4,6 +4,7 @@ import Logo from '../../assets/images/png/logo-with-tagline.png';
 import { Spinner } from '@ui-kitten/components';
 import PropTypes from 'prop-types';
 import {
+  getDataFromStorage,
   getRefreshToken,
   getSavedToken,
   saveAccessToken,
@@ -24,24 +25,20 @@ const LoadingScreen = ({ navigation }) => {
   console.log('Generated UUID:', myUUID);
   useEffect(() => {
     const fetchData = async () => {
-      const token = await getSavedToken();
+      const token = await getDataFromStorage('Accesstoken');
       const refresh_token = await getRefreshToken();
       const data = await refreshToken({
-        refresh_token: refresh_token?.token,
+        refresh_token: refresh_token,
       });
-      if (token?.token && data?.access_token) {
+      // console.log({ token, refresh_token });
+      if (token && data?.access_token) {
         const current_token = await getAccessToken();
-        if (current_token === 'successful') {
-          navigation.replace('Dashboard');
-        } else {
+        if (current_token !== 'successful') {
           await saveAccessToken(data?.access_token);
-          await saveToken(data?.access_token);
           await saveRefreshToken(data?.refresh_token);
-          navigation.replace('Dashboard');
         }
-      } else {
-        navigation.replace('LanguageScreen');
       }
+      navigation.replace('Dashboard');
     };
     fetchData();
   }, [navigation]);

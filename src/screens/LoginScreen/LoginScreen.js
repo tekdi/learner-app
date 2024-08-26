@@ -12,7 +12,11 @@ import { useState, React, useEffect } from 'react';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
-import { getCohort, login } from '../../utils/API/AuthService';
+import {
+  getCohort,
+  getProfileDetails,
+  login,
+} from '../../utils/API/AuthService';
 import {
   getUserId,
   saveAccessToken,
@@ -58,14 +62,16 @@ const LoginScreen = () => {
         password: password,
       };
       const data = await login(payload);
+      // console.log({ data });
       if (data?.params?.status !== 'failed') {
-        if (savePassword && data?.access_token) {
-          await saveToken(data?.access_token || '');
-          await saveRefreshToken(data?.refresh_token || '');
-        }
-
+        // await saveToken(data?.access_token || '');
+        await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
         const user_id = await getUserId();
+        const profileData = await getProfileDetails({
+          userId: user_id,
+        });
+        await setDataInStorage('profileData', JSON.stringify(profileData));
         await setDataInStorage('userId', user_id);
         const cohort = await getCohort({ user_id });
         await setDataInStorage('cohortData', JSON.stringify(cohort));
@@ -154,12 +160,12 @@ const LoginScreen = () => {
               {t('forgot_password')}
             </Text>
           </TouchableOpacity> */}
-          <View style={globalStyles.flexrow}>
+          {/* <View style={globalStyles.flexrow}>
             <CustomCheckbox value={savePassword} onChange={setSavePassword} />
             <View>
               <Text style={globalStyles.subHeading}>{t('remember_me')}</Text>
             </View>
-          </View>
+          </View> */}
           <View style={[globalStyles.flexrow, { paddingTop: 10 }]}>
             <View>
               <CustomCheckbox value={acceptTerms} onChange={setAcceptTerms} />

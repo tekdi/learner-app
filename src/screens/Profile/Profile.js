@@ -11,7 +11,6 @@ import {
 import Header from '../../components/Layout/Header';
 import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { getAccessToken, getProfileDetails } from '../../utils/API/AuthService';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import Label from '../../components/Label/Label';
 import TextField from '../../components/TextField/TextField';
@@ -19,6 +18,7 @@ import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 import {
   capitalizeFirstLetter,
   deleteSavedItem,
+  getDataFromStorage,
   getUserId,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
@@ -43,10 +43,7 @@ const Profile = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const user_id = await getUserId();
-      const result = await getProfileDetails({
-        userId: user_id,
-      });
+      const result = JSON.parse(await getDataFromStorage('profileData'));
       const requiredLabels = [
         'GENDER',
         'CLASS_OR_LAST_PASSED_GRADE',
