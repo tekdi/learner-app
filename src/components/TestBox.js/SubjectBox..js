@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Image,
@@ -7,6 +7,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useTranslation } from '../../context/LanguageContext';
@@ -22,6 +24,11 @@ import globalStyles from '../../utils/Helper/Style';
 import download from '../../assets/images/png/download.png';
 import download_inprogress from '../../assets/images/png/download_inprogress.png';
 import download_complete from '../../assets/images/png/download_complete.png';
+import { getData, storeData } from '../../utils/Helper/JSHelper';
+import { hierarchyContent, listQuestion } from '../../utils/API/ApiCalls';
+import RNFS from 'react-native-fs';
+import { unzip } from 'react-native-zip-archive';
+import Config from 'react-native-config';
 
 const SubjectBox = ({ name, disabled, data }) => {
   // console.log({ data });
@@ -29,6 +36,23 @@ const SubjectBox = ({ name, disabled, data }) => {
   const navigation = useNavigation();
   const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
   const [downloadIcon, setDownloadIcon] = useState(download);
+  const [downloadStatus, setDownloadStatus] = useState('');
+  const questionListUrl = Config.QUESTION_LIST_URL;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      let content_do_id = data?.IL_UNIQUE_ID;
+      let contentObj = await getData(content_do_id, 'json');
+      if (contentObj == null) {
+        setDownloadStatus('download');
+        setDownloadIcon(download);
+      } else {
+        setDownloadStatus('completed');
+        setDownloadIcon(download_complete);
+      }
+    };
+    fetchData();
+  }, []);
 
   const handlePress = () => {
     navigation.navigate('AnswerKeyView', {
@@ -36,11 +60,124 @@ const SubjectBox = ({ name, disabled, data }) => {
       contentId: data?.IL_UNIQUE_ID,
     });
   };
-  const handleDownload = () => {
+  const handleDownload = async () => {
+    let content_do_id = data?.IL_UNIQUE_ID;
+    await downloadContentQuML(content_do_id);
+  };
+
+  const downloadContentQuML = async (content_do_id) => {
+    const content_file = `${RNFS.DocumentDirectoryPath}/${content_do_id}`;
+    const streamingPath = `${content_file}/${content_do_id}.json`;
+    //content read
+    setDownloadStatus('progress');
     setDownloadIcon(download_inprogress);
-    setTimeout(() => {
-      setDownloadIcon(download_complete);
-    }, 1000);
+    //get data online
+    let content_response = await hierarchyContent(content_do_id);
+    if (content_response == null) {
+      Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
+      setDownloadStatus('download');
+      setDownloadIcon(download);
+    } else {
+      let contentObj = content_response?.result?.questionSet;
+      let filePath = '';
+      if (contentObj?.mimeType == 'application/vnd.sunbird.questionset') {
+        filePath = `${content_file}`;
+      }
+      if (filePath != '') {
+        //create file and store object in local
+        try {
+          //console.log('permission got');
+          try {
+            //create directory
+            await RNFS.mkdir(filePath);
+            //create directory and add json file in it
+            //downlaod here
+            let childNodes = contentObj?.childNodes;
+            //console.log('childNodes', childNodes);
+            let removeNodes = [];
+            if (contentObj?.children) {
+              for (let i = 0; i < contentObj.children.length; i++) {
+                if (contentObj.children[i]?.identifier) {
+                  removeNodes.push(contentObj.children[i].identifier);
+                }
+              }
+            }
+            //console.log('removeNodes', removeNodes);
+            let identifiers = childNodes.filter(
+              (item) => !removeNodes.includes(item)
+            );
+            //console.log('identifiers', identifiers);
+            let questions = [];
+            const chunks = [];
+            let chunkSize = 10;
+            for (let i = 0; i < identifiers.length; i += chunkSize) {
+              chunks.push(identifiers.slice(i, i + chunkSize));
+            }
+            //console.log('chunks', chunks);
+            for (const chunk of chunks) {
+              let response_question = await listQuestion(
+                questionListUrl,
+                chunk
+              );
+              if (response_question?.result?.questions) {
+                for (
+                  let i = 0;
+                  i < response_question.result.questions.length;
+                  i++
+                ) {
+                  questions.push(response_question.result.questions[i]);
+                }
+                //console.log('chunk', chunk);
+                //console.log('response_question', response_question);
+              }
+            }
+            //console.log('questions', questions.length);
+            //console.log('identifiers', identifiers.length);
+            if (questions.length == identifiers.length) {
+              let question_result = {
+                questions: questions,
+                count: questions.length,
+              };
+              let file_content = { result: question_result };
+              await RNFS.writeFile(
+                streamingPath,
+                JSON.stringify(file_content),
+                'utf8'
+              );
+              console.log('file created successfully:', streamingPath);
+              //store content obj
+              //console.log(contentObj);
+              await storeData(content_do_id, contentObj, 'json');
+              setDownloadStatus('completed');
+              setDownloadIcon(download_complete);
+            } else {
+              Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+              setDownloadStatus('download');
+              setDownloadIcon(download);
+            }
+            //end download
+          } catch (error) {
+            Alert.alert('Error Catch', `Failed to create file: ${error}`, [
+              { text: 'OK' },
+            ]);
+            console.error('Error creating file:', error);
+            setDownloadStatus('download');
+            setDownloadIcon(download);
+          }
+        } catch (err) {
+          Alert.alert('Error Catch', `Failed to create file: ${err}`, [
+            { text: 'OK' },
+          ]);
+          console.log('display error', err);
+          setDownloadStatus('download');
+          setDownloadIcon(download);
+        }
+      } else {
+        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+        setDownloadStatus('download');
+        setDownloadIcon(download);
+      }
+    }
   };
 
   return (
@@ -96,13 +233,27 @@ const SubjectBox = ({ name, disabled, data }) => {
               />
             )}
           </View>
-          <TouchableOpacity onPress={handleDownload}>
-            <Image
-              style={styles.img}
-              source={downloadIcon}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
+          {!data?.lastAttemptedOn && downloadStatus == 'progress' ? (
+            <ActivityIndicator size="large" />
+          ) : !data?.lastAttemptedOn && downloadStatus == 'completed' ? (
+            <TouchableOpacity>
+              <Image
+                style={styles.img}
+                source={downloadIcon}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          ) : !data?.lastAttemptedOn ? (
+            <TouchableOpacity onPress={handleDownload}>
+              <Image
+                style={styles.img}
+                source={downloadIcon}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          ) : (
+            <></>
+          )}
         </View>
       </TouchableOpacity>
     </SafeAreaView>
