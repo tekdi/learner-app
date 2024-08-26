@@ -11,7 +11,6 @@ import {
 import Header from '../../components/Layout/Header';
 import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { getAccessToken, getProfileDetails } from '../../utils/API/AuthService';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import Label from '../../components/Label/Label';
 import TextField from '../../components/TextField/TextField';
@@ -19,6 +18,8 @@ import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 import {
   capitalizeFirstLetter,
   deleteSavedItem,
+  getDataFromStorage,
+  getUserId,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 
@@ -31,9 +32,8 @@ const Profile = (props) => {
 
   const createNewObject = (customFields, labels) => {
     const result = {};
-    customFields.forEach((field) => {
+    customFields?.forEach((field) => {
       if (labels.includes(field.label)) {
-        console.log(field.value);
         result[field.label] = field.value || '';
       }
     });
@@ -43,10 +43,7 @@ const Profile = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getAccessToken();
-      const result = await getProfileDetails({
-        userId: data?.result?.userId,
-      });
+      const result = JSON.parse(await getDataFromStorage('profileData'));
       const requiredLabels = [
         'GENDER',
         'CLASS_OR_LAST_PASSED_GRADE',
@@ -67,6 +64,9 @@ const Profile = (props) => {
     const fetchData = async () => {
       await deleteSavedItem('refreshToken');
       await deleteSavedItem('token');
+      await deleteSavedItem('userId');
+      await deleteSavedItem('cohortId');
+      await deleteSavedItem('cohortData');
 
       // Reset the navigation stack and navigate to LoginSignUpScreen
       navigation.dispatch(

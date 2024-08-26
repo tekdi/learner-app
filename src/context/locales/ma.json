@@ -152,6 +152,12 @@
   "full_name":"पूर्ण नाव",
   "State":"राज्य",
   "district":"जिल्हा",
-  "unanswered":"अनुत्तरीत"
+  "unanswered":"अनुत्तरीत",
+  "no_internet_connection": "अरेरे, इंटरनेट कनेक्शन नाही",
+  "make_sure_wifi_or_mobile_data_is_turned_on_and_try_again": "कृपया वायफाय किंवा मोबाइल डेटा चालू आहे याची खात्री करा आणि पुन्हा प्रयत्न करा.",
+  "try_again": "पुन्हा प्रयत्न करा",
+  "are_you_sure_you_want_to_exit_the_app": "आपण अ‍ॅपसाठी बाहेर पडू इच्छिता याची खात्री आहे का?",
+  "yes": "होय",
+  "no": "नाही"
 
 }

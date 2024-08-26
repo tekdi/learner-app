@@ -68,28 +68,20 @@ const TestView = ({ route }) => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await getDataFromStorage('QuestionSet');
-      const cohort = await getDataFromStorage('cohortId');
-      const cohort_id = cohort?.data;
-      const user_id = await getUserId();
-      const parseData = JSON.parse(data?.data);
-      // setQuestionsets(parseData);
+      const cohort_id = await getDataFromStorage('cohortId');
+      const user_id = await getDataFromStorage('userId');
+      const parseData = JSON.parse(data);
       // Extract DO_id from assessmentList (content)
 
       const uniqueAssessmentsId = [
         ...new Set(parseData?.map((item) => item.IL_UNIQUE_ID)),
       ];
-      // const uniqueAssessmentsId = [
-      //   'do_11388361673153740812077',
-      //   'do_11388361673153740812071',
-      // ];
 
       // Get data of exam if given
-      const assessmentStatusData =
-        (await getAssessmentStatus({
-          user_id,
-          cohort_id,
-          uniqueAssessmentsId,
-        })) || [];
+
+      const assessmentStatusData = JSON.parse(
+        await getDataFromStorage('assessmentStatusData')
+      );
 
       // console.log(JSON.stringify(assessmentStatusData));
       setStatus(assessmentStatusData?.[0]?.status || 'not_started');

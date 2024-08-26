@@ -7,7 +7,7 @@ import { getAccessToken } from '../API/AuthService';
 export const getDataFromStorage = async (value) => {
   try {
     const data = await AsyncStorage.getItem(value);
-    return { data };
+    return data;
   } catch (e) {
     console.error('Error retrieving credentials:', e);
   }
@@ -74,7 +74,7 @@ export const saveRefreshToken = async (data) => {
 export const getRefreshToken = async () => {
   try {
     const token = await AsyncStorage.getItem('refreshToken');
-    return { token };
+    return token;
   } catch (e) {
     console.error('Error retrieving credentials:', e);
   }
