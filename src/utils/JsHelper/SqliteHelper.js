@@ -2,16 +2,21 @@ import SQLite from 'react-native-sqlite-storage';
 
 // Open or create the database
 const openDatabase = () => {
-  return SQLite.openDatabase({ name: 'myDatabase.db', location: 'default' });
+  return SQLite.openDatabase({ name: 'learnerApp.db', location: 'default' });
 };
 
 // Create a table if not exists
-const createTable = () => {
+const createTable = ({ tableName, columns }) => {
   return new Promise((resolve, reject) => {
     const db = openDatabase();
+
+    // Generate the column definitions string from the columns array
+    const columnDefinitions = columns.join(', ');
+
     db.transaction((tx) => {
+      const query = `CREATE TABLE IF NOT EXISTS ${tableName} (${columnDefinitions})`;
       tx.executeSql(
-        'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, age INTEGER)',
+        query,
         [],
         () => resolve('Table created successfully'),
         (error) => reject('Error creating table: ' + error.message)
@@ -20,14 +25,61 @@ const createTable = () => {
   });
 };
 
-// Insert data into the table
-const insertData = (name, age) => {
+// Get data from the table
+
+const getData = ({ tableName, where }) => {
   return new Promise((resolve, reject) => {
     const db = openDatabase();
+
+    // Generate the WHERE clause from the where object if provided
+    let whereClause = '';
+    let whereValues = [];
+
+    if (where) {
+      whereClause =
+        'WHERE ' +
+        Object.keys(where)
+          .map((key) => `${key} = ?`)
+          .join(' AND ');
+      whereValues = Object.values(where);
+    }
+
     db.transaction((tx) => {
+      const query = `SELECT * FROM ${tableName} ${whereClause}`;
       tx.executeSql(
-        'INSERT INTO users (name, age) VALUES (?, ?)',
-        [name, age],
+        query,
+        whereValues,
+        (tx, results) => {
+          // Extract data from results.rows
+          const rows = [];
+          for (let i = 0; i < results.rows.length; i++) {
+            rows.push(results.rows.item(i));
+          }
+          resolve(rows);
+        },
+        (error) => reject('Error fetching data: ' + error.message)
+      );
+    });
+  });
+};
+
+// Insert data into the table
+const insertData = ({ tableName, data }) => {
+  return new Promise((resolve, reject) => {
+    const db = openDatabase();
+
+    // Get the column names and values from the data object
+    const columns = Object.keys(data).join(', ');
+    const placeholders = Object.keys(data)
+      .map(() => '?')
+      .join(', ');
+    const values = Object.values(data);
+
+    db.transaction((tx) => {
+      const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders})`;
+      tx.executeSql(
+        query,
+        values,
         () => resolve('Data inserted successfully'),
         (error) => reject('Error inserting data: ' + error.message)
       );
@@ -35,14 +87,29 @@ const insertData = (name, age) => {
   });
 };
 
-// Update data in the table
-const updateData = (id, name, age) => {
+const updateData = ({ tableName, data, where }) => {
   return new Promise((resolve, reject) => {
     const db = openDatabase();
+
+    // Generate the SET clause from the data object
+    const setClause = Object.keys(data)
+      .map((key) => `${key} = ?`)
+      .join(', ');
+
+    // Extract the values from the data object
+    const values = Object.values(data);
+
+    // Add the values for the WHERE clause
+    const whereClause = Object.keys(where)
+      .map((key) => `${key} = ?`)
+      .join(' AND ');
+    const whereValues = Object.values(where);
+
     db.transaction((tx) => {
+      const query = `UPDATE ${tableName} SET ${setClause} WHERE ${whereClause}`;
       tx.executeSql(
-        'UPDATE users SET name = ?, age = ? WHERE id = ?',
-        [name, age, id],
+        query,
+        [...values, ...whereValues], // Combine data and where clause values
         () => resolve('Data updated successfully'),
         (error) => reject('Error updating data: ' + error.message)
       );
@@ -50,14 +117,21 @@ const updateData = (id, name, age) => {
   });
 };
 
-// Delete data from the table
-const deleteData = (id) => {
+const deleteData = ({ tableName, where }) => {
   return new Promise((resolve, reject) => {
     const db = openDatabase();
+
+    // Generate the WHERE clause from the where object
+    const whereClause = Object.keys(where)
+      .map((key) => `${key} = ?`)
+      .join(' AND ');
+    const whereValues = Object.values(where);
+
     db.transaction((tx) => {
+      const query = `DELETE FROM ${tableName} WHERE ${whereClause}`;
       tx.executeSql(
-        'DELETE FROM users WHERE id = ?',
-        [id],
+        query,
+        whereValues,
         () => resolve('Data deleted successfully'),
         (error) => reject('Error deleting data: ' + error.message)
       );
@@ -71,7 +145,7 @@ const deleteDatabase = () => {
     const db = openDatabase();
     db.close(() => {
       SQLite.deleteDatabase(
-        { name: 'mainDatabase.db', location: 'default' },
+        { name: 'learnerApp.db', location: 'default' },
         () => {
           resolve('Database deleted successfully');
         },
@@ -86,6 +160,7 @@ const deleteDatabase = () => {
 export {
   openDatabase,
   createTable,
+  getData,
   insertData,
   updateData,
   deleteData,
