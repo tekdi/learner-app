@@ -26,13 +26,14 @@ const ViewAllContent = ({ route }) => {
     navigation.navigate('ContentList', { do_id: item?.identifier });
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item, index }) => (
     <View style={styles.cardContainer}>
       <ContentCard
         onPress={() => handlePress(item)}
-        title={item?.name}
-        description={item?.contentType}
         appIcon={item?.appIcon}
+        index={index}
+        setCardWidth={55}
+        item={item}
       />
     </View>
   );

@@ -160,5 +160,7 @@
   "are_you_sure_you_want_to_exit_the_app":"Are you sure you want to exit the app?",
   "yes":"Yes",
   "no":"No",
-  "course_details":"Course Details"
+  "course_details":"Course Details",
+  "sync_pending_no_internet_available":"Sync pending. No internet available",
+  "back_online_syncing":"Back online! Syncing"
 }

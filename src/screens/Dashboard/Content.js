@@ -22,6 +22,7 @@ import wave from '../../assets/images/png/wave.png';
 import ContentBox from '../../components/ContentBox/ContentBox';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 import { contentListApi, getAccessToken } from '../../utils/API/AuthService';
+import SyncCard from '../../components/SyncComponent/SyncCard';
 
 const Content = () => {
   const navigation = useNavigation();
@@ -84,6 +85,8 @@ const Content = () => {
                 {t('welcome')}, {userInfo?.result?.name} !
               </Text>
             </View>
+            <SyncCard />
+
             <ScrollViewLayout horizontalScroll={false}>
               <ContentBox
                 title={'Continue_Learning'}
