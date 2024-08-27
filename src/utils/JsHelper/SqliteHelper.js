@@ -25,6 +25,35 @@ const createTable = ({ tableName, columns }) => {
   });
 };
 
+//  alterTable if new column need to be added.
+
+const alterTable = ({ tableName, newColumns }) => {
+  return new Promise((resolve, reject) => {
+    const db = openDatabase();
+
+    db.transaction((tx) => {
+      newColumns.forEach((column) => {
+        const query = `ALTER TABLE ${tableName} ADD COLUMN ${column}`;
+        tx.executeSql(
+          query,
+          [],
+          () => {
+            console.log(`Column ${column} added successfully`);
+          },
+          (error) => {
+            if (error.message.includes('duplicate column name')) {
+              console.log(`Column ${column} already exists`);
+            } else {
+              reject('Error adding column: ' + error.message);
+            }
+          }
+        );
+      });
+      resolve('Table altered successfully');
+    });
+  });
+};
+
 // Get data from the table
 
 const getData = ({ tableName, where }) => {
@@ -139,23 +168,23 @@ const deleteData = ({ tableName, where }) => {
   });
 };
 
-// Delete the database
-const deleteDatabase = () => {
-  return new Promise((resolve, reject) => {
-    const db = openDatabase();
-    db.close(() => {
-      SQLite.deleteDatabase(
-        { name: 'learnerApp.db', location: 'default' },
-        () => {
-          resolve('Database deleted successfully');
-        },
-        (error) => {
-          reject('Error deleting database: ' + error.message);
-        }
-      );
-    });
-  });
-};
+// // Delete the database
+// const deleteDatabase = () => {
+//   return new Promise((resolve, reject) => {
+//     const db = openDatabase();
+//     db.close(() => {
+//       SQLite.deleteDatabase(
+//         { name: 'learnerApp.db', location: 'default' },
+//         () => {
+//           resolve('Database deleted successfully');
+//         },
+//         (error) => {
+//           reject('Error deleting database: ' + error.message);
+//         }
+//       );
+//     });
+//   });
+// };
 
 export {
   openDatabase,
@@ -164,5 +193,6 @@ export {
   insertData,
   updateData,
   deleteData,
-  deleteDatabase,
+  // deleteDatabase,
+  alterTable,
 };
