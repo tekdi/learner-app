@@ -158,6 +158,8 @@
   "are_you_sure_you_want_to_exit_the_app": "क्या आप वाकई एप्लिकेशन से बाहर निकलना चाहते हैं?",
   "yes": "हाँ",
   "no": "नहीं",
-  "course_details":"पाठ्यक्रम विवरण"
+  "course_details":"पाठ्यक्रम विवरण",
+  "sync_pending_no_internet_available": "सिंक लंबित है। इंटरनेट उपलब्ध नहीं है",
+  "back_online_syncing": "वापस ऑनलाइन! सिंक कर रहा है"
 
 }

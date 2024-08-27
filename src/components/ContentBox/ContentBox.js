@@ -1,21 +1,19 @@
 import React from 'react';
-import PropTypes, { bool } from 'prop-types';
+import PropTypes from 'prop-types';
 import {
-  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  FlatList,
 } from 'react-native';
-import ScrollViewLayout from '../Layout/ScrollViewLayout';
 import ContentCard from '../../components/ContentCard/ContentCard';
 import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useNavigation } from '@react-navigation/native';
 
 const ContentBox = ({
-  horizontalView,
   ContentData,
   viewAllLink,
   style,
@@ -24,65 +22,67 @@ const ContentBox = ({
 }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
+
   const handlePress = (item) => {
     console.log('Card pressed!', item);
-
     navigation.navigate('ContentList', { do_id: item?.identifier });
   };
 
+  const renderItem = ({ item, index }) => (
+    <View>
+      <ContentCard
+        onPress={() => handlePress(item)}
+        appIcon={item?.appIcon}
+        index={index}
+        setCardWidth={20}
+        item={item}
+      />
+    </View>
+  );
+
   return (
     <SafeAreaView style={[styles.container]}>
-      <View>
-        {title && (
-          <Text style={[styles.title, { color: style.titlecolor }]}>
-            {t(title)}
-          </Text>
-        )}
+      {title && (
+        <Text style={[styles.title, { color: style.titlecolor }]}>
+          {t(title)}
+        </Text>
+      )}
+      <View style={styles.view}>
+        <Text style={[styles.description, { color: 'black' }]}>
+          {t(description)}
+        </Text>
         <View style={styles.view}>
-          <Text style={[styles.description, { color: 'black' }]}>
-            {t(description)}
-          </Text>
-          <View style={styles.view}>
-            <TouchableOpacity onPress={viewAllLink}>
-              <Text style={[styles.description, { color: '#0D599E' }]}>
-                {t('view_all')}
-              </Text>
-            </TouchableOpacity>
-            <Icon
-              name="arrow-right"
-              style={{ marginHorizontal: 10 }}
-              color={'#0D599E'}
-              size={20}
-            />
-          </View>
+          <TouchableOpacity onPress={viewAllLink}>
+            <Text style={[styles.description, { color: '#0D599E' }]}>
+              {t('view_all')}
+            </Text>
+          </TouchableOpacity>
+          <Icon
+            name="arrow-right"
+            style={{ marginHorizontal: 10 }}
+            color={'#0D599E'}
+            size={20}
+          />
         </View>
-        <ScrollViewLayout horizontalScroll={true}>
-          {ContentData?.map((item, index) => {
-            return (
-              <ContentCard
-                key={index}
-                onPress={() => handlePress(item)}
-                title={item?.name}
-                description={item?.mimeType}
-                item={item}
-                appIcon={item?.appIcon}
-              />
-            );
-          })}
-        </ScrollViewLayout>
       </View>
+      <FlatList
+        data={ContentData}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        horizontal={true} // Enable horizontal scrolling
+        showsHorizontalScrollIndicator={false} // Hide horizontal scroll indicator if desired
+        initialNumToRender={3} // Adjust the number of items to render initially
+        maxToRenderPerBatch={3} // Number of items rendered per batch
+      />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    // borderWidth: 1,
-    height: 300,
     paddingTop: 20,
     marginVertical: 10,
   },
-
   title: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -91,9 +91,8 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    fontWeight: 500,
+    fontWeight: '500',
     marginLeft: 10,
-    // textAlign: 'center',
   },
   view: {
     flexDirection: 'row',
@@ -107,6 +106,7 @@ ContentBox.propTypes = {
   style: PropTypes.object,
   description: PropTypes.string,
   horizontalView: PropTypes.bool,
+  ContentData: PropTypes.array.isRequired,
 };
 
 export default ContentBox;
