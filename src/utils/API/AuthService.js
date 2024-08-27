@@ -532,7 +532,7 @@ export const deleteAsessmentOffline = async (user_id, batch_id, content_id) => {
       batch_id: batch_id,
       content_id: content_id,
     };
-    console.log('data_delete', data_delete);
+    //console.log('data_delete', data_delete);
     await deleteData({
       tableName: 'Asessment_Offline',
       where: data_delete,
@@ -588,7 +588,7 @@ export const getSyncAsessmentOffline = async (user_id) => {
         //console.log('rows', rows);
         if (rows.length > 0) {
           try {
-            result_data = JSON.parse(rows[0]?.payload);
+            result_data = rows;
           } catch (e) {}
         }
       })

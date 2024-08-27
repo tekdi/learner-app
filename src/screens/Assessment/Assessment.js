@@ -125,7 +125,7 @@ const Assessment = (props) => {
         <ActiveLoading />
       ) : (
         <View>
-          <SyncCard />
+          <SyncCard doneSync={fetchData} />
           <Text style={[globalStyles.heading, { padding: 20 }]}>
             {t('Assessments')}
           </Text>
