@@ -12,3 +12,6 @@
 # for external packages webview sunbird content player
 -keep class * extends android.webkit.WebView { *; }
 -keepclassmembers class * extends android.webkit.WebView { *; }
+
+# [react-native-background-fetch]
+-keep class com.transistorsoft.rnbackgroundfetch.HeadlessTask { *; }

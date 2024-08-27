@@ -1,31 +1,63 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useInternet } from '../../context/NetworkContext';
+import { getSyncAsessmentOffline } from '../../utils/API/AuthService';
+import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 
 const SyncCard = () => {
   const { t } = useTranslation();
   const { isConnected } = useInternet();
+  const [isSyncPending, setIsSyncPending] = useState(false);
+  const [syncStatus, setSyncStatus] = useState('Idle');
+  const [isProgress, setIsProgress] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      //get sync pending
+      const user_id = await getDataFromStorage('userId');
+      const result_sync_offline = await getSyncAsessmentOffline(user_id);
+      console.log('result_sync_offline', result_sync_offline);
+      if (result_sync_offline) {
+        setIsSyncPending(true);
+      } else {
+        setIsSyncPending(false);
+      }
+    };
+    fetchData();
+  }, [isConnected]);
+
   return (
-    <View style={styles.container}>
-      {isConnected ? (
-        <>
-          <Icon name="cloud-outline" color={'black'} size={22} />
-          <Text style={[globalStyles.text, { marginLeft: 10 }]}>
-            {t('back_online_syncing')}
-          </Text>
-        </>
-      ) : (
-        <>
-          <Icon name="cloud-offline-outline" color={'#7C766F'} size={22} />
-          <Text style={[globalStyles.text, { marginLeft: 10 }]}>
-            {t('sync_pending_no_internet_available')}
-          </Text>
-        </>
+    <>
+      {isSyncPending && (
+        <View style={styles.container}>
+          {isConnected ? (
+            <>
+              <Icon name="cloud-outline" color={'black'} size={22} />
+              <Text style={[globalStyles.text, { marginLeft: 10 }]}>
+                {t('back_online_syncing')}
+              </Text>
+              {isProgress && <ActivityIndicator size="small" />}
+            </>
+          ) : (
+            <>
+              <Icon name="cloud-offline-outline" color={'#7C766F'} size={22} />
+              <Text style={[globalStyles.text, { marginLeft: 10 }]}>
+                {t('sync_pending_no_internet_available')}
+              </Text>
+            </>
+          )}
+        </View>
       )}
-    </View>
+    </>
   );
 };
 

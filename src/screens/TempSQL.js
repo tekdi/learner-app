@@ -6,7 +6,7 @@ import {
   updateData,
   deleteData,
   deleteDatabase,
-} from './sqliteHelper';
+} from './SqliteHelper';
 
 const TempSQL = () => {
   useEffect(() => {
@@ -15,7 +15,7 @@ const TempSQL = () => {
       const tableName = 'APIResponses';
       const columns = [
         'id INTEGER PRIMARY KEY AUTOINCREMENT',
-        'user_id INTEGER',
+        'user_id TEXT',
         'api_url TEXT',
         'api_type TEXT',
         'payload TEXT',

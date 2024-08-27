@@ -30,6 +30,13 @@ import {
 import { getAccessToken, refreshToken } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { useInternet } from '../../context/NetworkContext';
+import {
+  createTable,
+  insertData,
+  updateData,
+  deleteData,
+  deleteDatabase,
+} from '../../utils/JsHelper/SqliteHelper';
 
 const LanguageScreen = () => {
   const navigation = useNavigation();
@@ -39,6 +46,31 @@ const LanguageScreen = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      //create tables local
+      //APIResponses
+      let tableName = 'APIResponses';
+      let columns = [
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'user_id TEXT',
+        'api_url TEXT',
+        'api_type TEXT',
+        'payload TEXT',
+        'response TEXT',
+      ];
+      const query_APIResponses = await createTable({ tableName, columns });
+      console.log('query_APIResponses', query_APIResponses);
+      //asessment_offline
+      tableName = 'Asessment_Offline';
+      columns = [
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'user_id TEXT',
+        'batch_id TEXT',
+        'content_id TEXT',
+        'payload TEXT',
+      ];
+      const query_Asessment_Offline = await createTable({ tableName, columns });
+      console.log('query_Asessment_Offline', query_Asessment_Offline);
+
       const token = await getDataFromStorage('Accesstoken');
       //console.log('Accesstoken', token);
       if (token) {

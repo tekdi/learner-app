@@ -17,6 +17,7 @@ import SecondaryButton from '../SecondaryButton/SecondaryButton';
 import {
   capitalizeFirstLetter,
   convertSecondsToMinutes,
+  getDataFromStorage,
 } from '../../utils/JsHelper/Helper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment';
@@ -30,6 +31,7 @@ import RNFS from 'react-native-fs';
 import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
+import { getAsessmentOffline } from '../../utils/API/AuthService';
 
 const SubjectBox = ({ name, disabled, data }) => {
   // console.log({ data });
@@ -40,6 +42,7 @@ const SubjectBox = ({ name, disabled, data }) => {
   const [downloadStatus, setDownloadStatus] = useState('');
   const questionListUrl = Config.QUESTION_LIST_URL;
   const [networkstatus, setNetworkstatus] = useState(true);
+  const [isSyncPending, setIsSyncPending] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +54,20 @@ const SubjectBox = ({ name, disabled, data }) => {
       } else {
         setDownloadStatus('completed');
         setDownloadIcon(download_complete);
+      }
+      //get sync pending
+      const user_id = await getDataFromStorage('userId');
+      const batch_id = await getDataFromStorage('cohortId');
+      const content_id = data?.IL_UNIQUE_ID;
+      const result_sync_offline = await getAsessmentOffline(
+        user_id,
+        batch_id,
+        content_id
+      );
+      if (result_sync_offline) {
+        setIsSyncPending(true);
+      } else {
+        setIsSyncPending(false);
       }
     };
     fetchData();
@@ -192,11 +209,11 @@ const SubjectBox = ({ name, disabled, data }) => {
             <Text style={globalStyles.subHeading}>
               {t(capitalizeFirstLetter(name))}
             </Text>
-            {disabled ? (
+            {disabled && !isSyncPending ? (
               <Text style={[globalStyles.subHeading, { color: '#7C766F' }]}>
                 {t('not_started')}
               </Text>
-            ) : (
+            ) : !isSyncPending ? (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Text style={{ color: '#000' }}>
                   {data?.totalScore}/{data?.totalMaxScore}
@@ -219,11 +236,22 @@ const SubjectBox = ({ name, disabled, data }) => {
                   </Text>
                 </View>
               </View>
+            ) : (
+              <></>
             )}
           </View>
           <View style={{ marginRight: 10, paddingVertical: 10 }}>
             {data?.lastAttemptedOn ? (
               <MaterialIcons name="navigate-next" size={32} color="black" />
+            ) : isSyncPending ? (
+              <Text
+                style={[
+                  globalStyles.subHeading,
+                  { color: '#7C766F', marginLeft: 5 },
+                ]}
+              >
+                .sync pending
+              </Text>
             ) : (
               <SecondaryButton
                 onPress={() => {

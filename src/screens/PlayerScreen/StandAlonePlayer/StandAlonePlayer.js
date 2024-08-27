@@ -41,6 +41,7 @@ import Config from 'react-native-config';
 
 import Orientation from 'react-native-orientation-locker';
 import { getDataFromStorage, getUserId } from '../../../utils/JsHelper/Helper';
+import { storeAsessmentOffline } from '../../../utils/API/AuthService';
 
 // User-Agent string for a desktop browser (e.g., Chrome on Windows)
 const desktopUserAgent =
@@ -204,13 +205,35 @@ const StandAlonePlayer = ({ route }) => {
             { cancelable: false } // Determines if the alert is dismissable by tapping outside
           );
         } else {
+          let payload = {
+            scoreDetails,
+            identifierWithoutImg,
+            maxScore,
+            seconds,
+            userId,
+            batchId,
+          };
+          //store result in offline mode
+          await storeAsessmentOffline(
+            userId,
+            batchId,
+            identifierWithoutImg,
+            payload
+          );
+
           Alert.alert(
-            'Error', // Title of the alert
-            'Resubmit Result', // Message of the alert
+            'Offline Exam', // Title of the alert
+            'Your result stored in offline mode', // Message of the alert
             [
               {
                 text: 'OK', // Text for the "OK" button
-                onPress: () => handleMessage(event), // Action to take when "OK" is pressed
+                onPress: () =>
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 0,
+                      routes: [{ name: 'Dashboard' }],
+                    })
+                  ), // Action to take when "OK" is pressed
               },
             ],
             { cancelable: false } // Determines if the alert is dismissable by tapping outside
