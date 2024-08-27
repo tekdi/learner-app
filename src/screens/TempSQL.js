@@ -11,15 +11,42 @@ import {
 const TempSQL = () => {
   useEffect(() => {
     // Create table on app load
-    createTable()
-      .then((msg) => console.log(msg))
-      .catch((err) => console.error(err));
+    const fetchData = async () => {
+      const tableName = 'APIResponses';
+      const columns = [
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'user_id INTEGER',
+        'api_url TEXT',
+        'api_type TEXT',
+        'payload TEXT',
+        'response TEXT',
+      ];
+      const query = await createTable({ tableName, columns });
+    };
+    fetchData();
   }, []);
 
-  const handleInsert = () => {
-    insertData('John Doe', 30)
-      .then((msg) => console.log(msg))
-      .catch((err) => console.error(err));
+  const handleInsert = async () => {
+    const data = {
+      user_id: 32,
+      api_url: `https://tracking.prathamdigital.org/v1/tracking/assessment/list`,
+      api_type: `POST`,
+      payload: `{
+        filters: {
+          userId: params?.user_id,
+        },
+        sort: {
+          field: 'userId',
+          order: 'asc',
+        },
+      }`,
+      response: 'Test Test',
+    };
+    const result = await insertData({
+      tableName: 'APIResponses',
+      data,
+    });
+    console.log({ result });
   };
 
   const handleUpdate = () => {

@@ -19,6 +19,7 @@ import {
 import globalStyles from '../../utils/Helper/Style';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
+import { createTable, getData } from '../../utils/JsHelper/SqliteHelper';
 
 const Assessment = (props) => {
   const { t } = useTranslation();
@@ -106,6 +107,24 @@ const Assessment = (props) => {
     };
     fetchData();
   }, [navigation]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const tableName = 'APIResponses';
+      const columns = [
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'user_id INTEGER',
+        'api_url TEXT',
+        'api_type TEXT',
+        'payload TEXT',
+        'response TEXT',
+      ];
+      const query = await createTable({ tableName, columns });
+      const data = await getData({ tableName: 'APIResponses' });
+      console.log({ query, data });
+    };
+    fetchData();
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>

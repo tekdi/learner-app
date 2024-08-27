@@ -1,11 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import FastImage from '@changwoolab/react-native-fast-image';
+import download from '../../assets/images/png/download.png';
+import download_inprogress from '../../assets/images/png/download_inprogress.png';
+import download_complete from '../../assets/images/png/download_complete.png';
 
 const ContentCard = ({ onPress, style, title, description, appIcon }) => {
   const { width } = Dimensions.get('window');
   const cardWidth = (width - 60) / 2; // Adjust width based on screen size and desired spacing
+  const [downloadIcon, setDownloadIcon] = useState(download);
+
+  const handleDownload = () => {
+    setDownloadIcon(download_inprogress);
+    setTimeout(() => {
+      setDownloadIcon(download_complete);
+    }, 1000);
+  };
+
   return (
     <Pressable
       onPress={onPress}
@@ -22,16 +42,26 @@ const ContentCard = ({ onPress, style, title, description, appIcon }) => {
         <Text style={{ fontWeight: '500' }}>mime-Type:</Text> {description}
       </Text>
 
-      <FastImage
-        style={styles.image}
-        source={
-          appIcon
-            ? { uri: appIcon, priority: FastImage.priority.high }
-            : require('../../assets/images/png/book.png')
-        }
-        resizeMode={FastImage.resizeMode.cover}
-        priority={FastImage.priority.high} // Set the priority here
-      />
+      <View style={styles.view}>
+        <TouchableOpacity onPress={handleDownload}>
+          <Image
+            style={styles.img}
+            source={downloadIcon}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+
+        <FastImage
+          style={styles.image}
+          source={
+            appIcon
+              ? { uri: appIcon, priority: FastImage.priority.high }
+              : require('../../assets/images/png/book.png')
+          }
+          resizeMode={FastImage.resizeMode.cover}
+          priority={FastImage.priority.high} // Set the priority here
+        />
+      </View>
     </Pressable>
   );
 };
@@ -65,8 +95,17 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 40,
-    left: 50,
-    top: 10,
+  },
+  img: {
+    width: 25,
+    height: 25,
+  },
+  view: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    top: 20,
   },
 });
 
