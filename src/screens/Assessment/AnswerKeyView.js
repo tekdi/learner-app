@@ -18,6 +18,7 @@ import moment from 'moment';
 import { getAssessmentAnswerKey } from '../../utils/API/AuthService';
 import {
   capitalizeFirstLetter,
+  deleteSavedItem,
   getDataFromStorage,
   getUserId,
   setDataInStorage,
@@ -39,12 +40,12 @@ const AnswerKeyView = ({ route }) => {
   const [scoreData, setScoreData] = useState();
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [unansweredCount, setUnansweredCount] = useState(null);
+  const [unansweredCount, setUnansweredCount] = useState(0);
   const flatListRef = useRef(null);
   const [networkstatus, setNetworkstatus] = useState(true);
 
   const countEmptyResValues = (data) => {
-    return data.reduce((count, item) => {
+    return data?.reduce((count, item) => {
       return item.resValue === '[]' ? count + 1 : count;
     }, 0);
   };
@@ -72,18 +73,13 @@ const AnswerKeyView = ({ route }) => {
       cohort_id,
       contentId,
     });
-    if (data?.[0]?.assessmentTrackingId) {
-      await setDataInStorage(
-        `assessmentAnswerKey${contentId}`,
-        JSON.stringify(data) || ''
-      );
-    }
+
     const OfflineassessmentAnswerKey = JSON.parse(
       await getDataFromStorage(`assessmentAnswerKey${contentId}`)
     );
-    if (OfflineassessmentAnswerKey) {
-      // console.log({ OfflineassessmentAnswerKey });
-      const finalData = getLastIndexData(OfflineassessmentAnswerKey);
+    console.log({ OfflineassessmentAnswerKey, data });
+    if (OfflineassessmentAnswerKey || !data?.error) {
+      const finalData = getLastIndexData(OfflineassessmentAnswerKey || data);
       const unanswered = countEmptyResValues(finalData?.score_details);
       setUnansweredCount(unanswered);
       setScoreData(finalData);
@@ -92,6 +88,28 @@ const AnswerKeyView = ({ route }) => {
       setNetworkstatus(false);
     }
     setLoading(false);
+  };
+
+  const handleDownload = () => {
+    console.log('hi');
+    const fetchData = async () => {
+      deleteSavedItem(`assessmentAnswerKey${contentId}`);
+
+      const cohort_id = await getDataFromStorage('cohortId');
+      const user_id = await getDataFromStorage('userId');
+      const data = await getAssessmentAnswerKey({
+        user_id,
+        cohort_id,
+        contentId,
+      });
+      if (data?.[0]?.assessmentTrackingId) {
+        await setDataInStorage(
+          `assessmentAnswerKey${contentId}`,
+          JSON.stringify(data) || ''
+        );
+      }
+    };
+    fetchData();
   };
 
   const passedItems = scoreData?.score_details?.filter(
@@ -149,6 +167,20 @@ const AnswerKeyView = ({ route }) => {
               {t(capitalizeFirstLetter(title))}
             </Text>
           </View>
+          <TouchableOpacity
+            onPress={handleDownload}
+            style={[globalStyles.flexrow, { marginTop: 10 }]}
+          >
+            <Text style={[globalStyles.subHeading, { color: '#0D599E' }]}>
+              {t('download_for_offline_access')}
+            </Text>
+            <Icon
+              name="download"
+              style={{ marginHorizontal: 10 }}
+              color={'#0D599E'}
+              size={18}
+            />
+          </TouchableOpacity>
           <View style={styles.container}>
             <View>
               <Text style={[globalStyles.text, { color: '#7C766F' }]}>
@@ -165,7 +197,7 @@ const AnswerKeyView = ({ route }) => {
                   {unansweredCount} {t('unanswered')}
                 </Text>
                 <Text style={[globalStyles.subHeading, { fontWeight: '700' }]}>
-                  {scoreData?.totalScore}/{scoreData?.totalMaxScore}
+                  {scoreData?.totalScore || 0}/{scoreData?.totalMaxScore || 0}
                 </Text>
               </View>
               <View style={{ borderBottomWidth: 1 }}></View>
@@ -175,8 +207,8 @@ const AnswerKeyView = ({ route }) => {
                   { marginVertical: 20, color: '#7C766F' },
                 ]}
               >
-                {passedItems?.length} {t('out_of')}{' '}
-                {scoreData?.score_details?.length} {t('correct_answers')}
+                {passedItems?.length || 0} {t('out_of')}{' '}
+                {scoreData?.score_details?.length || 0} {t('correct_answers')}
               </Text>
             </View>
             <FlatList
@@ -230,8 +262,8 @@ const AnswerKeyView = ({ route }) => {
                 globalStyles.subHeading,
                 { flex: 2, textAlign: 'center' },
               ]}
-            >{`${startIndex + 1}-${endIndex} of ${
-              scoreData?.score_details.length
+            >{`${startIndex ? startIndex + 1 : 0}-${endIndex || 0}  of ${
+              scoreData?.score_details.length || 0
             }`}</Text>
             <TouchableOpacity
               style={{ flex: 1, alignItems: 'center' }}

@@ -160,6 +160,11 @@
   "no": "नहीं",
   "course_details":"पाठ्यक्रम विवरण",
   "sync_pending_no_internet_available": "सिंक लंबित है। इंटरनेट उपलब्ध नहीं है",
-  "back_online_syncing": "वापस ऑनलाइन! सिंक कर रहा है"
+  "back_online_syncing": "वापस ऑनलाइन! सिंक कर रहा है",
+  "test_completed": "परीक्षा पूरी!",
+  "your_marks": "आपके अंक:",
+  "your_test_will_be_auto_saved_once_you_are_back_online": "जैसे ही आप ऑनलाइन आएंगे, आपकी परीक्षा स्वचालित रूप से सहेज ली जाएगी",
+  "okay": "ठीक है",
+  "download_for_offline_access": "ऑफ़लाइन पहुंच के लिए डाउनलोड करें"
 
 }

@@ -50,6 +50,7 @@ function mergeDataWithQuestionSet(questionSet, datatest) {
       matchingQuestionSetItem.timeSpent = dataItem.timeSpent;
       matchingQuestionSetItem.totalScore = dataItem.totalScore;
       matchingQuestionSetItem.lastAttemptedOn = dataItem.lastAttemptedOn;
+      matchingQuestionSetItem.createdOn = dataItem.createdOn;
     }
   });
 
