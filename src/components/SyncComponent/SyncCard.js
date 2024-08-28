@@ -104,6 +104,7 @@ const SyncCard = ({ doneSync }) => {
           setIsSyncPending(true);
           setIsProgress(true);
           //sync data to online
+          let isError = false;
           for (let i = 0; i < result_sync_offline.length; i++) {
             let assessment_result = result_sync_offline[i];
             try {
@@ -129,6 +130,8 @@ const SyncCard = ({ doneSync }) => {
                   assessment_result?.batch_id,
                   assessment_result?.content_id
                 );
+              } else {
+                isError = true;
               }
             } catch (e) {
               console.log(e);
@@ -136,7 +139,9 @@ const SyncCard = ({ doneSync }) => {
           }
           setIsSyncPending(false);
           setIsProgress(false);
-          doneSync(); //call back function
+          if (!isError) {
+            doneSync(); //call back function
+          }
         } else {
           setIsSyncPending(false);
           setIsProgress(false);
