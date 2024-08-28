@@ -161,6 +161,11 @@
   "no": "नाही",
   "course_details":"अभ्यासक्रमाचा तपशील",
   "sync_pending_no_internet_available": "समक्रमिती प्रलंबित. इंटरनेट उपलब्ध नाही",
-  "back_online_syncing": "परत ऑनलाइन! समक्रमित करत आहे"
+  "back_online_syncing": "परत ऑनलाइन! समक्रमित करत आहे",
+  "test_completed": "चाचणी पूर्ण!",
+  "your_marks": "तुमचे गुण:",
+  "your_test_will_be_auto_saved_once_you_are_back_online": "तुम्ही ऑनलाइन परतल्यावर तुमची चाचणी आपोआप जतन केली जाईल",
+  "okay": "ठीक आहे",
+  "download_for_offline_access": "ऑफलाइन प्रवेशासाठी डाउनलोड करा"
 
 }

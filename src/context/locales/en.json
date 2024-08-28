@@ -162,5 +162,10 @@
   "no":"No",
   "course_details":"Course Details",
   "sync_pending_no_internet_available":"Sync pending. No internet available",
-  "back_online_syncing":"Back online! Syncing"
+  "back_online_syncing":"Back online! Syncing",
+  "test_completed":"Test Completed!",
+  "your_marks":"Your Marks:",
+  "your_test_will_be_auto_saved_once_you_are_back_online":"Your test will be auto-saved once you are back online",
+  "okay":"Okay",
+  "download_for_offline_access":"Download for offline access"
 }

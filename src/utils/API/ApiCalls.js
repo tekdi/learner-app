@@ -174,7 +174,8 @@ export const assessmentTracking = async (
   maxScore,
   seconds,
   userId,
-  batchId
+  batchId,
+  lastAttemptedOn
 ) => {
   const attemptId = uuid.v4();
   let scoreDetails;
@@ -211,7 +212,7 @@ export const assessmentTracking = async (
       assessmentSummary: scoreDetailsString,
       totalMaxScore: maxScore || 0,
       totalScore: totalScore || 0,
-      lastAttemptedOn: new Date().toISOString(),
+      lastAttemptedOn: lastAttemptedOn,
       timeSpent: seconds || 0,
     });
 

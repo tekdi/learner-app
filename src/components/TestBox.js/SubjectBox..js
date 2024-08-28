@@ -11,6 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from '../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 import SecondaryButton from '../SecondaryButton/SecondaryButton';
@@ -64,6 +65,7 @@ const SubjectBox = ({ name, disabled, data }) => {
         batch_id,
         content_id
       );
+      console.log({ result_sync_offline });
       if (result_sync_offline) {
         setIsSyncPending(true);
       } else {
@@ -228,12 +230,27 @@ const SubjectBox = ({ name, disabled, data }) => {
                   <Icon name="circle" size={8} color="#7C766F" />
                   <Text
                     style={[
-                      globalStyles.subHeading,
+                      globalStyles.text,
                       { color: '#7C766F', marginLeft: 5 },
                     ]}
                   >
-                    {moment(data?.lastAttemptedOn).format('DD MMM, YYYY')}
+                    {moment(data?.createdOn).format('DD MMM, YYYY')}
                   </Text>
+                  <View style={[globalStyles.flexrow, { marginLeft: 15 }]}>
+                    <Ionicons
+                      name="cloud-outline"
+                      color={'#7C766F'}
+                      size={15}
+                    />
+                    <Text
+                      style={[
+                        globalStyles.text,
+                        { color: '#7C766F', marginLeft: 5 },
+                      ]}
+                    >
+                      {moment(data?.lastAttemptedOn).format('DD MMM, YYYY')}
+                    </Text>
+                  </View>
                 </View>
               </View>
             ) : (
@@ -244,14 +261,21 @@ const SubjectBox = ({ name, disabled, data }) => {
             {data?.lastAttemptedOn ? (
               <MaterialIcons name="navigate-next" size={32} color="black" />
             ) : isSyncPending ? (
-              <Text
-                style={[
-                  globalStyles.subHeading,
-                  { color: '#7C766F', marginLeft: 5 },
-                ]}
-              >
-                .sync pending
-              </Text>
+              <View style={globalStyles.flexrow}>
+                <Ionicons
+                  name="cloud-offline-outline"
+                  color={'#7C766F'}
+                  size={22}
+                />
+                <Text
+                  style={[
+                    globalStyles.subHeading,
+                    { color: '#7C766F', marginLeft: 10 },
+                  ]}
+                >
+                  {t('sync_pending')}
+                </Text>
+              </View>
             ) : (
               <SecondaryButton
                 onPress={() => {

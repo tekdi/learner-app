@@ -114,7 +114,8 @@ const SyncCard = ({ doneSync }) => {
                 payload?.maxScore,
                 payload?.seconds,
                 payload?.userId,
-                payload?.batchId
+                payload?.batchId,
+                payload?.lastAttemptedOn
               );
               if (
                 create_assessment &&
@@ -189,6 +190,7 @@ const SyncCard = ({ doneSync }) => {
 
 const styles = StyleSheet.create({
   container: {
+    margin: 30,
     flexDirection: 'row',
     alignItems: 'center',
     padding: 20,
