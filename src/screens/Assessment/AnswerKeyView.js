@@ -25,6 +25,7 @@ import {
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import RenderHtml from 'react-native-render-html';
 import globalStyles from '../../utils/Helper/Style';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -40,6 +41,7 @@ const AnswerKeyView = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [unansweredCount, setUnansweredCount] = useState(null);
   const flatListRef = useRef(null);
+  const [networkstatus, setNetworkstatus] = useState(true);
 
   const countEmptyResValues = (data) => {
     return data.reduce((count, item) => {
@@ -57,33 +59,40 @@ const AnswerKeyView = ({ route }) => {
 
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        const cohort_id = await getDataFromStorage('cohortId');
-        const user_id = await getDataFromStorage('userId');
-        const data = await getAssessmentAnswerKey({
-          user_id,
-          cohort_id,
-          contentId,
-        });
-        if (data?.[0]?.assessmentTrackingId) {
-          await setDataInStorage(
-            `assessmentAnswerKey${contentId}`,
-            JSON.stringify(data) || ''
-          );
-        }
-        const OfflineassessmentAnswerKey = JSON.parse(
-          await getDataFromStorage(`assessmentAnswerKey${contentId}`)
-        );
-        // console.log({ OfflineassessmentAnswerKey });
-        const finalData = getLastIndexData(OfflineassessmentAnswerKey);
-        const unanswered = countEmptyResValues(finalData?.score_details);
-        setUnansweredCount(unanswered);
-        setScoreData(finalData);
-        setLoading(false);
-      };
       fetchData();
     }, [navigation])
   );
+
+  const fetchData = async () => {
+    setLoading(true);
+    const cohort_id = await getDataFromStorage('cohortId');
+    const user_id = await getDataFromStorage('userId');
+    const data = await getAssessmentAnswerKey({
+      user_id,
+      cohort_id,
+      contentId,
+    });
+    if (data?.[0]?.assessmentTrackingId) {
+      await setDataInStorage(
+        `assessmentAnswerKey${contentId}`,
+        JSON.stringify(data) || ''
+      );
+    }
+    const OfflineassessmentAnswerKey = JSON.parse(
+      await getDataFromStorage(`assessmentAnswerKey${contentId}`)
+    );
+    if (OfflineassessmentAnswerKey) {
+      // console.log({ OfflineassessmentAnswerKey });
+      const finalData = getLastIndexData(OfflineassessmentAnswerKey);
+      const unanswered = countEmptyResValues(finalData?.score_details);
+      setUnansweredCount(unanswered);
+      setScoreData(finalData);
+      setNetworkstatus(true);
+    } else {
+      setNetworkstatus(false);
+    }
+    setLoading(false);
+  };
 
   const passedItems = scoreData?.score_details?.filter(
     (item) => item.pass === 'Yes'
@@ -221,7 +230,9 @@ const AnswerKeyView = ({ route }) => {
                 globalStyles.subHeading,
                 { flex: 2, textAlign: 'center' },
               ]}
-            >{`${startIndex + 1}-${endIndex} of ${scoreData?.score_details.length}`}</Text>
+            >{`${startIndex + 1}-${endIndex} of ${
+              scoreData?.score_details.length
+            }`}</Text>
             <TouchableOpacity
               style={{ flex: 1, alignItems: 'center' }}
               onPress={handleNext}
@@ -236,6 +247,13 @@ const AnswerKeyView = ({ route }) => {
           </View>
         </SafeAreaView>
       )}
+      <NetworkAlert
+        onTryAgain={fetchData}
+        isConnected={networkstatus}
+        closeModal={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+      />
     </SafeAreaView>
   );
 };

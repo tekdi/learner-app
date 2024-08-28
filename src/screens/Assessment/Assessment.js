@@ -20,6 +20,8 @@ import globalStyles from '../../utils/Helper/Style';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 import { createTable, getData } from '../../utils/JsHelper/SqliteHelper';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
+import SyncCard from '../../components/SyncComponent/SyncCard';
 
 const Assessment = (props) => {
   const { t } = useTranslation();
@@ -29,6 +31,7 @@ const Assessment = (props) => {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [percentage, setPercentage] = useState('');
+  const [networkstatus, setNetworkstatus] = useState(true);
 
   // Get the current route name
   const routeName = useNavigationState(
@@ -38,30 +41,36 @@ const Assessment = (props) => {
   // console.log({ isConnected });
 
   useEffect(() => {
-    const fetchData = async () => {
-      const user_id = await getDataFromStorage('userId');
-      const cohortparse = await getDataFromStorage('cohortData');
-      const cohort = JSON.parse(cohortparse);
-      const cohort_id = await getDataFromStorage('cohortId');
-      const board = cohort?.cohortData?.[0]?.customField?.find(
-        (field) => field.label === 'STATES'
-      );
+    fetchData();
+  }, [navigation]);
 
-      if (board) {
-        const boardName = board.value;
-        const assessmentList = await assessmentListApi({ boardName });
+  const fetchData = async () => {
+    setNetworkstatus(true);
+    setLoading(true);
+    const user_id = await getDataFromStorage('userId');
+    const cohortparse = await getDataFromStorage('cohortData');
+    const cohort = JSON.parse(cohortparse);
+    const cohort_id = await getDataFromStorage('cohortId');
+    const board = cohort?.cohortData?.[0]?.customField?.find(
+      (field) => field.label === 'STATES'
+    );
+
+    if (board) {
+      const boardName = board.value;
+      const assessmentList = await assessmentListApi({ boardName, user_id });
+      if (assessmentList) {
         // Extract pretest or posttest from assessmentList (content)
-        if (assessmentList?.QuestionSet) {
-          await setDataInStorage(
-            'assessmentList',
-            JSON.stringify(assessmentList) || ''
-          );
-        }
+        // if (assessmentList?.QuestionSet) {
+        //   await setDataInStorage(
+        //     'assessmentList',
+        //     JSON.stringify(assessmentList) || ''
+        //   );
+        // }
 
-        const OfflineAssessmentList = JSON.parse(
-          await getDataFromStorage('assessmentList')
-        );
-
+        // const OfflineAssessmentList = JSON.parse(
+        //   await getDataFromStorage('assessmentList')
+        // );
+        const OfflineAssessmentList = assessmentList;
         // console.log({ OfflineAssessmentList });
 
         const uniqueAssessments = [
@@ -93,7 +102,7 @@ const Assessment = (props) => {
         const OfflineAssessmentStatusData = JSON.parse(
           await getDataFromStorage('assessmentStatusData')
         );
-        console.log({ OfflineAssessmentStatusData });
+        //console.log({ OfflineAssessmentStatusData });
         setStatus(OfflineAssessmentStatusData?.[0]?.status || 'not_started');
         setPercentage(OfflineAssessmentStatusData?.[0]?.percentage || '');
 
@@ -102,29 +111,12 @@ const Assessment = (props) => {
           JSON.stringify(OfflineAssessmentList?.QuestionSet) || ''
         );
         setAssessments(uniqueAssessments);
+      } else {
+        setNetworkstatus(false);
       }
-      setLoading(false);
-    };
-    fetchData();
-  }, [navigation]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const tableName = 'APIResponses';
-      const columns = [
-        'id INTEGER PRIMARY KEY AUTOINCREMENT',
-        'user_id INTEGER',
-        'api_url TEXT',
-        'api_type TEXT',
-        'payload TEXT',
-        'response TEXT',
-      ];
-      const query = await createTable({ tableName, columns });
-      const data = await getData({ tableName: 'APIResponses' });
-      console.log({ query, data });
-    };
-    fetchData();
-  }, []);
+    }
+    setLoading(false);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -133,6 +125,7 @@ const Assessment = (props) => {
         <ActiveLoading />
       ) : (
         <View>
+          <SyncCard doneSync={fetchData} />
           <Text style={[globalStyles.heading, { padding: 20 }]}>
             {t('Assessments')}
           </Text>
@@ -157,6 +150,13 @@ const Assessment = (props) => {
           <BackButtonHandler exitRoutes={['Assessment']} />
         </View>
       )}
+      <NetworkAlert
+        onTryAgain={fetchData}
+        isConnected={networkstatus}
+        closeModal={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+      />
     </SafeAreaView>
   );
 };

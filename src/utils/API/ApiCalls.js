@@ -232,7 +232,7 @@ export const assessmentTracking = async (
     await axios
       .request(config)
       .then((response) => {
-        console.log(JSON.stringify(response.data));
+        //console.log(JSON.stringify(response.data));
         api_response = { response: response.data, data: data };
       })
       .catch((error) => {

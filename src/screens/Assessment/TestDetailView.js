@@ -20,6 +20,7 @@ import {
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
+import { getData } from '../../utils/Helper/JSHelper';
 
 const instructions = [
   {
@@ -53,17 +54,27 @@ const TestDetailView = ({ route }) => {
 
   const navigation = useNavigation();
 
-  const handlethis = () => {
-    if (isConnected) {
-      setNetworkstatus(true);
+  const handlethis = async () => {
+    let content_do_id = data?.IL_UNIQUE_ID;
+    let contentObj = await getData(content_do_id, 'json');
+    if (contentObj == null) {
+      if (isConnected) {
+        setNetworkstatus(true);
 
+        navigation.navigate('StandAlonePlayer', {
+          content_do_id: data?.IL_UNIQUE_ID,
+          content_mime_type: data?.mimeType,
+          isOffline: false,
+        });
+      } else {
+        setNetworkstatus(false);
+      }
+    } else {
       navigation.navigate('StandAlonePlayer', {
         content_do_id: data?.IL_UNIQUE_ID,
         content_mime_type: data?.mimeType,
         isOffline: false,
       });
-    } else {
-      setNetworkstatus(false);
     }
   };
 
@@ -129,7 +140,13 @@ const TestDetailView = ({ route }) => {
       <View style={styles.bottom}>
         <PrimaryButton text={t('start_test')} onPress={() => handlethis()} />
       </View>
-      <NetworkAlert onTryAgain={handlethis} isConnected={networkstatus} />
+      <NetworkAlert
+        onTryAgain={handlethis}
+        isConnected={networkstatus}
+        closeModal={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+      />
     </SafeAreaView>
   );
 };
