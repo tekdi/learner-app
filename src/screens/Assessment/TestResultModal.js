@@ -83,15 +83,16 @@ const TestResultModal = ({ modal, title }) => {
                 {t('your_marks')} {modal?.totalScore}/{modal?.totalMaxScore}
               </Text>
             )}
-
-            <Text
-              style={[
-                globalStyles.text,
-                { textAlign: 'center', marginVertical: 10 },
-              ]}
-            >
-              {t('your_test_will_be_auto_saved_once_you_are_back_online')}
-            </Text>
+            {!modal?.totalMaxScore && (
+              <Text
+                style={[
+                  globalStyles.text,
+                  { textAlign: 'center', marginVertical: 10 },
+                ]}
+              >
+                {t('your_test_will_be_auto_saved_once_you_are_back_online')}
+              </Text>
+            )}
           </TouchableOpacity>
           <View style={styles.btnbox}>
             <Button status="primary" style={styles.btn} onPress={closeModal}>
