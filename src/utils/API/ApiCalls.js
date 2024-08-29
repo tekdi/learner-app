@@ -215,6 +215,8 @@ export const assessmentTracking = async (
       lastAttemptedOn: lastAttemptedOn,
       timeSpent: seconds || 0,
     });
+    console.log('url', url);
+    console.log('data', data);
 
     let api_response = null;
 
@@ -224,6 +226,8 @@ export const assessmentTracking = async (
       url: url,
       headers: {
         'Content-Type': 'application/json',
+        Cookie:
+          'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
       },
       data: data,
     };
@@ -237,7 +241,7 @@ export const assessmentTracking = async (
         api_response = { response: response.data, data: data };
       })
       .catch((error) => {
-        console.log(error);
+        console.log('error', error);
       });
     return api_response;
   } catch (error) {
