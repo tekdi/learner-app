@@ -27,6 +27,7 @@ import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import RenderHtml from 'react-native-render-html';
 import globalStyles from '../../utils/Helper/Style';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
+import { useInternet } from '../../context/NetworkContext';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -34,6 +35,7 @@ const AnswerKeyView = ({ route }) => {
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
   const { t } = useTranslation();
+  const { isConnected } = useInternet();
   const { title, contentId } = route.params;
   const { height } = Dimensions.get('window');
 
@@ -73,12 +75,12 @@ const AnswerKeyView = ({ route }) => {
       cohort_id,
       contentId,
     });
-
+    handleDownload(data);
     const OfflineassessmentAnswerKey = JSON.parse(
       await getDataFromStorage(`assessmentAnswerKey${contentId}`)
     );
-    if (OfflineassessmentAnswerKey || !data?.error) {
-      const finalData = getLastIndexData(OfflineassessmentAnswerKey || data);
+    if (OfflineassessmentAnswerKey) {
+      const finalData = getLastIndexData(OfflineassessmentAnswerKey);
       const unanswered = countEmptyResValues(finalData?.score_details);
       setUnansweredCount(unanswered);
       setScoreData(finalData);
@@ -89,25 +91,14 @@ const AnswerKeyView = ({ route }) => {
     setLoading(false);
   };
 
-  const handleDownload = () => {
-    const fetchData = async () => {
-      deleteSavedItem(`assessmentAnswerKey${contentId}`);
-
-      const cohort_id = await getDataFromStorage('cohortId');
-      const user_id = await getDataFromStorage('userId');
-      const data = await getAssessmentAnswerKey({
-        user_id,
-        cohort_id,
-        contentId,
-      });
-      if (data?.[0]?.assessmentTrackingId) {
-        await setDataInStorage(
-          `assessmentAnswerKey${contentId}`,
-          JSON.stringify(data) || ''
-        );
-      }
-    };
-    fetchData();
+  const handleDownload = async (data) => {
+    // deleteSavedItem(`assessmentAnswerKey${contentId}`);
+    if (data?.[0]?.assessmentTrackingId) {
+      await setDataInStorage(
+        `assessmentAnswerKey${contentId}`,
+        JSON.stringify(data) || ''
+      );
+    }
   };
 
   const passedItems = scoreData?.score_details?.filter(
@@ -165,20 +156,19 @@ const AnswerKeyView = ({ route }) => {
               {t(capitalizeFirstLetter(title))}
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={handleDownload}
-            style={[globalStyles.flexrow, { marginTop: 10 }]}
-          >
-            <Text style={[globalStyles.subHeading, { color: '#0D599E' }]}>
-              {t('download_for_offline_access')}
-            </Text>
-            <Icon
-              name="download"
-              style={{ marginHorizontal: 10 }}
-              color={'#0D599E'}
-              size={18}
-            />
-          </TouchableOpacity>
+          {isConnected && (
+            <View style={[globalStyles.flexrow, { marginTop: 10 }]}>
+              <Text style={[globalStyles.subHeading, { color: '#000' }]}>
+                {t('downloaded_for_offline_access')}
+              </Text>
+              <Icon
+                name="check-circle"
+                style={{ marginHorizontal: 10 }}
+                color={'#1A8825'}
+                size={18}
+              />
+            </View>
+          )}
           <View style={styles.container}>
             <View>
               <Text style={[globalStyles.text, { color: '#7C766F' }]}>
