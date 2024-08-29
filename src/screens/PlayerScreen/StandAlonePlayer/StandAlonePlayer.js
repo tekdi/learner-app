@@ -171,13 +171,16 @@ const StandAlonePlayer = ({ route }) => {
         // let userId = 'fb6b2e58-0f14-4d4f-90e4-bae092e7a951';
         const userId = await getDataFromStorage('userId');
         let batchId = await getDataFromStorage('cohortId');
+        let lastAttemptedOn = new Date().toISOString();
+
         let create_assessment = await assessmentTracking(
           scoreDetails,
           identifierWithoutImg,
           maxScore,
           seconds,
           userId,
-          batchId
+          batchId,
+          lastAttemptedOn
         );
         if (
           create_assessment &&
@@ -212,6 +215,7 @@ const StandAlonePlayer = ({ route }) => {
             seconds,
             userId,
             batchId,
+            lastAttemptedOn,
           };
           //store result in offline mode
           await storeAsessmentOffline(
