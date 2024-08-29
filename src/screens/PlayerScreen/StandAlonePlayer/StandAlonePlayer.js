@@ -42,6 +42,7 @@ import Config from 'react-native-config';
 import Orientation from 'react-native-orientation-locker';
 import { getDataFromStorage, getUserId } from '../../../utils/JsHelper/Helper';
 import { storeAsessmentOffline } from '../../../utils/API/AuthService';
+import TestResultModal from '../../Assessment/TestResultModal';
 
 // User-Agent string for a desktop browser (e.g., Chrome on Windows)
 const desktopUserAgent =
@@ -49,7 +50,7 @@ const desktopUserAgent =
 
 const StandAlonePlayer = ({ route }) => {
   const navigation = useNavigation();
-  const { content_do_id, content_mime_type, isOffline } = route.params;
+  const { content_do_id, content_mime_type, title, isOffline } = route.params;
   console.log('content_do_id', content_do_id);
   console.log('content_mime_type', content_mime_type);
   //   ##content_mime_type
@@ -91,28 +92,29 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
-      ? 'sunbird-pdf-player'
-      : content_mime_type == 'application/vnd.sunbird.questionset'
-      ? 'sunbird-quml-player'
-      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
-      ? 'sunbird-video-player'
-      : content_mime_type == 'application/epub'
-      ? 'sunbird-epub-player'
-      : ''
+        ? 'sunbird-pdf-player'
+        : content_mime_type == 'application/vnd.sunbird.questionset'
+          ? 'sunbird-quml-player'
+          : content_mime_type == 'video/mp4' ||
+              content_mime_type == 'video/webm'
+            ? 'sunbird-video-player'
+            : content_mime_type == 'application/epub'
+              ? 'sunbird-epub-player'
+              : ''
   );
   const [lib_file] = useState(
     content_mime_type == 'application/vnd.sunbird.questionset'
       ? 'index_o.html'
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-        content_mime_type == 'application/pdf' ||
-        content_mime_type == 'video/mp4' ||
-        content_mime_type == 'video/webm' ||
-        content_mime_type == 'video/x-youtube' ||
-        content_mime_type == 'application/vnd.ekstep.html-archive' ||
-        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-        content_mime_type == 'application/epub'
-      ? 'index.html'
-      : ''
+          content_mime_type == 'application/pdf' ||
+          content_mime_type == 'video/mp4' ||
+          content_mime_type == 'video/webm' ||
+          content_mime_type == 'video/x-youtube' ||
+          content_mime_type == 'application/vnd.ekstep.html-archive' ||
+          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+          content_mime_type == 'application/epub'
+        ? 'index.html'
+        : ''
   );
 
   const [loading, setLoading] = useState(true);
@@ -121,10 +123,10 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
       ? `${content_file}`
       : content_mime_type == 'application/vnd.ekstep.html-archive'
-      ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
-      : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-      ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
-      : `${content_file}/${content_do_id}.json`;
+        ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
+        : content_mime_type == 'application/vnd.ekstep.h5p-archive'
+          ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
+          : `${content_file}/${content_do_id}.json`;
   // console.log('rnfs DocumentDirectoryPath', RNFS.DocumentDirectoryPath);
   // console.log('rnfs ExternalDirectoryPath', RNFS.ExternalDirectoryPath);
   const [is_valid_file, set_is_valid_file] = useState(null);
@@ -132,6 +134,7 @@ const StandAlonePlayer = ({ route }) => {
   const questionListUrl = Config.QUESTION_LIST_URL;
   const [progress, setProgress] = useState(0);
   const [loading_text, set_loading_text] = useState('');
+  const [modal, setModal] = useState(false);
   // Determine the correct path to the index.html file based on the platform
   const htmlFilePath = Platform.select({
     ios: `./assets/assets/libs/${lib_folder}/${lib_file}`,
@@ -190,23 +193,7 @@ const StandAlonePlayer = ({ route }) => {
           const percentage =
             (exam_data?.totalScore / exam_data?.totalMaxScore) * 100;
           const roundedPercentage = percentage.toFixed(2); // Rounds to 2 decimal places
-          Alert.alert(
-            'Success', // Title of the alert
-            `You got ${exam_data?.totalScore} out of ${exam_data?.totalMaxScore}. Percentage= ${roundedPercentage}%`, // Message of the alert
-            [
-              {
-                text: 'OK', // Text for the "OK" button
-                onPress: () =>
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 0,
-                      routes: [{ name: 'Dashboard' }],
-                    })
-                  ), // Action to take when "OK" is pressed
-              },
-            ],
-            { cancelable: false } // Determines if the alert is dismissable by tapping outside
-          );
+          setModal(exam_data);
         } else {
           let payload = {
             scoreDetails,
@@ -225,24 +212,10 @@ const StandAlonePlayer = ({ route }) => {
             payload
           );
 
-          Alert.alert(
-            'Offline Exam', // Title of the alert
-            'Your result stored in offline mode', // Message of the alert
-            [
-              {
-                text: 'OK', // Text for the "OK" button
-                onPress: () =>
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 0,
-                      routes: [{ name: 'Dashboard' }],
-                    })
-                  ), // Action to take when "OK" is pressed
-              },
-            ],
-            { cancelable: false } // Determines if the alert is dismissable by tapping outside
-          );
+          setModal(true);
         }
+        set_loading_text('');
+        setLoading(false);
       } catch (e) {
         console.log('error', e);
       }
@@ -401,13 +374,13 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? downloadContent()
       : content_mime_type == 'application/pdf' ||
-        content_mime_type == 'video/mp4' ||
-        content_mime_type == 'video/webm' ||
-        content_mime_type == 'application/epub'
-      ? fetchDataPdfVideoEpub()
-      : content_mime_type == 'application/vnd.sunbird.questionset'
-      ? fetchDataQuml()
-      : '';
+          content_mime_type == 'video/mp4' ||
+          content_mime_type == 'video/webm' ||
+          content_mime_type == 'application/epub'
+        ? fetchDataPdfVideoEpub()
+        : content_mime_type == 'application/vnd.sunbird.questionset'
+          ? fetchDataQuml()
+          : '';
   }, []);
 
   const downloadContent = async () => {
@@ -501,11 +474,11 @@ const StandAlonePlayer = ({ route }) => {
                     'application/vnd.ekstep.ecml-archive'
                       ? fetchDataEcml(contentObj)
                       : contentObj?.mimeType ==
-                          'application/vnd.ekstep.html-archive' ||
-                        contentObj?.mimeType ==
-                          'application/vnd.ekstep.h5p-archive'
-                      ? await fetchDataHtmlH5pYoutube(contentObj)
-                      : '';
+                            'application/vnd.ekstep.html-archive' ||
+                          contentObj?.mimeType ==
+                            'application/vnd.ekstep.h5p-archive'
+                        ? await fetchDataHtmlH5pYoutube(contentObj)
+                        : '';
                   } catch (error) {
                     console.error(`Error extracting zip file: ${error}`);
                   }
@@ -683,10 +656,10 @@ const StandAlonePlayer = ({ route }) => {
             window.setData();
         })();`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-        content_mime_type == 'application/vnd.ekstep.html-archive' ||
-        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-        content_mime_type == 'video/x-youtube'
-      ? `(function() {
+          content_mime_type == 'application/vnd.ekstep.html-archive' ||
+          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+          content_mime_type == 'video/x-youtube'
+        ? `(function() {
         localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
           {
             contentPlayerConfig: contentPlayerConfig,
@@ -694,19 +667,20 @@ const StandAlonePlayer = ({ route }) => {
         )}));
         window.setData();
         })();`
-      : content_mime_type == 'application/pdf'
-      ? `(function() {
+        : content_mime_type == 'application/pdf'
+          ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
         })();`
-      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
-      ? `(function() {
+          : content_mime_type == 'video/mp4' ||
+              content_mime_type == 'video/webm'
+            ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
         })();`
-      : content_mime_type == 'application/epub'
-      ? `(function() {
+            : content_mime_type == 'application/epub'
+              ? `(function() {
         window.setData('${JSON.stringify(epubPlayerConfig)}');
         })();`
-      : ``;
+              : ``;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -758,6 +732,7 @@ const StandAlonePlayer = ({ route }) => {
           onNavigationStateChange={handleNavigationStateChange}
         />
       )}
+      <TestResultModal modal={modal} title={title} />
     </SafeAreaView>
   );
 };

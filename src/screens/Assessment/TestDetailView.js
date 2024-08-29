@@ -65,6 +65,7 @@ const TestDetailView = ({ route }) => {
           content_do_id: data?.IL_UNIQUE_ID,
           content_mime_type: data?.mimeType,
           isOffline: false,
+          title: title,
         });
       } else {
         setNetworkstatus(false);
@@ -74,6 +75,7 @@ const TestDetailView = ({ route }) => {
         content_do_id: data?.IL_UNIQUE_ID,
         content_mime_type: data?.mimeType,
         isOffline: false,
+        title: title,
       });
     }
   };
