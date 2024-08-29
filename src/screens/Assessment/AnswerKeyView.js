@@ -77,7 +77,6 @@ const AnswerKeyView = ({ route }) => {
     const OfflineassessmentAnswerKey = JSON.parse(
       await getDataFromStorage(`assessmentAnswerKey${contentId}`)
     );
-    console.log({ OfflineassessmentAnswerKey, data });
     if (OfflineassessmentAnswerKey || !data?.error) {
       const finalData = getLastIndexData(OfflineassessmentAnswerKey || data);
       const unanswered = countEmptyResValues(finalData?.score_details);
@@ -91,7 +90,6 @@ const AnswerKeyView = ({ route }) => {
   };
 
   const handleDownload = () => {
-    console.log('hi');
     const fetchData = async () => {
       deleteSavedItem(`assessmentAnswerKey${contentId}`);
 

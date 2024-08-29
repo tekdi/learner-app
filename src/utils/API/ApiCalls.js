@@ -215,8 +215,8 @@ export const assessmentTracking = async (
       lastAttemptedOn: lastAttemptedOn,
       timeSpent: seconds || 0,
     });
-    console.log('url', url);
-    console.log('data', data);
+    // console.log('url', url);
+    // console.log('data', data);
 
     let api_response = null;
 

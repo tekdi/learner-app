@@ -67,20 +67,23 @@ const TestResultModal = ({ modal, title }) => {
             <Text style={[globalStyles.heading2, { marginVertical: 10 }]}>
               {t('test_completed')}
             </Text>
-            <Text
-              style={[
-                globalStyles.subHeading,
-                {
-                  marginVertical: 10,
-                  backgroundColor: '#E4F4E6',
-                  paddingVertical: 5,
-                  paddingHorizontal: 10,
-                  borderRadius: 10,
-                },
-              ]}
-            >
-              {t('your_marks')}60/75
-            </Text>
+            {modal?.totalMaxScore && (
+              <Text
+                style={[
+                  globalStyles.subHeading,
+                  {
+                    marginVertical: 10,
+                    backgroundColor: '#E4F4E6',
+                    paddingVertical: 5,
+                    paddingHorizontal: 10,
+                    borderRadius: 10,
+                  },
+                ]}
+              >
+                {t('your_marks')} {modal?.totalScore}/{modal?.totalMaxScore}
+              </Text>
+            )}
+
             <Text
               style={[
                 globalStyles.text,
