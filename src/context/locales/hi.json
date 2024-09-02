@@ -165,6 +165,7 @@
   "your_marks": "आपके अंक:",
   "your_test_will_be_auto_saved_once_you_are_back_online": "जैसे ही आप ऑनलाइन आएंगे, आपकी परीक्षा स्वचालित रूप से सहेज ली जाएगी",
   "okay": "ठीक है",
-  "downloaded_for_offline_access": "ऑफ़लाइन पहुंच के लिए डाउनलोड किया गया"
+  "downloaded_for_offline_access": "ऑफ़लाइन पहुंच के लिए डाउनलोड किया गया",
+  "unsupported_content":"असमर्थित सामग्री"
 
 }
