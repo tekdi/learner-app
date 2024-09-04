@@ -63,15 +63,18 @@ const ContentList = ({ route }) => {
   };
 
   function checkArchiveType(mimeType) {
-    if (
-      mimeType.includes('ecml-archive') ||
-      mimeType.includes('html-archive')
-    ) {
-      return 'touch-app';
-    } else if (mimeType.includes('pdf') || mimeType.includes('epub')) {
-      return 'file-copy';
-    } else if (mimeType.includes('Webm') || mimeType.includes('mp4')) {
-      return 'play-circle';
+    //bug fix undefined mimeType
+    if (mimeType) {
+      if (
+        mimeType.includes('ecml-archive') ||
+        mimeType.includes('html-archive')
+      ) {
+        return 'touch-app';
+      } else if (mimeType.includes('pdf') || mimeType.includes('epub')) {
+        return 'file-copy';
+      } else if (mimeType.includes('Webm') || mimeType.includes('mp4')) {
+        return 'play-circle';
+      }
     }
 
     return null; // or any default value you want to return if no conditions are met
