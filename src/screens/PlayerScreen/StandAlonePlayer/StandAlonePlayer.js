@@ -43,6 +43,7 @@ import Orientation from 'react-native-orientation-locker';
 import { getDataFromStorage, getUserId } from '../../../utils/JsHelper/Helper';
 import { storeAsessmentOffline } from '../../../utils/API/AuthService';
 import TestResultModal from '../../Assessment/TestResultModal';
+import MimeAlertModal from '../../../components/MimeAletModal/MimeAlertModal';
 
 // User-Agent string for a desktop browser (e.g., Chrome on Windows)
 const desktopUserAgent =
@@ -51,8 +52,8 @@ const desktopUserAgent =
 const StandAlonePlayer = ({ route }) => {
   const navigation = useNavigation();
   const { content_do_id, content_mime_type, title, isOffline } = route.params;
-  console.log('content_do_id', content_do_id);
-  console.log('content_mime_type', content_mime_type);
+  // console.log('content_do_id', content_do_id);
+  // console.log('content_mime_type', content_mime_type);
   //   ##content_mime_type
 
   //   #sunbird-content-player
@@ -118,6 +119,7 @@ const StandAlonePlayer = ({ route }) => {
   );
 
   const [loading, setLoading] = useState(true);
+  const [alertModal, setAlertModal] = useState(false);
   const content_file = `${RNFS.DocumentDirectoryPath}/${content_do_id}`;
   const streamingPath =
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
@@ -381,6 +383,27 @@ const StandAlonePlayer = ({ route }) => {
         : content_mime_type == 'application/vnd.sunbird.questionset'
           ? fetchDataQuml()
           : '';
+  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (
+        content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+        content_mime_type == 'video/x-youtube' ||
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'application/pdf' ||
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'application/epub' ||
+        content_mime_type == 'application/vnd.sunbird.questionset'
+      ) {
+        setAlertModal(false);
+      } else {
+        setAlertModal(true);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
   }, []);
 
   const downloadContent = async () => {
@@ -733,6 +756,7 @@ const StandAlonePlayer = ({ route }) => {
         />
       )}
       <TestResultModal modal={modal} title={title} />
+      {alertModal && <MimeAlertModal />}
     </SafeAreaView>
   );
 };

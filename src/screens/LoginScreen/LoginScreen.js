@@ -72,6 +72,10 @@ const LoginScreen = () => {
           userId: user_id,
         });
         await setDataInStorage('profileData', JSON.stringify(profileData));
+        await setDataInStorage(
+          'Username',
+          profileData?.getUserDetails?.[0]?.username
+        );
         await setDataInStorage('userId', user_id);
         const cohort = await getCohort({ user_id });
         await setDataInStorage('cohortData', JSON.stringify(cohort));
