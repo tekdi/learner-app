@@ -148,14 +148,14 @@ const StandAlonePlayer = ({ route }) => {
     console.log('Current URL:', navState.url);
   };
   const handleMessage = async (event) => {
-    // const data = event.nativeEvent.data;
-    // let jsonObj = JSON.parse(data);
-    // let data_obj = jsonObj.data;
-    // if (data_obj) {
-    //   console.log('####################');
-    //   console.log('data_obj', JSON.stringify(data_obj));
-    //   console.log('####################');
-    // }
+    const data = event.nativeEvent.data;
+    let jsonObj = JSON.parse(data);
+    let data_obj = jsonObj.data;
+    if (data_obj) {
+      console.log('####################');
+      console.log('data_obj', JSON.stringify(data_obj));
+      console.log('####################');
+    }
     //for assessment
     if (content_mime_type == 'application/vnd.sunbird.questionset') {
       setLoading(true);
