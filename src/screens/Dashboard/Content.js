@@ -32,6 +32,7 @@ const Content = () => {
   const [data, setData] = useState([]);
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showExitModal, setShowExitModal] = useState(false);
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -42,10 +43,10 @@ const Content = () => {
     useCallback(() => {
       const onBackPress = () => {
         if (routeName === 'Content') {
-          BackHandler.exitApp();
-          return true;
+          setShowExitModal(true);
+          return true; // Prevent default back behavior
         }
-        return false;
+        return false; // Allow default back behavior
       };
 
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
@@ -55,6 +56,15 @@ const Content = () => {
       };
     }, [routeName])
   );
+
+  const handleExitApp = () => {
+    setShowExitModal(false);
+    BackHandler.exitApp(); // Exit the app
+  };
+
+  const handleCancel = () => {
+    setShowExitModal(false); // Close the modal
+  };
 
   const handlePress = () => {
     navigation.navigate('Preference');
@@ -175,7 +185,13 @@ const Content = () => {
             </ScrollViewLayout>
           </SafeAreaView>
         )}
-        <BackButtonHandler exitRoutes={['Content']} />
+        {showExitModal && (
+          <BackButtonHandler
+            exitRoute={true} // You can pass any props needed by the modal here
+            onCancel={handleCancel}
+            onExit={handleExitApp}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
