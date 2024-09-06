@@ -23,6 +23,7 @@ import ContentBox from '../../components/ContentBox/ContentBox';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 import { contentListApi, getAccessToken } from '../../utils/API/AuthService';
 import SyncCard from '../../components/SyncComponent/SyncCard';
+import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 
 const Content = () => {
   const navigation = useNavigation();
@@ -174,6 +175,7 @@ const Content = () => {
             </ScrollViewLayout>
           </SafeAreaView>
         )}
+        <BackButtonHandler exitRoutes={['Content']} />
       </View>
     </SafeAreaView>
   );

@@ -26,6 +26,7 @@ import HTMLPlayer from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayer';
 import HTMLPlayerOffline from '../screens/PlayerScreen/HTMLPlayer/HTMLPlayerOffline';
 import YoutubePlayer from '../screens/PlayerScreen/YoutubePlayer/YoutubePlayer';
 import StandAlonePlayer from '../screens/PlayerScreen/StandAlonePlayer/StandAlonePlayer';
+// import EnableLocationScreen from '../screens/Location/EnableLocationScreen';
 import AssessmentStack from './AssessmentStack';
 import DashboardStack from './DashboardStack';
 
@@ -68,7 +69,7 @@ const StackScreen = (props) => {
 
       <Stack.Screen
         name="Dashboard"
-        component={AssessmentStack} // Changed to Assessment for now
+        component={TabScreen} // Changed to Assessment for now
         options={{ headerShown: false }}
       />
 
@@ -207,6 +208,12 @@ const StackScreen = (props) => {
         component={DashboardStack} // Changed to Assessment for now
         options={{ headerShown: false }}
       />
+
+      {/* <Stack.Screen
+        name="EnableLocationScreen"
+        component={EnableLocationScreen} // Changed to Assessment for now
+        options={{ headerShown: false }}
+      /> */}
     </Stack.Navigator>
   );
 };
