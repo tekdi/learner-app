@@ -33,11 +33,6 @@ const Assessment = (props) => {
   const [percentage, setPercentage] = useState('');
   const [networkstatus, setNetworkstatus] = useState(true);
 
-  // Get the current route name
-  const routeName = useNavigationState(
-    (state) => state.routes[state.index].name
-  );
-
   // console.log({ isConnected });
 
   useEffect(() => {
