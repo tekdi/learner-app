@@ -69,8 +69,8 @@ const StackScreen = (props) => {
 
       <Stack.Screen
         name="Dashboard"
-        //component={TabScreen} // Changed to TabScreen for now to show content in dashboard
-        component={AssessmentStack} // Changed to AssessmentStack for now to show only Assessment
+        component={TabScreen} // Changed to TabScreen for now to show content in dashboard
+        //component={AssessmentStack} // Changed to AssessmentStack for now to show only Assessment
         options={{ headerShown: false }}
       />
 

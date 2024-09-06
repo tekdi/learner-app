@@ -70,6 +70,15 @@ const LanguageScreen = () => {
       ];
       const query_Asessment_Offline = await createTable({ tableName, columns });
       console.log('query_Asessment_Offline', query_Asessment_Offline);
+      //telemetry_offline
+      tableName = 'Telemetry_Offline';
+      columns = [
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'user_id TEXT',
+        'telemetry_object TEXT',
+      ];
+      const query_Telemetry_Offline = await createTable({ tableName, columns });
+      console.log('query_Telemetry_Offline', query_Telemetry_Offline);
 
       const token = await getDataFromStorage('Accesstoken');
       //console.log('Accesstoken', token);

@@ -12,12 +12,17 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useInternet } from '../../context/NetworkContext';
 import {
   deleteAsessmentOffline,
+  deleteTelemetryOffline,
   getSyncAsessmentOffline,
+  getSyncTelemetryOffline,
 } from '../../utils/API/AuthService';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 import BackgroundFetch from 'react-native-background-fetch';
 import NetInfo from '@react-native-community/netinfo';
-import { assessmentTracking } from '../../utils/API/ApiCalls';
+import {
+  assessmentTracking,
+  telemetryTracking,
+} from '../../utils/API/ApiCalls';
 
 const SyncCard = ({ doneSync }) => {
   const { t } = useTranslation();
@@ -36,8 +41,12 @@ const SyncCard = ({ doneSync }) => {
       //get sync pending
       const user_id = await getDataFromStorage('userId');
       const result_sync_offline = await getSyncAsessmentOffline(user_id);
+      const result_sync_offline_telemetry = await getSyncTelemetryOffline(
+        user_id
+      );
       //console.log('result_sync_offline', result_sync_offline);
-      if (result_sync_offline) {
+      //console.log('result_sync_offline_telemetry', result_sync_offline_telemetry);
+      if (result_sync_offline || result_sync_offline_telemetry) {
         setIsSyncPending(true);
       } else {
         setIsSyncPending(false);
@@ -99,53 +108,99 @@ const SyncCard = ({ doneSync }) => {
         //get sync pending
         const user_id = await getDataFromStorage('userId');
         const result_sync_offline = await getSyncAsessmentOffline(user_id);
-        if (result_sync_offline && !isProgress) {
-          console.log('result_sync_offline', result_sync_offline.length);
-          setIsSyncPending(true);
-          setIsProgress(true);
-          //sync data to online
-          let isError = false;
-          for (let i = 0; i < result_sync_offline.length; i++) {
-            let assessment_result = result_sync_offline[i];
-            try {
-              let payload = JSON.parse(assessment_result?.payload);
-              let create_assessment = await assessmentTracking(
-                payload?.scoreDetails,
-                payload?.identifierWithoutImg,
-                payload?.maxScore,
-                payload?.seconds,
-                payload?.userId,
-                payload?.batchId,
-                payload?.lastAttemptedOn
-              );
-              if (
-                create_assessment &&
-                create_assessment?.response?.responseCode == 201
-              ) {
-                //success
-                console.log('create_assessment', create_assessment);
-                //delete from storage
-                await deleteAsessmentOffline(
-                  assessment_result?.user_id,
-                  assessment_result?.batch_id,
-                  assessment_result?.content_id
+        const result_sync_offline_telemetry = await getSyncTelemetryOffline(
+          user_id
+        );
+        if (
+          (result_sync_offline && !isProgress) ||
+          (result_sync_offline_telemetry && !isProgress)
+        ) {
+          if (result_sync_offline) {
+            setIsSyncPending(true);
+            setIsProgress(true);
+            //sync data to online
+            let isError = false;
+            console.log('result_sync_offline', result_sync_offline.length);
+            for (let i = 0; i < result_sync_offline.length; i++) {
+              let assessment_result = result_sync_offline[i];
+              try {
+                let payload = JSON.parse(assessment_result?.payload);
+                let create_assessment = await assessmentTracking(
+                  payload?.scoreDetails,
+                  payload?.identifierWithoutImg,
+                  payload?.maxScore,
+                  payload?.seconds,
+                  payload?.userId,
+                  payload?.batchId,
+                  payload?.lastAttemptedOn
                 );
-              } else {
-                isError = true;
+                if (
+                  create_assessment &&
+                  create_assessment?.response?.responseCode == 201
+                ) {
+                  //success
+                  console.log('create_assessment', create_assessment);
+                  //delete from storage
+                  await deleteAsessmentOffline(
+                    assessment_result?.user_id,
+                    assessment_result?.batch_id,
+                    assessment_result?.content_id
+                  );
+                } else {
+                  isError = true;
+                }
+              } catch (e) {
+                console.log(e);
               }
-            } catch (e) {
-              console.log(e);
+            }
+            setIsSyncPending(false);
+            setIsProgress(false);
+            if (!isError && doneSync) {
+              doneSync(); //call back function
             }
           }
-          setIsSyncPending(false);
-          setIsProgress(false);
-          if (!isError) {
-            doneSync(); //call back function
+          if (result_sync_offline_telemetry) {
+            //telemetry offline data sync
+            setIsSyncPending(true);
+            setIsProgress(true);
+            let isError = false;
+            console.log(
+              'result_sync_offline_telemetry',
+              result_sync_offline_telemetry.length
+            );
+            for (let i = 0; i < result_sync_offline_telemetry.length; i++) {
+              let telemetry_result = result_sync_offline_telemetry[i];
+              try {
+                let telemetry_object = JSON.parse(
+                  telemetry_result?.telemetry_object
+                );
+
+                let create_telemetry = await telemetryTracking(
+                  telemetry_object
+                );
+                if (
+                  create_telemetry &&
+                  create_telemetry?.response?.responseCode == 'SUCCESS'
+                ) {
+                  //success
+                  console.log('create_telemetry', create_telemetry);
+                  //delete from storage
+                  await deleteTelemetryOffline(assessment_result?.id);
+                } else {
+                  isError = true;
+                }
+              } catch (e) {
+                console.log(e);
+              }
+            }
+            setIsSyncPending(false);
+            setIsProgress(false);
           }
         } else {
           setIsSyncPending(false);
           setIsProgress(false);
         }
+
         console.log('Data synced successfully.');
       } catch (error) {
         console.error('Data sync failed:', error);

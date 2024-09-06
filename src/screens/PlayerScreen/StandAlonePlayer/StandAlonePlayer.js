@@ -23,6 +23,7 @@ import {
   hierarchyContent,
   assessmentTracking,
   listQuestion,
+  telemetryTracking,
 } from '../../../utils/API/ApiCalls';
 import {
   qumlPlayerConfig,
@@ -42,8 +43,15 @@ import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
 
 import Orientation from 'react-native-orientation-locker';
-import { getDataFromStorage, getUserId } from '../../../utils/JsHelper/Helper';
-import { storeAsessmentOffline } from '../../../utils/API/AuthService';
+import {
+  getDataFromStorage,
+  getUserId,
+  setDataInStorage,
+} from '../../../utils/JsHelper/Helper';
+import {
+  storeAsessmentOffline,
+  storeTelemetryOffline,
+} from '../../../utils/API/AuthService';
 import TestResultModal from '../../Assessment/TestResultModal';
 import MimeAlertModal from '../../../components/MimeAletModal/MimeAlertModal';
 
@@ -78,6 +86,8 @@ const StandAlonePlayer = ({ route }) => {
   //   application/vnd.sunbird.question
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState(null);
+  //const [telemetryObject, setTelemetryObject] = useState([]);
+  let telemetryObject = [];
 
   useEffect(() => {
     // Lock the screen to landscape mode
@@ -178,10 +188,14 @@ const StandAlonePlayer = ({ route }) => {
       let data_obj = jsonObj.data;
       if (data_obj) {
         //add user id in actor
-        data_obj.actor.id=userId
+        data_obj.actor.id = userId;
         console.log('####################');
         console.log('data_obj', JSON.stringify(data_obj));
         console.log('####################');
+        //setTelemetryObject((telemetryObject) => [...telemetryObject, data_obj]);
+        telemetryObject.push(data_obj);
+        //console.log('telemetryObject', telemetryObject);
+        await storeData('telemetryObject', telemetryObject, 'json');
       }
       //for assessment
       if (
@@ -744,6 +758,7 @@ const StandAlonePlayer = ({ route }) => {
       const onBackPress = () => {
         // Handle back button press
         console.log('useFocusEffect Back button pressed or screen closed');
+        fetchExitData();
         return false; // Return true if you want to block the back action, false to allow it
       };
 
@@ -751,11 +766,34 @@ const StandAlonePlayer = ({ route }) => {
 
       return () => {
         // Cleanup on unmount
-        console.log('useFocusEffect Screen closed');
+        //console.log('useFocusEffect Screen closed');
         BackHandler.removeEventListener('hardwareBackPress', onBackPress);
       };
     }, [])
   );
+  const fetchExitData = async () => {
+    let storedTelemetryObject = await getData('telemetryObject', 'json');
+    if (storedTelemetryObject && storedTelemetryObject.length > 0) {
+      try {
+        let create_telemetry = await telemetryTracking(storedTelemetryObject);
+        console.log('create_telemetry', create_telemetry);
+        if (
+          create_telemetry &&
+          create_telemetry?.response?.responseCode == 'SUCCESS'
+        ) {
+          console.log('saved data');
+        } else {
+          console.log('no internet available');
+          //store result in offline mode
+          const userId = await getDataFromStorage('userId');
+          await storeTelemetryOffline(userId, storedTelemetryObject);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    //console.log('storedTelemetryObject', JSON.stringify(storedTelemetryObject));
+  };
   //event when player closed
 
   if (loading) {

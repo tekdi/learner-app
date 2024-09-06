@@ -250,3 +250,52 @@ export const assessmentTracking = async (
     );
   }
 };
+
+export const telemetryTracking = async (telemetryObject) => {
+  try {
+    let ets = telemetryObject[telemetryObject.length - 1]?.ets;
+    let payload = {
+      id: 'api.sunbird.telemetry',
+      ver: '3.0',
+      params: {
+        msgid: '1fa187a4a1a95aec09afb64509e80244',
+      },
+      ets: ets,
+      events: telemetryObject,
+    };
+    const url = EndUrls.telemetryTracking;
+
+    let data = JSON.stringify(payload);
+    // console.log('url', url);
+    // console.log('data', data);
+
+    let api_response = null;
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: data,
+    };
+    // console.log('config', config);
+    // console.log('data', data);
+
+    await axios
+      .request(config)
+      .then((response) => {
+        //console.log(JSON.stringify(response.data));
+        api_response = { response: response.data };
+      })
+      .catch((error) => {
+        console.log('error', error);
+      });
+    return api_response;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Telemetry Submission Failed'
+    );
+  }
+};
