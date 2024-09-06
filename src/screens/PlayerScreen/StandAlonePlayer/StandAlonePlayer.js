@@ -11,7 +11,9 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { PermissionsAndroid } from 'react-native';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 
 import { WebView } from 'react-native-webview';
@@ -74,6 +76,8 @@ const StandAlonePlayer = ({ route }) => {
 
   //   #sunbird-quml-player
   //   application/vnd.sunbird.question
+  const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState(null);
 
   useEffect(() => {
     // Lock the screen to landscape mode
@@ -86,6 +90,16 @@ const StandAlonePlayer = ({ route }) => {
     ) {
       Orientation.lockToLandscape();
     }
+
+    const fetchData = async () => {
+      let tempUserId = await getDataFromStorage('userId');
+      let tempUserName = await getDataFromStorage('Username');
+      console.log('tempUserId', tempUserId);
+      console.log('tempUserName', tempUserName);
+      setUserId(tempUserId);
+      setUserName(tempUserName);
+    };
+    fetchData();
 
     // Unlock orientation when component is unmounted
     return () => {
@@ -163,6 +177,8 @@ const StandAlonePlayer = ({ route }) => {
       let jsonObj = JSON.parse(data);
       let data_obj = jsonObj.data;
       if (data_obj) {
+        //add user id in actor
+        data_obj.actor.id=userId
         console.log('####################');
         console.log('data_obj', JSON.stringify(data_obj));
         console.log('####################');
@@ -186,7 +202,6 @@ const StandAlonePlayer = ({ route }) => {
           // console.log('maxScore', maxScore);
           // console.log('seconds', seconds);
           // let userId = 'fb6b2e58-0f14-4d4f-90e4-bae092e7a951';
-          const userId = await getDataFromStorage('userId');
           let batchId = await getDataFromStorage('cohortId');
           let lastAttemptedOn = new Date().toISOString();
 
@@ -264,9 +279,13 @@ const StandAlonePlayer = ({ route }) => {
               //console.log('file_content', file_content);
               questionsData.questions_data = file_content;
               qumlPlayerConfig.metadata = contentObj;
+              //set user id and full name
+              qumlPlayerConfig.context.uid = userId;
+              qumlPlayerConfig.context.userData.firstName = userName;
               //console.log('qumlPlayerConfig set', qumlPlayerConfig);
               set_is_valid_file(true);
             } catch (e) {
+              console.log(e);
               set_is_download(true);
               await downloadContentQuML();
             }
@@ -306,6 +325,9 @@ const StandAlonePlayer = ({ route }) => {
           contentPlayerConfig.context = {
             host: `file://${content_file}/assets`,
           };
+          //set user id and full name
+          contentPlayerConfig.context.uid = userId;
+          contentPlayerConfig.context.userData.firstName = userName;
           //console.log('contentPlayerConfig set', contentPlayerConfig);
           set_is_valid_file(true);
         } catch (e) {
@@ -341,6 +363,9 @@ const StandAlonePlayer = ({ route }) => {
           contentPlayerConfig.metadata = contentObj;
           contentPlayerConfig.data = '';
           contentPlayerConfig.context = { host: `file://${content_file}` };
+          //set user id and full name
+          contentPlayerConfig.context.uid = userId;
+          contentPlayerConfig.context.userData.firstName = userName;
           //console.log('contentPlayerConfig set', contentPlayerConfig);
           set_is_valid_file(true);
         } catch (e) {
@@ -365,17 +390,26 @@ const StandAlonePlayer = ({ route }) => {
       content_response?.result?.content?.mimeType == 'application/pdf'
     ) {
       pdfPlayerConfig.metadata = content_response.result.content;
+      //set user id and full name
+      pdfPlayerConfig.context.uid = userId;
+      pdfPlayerConfig.context.userData.firstName = userName;
       set_is_valid_file(true);
     } else if (
       content_response?.result?.content?.mimeType == 'video/mp4' ||
       content_response?.result?.content?.mimeType == 'video/webm'
     ) {
       videoPlayerConfig.metadata = content_response.result.content;
+      //set user id and full name
+      videoPlayerConfig.context.uid = userId;
+      videoPlayerConfig.context.userData.firstName = userName;
       set_is_valid_file(true);
     } else if (
       content_response?.result?.content?.mimeType == 'application/epub'
     ) {
       epubPlayerConfig.metadata = content_response.result.content;
+      //set user id and full name
+      epubPlayerConfig.context.uid = userId;
+      epubPlayerConfig.context.userData.firstName = userName;
       set_is_valid_file(true);
     } else {
       set_is_valid_file(false);
@@ -703,6 +737,26 @@ const StandAlonePlayer = ({ route }) => {
         window.setData('${JSON.stringify(epubPlayerConfig)}');
         })();`
       : ``;
+
+  //event when player closed
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        // Handle back button press
+        console.log('useFocusEffect Back button pressed or screen closed');
+        return false; // Return true if you want to block the back action, false to allow it
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        // Cleanup on unmount
+        console.log('useFocusEffect Screen closed');
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, [])
+  );
+  //event when player closed
 
   if (loading) {
     return (

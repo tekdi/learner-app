@@ -142,7 +142,7 @@ const Assessment = (props) => {
             )}
           </View>
           {/* Use the BackButtonHandler component */}
-          {/* <BackButtonHandler exitRoutes={['Assessment']} /> */}
+          <BackButtonHandler exitRoutes={['Assessment']} />
         </View>
       )}
       <NetworkAlert

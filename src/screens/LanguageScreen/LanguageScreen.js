@@ -117,9 +117,9 @@ const LanguageScreen = () => {
 
   const handlethis = () => {
     //direct login show
-    //navigation.navigate('LoginScreen');
+    navigation.navigate('LoginScreen');
     //show register and content button
-    navigation.navigate('LoginSignUpScreen');
+    //navigation.navigate('LoginSignUpScreen');
   };
 
   if (loading) {
