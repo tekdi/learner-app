@@ -13,47 +13,18 @@ import { useTranslation } from '../../context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
 import { useNavigationState } from '@react-navigation/native';
 
-const BackButtonHandler = ({ exitRoutes }) => {
+const BackButtonHandler = ({ exitRoute, onCancel, onExit }) => {
   const { t } = useTranslation();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const routeName = useNavigationState((state) => {
-    const route = state.routes[state.index];
-    return route.name;
-  });
-
   useEffect(() => {
-    const onBackPress = () => {
-      if (exitRoutes.includes(routeName)) {
-        setModalVisible(true); // Show custom modal
-        return true; // Prevent default back action
-      }
-      return false; // Allow default back action
-    };
-
-    BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    };
-  }, [routeName, exitRoutes]);
-
-  const handleExit = () => {
-    setModalVisible(false);
-    BackHandler.exitApp(); // Exit the app
-  };
-
-  const handleCancel = () => {
-    setModalVisible(false); // Just close the modal
-  };
+    if (exitRoute) {
+      setModalVisible(true);
+    }
+  }, [exitRoute]);
 
   return (
-    <Modal
-      transparent={true}
-      animationType="fade"
-      visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
-    >
+    <Modal transparent={true} animationType="fade" visible={modalVisible}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <View style={styles.alertBox}>
@@ -69,12 +40,12 @@ const BackButtonHandler = ({ exitRoutes }) => {
             </Text>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleCancel}>
+            <TouchableOpacity style={styles.button} onPress={onCancel}>
               <Text style={[globalStyles.subHeading, { color: '#0D599E' }]}>
                 {t('no')}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleExit}>
+            <TouchableOpacity style={styles.button} onPress={onExit}>
               <Text style={[globalStyles.subHeading, { color: '#0D599E' }]}>
                 {t('yes')}
               </Text>
