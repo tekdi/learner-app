@@ -13,7 +13,10 @@ const CustomCardLanguage = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <TouchableOpacity onPress={() => clickEvent(value)}>
+    <TouchableOpacity
+      style={{ width: '50%' }}
+      onPress={() => clickEvent(value)}
+    >
       <View style={active ? [styles.cardActive, style] : [styles.card, style]}>
         <Text
           style={[

@@ -140,62 +140,77 @@ export const registerUser = async (params = {}) => {
 };
 
 export const contentListApi = async (params = {}) => {
-  try {
-    const url = `${EndUrls.contentList}`; // Define the URL
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    };
-    const payload = {
-      request: {
-        filters: {
-          primaryCategory: ['course'],
-          visibility: ['Default', 'Parent'],
-        },
-        limit: 100,
-        sort_by: {
-          lastPublishedOn: 'desc',
-        },
-        fields: [
-          'name',
-          'appIcon',
-          'mimeType',
-          'gradeLevel',
-          'identifier',
-          'medium',
-          'pkgVersion',
-          'board',
-          'subject',
-          'resourceType',
-          'primaryCategory',
-          'contentType',
-          'channel',
-          'organisation',
-          'trackable',
-        ],
-        facets: [
-          'se_boards',
-          'se_gradeLevels',
-          'se_subjects',
-          'se_mediums',
-          'primaryCategory',
-        ],
-        offset: 0,
+  const user_id = await getDataFromStorage('userId');
+  const url = `${EndUrls.contentList}`; // Define the URL
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  const payload = {
+    request: {
+      filters: {
+        primaryCategory: ['course'],
+        visibility: ['Default', 'Parent'],
       },
-    };
+      limit: 100,
+      sort_by: {
+        lastPublishedOn: 'desc',
+      },
+      fields: [
+        'name',
+        'appIcon',
+        'mimeType',
+        'gradeLevel',
+        'identifier',
+        'medium',
+        'pkgVersion',
+        'board',
+        'subject',
+        'resourceType',
+        'primaryCategory',
+        'contentType',
+        'channel',
+        'organisation',
+        'trackable',
+      ],
+      facets: [
+        'se_boards',
+        'se_gradeLevels',
+        'se_subjects',
+        'se_mediums',
+        'primaryCategory',
+      ],
+      offset: 0,
+    },
+  };
 
+  try {
     // Make the actual request
     const result = await post(url, payload, {
       headers: headers || {},
     });
 
     if (result) {
+      // store result
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
       return result?.data?.result;
     } else {
-      return {};
+      let result_offline = await getApiResponse(user_id, url, 'post', payload);
+      //console.log('result_offline', result_offline);
+      return result_offline;
     }
   } catch (e) {
-    return handleResponseException(e);
+    console.log('no internet available');
+    let result_offline = await getApiResponse(user_id, url, 'post', payload);
+    //console.log('result_offline', result_offline);
+    return result_offline;
+    //return handleResponseException(e);
   }
 };
 
@@ -413,7 +428,7 @@ export const getAssessmentAnswerKey = async (params = {}) => {
 };
 
 //store all api response in offline storage
-const storeApiResponse = async (
+export const storeApiResponse = async (
   user_id,
   api_url,
   api_type,
@@ -454,7 +469,7 @@ const storeApiResponse = async (
   }
 };
 
-const getApiResponse = async (user_id, api_url, api_type, payload) => {
+export const getApiResponse = async (user_id, api_url, api_type, payload) => {
   try {
     //get result
     const data_get = {

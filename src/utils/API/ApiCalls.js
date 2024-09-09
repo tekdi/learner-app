@@ -1,6 +1,7 @@
 import EndUrls from './EndUrls';
 import axios from 'axios';
 import uuid from 'react-native-uuid';
+import { getApiResponse, storeApiResponse } from './AuthService';
 
 export const getAccessToken = async () => {
   const url = EndUrls.login;
@@ -98,32 +99,33 @@ export const hierarchyContent = async (content_do_id) => {
   return api_response;
 };
 export const courseDetails = async (content_do_id) => {
-  console.log({ content_do_id });
+  const user_id = await getDataFromStorage('userId');
   const url = EndUrls.course_details + content_do_id;
-
-  let api_response = null;
-
-  let config = {
-    method: 'get',
-    maxBodyLength: Infinity,
-    url: url,
-    headers: {
-      accept: '*/*',
-      'Content-Type': 'application/json',
-    },
+  const payload = null;
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
   };
 
-  await axios
-    .request(config)
-    .then((response) => {
-      //console.log(JSON.stringify(response.data));
-      api_response = response.data;
-    })
-    .catch((error) => {
-      console.log(error);
+  try {
+    const result = await get(url, {
+      headers: headers || {},
     });
-
-  return api_response;
+    if (result) {
+      // store result
+      await storeApiResponse(user_id, url, 'get', payload, result?.data);
+      return result?.data;
+    } else {
+      let result_offline = await getApiResponse(user_id, url, 'get', payload);
+      //console.log('result_offline', result_offline);
+      return result_offline;
+    }
+  } catch (error) {
+    console.log('no internet available');
+    let result_offline = await getApiResponse(user_id, url, 'get', payload);
+    //console.log('result_offline', result_offline);
+    return result_offline;
+  }
 };
 
 //list question
