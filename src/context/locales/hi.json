@@ -21,7 +21,7 @@
   "q1_name": "आपका नाम क्या है?",
   "first_name": "प्रथम नाम",
   "last_name": "अंतिम नाम",
-  "age_group": "आप किस आयु समूह में आते हैं?",
+  "age_group": "आपकी उम्र और लिंग क्या है?",
   "q2_op_1": "3 - 6 वर्ष",
   "q2_op_2": "6 - 10 वर्ष",
   "q2_op_3": "10 - 14 वर्ष",
@@ -166,6 +166,9 @@
   "your_test_will_be_auto_saved_once_you_are_back_online": "जैसे ही आप ऑनलाइन आएंगे, आपकी परीक्षा स्वचालित रूप से सहेज ली जाएगी",
   "okay": "ठीक है",
   "downloaded_for_offline_access": "ऑफ़लाइन पहुंच के लिए डाउनलोड किया गया",
-  "unsupported_content":"असमर्थित सामग्री"
-
+  "unsupported_content":"असमर्थित सामग्री",
+  "enable": "सक्षम करें",
+  "not_now": "अभी नहीं",
+  "enable_location_to_discover_nearby_skilling_centers_and_more_opportunities_tailored_just_for_you": "आपके लिए निकटवर्ती कौशल केंद्रों की खोज और अधिक अवसरों को प्राप्त करने के लिए स्थान सक्षम करें!"
+  
 }

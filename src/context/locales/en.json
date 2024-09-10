@@ -21,7 +21,7 @@
   "q1_name": "What's your name?",
   "first_name": "First Name",
   "last_name": "Last Name",
-  "age_group": "Which age group do you fall under?",
+  "age_group": "What is your age and gender?",
   "q2_op_1": "3 - 6 years",
   "q2_op_2": "6 - 10 years",
   "q2_op_3": "10 - 14 years",
@@ -168,5 +168,9 @@
   "your_test_will_be_auto_saved_once_you_are_back_online":"Your test will be auto-saved once you are back online",
   "okay":"Okay",
   "downloaded_for_offline_access":"Downloaded for offline access",
-  "unsupported_content":"Unsupported Content"
+  "unsupported_content":"Unsupported Content",
+  "enable":"Enable",
+  "not_now":"Not now",
+  "enable_location_to_discover_nearby_skilling_centers_and_more_opportunities_tailored_just_for_you":"Enable location to discover nearby skilling centers and more opportunities tailored just for you!",
+  "which_program_do_you_want_to_enroll_to":"Which program do you want to enroll to?"
 }

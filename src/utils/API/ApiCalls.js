@@ -1,6 +1,8 @@
 import EndUrls from './EndUrls';
 import axios from 'axios';
 import uuid from 'react-native-uuid';
+import { getApiResponse, storeApiResponse } from './AuthService';
+import { getDataFromStorage } from '../JsHelper/Helper';
 
 export const getAccessToken = async () => {
   const url = EndUrls.login;
@@ -98,9 +100,8 @@ export const hierarchyContent = async (content_do_id) => {
   return api_response;
 };
 export const courseDetails = async (content_do_id) => {
-  console.log({ content_do_id });
-  const url = EndUrls.course_details + content_do_id;
-
+  const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+  const url = `${EndUrls.course_details}${content_do_id}`;
   let api_response = null;
 
   let config = {
@@ -113,19 +114,22 @@ export const courseDetails = async (content_do_id) => {
     },
   };
 
-  await axios
-    .request(config)
-    .then((response) => {
-      //console.log(JSON.stringify(response.data));
-      api_response = response.data;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-
-  return api_response;
+  try {
+    const response = await axios.request(config);
+    api_response = response.data;
+    if (api_response) {
+      await storeApiResponse(user_id, url, 'get', null, api_response);
+      return api_response;
+    } else {
+      const result_offline = await getApiResponse(user_id, url, 'get', null);
+      return result_offline;
+    }
+  } catch (error) {
+    console.log('No internet available, retrieving offline data...');
+    const result_offline = await getApiResponse(user_id, url, 'get', null);
+    return result_offline;
+  }
 };
-
 //list question
 export const listQuestion = async (url, identifiers) => {
   let data = JSON.stringify({
