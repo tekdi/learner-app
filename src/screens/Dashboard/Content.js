@@ -70,16 +70,18 @@ const Content = () => {
     navigation.navigate('Preference');
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await contentListApi();
-      const user_Info = await getAccessToken();
-      setUserInfo(user_Info);
-      setData(data?.content);
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const data = await contentListApi();
+        const user_Info = await getAccessToken();
+        setUserInfo(user_Info);
+        setData(data?.content);
+        setLoading(false);
+      };
+      fetchData();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, top: 40 }}>

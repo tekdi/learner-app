@@ -2,6 +2,7 @@ import EndUrls from './EndUrls';
 import axios from 'axios';
 import uuid from 'react-native-uuid';
 import { getApiResponse, storeApiResponse } from './AuthService';
+import { getDataFromStorage } from '../JsHelper/Helper';
 
 export const getAccessToken = async () => {
   const url = EndUrls.login;
@@ -99,35 +100,36 @@ export const hierarchyContent = async (content_do_id) => {
   return api_response;
 };
 export const courseDetails = async (content_do_id) => {
-  const user_id = await getDataFromStorage('userId');
-  const url = EndUrls.course_details + content_do_id;
-  const payload = null;
-  const headers = {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
+  const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+  const url = `${EndUrls.course_details}${content_do_id}`;
+  let api_response = null;
+
+  let config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: url,
+    headers: {
+      accept: '*/*',
+      'Content-Type': 'application/json',
+    },
   };
 
   try {
-    const result = await get(url, {
-      headers: headers || {},
-    });
-    if (result) {
-      // store result
-      await storeApiResponse(user_id, url, 'get', payload, result?.data);
-      return result?.data;
+    const response = await axios.request(config);
+    api_response = response.data;
+    if (api_response) {
+      await storeApiResponse(user_id, url, 'get', null, api_response);
+      return api_response;
     } else {
-      let result_offline = await getApiResponse(user_id, url, 'get', payload);
-      //console.log('result_offline', result_offline);
+      const result_offline = await getApiResponse(user_id, url, 'get', null);
       return result_offline;
     }
   } catch (error) {
-    console.log('no internet available');
-    let result_offline = await getApiResponse(user_id, url, 'get', payload);
-    //console.log('result_offline', result_offline);
+    console.log('No internet available, retrieving offline data...');
+    const result_offline = await getApiResponse(user_id, url, 'get', null);
     return result_offline;
   }
 };
-
 //list question
 export const listQuestion = async (url, identifiers) => {
   let data = JSON.stringify({
