@@ -9,6 +9,7 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  StatusBar,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import location from '../../assets/images/png/location.png';
@@ -57,9 +58,14 @@ const EnableLocationScreen = () => {
   const disableLocation = () => navigation.navigate('LanguageScreen');
 
   return (
-    <View style={{ flex: 1, top: 40, alignItems: 'center' }}>
+    <View style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
+      <StatusBar
+        barStyle="dark-content"
+        translucent={true}
+        backgroundColor="transparent"
+      />
       <Image style={{ width: '100%' }} source={location} resizeMode="cover" />
-      <View style={{ width: '80%', marginTop: 30 }}>
+      <View style={{ width: '80%', marginTop: 50 }}>
         <Text style={[globalStyles.heading2, { textAlign: 'center' }]}>
           {t(
             'enable_location_to_discover_nearby_skilling_centers_and_more_opportunities_tailored_just_for_you'
