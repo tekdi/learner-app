@@ -82,9 +82,23 @@ export const getAccessToken = async () => {
 export const getStudentForm = async () => {
   try {
     const headers = await getHeaders();
-    const result = await get(`${EndUrls.get_form}`, {
+    const url = `${EndUrls.get_form}`;
+
+    // Generate the curl command
+    const curlCommand = `curl -X GET '${url}' \\
+${Object.entries(headers || {})
+  .map(([key, value]) => `-H '${key}: ${value}' \\`)
+  .join('\n')}`;
+
+    // Log the curl command to the console
+    console.log('Generated curl command:');
+    console.log(curlCommand);
+
+    // Make the API request
+    const result = await get(url, {
       headers: headers || {},
     });
+
     if (result) {
       return result?.data?.result;
     } else {
