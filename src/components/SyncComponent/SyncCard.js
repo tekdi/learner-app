@@ -195,6 +195,9 @@ const SyncCard = ({ doneSync }) => {
             }
             setIsSyncPending(false);
             setIsProgress(false);
+            if (!isError && doneSync) {
+              doneSync(); //call back function
+            }
           }
         } else {
           setIsSyncPending(false);

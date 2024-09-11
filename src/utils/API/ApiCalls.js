@@ -254,11 +254,12 @@ export const assessmentTracking = async (
 export const telemetryTracking = async (telemetryObject) => {
   try {
     let ets = telemetryObject[telemetryObject.length - 1]?.ets;
+    const msgid = uuid.v4();
     let payload = {
       id: 'api.sunbird.telemetry',
       ver: '3.0',
       params: {
-        msgid: '1fa187a4a1a95aec09afb64509e80244',
+        msgid: msgid,
       },
       ets: ets,
       events: telemetryObject,

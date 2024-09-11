@@ -71,15 +71,16 @@ const Content = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await contentListApi();
-      const user_Info = await getAccessToken();
-      setUserInfo(user_Info);
-      setData(data?.content);
-      setLoading(false);
-    };
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    const data = await contentListApi();
+    const user_Info = await getAccessToken();
+    setUserInfo(user_Info);
+    setData(data?.content);
+    setLoading(false);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, top: 40 }}>
@@ -96,7 +97,7 @@ const Content = () => {
                 {t('welcome')}, {userInfo?.result?.name} !
               </Text>
             </View>
-            <SyncCard />
+            <SyncCard doneSync={fetchData} />
 
             <ScrollViewLayout horizontalScroll={false}>
               <ContentBox
