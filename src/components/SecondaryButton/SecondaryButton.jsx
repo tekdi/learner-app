@@ -3,32 +3,32 @@ import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
-const SecondaryButton = ({onPress,text,style}) => {
+const SecondaryButton = ({ onPress, text, style }) => {
   //multi language setup
   const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text style={[styles.buttontext,style]}>{t(text)}</Text>
+        <Text style={[styles.buttontext, style]}>{t(text)}</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 SecondaryButton.propTypes = {
-  
   onPress: PropTypes.func,
-  text: PropTypes.string
+  text: PropTypes.string,
+  style: PropTypes.any,
 };
 
 const styles = StyleSheet.create({
   buttontext: {
     textAlign: 'center',
     fontSize: 16,
-    width:"100%",
+    width: '100%',
     color: 'black',
-    padding:10,
-    paddingHorizontal:20,
+    padding: 10,
+    paddingHorizontal: 20,
     fontFamily: 'Poppins-Medium',
   },
   button: {

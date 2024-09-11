@@ -4,14 +4,13 @@ import {
   Text,
   Modal,
   StyleSheet,
-  BackHandler,
   Image,
   TouchableOpacity,
 } from 'react-native';
 import question from '../../assets/images/png/question.png';
 import { useTranslation } from '../../context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
-import { useNavigationState } from '@react-navigation/native';
+import PropTypes from 'prop-types';
 
 const BackButtonHandler = ({ exitRoute, onCancel, onExit }) => {
   const { t } = useTranslation();
@@ -89,5 +88,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+BackButtonHandler.propTypes = {
+  exitRoute: PropTypes.any,
+  onCancel: PropTypes.any,
+  onExit: PropTypes.any,
+};
 
 export default BackButtonHandler;

@@ -34,6 +34,5 @@ const styles = StyleSheet.create({
   },
 });
 
-// Courses.propTypes = {};
 
 export default Courses;

@@ -21,7 +21,7 @@ import {
   getUserId,
   saveAccessToken,
   saveRefreshToken,
-  saveToken,
+
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 import LoginTextField from '../../components/LoginTextField/LoginTextField';
@@ -39,7 +39,6 @@ const LoginScreen = () => {
   const { isConnected } = useInternet();
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const [savePassword, setSavePassword] = useState(true);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [errmsg, setErrmsg] = useState('');
@@ -62,9 +61,7 @@ const LoginScreen = () => {
         password: password,
       };
       const data = await login(payload);
-      // console.log({ data });
       if (data?.params?.status !== 'failed') {
-        // await saveToken(data?.access_token || '');
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
         const user_id = await getUserId();

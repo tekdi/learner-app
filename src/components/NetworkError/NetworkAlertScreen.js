@@ -1,21 +1,11 @@
 import React from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  SafeAreaView,
-} from 'react-native';
-import { useInternet } from '../../context/NetworkContext';
+import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
-
 import globalStyles from '../../utils/Helper/Style';
-
 import lightning from '../../assets/images/png/lightning.png';
 import { Button } from '@ui-kitten/components';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import PropTypes from 'prop-types';
 
 const NetworkAlertScreen = ({ onTryAgain, routes, currentRoute }) => {
   const { t } = useTranslation();
@@ -51,6 +41,12 @@ const NetworkAlertScreen = ({ onTryAgain, routes, currentRoute }) => {
       </View>
     </SafeAreaView>
   );
+};
+
+NetworkAlertScreen.propTypes = {
+  routes: PropTypes.any,
+  onTryAgain: PropTypes.any,
+  currentRoute: PropTypes.any,
 };
 
 const styles = StyleSheet.create({

@@ -22,20 +22,17 @@ import FastImage from '@changwoolab/react-native-fast-image';
 import {
   getDataFromStorage,
   getRefreshToken,
-  getSavedToken,
+  
   saveAccessToken,
   saveRefreshToken,
-  saveToken,
+  
 } from '../../utils/JsHelper/Helper';
-import { getAccessToken, refreshToken } from '../../utils/API/AuthService';
+import {  refreshToken } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { useInternet } from '../../context/NetworkContext';
 import {
   createTable,
-  insertData,
-  updateData,
-  deleteData,
-  deleteDatabase,
+ 
 } from '../../utils/JsHelper/SqliteHelper';
 
 const LanguageScreen = () => {
@@ -81,15 +78,12 @@ const LanguageScreen = () => {
       console.log('query_Telemetry_Offline', query_Telemetry_Offline);
 
       const token = await getDataFromStorage('Accesstoken');
-      //console.log('Accesstoken', token);
       if (token) {
         if (isConnected) {
           const refresh_token = await getRefreshToken();
-          //console.log('refresh_token', refresh_token);
           const data = await refreshToken({
             refresh_token: refresh_token,
           });
-          //console.log('data', data);
           if (token && data?.access_token) {
             await saveAccessToken(data?.access_token);
             await saveRefreshToken(data?.refresh_token);

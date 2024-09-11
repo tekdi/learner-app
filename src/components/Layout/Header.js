@@ -14,7 +14,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { languages } from '../../screens/LanguageScreen/Languages';
 import { useTranslation } from '../../context/LanguageContext';
-import { deleteSavedItem } from '../../utils/JsHelper/Helper';
 
 const Header = () => {
   const navigation = useNavigation();
@@ -41,8 +40,6 @@ const Header = () => {
   };
 
   const profile = async () => {
-    // await deleteSavedItem('refreshToken');
-    // await deleteSavedItem('token');
     navigation.navigate('Profile');
   };
 

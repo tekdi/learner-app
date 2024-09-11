@@ -1,20 +1,10 @@
 import React from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  Pressable,
-} from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 
 import globalStyles from '../../utils/Helper/Style';
-import Icon from 'react-native-vector-icons/FontAwesome6';
 import { Button } from '@ui-kitten/components';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { capitalizeFirstLetter } from '../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
 
 const MimeAlertModal = () => {
@@ -45,11 +35,9 @@ const MimeAlertModal = () => {
           <View style={styles.btnbox}>
             <Button status="primary" style={styles.btn} onPress={closeModal}>
               {() => (
-                <>
-                  <Text style={[globalStyles.subHeading, { marginRight: 10 }]}>
-                    {t('okay')}
-                  </Text>
-                </>
+                <Text style={[globalStyles.subHeading, { marginRight: 10 }]}>
+                  {t('okay')}
+                </Text>
               )}
             </Button>
           </View>

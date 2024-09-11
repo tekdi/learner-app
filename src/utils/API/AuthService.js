@@ -1,4 +1,4 @@
-import { getDataFromStorage, getSavedToken } from '../JsHelper/Helper';
+import { getDataFromStorage } from '../JsHelper/Helper';
 import { deleteData, getData, insertData } from '../JsHelper/SqliteHelper';
 import EndUrls from './EndUrls';
 import { get, handleResponseException, post } from './RestClient';
@@ -216,15 +216,12 @@ export const contentListApi = async (params = {}) => {
       return result?.data?.result;
     } else {
       let result_offline = await getApiResponse(user_id, url, 'post', payload);
-      //console.log('result_offline', result_offline);
       return result_offline;
     }
   } catch (e) {
     console.log('no internet available');
     let result_offline = await getApiResponse(user_id, url, 'post', payload);
-    //console.log('result_offline', result_offline);
     return result_offline;
-    //return handleResponseException(e);
   }
 };
 
@@ -284,7 +281,6 @@ export const assessmentListApi = async (params = {}) => {
       },
       headers: headers || {},
     });
-    // console.log('result', result);
     if (result) {
       //store result
       await storeApiResponse(
@@ -297,15 +293,12 @@ export const assessmentListApi = async (params = {}) => {
       return result?.data?.result;
     } else {
       let result_offline = await getApiResponse(user_id, url, 'post', payload);
-      //console.log('result_offline', result_offline);
       return result_offline;
     }
   } catch (e) {
     console.log('no internet available');
     let result_offline = await getApiResponse(user_id, url, 'post', payload);
-    //console.log('result_offline', result_offline);
     return result_offline;
-    //return handleResponseException(e);
   }
 };
 
@@ -498,7 +491,6 @@ export const getApiResponse = async (user_id, api_url, api_type, payload) => {
       where: data_get,
     })
       .then((rows) => {
-        //console.log('rows', rows);
         if (rows.length > 0) {
           try {
             result_data = JSON.parse(rows[0]?.response);
@@ -561,7 +553,6 @@ export const deleteAsessmentOffline = async (user_id, batch_id, content_id) => {
       batch_id: batch_id,
       content_id: content_id,
     };
-    //console.log('data_delete', data_delete);
     await deleteData({
       tableName: 'Asessment_Offline',
       where: data_delete,
@@ -586,7 +577,6 @@ export const getAsessmentOffline = async (user_id, batch_id, content_id) => {
       where: data_get,
     })
       .then((rows) => {
-        //console.log('rows', rows);
         if (rows.length > 0) {
           try {
             result_data = JSON.parse(rows[0]?.payload);
@@ -614,7 +604,6 @@ export const getSyncAsessmentOffline = async (user_id) => {
       where: data_get,
     })
       .then((rows) => {
-        //console.log('rows', rows);
         if (rows.length > 0) {
           try {
             result_data = rows;

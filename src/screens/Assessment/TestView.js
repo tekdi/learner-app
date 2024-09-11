@@ -7,10 +7,9 @@ import { useTranslation } from '../../context/LanguageContext';
 import {
   getDataFromStorage,
   getLastMatchingData,
-  getUserId,
+
 } from '../../utils/JsHelper/Helper';
 import SubjectBox from '../../components/TestBox.js/SubjectBox.';
-import { getAssessmentStatus } from '../../utils/API/AuthService';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import globalStyles from '../../utils/Helper/Style';
 
@@ -69,8 +68,7 @@ const TestView = ({ route }) => {
   useEffect(() => {
     const fetchData = async () => {
       const data = await getDataFromStorage('QuestionSet');
-      const cohort_id = await getDataFromStorage('cohortId');
-      const user_id = await getDataFromStorage('userId');
+
       const parseData = JSON.parse(data);
       // Extract DO_id from assessmentList (content)
 
@@ -119,7 +117,7 @@ const TestView = ({ route }) => {
           {questionsets?.map((item, index) => {
             return (
               <SubjectBox
-                key={index}
+                key={item?.subject}
                 disabled={!item?.lastAttemptedOn}
                 name={item?.subject?.[0]?.toUpperCase()}
                 data={item}
