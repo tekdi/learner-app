@@ -70,9 +70,11 @@ const Content = () => {
     navigation.navigate('Preference');
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   const fetchData = async () => {
     const data = await contentListApi();

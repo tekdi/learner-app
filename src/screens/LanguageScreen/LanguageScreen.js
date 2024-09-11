@@ -167,7 +167,10 @@ const LanguageScreen = () => {
             style={styles.list}
             data={languages}
             renderItem={renderItem}
-            keyExtractor={(item) => item.value}
+            initialNumToRender={10} // Adjust the number of items to render initially
+            maxToRenderPerBatch={10} // Number of items rendered per batch
+            numColumns={2}
+            windowSize={21} // Controls the number of items rendered around the current index
           />
           <HorizontalLine />
         </View>

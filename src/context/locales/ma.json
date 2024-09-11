@@ -22,7 +22,7 @@
   "q1_name": "तुमचे नाव काय आहे?",
   "first_name": "पहिले नाव",
   "last_name": "आडनाव",
-  "age_group": "तुम्ही कोणत्या वयोगटात येता?",
+  "age_group": "तुमचे वय आणि लिंग काय आहे?",
   "q2_op_1": "3 - 6 वर्षे",
   "q2_op_2": "6 - 10 वर्षे",
   "q2_op_3": "10 - 14 वर्षे",
@@ -167,6 +167,11 @@
   "your_test_will_be_auto_saved_once_you_are_back_online": "तुम्ही ऑनलाइन परतल्यावर तुमची चाचणी आपोआप जतन केली जाईल",
   "okay": "ठीक आहे",
   "downloaded_for_offline_access": "ऑफलाइन प्रवेशासाठी डाउनलोड केले",
-  "unsupported_content":"असमर्थित सामग्री"
+  "unsupported_content":"असमर्थित सामग्री",
+  "enable": "सक्षम करा",
+  "not_now": "आता नाही",
+  "enable_location_to_discover_nearby_skilling_centers_and_more_opportunities_tailored_just_for_you": "तुमच्यासाठी जवळपासच्या कौशल्य केंद्रांचा शोध घेण्यासाठी आणि अधिक संधी मिळविण्यासाठी स्थान सक्षम करा!"
+  
+  
 
 }

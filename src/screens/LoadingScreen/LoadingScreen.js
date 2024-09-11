@@ -6,7 +6,7 @@ import Loading from './Loading';
 const LoadingScreen = ({ navigation }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.replace('LanguageScreen'); // Replace 'LanguageScreen' with your target route name
+      navigation.replace('EnableLocationScreen'); // Replace 'LanguageScreen' with your target route name
     }, 500); // 500 milliseconds = 0.5 seconds
 
     return () => clearTimeout(timer); // Cleanup the timer
