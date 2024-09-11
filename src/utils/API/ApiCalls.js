@@ -28,12 +28,10 @@ export const getAccessToken = async () => {
     .request(config)
     .then((response) => {
       if (response?.data?.result?.access_token) {
-        //console.log(response?.data?.result?.access_token);
         api_response = response.data.result.access_token;
       }
     })
     .catch((error) => {
-      //console.log(error);
     });
   return api_response;
 };
@@ -60,7 +58,6 @@ export const readContent = async (content_do_id) => {
   await axios
     .request(config)
     .then((response) => {
-      //console.log(JSON.stringify(response.data));
       api_response = response.data;
     })
     .catch((error) => {
@@ -90,7 +87,6 @@ export const hierarchyContent = async (content_do_id) => {
   await axios
     .request(config)
     .then((response) => {
-      //console.log(JSON.stringify(response.data));
       api_response = response.data;
     })
     .catch((error) => {
@@ -162,7 +158,6 @@ export const listQuestion = async (url, identifiers) => {
   await axios
     .request(config)
     .then((response) => {
-      //console.log(JSON.stringify(response.data));
       api_response = response.data;
     })
     .catch((error) => {
@@ -219,8 +214,7 @@ export const assessmentTracking = async (
       lastAttemptedOn: lastAttemptedOn,
       timeSpent: seconds || 0,
     });
-    // console.log('url', url);
-    // console.log('data', data);
+
 
     let api_response = null;
 
@@ -235,13 +229,11 @@ export const assessmentTracking = async (
       },
       data: data,
     };
-    // console.log('config', config);
-    // console.log('data', data);
+
 
     await axios
       .request(config)
       .then((response) => {
-        //console.log(JSON.stringify(response.data));
         api_response = { response: response.data, data: data };
       })
       .catch((error) => {

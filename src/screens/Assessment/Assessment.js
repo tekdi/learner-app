@@ -5,14 +5,11 @@ import Header from '../../components/Layout/Header';
 import TestBox from '../../components/TestBox.js/TestBox';
 import {
   assessmentListApi,
-
   getAssessmentStatus,
-
 } from '../../utils/API/AuthService';
 import { useNavigation } from '@react-navigation/native';
 import {
   getDataFromStorage,
-
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
@@ -29,7 +26,6 @@ const Assessment = (props) => {
   const [status, setStatus] = useState('');
   const [percentage, setPercentage] = useState('');
   const [networkstatus, setNetworkstatus] = useState(true);
-
 
   useEffect(() => {
     fetchData();
@@ -50,8 +46,6 @@ const Assessment = (props) => {
       const boardName = board.value;
       const assessmentList = await assessmentListApi({ boardName, user_id });
       if (assessmentList) {
-
-
         // const OfflineAssessmentList = JSON.parse(
         //   await getDataFromStorage('assessmentList')
         // );

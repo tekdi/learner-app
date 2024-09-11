@@ -9,7 +9,9 @@ const Label = ({ text }) => {
   return <Text style={styles.text}>{t(text)}</Text>;
 };
 
-Label.propTypes = {};
+Label.propTypes = {
+  text: PropTypes.string,
+};
 
 const styles = StyleSheet.create({
   text: {

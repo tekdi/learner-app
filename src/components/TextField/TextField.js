@@ -5,12 +5,15 @@ import { StyleSheet, Text } from 'react-native';
 
 const TextField = ({ text, style }) => {
   const { t } = useTranslation();
-  const textStyle = style ? style : styles.text;
+  const textStyle = style || styles.text;
 
   return <Text style={textStyle}> {text ? t(text) : '-'} </Text>;
 };
 
-TextField.propTypes = {};
+TextField.propTypes = {
+  text: PropTypes.string,
+  style: PropTypes.any,
+};
 
 const styles = StyleSheet.create({
   text: {

@@ -117,12 +117,10 @@ export const translateLanguage = (code) => {
 };
 
 export const checkAssessmentStatus = async (data, uniqueAssessmentsId) => {
-  // console.log({ data, uniqueAssessmentsId });
   const contentIdsInData = data?.map((item) => item.contentId);
   const matchedIds = uniqueAssessmentsId.filter((id) =>
     contentIdsInData.includes(id)
   );
-  // console.log({ contentIdsInData, matchedIds });
   if (matchedIds.length === 0) {
     return 'not_started';
   } else if (matchedIds.length === uniqueAssessmentsId.length) {
@@ -134,7 +132,6 @@ export const checkAssessmentStatus = async (data, uniqueAssessmentsId) => {
 
 export const getLastMatchingData = async (data, uniqueAssessmentsId) => {
   const result = [];
-  // console.log(data?.[0]?.assessments);
   uniqueAssessmentsId.forEach((id) => {
     // Filter the data array to find all objects with the matching uniqueAssessmentsId
     const matchingData = data?.[0]?.assessments.filter(
@@ -152,7 +149,6 @@ export const getLastMatchingData = async (data, uniqueAssessmentsId) => {
 
 export const convertSecondsToMinutes = (seconds) => {
   const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
   return `${minutes}`;
 };
 

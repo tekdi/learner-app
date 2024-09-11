@@ -7,11 +7,9 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
-import { useInternet } from '../../context/NetworkContext';
 import { useTranslation } from '../../context/LanguageContext';
-
+import PropTypes from 'prop-types';
 import globalStyles from '../../utils/Helper/Style';
-
 import lightning from '../../assets/images/png/lightning.png';
 import { Button } from '@ui-kitten/components';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -66,6 +64,12 @@ const NetworkAlert = ({ isConnected, onTryAgain, closeModal }) => {
       </TouchableOpacity>
     </Modal>
   );
+};
+
+NetworkAlert.propTypes = {
+  isConnected: PropTypes.bool,
+  onTryAgain: PropTypes.any,
+  closeModal: PropTypes.any,
 };
 
 const styles = StyleSheet.create({

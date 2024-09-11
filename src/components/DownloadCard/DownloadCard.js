@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import download from '../../assets/images/png/download.png';
 import download_inprogress from '../../assets/images/png/download_inprogress.png';
 import download_complete from '../../assets/images/png/download_complete.png';
 import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 
-const DownloadCard = (props) => {
+const DownloadCard = () => {
   const [downloadIcon, setDownloadIcon] = useState(download);
 
   const handleDownload = () => {
