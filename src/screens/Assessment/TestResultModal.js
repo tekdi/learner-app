@@ -5,13 +5,11 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
-  Pressable,
+
 } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
-
+import PropTypes from 'prop-types';
 import globalStyles from '../../utils/Helper/Style';
-import Icon from 'react-native-vector-icons/FontAwesome6';
 import { Button } from '@ui-kitten/components';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { capitalizeFirstLetter } from '../../utils/JsHelper/Helper';
@@ -27,7 +25,7 @@ const TestResultModal = ({ modal, title }) => {
 
   return (
     <Modal
-      visible={modal ? true : false}
+      visible={!!modal}
       transparent={true}
       animationType="slide"
       onclo
@@ -42,18 +40,7 @@ const TestResultModal = ({ modal, title }) => {
             <Text style={globalStyles.heading}>
               {t(capitalizeFirstLetter(title))}
             </Text>
-            {/* <Pressable
-                onPress={() => {
-                  navigation.goBack();
-                }}
-              >
-                <Icon
-                  name="xmark"
-                  color="black"
-                  size={30}
-                  style={styles.icon}
-                />
-              </Pressable> */}
+            
           </View>
           <TouchableOpacity
             activeOpacity={1} // Prevent closing the modal when clicking inside the alert box
@@ -97,11 +84,10 @@ const TestResultModal = ({ modal, title }) => {
           <View style={styles.btnbox}>
             <Button status="primary" style={styles.btn} onPress={closeModal}>
               {() => (
-                <>
+                
                   <Text style={[globalStyles.subHeading, { marginRight: 10 }]}>
                     {t('okay')}
                   </Text>
-                </>
               )}
             </Button>
           </View>
@@ -151,5 +137,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
+
+TestResultModal.propTypes = {
+  modal:PropTypes.any,
+  title:PropTypes.any
+};
 
 export default TestResultModal;

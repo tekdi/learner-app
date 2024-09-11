@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Header from '../../components/Layout/Header';
 import TextField from '../../components/TextField/TextField';
 import { courseDetails } from '../../utils/API/ApiCalls';
 import { useNavigation } from '@react-navigation/native';
@@ -125,7 +124,7 @@ const ContentList = ({ route }) => {
   );
 };
 
-styles = StyleSheet.create({
+const styles = StyleSheet.create({
   view: {
     borderWidth: 1,
     padding: 20,
@@ -136,6 +135,8 @@ styles = StyleSheet.create({
   },
 });
 
-ContentList.propTypes = {};
+ContentList.propTypes = {
+  route: PropTypes.any
+};
 
 export default ContentList;

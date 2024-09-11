@@ -1,31 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
-import { useInternet } from '../../context/NetworkContext';
 import Header from '../../components/Layout/Header';
 import TestBox from '../../components/TestBox.js/TestBox';
 import {
   assessmentListApi,
-  getAccessToken,
+
   getAssessmentStatus,
-  getCohort,
+
 } from '../../utils/API/AuthService';
-import { useNavigation, useNavigationState } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import {
   getDataFromStorage,
-  getUserId,
+
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
-import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
-import { createTable, getData } from '../../utils/JsHelper/SqliteHelper';
+
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 
 const Assessment = (props) => {
   const { t } = useTranslation();
-  const { isConnected } = useInternet();
   const navigation = useNavigation();
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +30,6 @@ const Assessment = (props) => {
   const [percentage, setPercentage] = useState('');
   const [networkstatus, setNetworkstatus] = useState(true);
 
-  // console.log({ isConnected });
 
   useEffect(() => {
     fetchData();
@@ -54,19 +50,12 @@ const Assessment = (props) => {
       const boardName = board.value;
       const assessmentList = await assessmentListApi({ boardName, user_id });
       if (assessmentList) {
-        // Extract pretest or posttest from assessmentList (content)
-        // if (assessmentList?.QuestionSet) {
-        //   await setDataInStorage(
-        //     'assessmentList',
-        //     JSON.stringify(assessmentList) || ''
-        //   );
-        // }
+
 
         // const OfflineAssessmentList = JSON.parse(
         //   await getDataFromStorage('assessmentList')
         // );
         const OfflineAssessmentList = assessmentList;
-        // console.log({ OfflineAssessmentList });
 
         const uniqueAssessments = [
           ...new Set(
@@ -97,7 +86,6 @@ const Assessment = (props) => {
         const OfflineAssessmentStatusData = JSON.parse(
           await getDataFromStorage('assessmentStatusData')
         );
-        //console.log({ OfflineAssessmentStatusData });
         setStatus(OfflineAssessmentStatusData?.[0]?.status || 'not_started');
         setPercentage(OfflineAssessmentStatusData?.[0]?.percentage || '');
 

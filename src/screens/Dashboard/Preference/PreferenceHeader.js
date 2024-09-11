@@ -1,11 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 
-const PreferenceHeader = (props) => {
+const PreferenceHeader = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
