@@ -18,9 +18,7 @@ import moment from 'moment';
 import { getAssessmentAnswerKey } from '../../utils/API/AuthService';
 import {
   capitalizeFirstLetter,
-  deleteSavedItem,
   getDataFromStorage,
-  getUserId,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
@@ -92,7 +90,6 @@ const AnswerKeyView = ({ route }) => {
   };
 
   const handleDownload = async (data) => {
-    // deleteSavedItem(`assessmentAnswerKey${contentId}`);
     if (data?.[0]?.assessmentTrackingId) {
       await setDataInStorage(
         `assessmentAnswerKey${contentId}`,

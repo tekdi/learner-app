@@ -168,23 +168,7 @@ const deleteData = ({ tableName, where }) => {
   });
 };
 
-// // Delete the database
-// const deleteDatabase = () => {
-//   return new Promise((resolve, reject) => {
-//     const db = openDatabase();
-//     db.close(() => {
-//       SQLite.deleteDatabase(
-//         { name: 'learnerApp.db', location: 'default' },
-//         () => {
-//           resolve('Database deleted successfully');
-//         },
-//         (error) => {
-//           reject('Error deleting database: ' + error.message);
-//         }
-//       );
-//     });
-//   });
-// };
+
 
 export {
   openDatabase,

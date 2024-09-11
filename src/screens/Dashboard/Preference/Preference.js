@@ -1,15 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { SafeAreaView,  } from 'react-native';
 import Header from '../../../components/Layout/Header';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from '../../../context/LanguageContext';
 import PreferenceHeader from './PreferenceHeader';
 import PreferenceForm from './PreferenceForm';
 
-const Preference = (props) => {
-  const navigation = useNavigation();
-  const { t } = useTranslation();
+const Preference = () => {
+
   return (
     <>
       <Header />
@@ -21,6 +17,5 @@ const Preference = (props) => {
   );
 };
 
-Preference.propTypes = {};
 
 export default Preference;

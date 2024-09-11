@@ -105,7 +105,7 @@ ContentBox.propTypes = {
   title: PropTypes.string,
   style: PropTypes.object,
   description: PropTypes.string,
-  horizontalView: PropTypes.bool,
+  viewAllLink: PropTypes.any,
   ContentData: PropTypes.array.isRequired,
 };
 

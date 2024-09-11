@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const CustomCheckbox = ({ value, onChange, label }) => {
@@ -29,6 +29,10 @@ const styles = StyleSheet.create({
   },
 });
 
-CustomCheckbox.propTypes = {};
+CustomCheckbox.propTypes = {
+  value: PropTypes.any,
+  onChange: PropTypes.func,
+  label: PropTypes.string,
+};
 
 export default CustomCheckbox;

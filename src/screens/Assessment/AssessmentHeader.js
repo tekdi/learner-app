@@ -16,6 +16,38 @@ const AssessmentHeader = ({
 }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
+
+  let content;
+
+  if (status === 'Completed') {
+    content = (
+      <View style={globalStyles.flexrow}>
+        <Text style={globalStyles.subHeading}>
+          {t('Overallscore')}{' '}
+          <Text style={{ color: percentage > 35 ? '#1A8825' : 'red' }}>
+            {percentage}%
+          </Text>
+        </Text>
+        <Text style={styles.smileyText}>{percentage > 35 && `😄`}</Text>
+      </View>
+    );
+  } else if (status === 'In_Progress') {
+    content = (
+      <View style={globalStyles.flexrow}>
+        <Icon name="circle-o" size={24} color="#4D4639" />
+        <Text style={[globalStyles.subHeading, { marginLeft: 10 }]}>
+          {t('Inprogress')} ({completedCount} {t('out_of')} {questionsets?.length} {t('completed')})
+        </Text>
+      </View>
+    );
+  } else {
+    content = (
+      <View style={globalStyles.flexrow}>
+        <Text style={globalStyles.subHeading}>{t('not_started')}</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.card}>
       <View style={styles.leftContainer}>
@@ -35,31 +67,7 @@ const AssessmentHeader = ({
       </View>
       <View style={styles.rightContainer}>
         <Text style={globalStyles.subHeading}>{t(testText)}</Text>
-        {status === 'Completed' ? (
-          <View style={globalStyles.flexrow}>
-            <Text style={globalStyles.subHeading}>
-              {t('Overallscore')}{' '}
-              <Text style={{ color: percentage > 35 ? '#1A8825' : 'red' }}>
-                {' '}
-                {percentage}%
-              </Text>
-            </Text>
-            <Text style={styles.smileyText}>{percentage > 35 && `😄`}</Text>
-          </View>
-        ) : status === 'In_Progress' ? (
-          <View style={globalStyles.flexrow}>
-            <Icon name="circle-o" size={24} color="#4D4639" />
-
-            <Text style={[globalStyles.subHeading, { marginLeft: 10 }]}>
-              {t('Inprogress')} ({completedCount} {t('out_of')}{' '}
-              {questionsets?.length} {t('completed')})
-            </Text>
-          </View>
-        ) : (
-          <View style={globalStyles.flexrow}>
-            <Text style={[globalStyles.subHeading]}>{t('not_started')}</Text>
-          </View>
-        )}
+        {content}
       </View>
     </View>
   );
@@ -88,7 +96,6 @@ const styles = StyleSheet.create({
   rightContainer: {
     flex: 4,
   },
-
   smileyText: {
     fontSize: 16,
     marginLeft: 5,

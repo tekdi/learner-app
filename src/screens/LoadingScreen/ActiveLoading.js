@@ -1,8 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { ActivityIndicator, View } from 'react-native';
 
-const ActiveLoading = (props) => {
+const ActiveLoading = () => {
   return (
     <View style={{ flex: 1, justifyContent: 'center' }}>
       <ActivityIndicator size="large" />
@@ -10,6 +9,5 @@ const ActiveLoading = (props) => {
   );
 };
 
-ActiveLoading.propTypes = {};
 
 export default ActiveLoading;

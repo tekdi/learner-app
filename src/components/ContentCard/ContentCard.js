@@ -229,9 +229,11 @@ const styles = StyleSheet.create({
 
 ContentCard.propTypes = {
   onPress: PropTypes.func,
-  title: PropTypes.string,
   style: PropTypes.object,
-  description: PropTypes.string,
+  setCardWidth: PropTypes.any,
+  index: PropTypes.any,
+  item: PropTypes.any,
+  appIcon: PropTypes.any,
 };
 
 export default ContentCard;

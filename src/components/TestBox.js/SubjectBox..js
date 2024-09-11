@@ -29,13 +29,11 @@ import download_complete from '../../assets/images/png/download_complete.png';
 import { getData, storeData } from '../../utils/Helper/JSHelper';
 import { hierarchyContent, listQuestion } from '../../utils/API/ApiCalls';
 import RNFS from 'react-native-fs';
-import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { getAsessmentOffline } from '../../utils/API/AuthService';
 
 const SubjectBox = ({ name, disabled, data }) => {
-  // console.log({ data });
   const { t } = useTranslation();
   const navigation = useNavigation();
   const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);

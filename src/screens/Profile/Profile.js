@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   SafeAreaView,
   ScrollView,
@@ -19,7 +18,7 @@ import {
   capitalizeFirstLetter,
   deleteSavedItem,
   getDataFromStorage,
-  getUserId,
+
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 
@@ -89,13 +88,7 @@ const Profile = (props) => {
         <ScrollView style={globalStyles.container}>
           <View style={styles.view}>
             <Text style={globalStyles.heading}>{t('my_profile')}</Text>
-            {/* <TouchableOpacity
-              onPress={() => {
-                navigation.replace('ProfileMenu');
-              }}
-            >
-              <Icon name="menu" color="black" size={30} />
-            </TouchableOpacity> */}
+           
           </View>
 
           <View>
