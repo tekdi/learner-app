@@ -36,7 +36,7 @@ const ContentList = ({ route }) => {
 
         // Set courses
         const coursesData = data?.result?.content?.children?.[0]?.children;
-        console.log(coursesData);
+        console.log('coursesData', coursesData);
         setCourses(coursesData);
 
         // Extract identifiers
@@ -66,12 +66,17 @@ const ContentList = ({ route }) => {
     if (mimeType) {
       if (
         mimeType.includes('ecml-archive') ||
+        mimeType.includes('h5p-archive') ||
         mimeType.includes('html-archive')
       ) {
         return 'touch-app';
       } else if (mimeType.includes('pdf') || mimeType.includes('epub')) {
         return 'file-copy';
-      } else if (mimeType.includes('Webm') || mimeType.includes('mp4')) {
+      } else if (
+        mimeType.includes('Webm') ||
+        mimeType.includes('mp4') ||
+        mimeType.includes('youtube')
+      ) {
         return 'play-circle';
       }
     }
@@ -99,7 +104,10 @@ const ContentList = ({ route }) => {
               <TextField text={item?.mimeType} />)
             </Text>
           </View>
-          <DownloadCard />
+          <DownloadCard
+            contentId={item?.identifier}
+            contentMimeType={item?.mimeType}
+          />
         </View>
         <ProgressBar style={{ marginTop: 15 }} progress={0.3} width={'100%'} />
       </View>
@@ -139,7 +147,7 @@ const styles = StyleSheet.create({
 });
 
 ContentList.propTypes = {
-  route: PropTypes.any
+  route: PropTypes.any,
 };
 
 export default ContentList;

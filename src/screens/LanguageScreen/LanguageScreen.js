@@ -22,18 +22,13 @@ import FastImage from '@changwoolab/react-native-fast-image';
 import {
   getDataFromStorage,
   getRefreshToken,
-  
   saveAccessToken,
   saveRefreshToken,
-  
 } from '../../utils/JsHelper/Helper';
-import {  refreshToken } from '../../utils/API/AuthService';
+import { refreshToken } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { useInternet } from '../../context/NetworkContext';
-import {
-  createTable,
- 
-} from '../../utils/JsHelper/SqliteHelper';
+import { createTable } from '../../utils/JsHelper/SqliteHelper';
 
 const LanguageScreen = () => {
   const navigation = useNavigation();
@@ -76,6 +71,20 @@ const LanguageScreen = () => {
       ];
       const query_Telemetry_Offline = await createTable({ tableName, columns });
       console.log('query_Telemetry_Offline', query_Telemetry_Offline);
+      //tracking_offline
+      tableName = 'Tracking_Offline';
+      columns = [
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'user_id TEXT',
+        'course_id TEXT',
+        'batch_id TEXT',
+        'content_id TEXT',
+        'content_type TEXT',
+        'content_mime TEXT',
+        'detailsObject TEXT',
+      ];
+      const query_Tracking_Offline = await createTable({ tableName, columns });
+      console.log('query_Tracking_Offline', query_Tracking_Offline);
 
       const token = await getDataFromStorage('Accesstoken');
       if (token) {

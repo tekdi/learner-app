@@ -650,7 +650,7 @@ export const getSyncTelemetryOffline = async (user_id) => {
       where: data_get,
     })
       .then((rows) => {
-        console.log('rows', rows);
+        //console.log('rows', rows);
         if (rows.length > 0) {
           try {
             result_data = rows;
@@ -675,6 +675,83 @@ export const deleteTelemetryOffline = async (id) => {
     //console.log('data_delete', data_delete);
     await deleteData({
       tableName: 'Telemetry_Offline',
+      where: data_delete,
+    })
+      .then((msg) => console.log('msg', msg))
+      .catch((err) => console.error('err', err));
+  } catch (e) {
+    console.log(e);
+  }
+};
+//tracking offline
+//store
+export const storeTrackingOffline = async (
+  user_id,
+  course_id,
+  batch_id,
+  content_id,
+  content_type,
+  content_mime,
+  detailsObject
+) => {
+  try {
+    //store
+    const data_insert = {
+      user_id: user_id,
+      course_id: course_id,
+      batch_id: batch_id,
+      content_id: content_id,
+      content_type: content_type,
+      content_mime: content_mime,
+      detailsObject: JSON.stringify(detailsObject),
+    };
+    await insertData({
+      tableName: 'Tracking_Offline',
+      data: data_insert,
+    })
+      .then((msg) => console.log('msg', msg))
+      .catch((err) => console.error('err', err));
+  } catch (e) {
+    console.log(e);
+  }
+};
+export const getSyncTrackingOffline = async (user_id) => {
+  try {
+    //get result
+    const data_get = {
+      user_id: user_id,
+    };
+    let result_data = null;
+    await getData({
+      tableName: 'Tracking_Offline',
+      where: data_get,
+    })
+      .then((rows) => {
+        //console.log('rows', rows);
+        if (rows.length > 0) {
+          try {
+            result_data = rows;
+          } catch (e) {}
+        }
+      })
+      .catch((err) => {
+        console.error('err', err);
+      });
+    return result_data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+export const deleteTrackingOffline = async (id) => {
+  try {
+    //delete if exist to overwrite
+    const data_delete = {
+      id: id,
+    };
+    //console.log('data_delete', data_delete);
+    await deleteData({
+      tableName: 'Tracking_Offline',
       where: data_delete,
     })
       .then((msg) => console.log('msg', msg))

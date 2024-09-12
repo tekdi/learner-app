@@ -167,6 +167,7 @@
   "okay": "ठीक है",
   "downloaded_for_offline_access": "ऑफ़लाइन पहुंच के लिए डाउनलोड किया गया",
   "unsupported_content":"असमर्थित सामग्री",
+  "content_not_in_device":"सामग्री ऑफ़लाइन मोड में प्ले करने के लिए डाउनलोड नहीं की गई है। कृपया इंटरनेट से कनेक्ट करें और प्ले करें।",
   "enable": "सक्षम करें",
   "not_now": "अभी नहीं",
   "enable_location_to_discover_nearby_skilling_centers_and_more_opportunities_tailored_just_for_you": "आपके लिए निकटवर्ती कौशल केंद्रों की खोज और अधिक अवसरों को प्राप्त करने के लिए स्थान सक्षम करें!"

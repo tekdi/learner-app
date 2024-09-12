@@ -7,7 +7,7 @@ import { Button } from '@ui-kitten/components';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 
-const MimeAlertModal = () => {
+const MimeAlertModal = ({ textTitle }) => {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
@@ -29,7 +29,7 @@ const MimeAlertModal = () => {
           >
             <MaterialIcons name="close" size={48} color="red" />
             <Text style={[globalStyles.heading2, { marginVertical: 10 }]}>
-              {t('unsupported_content')}
+              {t(textTitle)}
             </Text>
           </TouchableOpacity>
           <View style={styles.btnbox}>

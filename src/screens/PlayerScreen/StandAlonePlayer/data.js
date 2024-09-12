@@ -61,7 +61,10 @@ export const questionsData = {
 };
 
 export const contentPlayerConfig = {
-  context: {},
+  context: {
+    uid: '',
+    userData: { firstName: '', lastName: '' },
+  },
   config: { showEndPage: true },
   metadata: {},
   data: {},

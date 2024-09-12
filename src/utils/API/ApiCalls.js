@@ -31,8 +31,7 @@ export const getAccessToken = async () => {
         api_response = response.data.result.access_token;
       }
     })
-    .catch((error) => {
-    });
+    .catch((error) => {});
   return api_response;
 };
 
@@ -215,7 +214,6 @@ export const assessmentTracking = async (
       timeSpent: seconds || 0,
     });
 
-
     let api_response = null;
 
     let config = {
@@ -229,7 +227,6 @@ export const assessmentTracking = async (
       },
       data: data,
     };
-
 
     await axios
       .request(config)
@@ -293,6 +290,58 @@ export const telemetryTracking = async (telemetryObject) => {
   } catch (error) {
     throw new Error(
       error.response?.data?.message || 'Telemetry Submission Failed'
+    );
+  }
+};
+
+export const contentTracking = async (
+  userId,
+  courseId,
+  batchId,
+  contentId,
+  contentType,
+  contentMime,
+  lastAccessOn,
+  detailsObject
+) => {
+  try {
+    const url = EndUrls.ContentCreate;
+
+    let data = JSON.stringify({
+      userId: userId,
+      courseId: courseId,
+      batchId: batchId,
+      contentId: contentId,
+      contentType: contentType,
+      contentMime: contentMime,
+      lastAccessOn: lastAccessOn,
+      detailsObject: detailsObject,
+    });
+
+    let api_response = null;
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: data,
+    };
+
+    await axios
+      .request(config)
+      .then((response) => {
+        api_response = { response: response.data };
+      })
+      .catch((error) => {
+        console.log('error', error);
+      });
+    return api_response;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Content Submission Failed'
     );
   }
 };

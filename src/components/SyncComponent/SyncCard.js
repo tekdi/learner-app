@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -23,39 +23,53 @@ import {
   assessmentTracking,
   telemetryTracking,
 } from '../../utils/API/ApiCalls';
+import {
+  useFocusEffect,
+  useNavigation,
+  useNavigationState,
+} from '@react-navigation/native';
 
 const SyncCard = ({ doneSync }) => {
   const { t } = useTranslation();
   const { isConnected } = useInternet();
   const [isSyncPending, setIsSyncPending] = useState(false);
+  const [syncCall, setSyncCall] = useState('');
   const [isProgress, setIsProgress] = useState(false);
-  const [syncStatus, setSyncStatus] = useState('Idle');
   const [isOnline, setIsOnline] = useState(false);
   const hasSynced = useRef(false);
 
   //solved 4 times issue
   const isFirstRender = useRef(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      //get sync pending
-      const user_id = await getDataFromStorage('userId');
-      const result_sync_offline = await getSyncAsessmentOffline(user_id);
-      const result_sync_offline_telemetry = await getSyncTelemetryOffline(
-        user_id
-      );
-      //console.log('result_sync_offline', result_sync_offline);
-      //console.log('result_sync_offline_telemetry', result_sync_offline_telemetry);
-      if (result_sync_offline || result_sync_offline_telemetry) {
-        setIsSyncPending(true);
-      } else {
-        setIsSyncPending(false);
-      }
-    };
-    fetchData();
-  }, [isConnected]);
+  const [temp, setTemp] = useState([]);
 
   useEffect(() => {
+    const fetchData = async () => {
+      console.log('internet changed ', isConnected);
+      await performDataSync();
+    };
+    fetchData();
+  }, [isConnected, temp]);
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log('Screen is focused');
+
+      const fetchData = async () => {
+        console.log('internet changed ', isConnected);
+        await performDataSync();
+      };
+      fetchData();
+      // Perform any task when the screen is focused
+
+      return () => {
+        console.log('Screen is unfocused');
+        // Perform any cleanup or task when screen is unfocused
+      };
+    }, [])
+  );
+
+  /*useEffect(() => {
     // Configure Background Fetch
     const configureBackgroundFetch = async () => {
       BackgroundFetch.configure(
@@ -65,13 +79,10 @@ const SyncCard = ({ doneSync }) => {
         async (taskId) => {
           if (isOnline && !hasSynced.current) {
             hasSynced.current = true;
-            setSyncStatus('Syncing...');
             if (!isProgress) {
               await performDataSync();
             }
-            setSyncStatus('Synced');
           } else {
-            setSyncStatus('Waiting for connection...');
           }
 
           BackgroundFetch.finish(taskId);
@@ -98,7 +109,7 @@ const SyncCard = ({ doneSync }) => {
       unsubscribeNetInfo(); // Unsubscribe from network listener
       BackgroundFetch.stop(); // Stop background fetch when component is unmounted
     };
-  }, [isOnline]);
+  }, [isOnline]);*/
 
   const performDataSync = async () => {
     if (isFirstRender.current) {
@@ -107,9 +118,14 @@ const SyncCard = ({ doneSync }) => {
         // Simulate data sync process
         //get sync pending
         const user_id = await getDataFromStorage('userId');
-        const result_sync_offline = await getSyncAsessmentOffline(user_id);
-        const result_sync_offline_telemetry = await getSyncTelemetryOffline(
+        let result_sync_offline = await getSyncAsessmentOffline(user_id);
+        let result_sync_offline_telemetry = await getSyncTelemetryOffline(
           user_id
+        );
+        console.log('result_sync_offline', result_sync_offline);
+        console.log(
+          'result_sync_offline_telemetry',
+          result_sync_offline_telemetry
         );
         if (
           (result_sync_offline && !isProgress) ||
@@ -118,6 +134,7 @@ const SyncCard = ({ doneSync }) => {
           if (result_sync_offline) {
             setIsSyncPending(true);
             setIsProgress(true);
+            setSyncCall('Assessments');
             //sync data to online
             let isError = false;
             console.log('result_sync_offline', result_sync_offline.length);
@@ -150,7 +167,7 @@ const SyncCard = ({ doneSync }) => {
                   isError = true;
                 }
               } catch (e) {
-                console.log(e);
+                console.log('error in result_sync_offline ', e);
               }
             }
             setIsSyncPending(false);
@@ -163,6 +180,7 @@ const SyncCard = ({ doneSync }) => {
             //telemetry offline data sync
             setIsSyncPending(true);
             setIsProgress(true);
+            setSyncCall('Telemetry');
             let isError = false;
             console.log(
               'result_sync_offline_telemetry',
@@ -185,12 +203,12 @@ const SyncCard = ({ doneSync }) => {
                   //success
                   console.log('create_telemetry', create_telemetry);
                   //delete from storage
-                  await deleteTelemetryOffline(assessment_result?.id);
+                  await deleteTelemetryOffline(telemetry_result?.id);
                 } else {
                   isError = true;
                 }
               } catch (e) {
-                console.log(e);
+                console.log('error in result_sync_offline_telemetry ', e);
               }
             }
             setIsSyncPending(false);
@@ -204,15 +222,30 @@ const SyncCard = ({ doneSync }) => {
           setIsProgress(false);
         }
 
+        //check sync all or not
+        result_sync_offline = await getSyncAsessmentOffline(user_id);
+        result_sync_offline_telemetry = await getSyncTelemetryOffline(user_id);
+        console.log('result_sync_offline', result_sync_offline);
+        console.log(
+          'result_sync_offline_telemetry',
+          result_sync_offline_telemetry
+        );
+        if (
+          (result_sync_offline && !isProgress) ||
+          (result_sync_offline_telemetry && !isProgress)
+        ) {
+          setIsSyncPending(true);
+          setIsProgress(false);
+        }
         console.log('Data synced successfully.');
       } catch (error) {
         console.error('Data sync failed:', error);
       }
+      isFirstRender.current = true;
     }
   };
 
   const startSync = async () => {
-    setSyncStatus('Online - Starting sync...');
     if (!hasSynced.current) {
       if (!isProgress) {
         await performDataSync();
@@ -220,9 +253,7 @@ const SyncCard = ({ doneSync }) => {
     }
   };
 
-  const stopSync = () => {
-    setSyncStatus('Offline - Sync paused');
-  };
+  const stopSync = () => {};
 
   return (
     <>
@@ -232,8 +263,9 @@ const SyncCard = ({ doneSync }) => {
             <>
               <Icon name="cloud-outline" color={'black'} size={22} />
               <Text style={[globalStyles.text, { marginLeft: 10 }]}>
-                {syncStatus}
                 {t('back_online_syncing')}
+                {'\n'}
+                {syncCall}
               </Text>
               {isProgress && <ActivityIndicator size="small" />}
             </>

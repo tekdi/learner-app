@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
   ActivityIndicator,
   BackHandler,
@@ -69,11 +69,15 @@ const Content = () => {
     navigation.navigate('Preference');
   };
 
-  useFocusEffect(
+  /*useFocusEffect(
     useCallback(() => {
       fetchData();
     }, [])
-  );
+  );*/
+
+  useEffect(() => {
+    fetchData();
+  }, [navigation]);
 
   const fetchData = async () => {
     const data = await contentListApi();

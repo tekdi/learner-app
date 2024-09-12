@@ -30,6 +30,7 @@ const EndUrls = {
   AssessmentSearch: `${tracking_assessment}/v1/tracking/assessment/search`,
   profileDetails: `${API_URL}/user/v1/list`,
   telemetryTracking: TELEMETRY_URL,
+  ContentCreate: `${tracking_assessment}/v1/tracking/content/create`,
 };
 
 export default EndUrls;
