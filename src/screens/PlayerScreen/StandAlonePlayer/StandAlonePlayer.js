@@ -462,42 +462,102 @@ const StandAlonePlayer = ({ route }) => {
     //content read
     setLoading(true);
     set_loading_text('Reading Content...');
-    let contentObj = await getData(content_do_id, 'json');
-    if (contentObj == null) {
-      //download start
-      set_is_download(true);
-      await downloadContentPDFEpubVideo();
-    } else if (contentObj?.mimeType == 'application/pdf') {
-      pdfPlayerConfig.metadata = contentObj;
-      //set user id and full name
-      pdfPlayerConfig.context.uid = userId;
-      pdfPlayerConfig.context.userData = {
-        firstName: userName,
-        lastName: '',
-      };
-      set_is_valid_file(true);
-    } else if (
-      contentObj?.mimeType == 'video/mp4' ||
-      contentObj?.mimeType == 'video/webm'
-    ) {
-      videoPlayerConfig.metadata = contentObj;
-      //set user id and full name
-      videoPlayerConfig.context.uid = userId;
-      videoPlayerConfig.context.userData = {
-        firstName: userName,
-        lastName: '',
-      };
-      set_is_valid_file(true);
-    } else if (contentObj?.mimeType == 'application/epub') {
-      epubPlayerConfig.metadata = contentObj;
-      //set user id and full name
-      epubPlayerConfig.context.uid = userId;
-      epubPlayerConfig.context.userData = {
-        firstName: userName,
-        lastName: '',
-      };
-      set_is_valid_file(true);
-    } else {
+    try {
+      let contentObj = await getData(content_do_id, 'json');
+      if (contentObj == null) {
+        //download start
+        set_is_download(true);
+        await downloadContentPDFEpubVideo();
+      } else if (contentObj?.mimeType == 'application/pdf') {
+        //get content file name
+        let temp_file_url = contentObj?.artifactUrl;
+        const dividedArray = temp_file_url.split(content_do_id);
+        const file_name =
+          dividedArray[
+            dividedArray.length > 0
+              ? dividedArray.length - 1
+              : dividedArray.length
+          ];
+        filePath = `${content_file}/${content_do_id}${file_name}`;
+        //console.log('filePath', filePath);
+        let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
+        //console.log('blobContent', blobContent);
+        if (blobContent) {
+          //console.log('create blob url');
+          contentObj.artifactUrl = blobContent;
+
+          //previewUrl streamingUrl no needed for offline use
+          delete contentObj.previewUrl;
+          delete contentObj.streamingUrl;
+
+          pdfPlayerConfig.metadata = contentObj;
+          //console.log('pdfPlayerConfig set', pdfPlayerConfig);
+          set_is_valid_file(true);
+        } else {
+          set_is_valid_file(false);
+        }
+      } else if (
+        contentObj?.mimeType == 'video/mp4' ||
+        contentObj?.mimeType == 'video/webm'
+      ) {
+        //get content file name
+        let temp_file_url = contentObj?.artifactUrl;
+        const dividedArray = temp_file_url.split(content_do_id);
+        const file_name =
+          dividedArray[
+            dividedArray.length > 0
+              ? dividedArray.length - 1
+              : dividedArray.length
+          ];
+        filePath = `${content_file}/${content_do_id}${file_name}`;
+        //console.log('filePath', filePath);
+        let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
+        //console.log('blobContent', blobContent);
+        if (blobContent) {
+          //console.log('create blob url');
+          contentObj.artifactUrl = blobContent;
+
+          //previewUrl streamingUrl no needed for offline use
+          delete contentObj.previewUrl;
+          delete contentObj.streamingUrl;
+
+          videoPlayerConfig.metadata = contentObj;
+          //console.log('videoPlayerConfig set', videoPlayerConfig);
+          set_is_valid_file(true);
+        } else {
+          set_is_valid_file(false);
+        }
+      } else if (contentObj?.mimeType == 'application/epub') {
+        //get content file name
+        let temp_file_url = contentObj?.artifactUrl;
+        const dividedArray = temp_file_url.split(content_do_id);
+        const file_name =
+          dividedArray[
+            dividedArray.length > 0
+              ? dividedArray.length - 1
+              : dividedArray.length
+          ];
+        filePath = `${content_file}/${content_do_id}${file_name}`;
+        let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
+        //console.log('blobContent', blobContent);
+        if (blobContent) {
+          //console.log('create blob url');
+          contentObj.artifactUrl = blobContent;
+
+          //previewUrl streamingUrl no needed for offline use
+          delete contentObj.previewUrl;
+          delete contentObj.streamingUrl;
+
+          epubPlayerConfig.metadata = contentObj;
+          //console.log('epubPlayerConfig set', epubPlayerConfig);
+          set_is_valid_file(true);
+        } else {
+          set_is_valid_file(false);
+        }
+      } else {
+        set_is_valid_file(false);
+      }
+    } catch (e) {
       set_is_valid_file(false);
     }
     set_is_download(false);

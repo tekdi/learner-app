@@ -13,14 +13,17 @@ import { useInternet } from '../../context/NetworkContext';
 import {
   deleteAsessmentOffline,
   deleteTelemetryOffline,
+  deleteTrackingOffline,
   getSyncAsessmentOffline,
   getSyncTelemetryOffline,
+  getSyncTrackingOffline,
 } from '../../utils/API/AuthService';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 import BackgroundFetch from 'react-native-background-fetch';
 import NetInfo from '@react-native-community/netinfo';
 import {
   assessmentTracking,
+  contentTracking,
   telemetryTracking,
 } from '../../utils/API/ApiCalls';
 import {
@@ -122,14 +125,22 @@ const SyncCard = ({ doneSync }) => {
         let result_sync_offline_telemetry = await getSyncTelemetryOffline(
           user_id
         );
+        let result_sync_offline_tracking = await getSyncTrackingOffline(
+          user_id
+        );
         console.log('result_sync_offline', result_sync_offline);
         console.log(
           'result_sync_offline_telemetry',
           result_sync_offline_telemetry
         );
+        console.log(
+          'result_sync_offline_tracking',
+          result_sync_offline_tracking
+        );
         if (
           (result_sync_offline && !isProgress) ||
-          (result_sync_offline_telemetry && !isProgress)
+          (result_sync_offline_telemetry && !isProgress) ||
+          (result_sync_offline_tracking && !isProgress)
         ) {
           if (result_sync_offline) {
             setIsSyncPending(true);
@@ -217,6 +228,51 @@ const SyncCard = ({ doneSync }) => {
               doneSync(); //call back function
             }
           }
+          if (result_sync_offline_tracking) {
+            setIsSyncPending(true);
+            setIsProgress(true);
+            setSyncCall('Tracking');
+            //sync data to online
+            let isError = false;
+            console.log(
+              'result_sync_offline_tracking',
+              result_sync_offline_tracking.length
+            );
+            for (let i = 0; i < result_sync_offline_tracking.length; i++) {
+              let cntent_tracking = result_sync_offline_tracking[i];
+              try {
+                let detailsObject = JSON.parse(cntent_tracking?.detailsObject);
+                let create_tracking = await contentTracking(
+                  cntent_tracking?.user_id,
+                  cntent_tracking?.course_id,
+                  cntent_tracking?.batch_id,
+                  cntent_tracking?.content_id,
+                  cntent_tracking?.content_type,
+                  cntent_tracking?.content_mime,
+                  cntent_tracking?.lastAccessOn,
+                  detailsObject
+                );
+                if (
+                  create_tracking &&
+                  create_tracking?.response?.responseCode == 201
+                ) {
+                  //success
+                  console.log('create_tracking', create_tracking);
+                  //delete from storage
+                  await deleteTrackingOffline(cntent_tracking?.id);
+                } else {
+                  isError = true;
+                }
+              } catch (e) {
+                console.log('error in result_sync_offline ', e);
+              }
+            }
+            setIsSyncPending(false);
+            setIsProgress(false);
+            if (!isError && doneSync) {
+              doneSync(); //call back function
+            }
+          }
         } else {
           setIsSyncPending(false);
           setIsProgress(false);
@@ -225,14 +281,20 @@ const SyncCard = ({ doneSync }) => {
         //check sync all or not
         result_sync_offline = await getSyncAsessmentOffline(user_id);
         result_sync_offline_telemetry = await getSyncTelemetryOffline(user_id);
+        result_sync_offline_tracking = await getSyncTrackingOffline(user_id);
         console.log('result_sync_offline', result_sync_offline);
         console.log(
           'result_sync_offline_telemetry',
           result_sync_offline_telemetry
         );
+        console.log(
+          'result_sync_offline_tracking',
+          result_sync_offline_tracking
+        );
         if (
           (result_sync_offline && !isProgress) ||
-          (result_sync_offline_telemetry && !isProgress)
+          (result_sync_offline_telemetry && !isProgress) ||
+          (result_sync_offline_tracking && !isProgress)
         ) {
           setIsSyncPending(true);
           setIsProgress(false);

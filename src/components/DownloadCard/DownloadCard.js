@@ -10,7 +10,11 @@ import {
   Alert,
 } from 'react-native';
 import { getData, storeData } from '../../utils/Helper/JSHelper';
-import { hierarchyContent, listQuestion, readContent } from '../../utils/API/ApiCalls';
+import {
+  hierarchyContent,
+  listQuestion,
+  readContent,
+} from '../../utils/API/ApiCalls';
 import RNFS from 'react-native-fs';
 import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
@@ -54,6 +58,7 @@ const DownloadCard = ({ contentId, contentMimeType }) => {
   }, []);
 
   const handleDownload = async () => {
+    setNetworkstatus(true);
     if (
       contentMimeType == 'application/vnd.ekstep.ecml-archive' ||
       contentMimeType == 'video/x-youtube' ||

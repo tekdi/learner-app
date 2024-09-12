@@ -109,7 +109,8 @@ const ContentList = ({ route }) => {
             contentMimeType={item?.mimeType}
           />
         </View>
-        <ProgressBar style={{ marginTop: 15 }} progress={0.3} width={'100%'} />
+        
+        <ProgressBar style={{ marginTop: 15 }} progress={1} width={'100%'} />
       </View>
     </TouchableOpacity>
   );

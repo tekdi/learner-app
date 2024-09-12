@@ -692,6 +692,7 @@ export const storeTrackingOffline = async (
   content_id,
   content_type,
   content_mime,
+  lastAccessOn,
   detailsObject
 ) => {
   try {
@@ -703,6 +704,7 @@ export const storeTrackingOffline = async (
       content_id: content_id,
       content_type: content_type,
       content_mime: content_mime,
+      lastAccessOn: lastAccessOn,
       detailsObject: JSON.stringify(detailsObject),
     };
     await insertData({

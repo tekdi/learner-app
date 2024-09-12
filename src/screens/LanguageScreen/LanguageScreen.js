@@ -81,6 +81,7 @@ const LanguageScreen = () => {
         'content_id TEXT',
         'content_type TEXT',
         'content_mime TEXT',
+        'lastAccessOn TEXT',
         'detailsObject TEXT',
       ];
       const query_Tracking_Offline = await createTable({ tableName, columns });
