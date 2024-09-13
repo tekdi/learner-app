@@ -345,3 +345,46 @@ export const contentTracking = async (
     );
   }
 };
+
+//status of content
+export const contentTrackingStatus = async (userId, contentId, batchId) => {
+  try {
+    const url = EndUrls.ContentTrackingStatus;
+
+    let data = JSON.stringify({
+      userId: [userId],
+      contentId: contentId,
+      batchId: batchId,
+    });
+
+    let api_response = null;
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: data,
+    };
+
+    try {
+      const response = await axios.request(config);
+      api_response = response.data;
+      if (api_response) {
+        await storeApiResponse(userId, url, 'post', data, api_response);
+        return api_response;
+      } else {
+        const result_offline = await getApiResponse(userId, url, 'post', data);
+        return result_offline;
+      }
+    } catch (error) {
+      console.log('No internet available, retrieving offline data...');
+      const result_offline = await getApiResponse(userId, url, 'post', data);
+      return result_offline;
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Content Status Failed');
+  }
+};
