@@ -102,7 +102,7 @@ const ContentCard = ({
         style={[
           globalStyles.text,
           {
-            width: '60%',
+            width: '100%',
             alignSelf: 'flex-start',
             backgroundColor: '#e0f5ea',
             paddingHorizontal: 5,
@@ -115,7 +115,7 @@ const ContentCard = ({
         {item?.orgDetails?.orgName}
       </Text>
 
-      <View style={styles.downloadView}>
+      {/* <View style={styles.downloadView}>
         <ProgressBar progress={0.3} width={100} />
         <TouchableOpacity onPress={handleDownload}>
           <Image
@@ -124,7 +124,7 @@ const ContentCard = ({
             resizeMode="contain"
           />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </Pressable>
   );
 };

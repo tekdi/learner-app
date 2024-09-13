@@ -143,15 +143,6 @@ const VideoPlayerOffline = () => {
         filePath = `${content_file}.zip`;
         //console.log('fileUrl', fileUrl);
         try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-              title: 'Storage Permission',
-              message: 'App needs access to storage to download files.',
-              buttonPositive: 'OK',
-            }
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
             //console.log('permission got');
             try {
               const download = RNFS.downloadFile({
@@ -200,10 +191,6 @@ const VideoPlayerOffline = () => {
               ]);
               console.error('Error downloading file:', error);
             }
-          } else {
-            Alert.alert('Error', `Permission Denied`, [{ text: 'OK' }]);
-            console.log('please grant permission');
-          }
         } catch (err) {
           Alert.alert('Error Catch', `Failed to download file: ${err}`, [
             { text: 'OK' },

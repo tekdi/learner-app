@@ -111,6 +111,14 @@
 
           qumlPlayerElement.addEventListener('telemetryEvent', (event) => {
             console.log("On telemetryEvent", event);
+            try {
+            const data = event?.detail;
+                let result_submit={data:data};
+                window.ReactNativeWebView.postMessage(JSON.stringify(result_submit));
+              } catch (error) {
+                console.error("Error submitting assessment:", error);
+              }
+              //calculate asessment result
             const data = event?.detail;
             let telemetry = {};
 

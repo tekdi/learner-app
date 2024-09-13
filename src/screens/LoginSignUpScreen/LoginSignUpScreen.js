@@ -54,13 +54,12 @@ const LoginSignUpScreen = () => {
           }}
         />
         <View style={{ padding: 10 }}></View>
-
-        {/* <PrimaryButton
+        <PrimaryButton
           text={'Content'}
           onPress={() => {
             nav.navigate('DashboardStack');
           }}
-        /> */}
+        />
       </View>
     </View>
   );

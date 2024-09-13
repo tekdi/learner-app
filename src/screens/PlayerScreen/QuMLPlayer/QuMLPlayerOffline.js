@@ -123,94 +123,81 @@ const QuMLPlayerOffline = () => {
       if (filePath != '') {
         //create file and store object in local
         try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-              title: 'Storage Permission',
-              message: 'App needs access to storage to download files.',
-              buttonPositive: 'OK',
-            }
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            //console.log('permission got');
-            try {
-              //create directory
-              set_loading_text('Creating Folder...');
-              await RNFS.mkdir(filePath);
-              console.log('folder created successfully:', filePath);
-              //create directory and add json file in it
-              set_loading_text('Downloading questionset...');
-              //downlaod here
-              let childNodes = contentObj?.childNodes;
-              console.log('childNodes', childNodes);
-              let removeNodes = [];
-              if (contentObj?.children) {
-                for (let i = 0; i < contentObj.children.length; i++) {
-                  if (contentObj.children[i]?.identifier) {
-                    removeNodes.push(contentObj.children[i].identifier);
-                  }
+          //console.log('permission got');
+          try {
+            //create directory
+            set_loading_text('Creating Folder...');
+            await RNFS.mkdir(filePath);
+            console.log('folder created successfully:', filePath);
+            //create directory and add json file in it
+            set_loading_text('Downloading questionset...');
+            //downlaod here
+            let childNodes = contentObj?.childNodes;
+            console.log('childNodes', childNodes);
+            let removeNodes = [];
+            if (contentObj?.children) {
+              for (let i = 0; i < contentObj.children.length; i++) {
+                if (contentObj.children[i]?.identifier) {
+                  removeNodes.push(contentObj.children[i].identifier);
                 }
               }
-              console.log('removeNodes', removeNodes);
-              let identifiers = childNodes.filter(
-                (item) => !removeNodes.includes(item)
+            }
+            console.log('removeNodes', removeNodes);
+            let identifiers = childNodes.filter(
+              (item) => !removeNodes.includes(item)
+            );
+            console.log('identifiers', identifiers);
+            let questions = [];
+            const chunks = [];
+            let chunkSize = 10;
+            for (let i = 0; i < identifiers.length; i += chunkSize) {
+              chunks.push(identifiers.slice(i, i + chunkSize));
+            }
+            console.log('chunks', chunks);
+            for (const chunk of chunks) {
+              let response_question = await listQuestion(
+                questionListUrl,
+                chunk
               );
-              console.log('identifiers', identifiers);
-              let questions = [];
-              const chunks = [];
-              let chunkSize = 10;
-              for (let i = 0; i < identifiers.length; i += chunkSize) {
-                chunks.push(identifiers.slice(i, i + chunkSize));
-              }
-              console.log('chunks', chunks);
-              for (const chunk of chunks) {
-                let response_question = await listQuestion(
-                  questionListUrl,
-                  chunk
-                );
-                if (response_question?.result?.questions) {
-                  for (
-                    let i = 0;
-                    i < response_question.result.questions.length;
-                    i++
-                  ) {
-                    questions.push(response_question.result.questions[i]);
-                  }
-                  //console.log('chunk', chunk);
-                  //console.log('response_question', response_question);
+              if (response_question?.result?.questions) {
+                for (
+                  let i = 0;
+                  i < response_question.result.questions.length;
+                  i++
+                ) {
+                  questions.push(response_question.result.questions[i]);
                 }
+                //console.log('chunk', chunk);
+                //console.log('response_question', response_question);
               }
-              console.log('questions', questions.length);
-              console.log('identifiers', identifiers.length);
-              if (questions.length == identifiers.length) {
-                let question_result = {
-                  questions: questions,
-                  count: questions.length,
-                };
-                let file_content = { result: question_result };
-                set_loading_text('Creating File...');
-                await RNFS.writeFile(
-                  streamingPath,
-                  JSON.stringify(file_content),
-                  'utf8'
-                );
-                console.log('file created successfully:', streamingPath);
-                //store content obj
-                //console.log(contentObj);
-                await storeData(content_do_id, contentObj, 'json');
-              } else {
-                Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
-              }
-              //end download
-            } catch (error) {
-              Alert.alert('Error Catch', `Failed to create file: ${error}`, [
-                { text: 'OK' },
-              ]);
-              console.error('Error creating file:', error);
             }
-          } else {
-            Alert.alert('Error', `Permission Denied`, [{ text: 'OK' }]);
-            console.log('please grant permission');
+            console.log('questions', questions.length);
+            console.log('identifiers', identifiers.length);
+            if (questions.length == identifiers.length) {
+              let question_result = {
+                questions: questions,
+                count: questions.length,
+              };
+              let file_content = { result: question_result };
+              set_loading_text('Creating File...');
+              await RNFS.writeFile(
+                streamingPath,
+                JSON.stringify(file_content),
+                'utf8'
+              );
+              console.log('file created successfully:', streamingPath);
+              //store content obj
+              //console.log(contentObj);
+              await storeData(content_do_id, contentObj, 'json');
+            } else {
+              Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+            }
+            //end download
+          } catch (error) {
+            Alert.alert('Error Catch', `Failed to create file: ${error}`, [
+              { text: 'OK' },
+            ]);
+            console.error('Error creating file:', error);
           }
         } catch (err) {
           Alert.alert('Error Catch', `Failed to create file: ${err}`, [
