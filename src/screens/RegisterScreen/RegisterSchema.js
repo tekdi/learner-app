@@ -3,7 +3,6 @@
 export const registerSchema = async (data) => {
   try {
     // Fix field order and labels
-
     const schema = [
       {
         formNumber: 1,
@@ -16,7 +15,7 @@ export const registerSchema = async (data) => {
             coreField: data?.[0]?.coreField,
             fieldId: data?.[0]?.fieldId,
             validation: {
-              required: true,
+              // required: true,
               // pattern: data?.[0]?.pattern, // Only letters, no numbers
               // minLength: data?.[0]?.minLength,
               // maxLength: data?.[0]?.maxLength,
@@ -32,7 +31,7 @@ export const registerSchema = async (data) => {
             coreField: data?.[1]?.coreField,
             fieldId: data?.[1]?.fieldId,
             validation: {
-              required: true,
+              // required: true,
               // pattern: data?.[1]?.pattern, // Only letters, no numbers
               // minLength: data?.[1]?.minLength,
               // maxLength: data?.[1]?.maxLength,
@@ -42,6 +41,36 @@ export const registerSchema = async (data) => {
               maxLength: 30,
             },
           },
+          {
+            type: 'number',
+            label: 'phone_number',
+            name: 'phone_number',
+            coreField: data?.[1]?.coreField,
+            fieldId: data?.[1]?.fieldId,
+            validation: {
+              // required: true,
+              // pattern: data?.[1]?.pattern, // Only letters, no numbers
+              // minLength: data?.[1]?.minLength,
+              // maxLength: data?.[1]?.maxLength,
+
+              pattern: /^[0-9]{10}$/, // Only numbers,
+              minLength: 3,
+              maxLength: 10,
+            },
+          },
+          {
+            type: 'select_drop_down',
+            label: 'state',
+            name: 'state',
+            coreField: data?.[1]?.coreField,
+            fieldId: data?.[1]?.fieldId,
+            validation: {
+              required: true,
+              // pattern: data?.[1]?.pattern, // Only letters, no numbers
+              // minLength: data?.[1]?.minLength,
+              // maxLength: data?.[1]?.maxLength,
+            },
+          },
         ],
       },
       {
@@ -49,41 +78,38 @@ export const registerSchema = async (data) => {
         question: 'age_group',
         fields: [
           {
-            type: data?.[2]?.type,
-            label: data?.[2]?.label,
+            type: 'number',
+            label: 'age',
             name: data?.[2]?.name.replace(/ /g, '_').toLowerCase(),
             coreField: data?.[2]?.coreField,
             fieldId: data?.[2]?.fieldId,
-            options: data?.[2]?.options,
+            // options: data?.[2]?.options,
             validation: {
-              required: true,
+              // required: true,
+              pattern: /^[0-9]+$/, // Only letters, no numbers
+              minLength: 1,
+              maxLength: 2,
             },
           },
-        ],
-      },
-      {
-        formNumber: 3,
-        question: 'gender',
-        fields: [
           {
-            type: data?.[3]?.type,
+            type: 'select',
             label: data?.[3]?.label,
             name: data?.[3]?.name,
             coreField: data?.[3]?.coreField,
             fieldId: data?.[3]?.fieldId,
             options: data?.[3]?.options,
             validation: {
-              required: true,
+              // required: true,
             },
           },
         ],
       },
       {
-        formNumber: 4,
+        formNumber: 3,
         question: 'q4_language',
         fields: [
           {
-            type: data?.[4]?.type,
+            type: 'select',
             label: data?.[4]?.label,
             name: data?.[4]?.name.replace(/ /g, '_'),
             coreField: data?.[4]?.coreField,
@@ -95,9 +121,27 @@ export const registerSchema = async (data) => {
           },
         ],
       },
+
+      {
+        formNumber: 4,
+        question: 'which_program_do_you_want_to_enroll_to',
+        fields: [
+          {
+            type: 'radio',
+            label: 'program',
+            name: 'program',
+            coreField: data?.[4]?.coreField,
+            fieldId: data?.[4]?.fieldId,
+            options: data?.[4]?.options,
+            validation: {
+              required: true,
+            },
+          },
+        ],
+      },
       {
         formNumber: 5,
-        question: 'q5_interested_in',
+        question: 'where_are_you_located',
         fields: [
           {
             type: data?.[5]?.type,

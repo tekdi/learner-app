@@ -13,11 +13,10 @@ const CustomBottomCard = ({ onPress }) => {
     <View>
       <View style={styles.overlap}>
         <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <PrimaryButton onPress={onPress} text={t('continue')}></PrimaryButton>
           <Text
             category="p2"
             style={{
-              marginTop: 10,
+              marginBottom: 10,
               color: '#635E57',
               fontFamily: 'Poppins-Regular',
               textAlign: 'center',
@@ -25,6 +24,7 @@ const CustomBottomCard = ({ onPress }) => {
           >
             {t('language_help')}
           </Text>
+          <PrimaryButton onPress={onPress} text={t('continue')}></PrimaryButton>
         </Layout>
       </View>
     </View>

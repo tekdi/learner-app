@@ -9,6 +9,7 @@ import {
   Alert,
   SafeAreaView,
   Text,
+  ScrollView,
 } from 'react-native';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -32,6 +33,9 @@ import PlainTcText from '../../components/PlainText/PlainTcText';
 import { transformPayload } from './TransformPayload';
 import { registerUser, userExist } from '../../utils/API/AuthService';
 import { getAccessToken } from '../../utils/API/ApiCalls';
+import globalStyles from '../../utils/Helper/Style';
+import CustomRadioCard from '../../components/CustomRadioCard/CustomRadioCard';
+import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -83,7 +87,17 @@ const buildYupSchema = (form, currentForm, t) => {
             );
           }
           break;
-        case 'drop_down':
+        case 'select':
+          validator = yup.lazy((value) =>
+            typeof value === 'object'
+              ? yup.object({
+                  value: yup
+                    .string()
+                    .required(`${t(field.name)} ${t('is_required')}`),
+                })
+              : yup.string().required(`${t(field.name)} ${t('is_required')}`)
+          );
+          break;
         case 'radio':
           validator = yup.lazy((value) =>
             typeof value === 'object'
@@ -94,6 +108,32 @@ const buildYupSchema = (form, currentForm, t) => {
                 })
               : yup.string().required(`${t(field.name)} ${t('is_required')}`)
           );
+          break;
+        case 'number':
+          validator = yup.string(); // Change from yup.number() to yup.string()
+          if (field.validation.required) {
+            validator = validator.required(
+              `${t(field.name)} ${t('is_required')}`
+            );
+          }
+          if (field.validation.minLength) {
+            validator = validator.min(
+              field.validation.minLength,
+              `${t(field.name)} ${t('min')} ${t(field.validation.minLength)} ${t('characters')}`
+            );
+          }
+          if (field.validation.maxLength) {
+            validator = validator.max(
+              field.validation.maxLength,
+              `${t(field.label)} ${t('max')} ${t(field.validation.maxLength)} ${t('characters')}`
+            );
+          }
+          if (field.validation.pattern) {
+            validator = validator.matches(
+              field.validation.pattern,
+              `${t(field.name)} ${t('can_only_contain_numbers')}` // Update the error message to reflect numbers only
+            );
+          }
           break;
         // Add other field types as needed...
         case 'multipleCard':
@@ -171,8 +211,17 @@ const RegistrationForm = ({ schema }) => {
     },
   });
 
+  const states = {
+    options: [
+      { label: 'maharashtra', value: 'maharashtra' },
+      { label: 'kerala', value: 'kerala' },
+      { label: 'delhi', value: 'delhi' },
+    ],
+  };
+
   const onSubmit = async (data) => {
     const payload = await transformPayload(data);
+    console.log(JSON.stringify(data));
     const token = await getAccessToken();
     // await saveToken(token);
     const register = await registerUser(payload);
@@ -201,6 +250,7 @@ const RegistrationForm = ({ schema }) => {
   const renderFields = (fields) => {
     return fields?.map((field) => {
       switch (field.type) {
+        case 'number':
         case 'text':
           return (
             <View key={field.name} style={styles.inputContainer}>
@@ -222,12 +272,39 @@ const RegistrationForm = ({ schema }) => {
               />
             </View>
           );
-        case 'drop_down':
-        case 'radio':
+        case 'select':
           return (
             <View key={field.name} style={styles.inputContainer}>
               <CustomCards
                 field={field}
+                name={field.name}
+                errors={errors}
+                control={control}
+                secureTextEntry={true}
+                setSelectedIds={setSelectedIds}
+                selectedIds={selectedIds}
+              />
+            </View>
+          );
+        case 'radio':
+          return (
+            <View key={field.name} style={styles.inputContainer}>
+              <CustomRadioCard
+                field={field}
+                name={field.name}
+                errors={errors}
+                control={control}
+                secureTextEntry={true}
+                setSelectedIds={setSelectedIds}
+                selectedIds={selectedIds}
+              />
+            </View>
+          );
+        case 'select_drop_down':
+          return (
+            <View key={field.name} style={styles.inputContainer}>
+              <DropdownSelect
+                field={states}
                 name={field.name}
                 errors={errors}
                 control={control}
@@ -324,13 +401,20 @@ const RegistrationForm = ({ schema }) => {
         questionIndex={currentForm}
         totalForms={schema?.length}
       />
-      {schema
-        ?.filter((form) => form.formNumber === currentForm)
-        ?.map((form) => (
-          <View style={{ top: 20, position: 'relative' }} key={form.formNumber}>
-            {renderFields(form.fields)}
-          </View>
-        ))}
+
+      <View style={{ flex: 1 }}>
+        {schema
+          ?.filter((form) => form.formNumber === currentForm)
+          ?.map((form) => (
+            <View key={form.formNumber}>{renderFields(form.fields)}</View>
+          ))}
+
+        {/* {currentForm === 1 && (
+          <Text style={globalStyles.text}>
+            It will help us stay connected and share important updates
+          </Text>
+        )} */}
+      </View>
 
       <View style={styles.buttonContainer}>
         <RenderBtn
@@ -357,11 +441,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     Bottom: 16,
   },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 10,
-    width: '100%',
-  },
+
   card: {
     padding: 16,
     borderWidth: 1,
