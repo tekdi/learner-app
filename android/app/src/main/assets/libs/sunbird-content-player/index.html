@@ -38,7 +38,15 @@
           if(contentPlayerConfig!=null)
           {
             //alert("valid playerConfig");
-            previewContentIframe.contentWindow.initializePreview(contentPlayerConfig);
+            if (previewContentIframe) {
+              try {
+                previewContentIframe.contentWindow.initializePreview(
+                  contentPlayerConfig
+                );
+              } catch (e) {
+                delay(1000).then(() => setData());
+              }
+            }
           }
           else
           {

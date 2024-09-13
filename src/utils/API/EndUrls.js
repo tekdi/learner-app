@@ -6,6 +6,7 @@ import Config from 'react-native-config';
 const API_URL = Config.API_URL;
 const CONTENT_URL = Config.CONTENT_URL;
 const tracking_assessment = Config.tracking_assessment;
+const TELEMETRY_URL = Config.TELEMETRY_URL;
 
 const EndUrls = {
   login: API_URL + '/user/v1/auth/login',
@@ -28,6 +29,8 @@ const EndUrls = {
   AssessmentStatus: `${tracking_assessment}/v1/tracking/assessment/search/status`,
   AssessmentSearch: `${tracking_assessment}/v1/tracking/assessment/search`,
   profileDetails: `${API_URL}/user/v1/list`,
+  telemetryTracking: TELEMETRY_URL,
+  ContentCreate: `${tracking_assessment}/v1/tracking/content/create`,
 };
 
 export default EndUrls;

@@ -24,7 +24,7 @@ const ContentBox = ({
   const navigation = useNavigation();
 
   const handlePress = (item) => {
-    console.log('Card pressed!', item);
+    //console.log('Card pressed!', item);
     navigation.navigate('ContentList', { do_id: item?.identifier });
   };
 

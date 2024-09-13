@@ -132,94 +132,81 @@ const H5PPlayer = () => {
         const fileUrl = contentObj?.downloadUrl;
         //console.log('fileUrl', fileUrl);
         try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-              title: 'Storage Permission',
-              message: 'App needs access to storage to download files.',
-              buttonPositive: 'OK',
-            }
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            //console.log('permission got');
-            try {
-              const download = RNFS.downloadFile({
-                fromUrl: fileUrl,
-                toFile: filePath,
-                begin: (res) => {
-                  console.log('Download started');
-                },
-                progress: (res) => {
-                  const progressPercent =
-                    (res.bytesWritten / res.contentLength) * 100;
-                  setProgress(progressPercent);
-                },
-              });
-              const result = await download.promise;
-              if (result.statusCode === 200) {
-                console.log('File downloaded successfully:', filePath);
-                setProgress(0);
-                set_loading_text('Unzip content ecar file...');
+          //console.log('permission got');
+          try {
+            const download = RNFS.downloadFile({
+              fromUrl: fileUrl,
+              toFile: filePath,
+              begin: (res) => {
+                console.log('Download started');
+              },
+              progress: (res) => {
+                const progressPercent =
+                  (res.bytesWritten / res.contentLength) * 100;
+                setProgress(progressPercent);
+              },
+            });
+            const result = await download.promise;
+            if (result.statusCode === 200) {
+              console.log('File downloaded successfully:', filePath);
+              setProgress(0);
+              set_loading_text('Unzip content ecar file...');
+              // Define the paths
+              const sourcePath = filePath;
+              const targetPath = content_file;
+              try {
+                // Ensure the target directory exists
+                await RNFS.mkdir(targetPath);
+                // Unzip the file
+                const path = await unzip(sourcePath, targetPath);
+                console.log(`Unzipped to ${path}`);
+                //content unzip in content folder
+                //get content file name
+                let temp_file_url = contentObj?.artifactUrl;
+                const dividedArray = temp_file_url.split('artifact');
+                const file_name =
+                  dividedArray[
+                    dividedArray.length > 0
+                      ? dividedArray.length - 1
+                      : dividedArray.length
+                  ];
                 // Define the paths
-                const sourcePath = filePath;
-                const targetPath = content_file;
+                const sourcePath_internal = `${content_file}/${content_do_id}${file_name}`;
+                const targetPath_internal = streamingPath;
+
+                sourcePath_internal.replace('.zip', '');
                 try {
                   // Ensure the target directory exists
-                  await RNFS.mkdir(targetPath);
+                  await RNFS.mkdir(targetPath_internal);
                   // Unzip the file
-                  const path = await unzip(sourcePath, targetPath);
+                  const path = await unzip(
+                    sourcePath_internal,
+                    targetPath_internal
+                  );
                   console.log(`Unzipped to ${path}`);
-                  //content unzip in content folder
-                  //get content file name
-                  let temp_file_url = contentObj?.artifactUrl;
-                  const dividedArray = temp_file_url.split('artifact');
-                  const file_name =
-                    dividedArray[
-                      dividedArray.length > 0
-                        ? dividedArray.length - 1
-                        : dividedArray.length
-                    ];
-                  // Define the paths
-                  const sourcePath_internal = `${content_file}/${content_do_id}${file_name}`;
-                  const targetPath_internal = streamingPath;
-
-                  sourcePath_internal.replace('.zip', '');
-                  try {
-                    // Ensure the target directory exists
-                    await RNFS.mkdir(targetPath_internal);
-                    // Unzip the file
-                    const path = await unzip(
-                      sourcePath_internal,
-                      targetPath_internal
-                    );
-                    console.log(`Unzipped to ${path}`);
-                    //store content obj
-                    //console.log(contentObj);
-                    //await storeData(content_do_id, contentObj, 'json');
-                    await fetchData(contentObj);
-                  } catch (error) {
-                    console.error(`Error extracting zip file: ${error}`);
-                  }
+                  //store content obj
+                  //console.log(contentObj);
+                  //await storeData(content_do_id, contentObj, 'json');
+                  await fetchData(contentObj);
                 } catch (error) {
                   console.error(`Error extracting zip file: ${error}`);
                 }
-              } else {
-                Alert.alert(
-                  'Error Internal',
-                  `Failed to download file: ${JSON.stringify(result)}`,
-                  [{ text: 'OK' }]
-                );
-                console.log('Failed to download file:', result.statusCode);
+              } catch (error) {
+                console.error(`Error extracting zip file: ${error}`);
               }
-            } catch (error) {
-              Alert.alert('Error Catch', `Failed to download file: ${error}`, [
-                { text: 'OK' },
-              ]);
-              console.error('Error downloading file:', error);
+            } else {
+              Alert.alert(
+                'Error Internal',
+                `Failed to download file: ${JSON.stringify(result)}`,
+                [{ text: 'OK' }]
+              );
+              console.log('Failed to download file:', result.statusCode);
             }
-          } else {
-            Alert.alert('Error', `Permission Denied`, [{ text: 'OK' }]);
-            console.log('please grant permission');
+          } catch (error) {
+            Alert.alert('Error Catch', `Failed to download file: ${error}`, [
+              { text: 'OK' },
+            ]);
+            console.error('Error downloading file:', error);
           }
         } catch (err) {
           Alert.alert('Error Catch', `Failed to download file: ${err}`, [

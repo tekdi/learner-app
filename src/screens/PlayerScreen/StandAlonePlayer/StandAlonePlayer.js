@@ -11,7 +11,9 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { PermissionsAndroid } from 'react-native';
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 
 import { WebView } from 'react-native-webview';
@@ -21,6 +23,8 @@ import {
   hierarchyContent,
   assessmentTracking,
   listQuestion,
+  telemetryTracking,
+  contentTracking,
 } from '../../../utils/API/ApiCalls';
 import {
   qumlPlayerConfig,
@@ -40,8 +44,16 @@ import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
 
 import Orientation from 'react-native-orientation-locker';
-import { getDataFromStorage, getUserId } from '../../../utils/JsHelper/Helper';
-import { storeAsessmentOffline } from '../../../utils/API/AuthService';
+import {
+  getDataFromStorage,
+  getUserId,
+  setDataInStorage,
+} from '../../../utils/JsHelper/Helper';
+import {
+  storeAsessmentOffline,
+  storeTelemetryOffline,
+  storeTrackingOffline,
+} from '../../../utils/API/AuthService';
 import TestResultModal from '../../Assessment/TestResultModal';
 import MimeAlertModal from '../../../components/MimeAletModal/MimeAlertModal';
 
@@ -74,14 +86,62 @@ const StandAlonePlayer = ({ route }) => {
 
   //   #sunbird-quml-player
   //   application/vnd.sunbird.question
+  const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState(null);
+  //const [telemetryObject, setTelemetryObject] = useState([]);
+  let telemetryObject = [];
+  let contentEidSTART = [];
+  let contentEidINTERACT = [];
+  let contentEidEND = [];
 
   useEffect(() => {
     // Lock the screen to landscape mode
-    //Orientation.lockToLandscape();
+    if (
+      content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+      content_mime_type == 'video/x-youtube' ||
+      content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+      content_mime_type == 'video/mp4' ||
+      content_mime_type == 'video/webm'
+    ) {
+      //Orientation.lockToLandscape();
+    }
+
+    const fetchData = async () => {
+      let tempUserId = await getDataFromStorage('userId');
+      let tempUserName = await getDataFromStorage('Username');
+      console.log('tempUserId', tempUserId);
+      console.log('tempUserName', tempUserName);
+      setUserId(tempUserId);
+      setUserName(tempUserName);
+      let contentType = '';
+      content_mime_type == 'application/vnd.sunbird.questionset'
+        ? (contentType = 'quml')
+        : content_mime_type == 'application/vnd.ekstep.ecml-archive'
+        ? (contentType = 'ecml')
+        : content_mime_type == 'application/vnd.ekstep.h5p-archive'
+        ? (contentType = 'h5p')
+        : content_mime_type == 'application/vnd.ekstep.html-archive'
+        ? (contentType = 'html')
+        : content_mime_type == 'video/x-youtube'
+        ? (contentType = 'youtube')
+        : content_mime_type == 'application/pdf'
+        ? (contentType = 'pdf')
+        : content_mime_type == 'application/epub'
+        ? (contentType = 'epub')
+        : content_mime_type == 'video/mp4'
+        ? (contentType = 'mp4')
+        : content_mime_type == 'video/webm'
+        ? (contentType = 'webm')
+        : '';
+      await storeData('contentId', content_do_id, '');
+      await storeData('contentType', contentType, '');
+      await storeData('contentMimeType', content_mime_type, '');
+    };
+    fetchData();
 
     // Unlock orientation when component is unmounted
     return () => {
-      //Orientation.unlockAllOrientations();
+      //Orientation.lockToPortrait();
     };
   }, []);
 
@@ -93,42 +153,42 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
-        ? 'sunbird-pdf-player'
-        : content_mime_type == 'application/vnd.sunbird.questionset'
-          ? 'sunbird-quml-player'
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? 'sunbird-video-player'
-            : content_mime_type == 'application/epub'
-              ? 'sunbird-epub-player'
-              : ''
+      ? 'sunbird-pdf-player'
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? 'sunbird-quml-player'
+      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
+      ? 'sunbird-video-player'
+      : content_mime_type == 'application/epub'
+      ? 'sunbird-epub-player'
+      : ''
   );
   const [lib_file] = useState(
     content_mime_type == 'application/vnd.sunbird.questionset'
       ? 'index_o.html'
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/pdf' ||
-          content_mime_type == 'video/mp4' ||
-          content_mime_type == 'video/webm' ||
-          content_mime_type == 'video/x-youtube' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'application/epub'
-        ? 'index.html'
-        : ''
+        content_mime_type == 'application/pdf' ||
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'video/x-youtube' ||
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'application/epub'
+      ? 'index.html'
+      : ''
   );
 
   const [loading, setLoading] = useState(true);
   const [alertModal, setAlertModal] = useState(false);
+  const [errorDetail, setErrorDetail] = useState('unsupported_content');
   const content_file = `${RNFS.DocumentDirectoryPath}/${content_do_id}`;
   const streamingPath =
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
       ? `${content_file}`
       : content_mime_type == 'application/vnd.ekstep.html-archive'
-        ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
-        : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-          ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
-          : `${content_file}/${content_do_id}.json`;
+      ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
+      : content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
+      : `${content_file}/${content_do_id}.json`;
   // console.log('rnfs DocumentDirectoryPath', RNFS.DocumentDirectoryPath);
   // console.log('rnfs ExternalDirectoryPath', RNFS.ExternalDirectoryPath);
   const [is_valid_file, set_is_valid_file] = useState(null);
@@ -150,78 +210,120 @@ const StandAlonePlayer = ({ route }) => {
     console.log('Current URL:', navState.url);
   };
   const handleMessage = async (event) => {
-    // const data = event.nativeEvent.data;
-    // let jsonObj = JSON.parse(data);
-    // let data_obj = jsonObj.data;
-    // if (data_obj) {
-    //   console.log('####################');
-    //   console.log('data_obj', JSON.stringify(data_obj));
-    //   console.log('####################');
-    // }
-    //for assessment
-    if (content_mime_type == 'application/vnd.sunbird.questionset') {
-      setLoading(true);
-      set_loading_text('Sending Result...');
-      try {
-        const data = event.nativeEvent.data;
-        let jsonObj = JSON.parse(data);
-        let scoreDetails = jsonObj.scoreDetails;
-        let identifierWithoutImg = jsonObj.identifierWithoutImg;
-        let maxScore = jsonObj.maxScore;
-        let seconds = jsonObj.seconds;
-        // console.log('scoreDetails', scoreDetails);
-        // console.log('identifierWithoutImg', identifierWithoutImg);
-        // console.log('maxScore', maxScore);
-        // console.log('seconds', seconds);
-        // let userId = 'fb6b2e58-0f14-4d4f-90e4-bae092e7a951';
-        const userId = await getDataFromStorage('userId');
-        let batchId = await getDataFromStorage('cohortId');
-        let lastAttemptedOn = new Date().toISOString();
+    try {
+      //get telemetry save
+      const data = event.nativeEvent.data;
+      let jsonObj = JSON.parse(data);
+      let data_obj = jsonObj.data;
+      if (data_obj) {
+        //add user id in actor
+        data_obj.actor.id = userId;
+        console.log('####################');
+        console.log('data_obj', JSON.stringify(data_obj));
+        console.log('####################');
+        //setTelemetryObject((telemetryObject) => [...telemetryObject, data_obj]);
+        telemetryObject.push(data_obj);
+        //console.log('telemetryObject', telemetryObject);
+        await storeData('telemetryObject', telemetryObject, 'json');
 
-        let create_assessment = await assessmentTracking(
-          scoreDetails,
-          identifierWithoutImg,
-          maxScore,
-          seconds,
-          userId,
-          batchId,
-          lastAttemptedOn
-        );
-        if (
-          create_assessment &&
-          create_assessment?.response?.responseCode == 201
-        ) {
-          let exam_data = JSON.parse(create_assessment?.data);
-          const percentage =
-            (exam_data?.totalScore / exam_data?.totalMaxScore) * 100;
-          const roundedPercentage = percentage.toFixed(2); // Rounds to 2 decimal places
-          setModal(exam_data);
-        } else {
-          let payload = {
+        //content tracking
+        if (data_obj?.eid == 'START') {
+          contentEidSTART = [
+            {
+              eid: data_obj.eid,
+              edata: data_obj.edata,
+            },
+          ];
+        }
+        if (data_obj?.eid == 'INTERACT') {
+          contentEidINTERACT = [
+            {
+              eid: data_obj.eid,
+              edata: data_obj.edata,
+            },
+          ];
+        }
+        if (data_obj?.eid == 'END') {
+          contentEidEND = [
+            {
+              eid: data_obj.eid,
+              edata: data_obj.edata,
+            },
+          ];
+        }
+        await storeData('contentEidSTART', contentEidSTART, 'json');
+        await storeData('contentEidINTERACT', contentEidINTERACT, 'json');
+        await storeData('contentEidEND', contentEidEND, 'json');
+      }
+      //for assessment
+      if (
+        jsonObj?.scoreDetails &&
+        content_mime_type == 'application/vnd.sunbird.questionset'
+      ) {
+        setLoading(true);
+        set_loading_text('Sending Result...');
+        try {
+          const data = event.nativeEvent.data;
+          let jsonObj = JSON.parse(data);
+          let scoreDetails = jsonObj.scoreDetails;
+          let identifierWithoutImg = jsonObj.identifierWithoutImg;
+          let maxScore = jsonObj.maxScore;
+          let seconds = jsonObj.seconds;
+          // console.log('scoreDetails', scoreDetails);
+          // console.log('identifierWithoutImg', identifierWithoutImg);
+          // console.log('maxScore', maxScore);
+          // console.log('seconds', seconds);
+          // let userId = 'fb6b2e58-0f14-4d4f-90e4-bae092e7a951';
+          let batchId = await getDataFromStorage('cohortId');
+          let lastAttemptedOn = new Date().toISOString();
+
+          let create_assessment = await assessmentTracking(
             scoreDetails,
             identifierWithoutImg,
             maxScore,
             seconds,
             userId,
             batchId,
-            lastAttemptedOn,
-          };
-          //store result in offline mode
-          await storeAsessmentOffline(
-            userId,
-            batchId,
-            identifierWithoutImg,
-            payload
+            lastAttemptedOn
           );
+          if (
+            create_assessment &&
+            create_assessment?.response?.responseCode == 201
+          ) {
+            let exam_data = JSON.parse(create_assessment?.data);
+            const percentage =
+              (exam_data?.totalScore / exam_data?.totalMaxScore) * 100;
+            const roundedPercentage = percentage.toFixed(2); // Rounds to 2 decimal places
+            setModal(exam_data);
+          } else {
+            let payload = {
+              scoreDetails,
+              identifierWithoutImg,
+              maxScore,
+              seconds,
+              userId,
+              batchId,
+              lastAttemptedOn,
+            };
+            //store result in offline mode
+            await storeAsessmentOffline(
+              userId,
+              batchId,
+              identifierWithoutImg,
+              payload
+            );
 
-          setModal(true);
+            setModal(true);
+          }
+          set_loading_text('');
+          setLoading(false);
+        } catch (e) {
+          console.log('error', e);
         }
-        set_loading_text('');
-        setLoading(false);
-      } catch (e) {
-        console.log('error', e);
+        //setRetrievedData(data);
       }
-      //setRetrievedData(data);
+    } catch (e) {
+      console.log('error', e);
     }
   };
 
@@ -249,9 +351,16 @@ const StandAlonePlayer = ({ route }) => {
               //console.log('file_content', file_content);
               questionsData.questions_data = file_content;
               qumlPlayerConfig.metadata = contentObj;
+              //set user id and full name
+              qumlPlayerConfig.context.uid = userId;
+              qumlPlayerConfig.context.userData = {
+                firstName: userName,
+                lastName: '',
+              };
               //console.log('qumlPlayerConfig set', qumlPlayerConfig);
               set_is_valid_file(true);
             } catch (e) {
+              console.log(e);
               set_is_download(true);
               await downloadContentQuML();
             }
@@ -271,14 +380,15 @@ const StandAlonePlayer = ({ route }) => {
     setLoading(false);
   };
 
-  const fetchDataEcml = async (contentObj) => {
+  const fetchDataEcml = async () => {
     //content read
     setLoading(true);
     set_loading_text('Reading Content...');
-    //let contentObj = await getData(content_do_id, 'json');
+    let contentObj = await getData(content_do_id, 'json');
     if (contentObj == null) {
-      //download failed
-      Alert.alert('Error', 'Server Not Available', [{ text: 'OK' }]);
+      //download start
+      set_is_download(true);
+      await downloadContentECMLH5pHTMLYoutube();
     } else {
       let filePath = '';
       if (contentObj?.mimeType == 'application/vnd.ekstep.ecml-archive') {
@@ -299,19 +409,21 @@ const StandAlonePlayer = ({ route }) => {
       } else {
         set_is_valid_file(false);
       }
+      set_is_download(false);
     }
     set_loading_text('');
     setLoading(false);
   };
 
-  const fetchDataHtmlH5pYoutube = async (contentObj) => {
+  const fetchDataHtmlH5pYoutube = async () => {
     //content read
     setLoading(true);
     set_loading_text('Reading Content...');
-    //let contentObj = await getData(content_do_id, 'json');
+    let contentObj = await getData(content_do_id, 'json');
     if (contentObj == null) {
-      //download failed
-      Alert.alert('Error', 'Server Not Available', [{ text: 'OK' }]);
+      //download start
+      set_is_download(true);
+      await downloadContentECMLH5pHTMLYoutube();
     } else {
       let filePath = '';
       if (
@@ -326,6 +438,12 @@ const StandAlonePlayer = ({ route }) => {
           contentPlayerConfig.metadata = contentObj;
           contentPlayerConfig.data = '';
           contentPlayerConfig.context = { host: `file://${content_file}` };
+          //set user id and full name
+          contentPlayerConfig.context.uid = userId;
+          contentPlayerConfig.context.userData = {
+            firstName: userName,
+            lastName: '',
+          };
           //console.log('contentPlayerConfig set', contentPlayerConfig);
           set_is_valid_file(true);
         } catch (e) {
@@ -334,6 +452,7 @@ const StandAlonePlayer = ({ route }) => {
       } else {
         set_is_valid_file(false);
       }
+      set_is_download(false);
     }
     set_loading_text('');
     setLoading(false);
@@ -342,47 +461,126 @@ const StandAlonePlayer = ({ route }) => {
   const fetchDataPdfVideoEpub = async () => {
     //content read
     setLoading(true);
-    let content_response = await readContent(content_do_id);
-    if (content_response == null) {
-      Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
-      set_is_valid_file(false);
-    } else if (
-      content_response?.result?.content?.mimeType == 'application/pdf'
-    ) {
-      pdfPlayerConfig.metadata = content_response.result.content;
-      set_is_valid_file(true);
-    } else if (
-      content_response?.result?.content?.mimeType == 'video/mp4' ||
-      content_response?.result?.content?.mimeType == 'video/webm'
-    ) {
-      videoPlayerConfig.metadata = content_response.result.content;
-      set_is_valid_file(true);
-    } else if (
-      content_response?.result?.content?.mimeType == 'application/epub'
-    ) {
-      epubPlayerConfig.metadata = content_response.result.content;
-      set_is_valid_file(true);
-    } else {
+    set_loading_text('Reading Content...');
+    try {
+      let contentObj = await getData(content_do_id, 'json');
+      if (contentObj == null) {
+        //download start
+        set_is_download(true);
+        await downloadContentPDFEpubVideo();
+      } else if (contentObj?.mimeType == 'application/pdf') {
+        //get content file name
+        let temp_file_url = contentObj?.artifactUrl;
+        const dividedArray = temp_file_url.split(content_do_id);
+        const file_name =
+          dividedArray[
+            dividedArray.length > 0
+              ? dividedArray.length - 1
+              : dividedArray.length
+          ];
+        filePath = `${content_file}/${content_do_id}${file_name}`;
+        //console.log('filePath', filePath);
+        let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
+        //console.log('blobContent', blobContent);
+        if (blobContent) {
+          //console.log('create blob url');
+          contentObj.artifactUrl = blobContent;
+
+          //previewUrl streamingUrl no needed for offline use
+          delete contentObj.previewUrl;
+          delete contentObj.streamingUrl;
+
+          pdfPlayerConfig.metadata = contentObj;
+          //console.log('pdfPlayerConfig set', pdfPlayerConfig);
+          set_is_valid_file(true);
+        } else {
+          set_is_valid_file(false);
+        }
+      } else if (
+        contentObj?.mimeType == 'video/mp4' ||
+        contentObj?.mimeType == 'video/webm'
+      ) {
+        //get content file name
+        let temp_file_url = contentObj?.artifactUrl;
+        const dividedArray = temp_file_url.split(content_do_id);
+        const file_name =
+          dividedArray[
+            dividedArray.length > 0
+              ? dividedArray.length - 1
+              : dividedArray.length
+          ];
+        filePath = `${content_file}/${content_do_id}${file_name}`;
+        //console.log('filePath', filePath);
+        let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
+        //console.log('blobContent', blobContent);
+        if (blobContent) {
+          //console.log('create blob url');
+          contentObj.artifactUrl = blobContent;
+
+          //previewUrl streamingUrl no needed for offline use
+          delete contentObj.previewUrl;
+          delete contentObj.streamingUrl;
+
+          videoPlayerConfig.metadata = contentObj;
+          //console.log('videoPlayerConfig set', videoPlayerConfig);
+          set_is_valid_file(true);
+        } else {
+          set_is_valid_file(false);
+        }
+      } else if (contentObj?.mimeType == 'application/epub') {
+        //get content file name
+        let temp_file_url = contentObj?.artifactUrl;
+        const dividedArray = temp_file_url.split(content_do_id);
+        const file_name =
+          dividedArray[
+            dividedArray.length > 0
+              ? dividedArray.length - 1
+              : dividedArray.length
+          ];
+        filePath = `${content_file}/${content_do_id}${file_name}`;
+        let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
+        //console.log('blobContent', blobContent);
+        if (blobContent) {
+          //console.log('create blob url');
+          contentObj.artifactUrl = blobContent;
+
+          //previewUrl streamingUrl no needed for offline use
+          delete contentObj.previewUrl;
+          delete contentObj.streamingUrl;
+
+          epubPlayerConfig.metadata = contentObj;
+          //console.log('epubPlayerConfig set', epubPlayerConfig);
+          set_is_valid_file(true);
+        } else {
+          set_is_valid_file(false);
+        }
+      } else {
+        set_is_valid_file(false);
+      }
+    } catch (e) {
       set_is_valid_file(false);
     }
+    set_is_download(false);
+    set_loading_text('');
     setLoading(false);
   };
 
   const [temp] = useState([]);
   useEffect(() => {
-    content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-    content_mime_type == 'video/x-youtube' ||
-    content_mime_type == 'application/vnd.ekstep.html-archive' ||
-    content_mime_type == 'application/vnd.ekstep.h5p-archive'
-      ? downloadContent()
+    content_mime_type == 'application/vnd.ekstep.ecml-archive'
+      ? fetchDataEcml()
+      : content_mime_type == 'video/x-youtube' ||
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      ? fetchDataHtmlH5pYoutube()
       : content_mime_type == 'application/pdf' ||
-          content_mime_type == 'video/mp4' ||
-          content_mime_type == 'video/webm' ||
-          content_mime_type == 'application/epub'
-        ? fetchDataPdfVideoEpub()
-        : content_mime_type == 'application/vnd.sunbird.questionset'
-          ? fetchDataQuml()
-          : '';
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'application/epub'
+      ? fetchDataPdfVideoEpub()
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? fetchDataQuml()
+      : '';
   }, []);
   useEffect(() => {
     const fetchData = async () => {
@@ -399,6 +597,7 @@ const StandAlonePlayer = ({ route }) => {
         setAlertModal(false);
       } else {
         setAlertModal(true);
+        setErrorDetail('unsupported_content');
       }
       setLoading(false);
     };
@@ -406,14 +605,16 @@ const StandAlonePlayer = ({ route }) => {
     fetchData();
   }, []);
 
-  const downloadContent = async () => {
+  const downloadContentECMLH5pHTMLYoutube = async () => {
     //content read
     setLoading(true);
     set_loading_text('Reading Content...');
     //get data online
     let content_response = await readContent(content_do_id);
     if (content_response == null) {
-      Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
+      //Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
+      setAlertModal(true);
+      setErrorDetail('content_not_in_device');
       set_is_valid_file(false);
     } else {
       let contentObj = content_response?.result?.content;
@@ -436,7 +637,10 @@ const StandAlonePlayer = ({ route }) => {
         try {
           if (contentObj?.mimeType == 'video/x-youtube') {
             //console.log('permission got');
-            await fetchDataHtmlH5pYoutube(contentObj);
+            //store content obj
+            //console.log(contentObj);
+            await storeData(content_do_id, contentObj, 'json');
+            await fetchDataHtmlH5pYoutube();
           } else {
             //console.log('permission got');
             try {
@@ -492,16 +696,16 @@ const StandAlonePlayer = ({ route }) => {
                     console.log(`Unzipped to ${path}`);
                     //store content obj
                     //console.log(contentObj);
-                    //await storeData(content_do_id, contentObj, 'json');
+                    await storeData(content_do_id, contentObj, 'json');
                     contentObj?.mimeType ==
                     'application/vnd.ekstep.ecml-archive'
-                      ? fetchDataEcml(contentObj)
+                      ? fetchDataEcml()
                       : contentObj?.mimeType ==
-                            'application/vnd.ekstep.html-archive' ||
-                          contentObj?.mimeType ==
-                            'application/vnd.ekstep.h5p-archive'
-                        ? await fetchDataHtmlH5pYoutube(contentObj)
-                        : '';
+                          'application/vnd.ekstep.html-archive' ||
+                        contentObj?.mimeType ==
+                          'application/vnd.ekstep.h5p-archive'
+                      ? await fetchDataHtmlH5pYoutube()
+                      : '';
                   } catch (error) {
                     console.error(`Error extracting zip file: ${error}`);
                   }
@@ -544,7 +748,9 @@ const StandAlonePlayer = ({ route }) => {
     //get data online
     let content_response = await hierarchyContent(content_do_id);
     if (content_response == null) {
-      Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
+      //Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
+      setAlertModal(true);
+      setErrorDetail('content_not_in_device');
       set_is_valid_file(false);
     } else {
       let contentObj = content_response?.result?.questionSet;
@@ -646,20 +852,100 @@ const StandAlonePlayer = ({ route }) => {
     setLoading(false);
   };
 
-  if (loading) {
-    return (
-      <View style={styles.middle_screen}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        {progress > 0 && progress < 100 ? (
-          <Text>{`Loading: ${progress.toFixed(2)}%`}</Text>
-        ) : loading_text != '' ? (
-          <Text style={{ color: '#000' }}>{loading_text}</Text>
-        ) : (
-          <></>
-        )}
-      </View>
-    );
-  }
+  const downloadContentPDFEpubVideo = async () => {
+    //content read
+    setLoading(true);
+    set_loading_text('Reading Content...');
+    //get data online
+    let content_response = await readContent(content_do_id);
+    if (content_response == null) {
+      //Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
+      setAlertModal(true);
+      setErrorDetail('content_not_in_device');
+      set_is_valid_file(false);
+    } else {
+      let contentObj = content_response?.result?.content;
+      let filePath = '';
+      if (contentObj?.mimeType == 'application/pdf') {
+        filePath = `${content_file}.pdf`;
+      } else if (contentObj?.mimeType == 'application/epub') {
+        filePath = `${content_file}.epub`;
+      } else if (contentObj?.mimeType == 'video/mp4') {
+        filePath = `${content_file}.mp4`;
+      } else if (contentObj?.mimeType == 'video/webm') {
+        filePath = `${content_file}.webm`;
+      }
+      if (filePath != '') {
+        //download file and store object in local
+        //download file
+        // URL of the file to download
+        //const fileUrl = contentObj?.artifactUrl;
+        const fileUrl = contentObj?.downloadUrl;
+        filePath = `${content_file}.zip`;
+        //console.log('fileUrl', fileUrl);
+        try {
+          //console.log('permission got');
+          try {
+            const download = RNFS.downloadFile({
+              fromUrl: fileUrl,
+              toFile: filePath,
+              begin: (res) => {
+                console.log('Download started');
+              },
+              progress: (res) => {
+                const progressPercent =
+                  (res.bytesWritten / res.contentLength) * 100;
+                setProgress(progressPercent);
+              },
+            });
+            const result = await download.promise;
+            if (result.statusCode === 200) {
+              console.log('File downloaded successfully:', filePath);
+              setProgress(0);
+              set_loading_text('Unzip content ecar file...');
+              // Define the paths
+              const sourcePath = filePath;
+              const targetPath = content_file;
+              try {
+                // Ensure the target directory exists
+                await RNFS.mkdir(targetPath);
+                // Unzip the file
+                const path = await unzip(sourcePath, targetPath);
+                console.log(`Unzipped to ${path}`);
+                //store content obj
+                //console.log(contentObj);
+                await storeData(content_do_id, contentObj, 'json');
+                await fetchDataPdfVideoEpub();
+              } catch (error) {
+                console.error(`Error extracting zip file: ${error}`);
+              }
+            } else {
+              Alert.alert(
+                'Error Internal',
+                `Failed to download file: ${JSON.stringify(result)}`,
+                [{ text: 'OK' }]
+              );
+              console.log('Failed to download file:', result.statusCode);
+            }
+          } catch (error) {
+            Alert.alert('Error Catch', `Failed to download file: ${error}`, [
+              { text: 'OK' },
+            ]);
+            console.error('Error downloading file:', error);
+          }
+        } catch (err) {
+          Alert.alert('Error Catch', `Failed to download file: ${err}`, [
+            { text: 'OK' },
+          ]);
+          console.log('display error', err);
+        }
+      } else {
+        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+      }
+    }
+    //content read
+    setLoading(false);
+  };
 
   //call content url
   let injectedJS =
@@ -679,10 +965,10 @@ const StandAlonePlayer = ({ route }) => {
             window.setData();
         })();`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'video/x-youtube'
-        ? `(function() {
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'video/x-youtube'
+      ? `(function() {
         localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
           {
             contentPlayerConfig: contentPlayerConfig,
@@ -690,20 +976,140 @@ const StandAlonePlayer = ({ route }) => {
         )}));
         window.setData();
         })();`
-        : content_mime_type == 'application/pdf'
-          ? `(function() {
+      : content_mime_type == 'application/pdf'
+      ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
         })();`
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? `(function() {
+      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
+      ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
         })();`
-            : content_mime_type == 'application/epub'
-              ? `(function() {
+      : content_mime_type == 'application/epub'
+      ? `(function() {
         window.setData('${JSON.stringify(epubPlayerConfig)}');
         })();`
-              : ``;
+      : ``;
+
+  //event when player closed
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        // Handle back button press
+        console.log('useFocusEffect Back button pressed or screen closed');
+        fetchExitData();
+        return false; // Return true if you want to block the back action, false to allow it
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        // Cleanup on unmount
+        //console.log('useFocusEffect Screen closed');
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, [])
+  );
+  const fetchExitData = async () => {
+    //store telemetry event
+    let storedTelemetryObject = await getData('telemetryObject', 'json');
+    if (storedTelemetryObject && storedTelemetryObject.length > 0) {
+      try {
+        let create_telemetry = await telemetryTracking(storedTelemetryObject);
+        console.log('create_telemetry', create_telemetry);
+        if (
+          create_telemetry &&
+          create_telemetry?.response?.responseCode == 'SUCCESS'
+        ) {
+          console.log('saved data');
+        } else {
+          console.log('no internet available');
+          //store result in offline mode
+          const userId = await getDataFromStorage('userId');
+          await storeTelemetryOffline(userId, storedTelemetryObject);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    //console.log('storedTelemetryObject', JSON.stringify(storedTelemetryObject));
+    //store content tracking
+    let storedContentEidSTART = await getData('contentEidSTART', 'json');
+    let storedContentEidINTERACT = await getData('contentEidINTERACT', 'json');
+    let storedContentEidEND = await getData('contentEidEND', 'json');
+
+    let detailsObject = [];
+    if (storedContentEidSTART.length > 0) {
+      detailsObject.push(storedContentEidSTART[0]);
+    }
+    if (storedContentEidINTERACT.length > 0) {
+      detailsObject.push(storedContentEidINTERACT[0]);
+    }
+    if (storedContentEidEND.length > 0) {
+      detailsObject.push(storedContentEidEND[0]);
+    }
+
+    let userId = await getDataFromStorage('userId');
+    let courseId = await getData('contentId', '');
+    let batchId = await getDataFromStorage('cohortId');
+    let contentId = await getData('contentId', '');
+    let contentType = await getData('contentType', '');
+    let contentMime = await getData('contentMimeType', '');
+    let lastAccessOn = new Date().toISOString();
+
+    if (detailsObject && detailsObject.length > 0) {
+      try {
+        let create_tracking = await contentTracking(
+          userId,
+          courseId,
+          batchId,
+          contentId,
+          contentType,
+          contentMime,
+          lastAccessOn,
+          detailsObject
+        );
+        console.log('create_tracking', create_tracking);
+        if (create_tracking && create_tracking?.response?.responseCode == 201) {
+          console.log('saved data');
+        } else {
+          console.log('no internet available');
+          //store result in offline mode
+          await storeTrackingOffline(
+            userId,
+            courseId,
+            batchId,
+            contentId,
+            contentType,
+            contentMime,
+            lastAccessOn,
+            detailsObject
+          );
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+  //event when player closed
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.middle_screen}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          {progress > 0 && progress < 100 ? (
+            <Text style={{ color: '#000000' }}>{`Loading: ${progress.toFixed(
+              2
+            )}%`}</Text>
+          ) : loading_text != '' ? (
+            <Text style={{ color: '#000000' }}>{loading_text}</Text>
+          ) : (
+            <></>
+          )}
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -719,8 +1125,15 @@ const StandAlonePlayer = ({ route }) => {
             onPress={() => {
               if (content_mime_type == 'application/vnd.sunbird.questionset') {
                 downloadContentQuML();
+              } else if (
+                content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+                content_mime_type == 'video/x-youtube' ||
+                content_mime_type == 'application/vnd.ekstep.html-archive' ||
+                content_mime_type == 'application/vnd.ekstep.h5p-archive'
+              ) {
+                downloadContentECMLH5pHTMLYoutube();
               } else {
-                downloadContent();
+                downloadContentPDFEpubVideo();
               }
             }}
           />
@@ -756,7 +1169,7 @@ const StandAlonePlayer = ({ route }) => {
         />
       )}
       <TestResultModal modal={modal} title={title} />
-      {alertModal && <MimeAlertModal />}
+      {alertModal && <MimeAlertModal textTitle={errorDetail} />}
     </SafeAreaView>
   );
 };

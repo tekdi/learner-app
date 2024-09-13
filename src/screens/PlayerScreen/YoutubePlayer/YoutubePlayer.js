@@ -132,21 +132,8 @@ const YoutubePlayer = () => {
         const fileUrl = contentObj?.downloadUrl;
         //console.log('fileUrl', fileUrl);
         try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-            {
-              title: 'Storage Permission',
-              message: 'App needs access to storage to download files.',
-              buttonPositive: 'OK',
-            }
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            //console.log('permission got');
-            await fetchData(contentObj);
-          } else {
-            Alert.alert('Error', `Permission Denied`, [{ text: 'OK' }]);
-            console.log('please grant permission');
-          }
+          //console.log('permission got');
+          await fetchData(contentObj);
         } catch (err) {
           Alert.alert('Error Catch', `Failed to download file: ${err}`, [
             { text: 'OK' },

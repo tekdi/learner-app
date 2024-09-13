@@ -619,3 +619,146 @@ export const getSyncAsessmentOffline = async (user_id) => {
     return null;
   }
 };
+//telemetry offline
+//store
+export const storeTelemetryOffline = async (user_id, telemetry_object) => {
+  try {
+    //store
+    const data_insert = {
+      user_id: user_id,
+      telemetry_object: JSON.stringify(telemetry_object),
+    };
+    await insertData({
+      tableName: 'Telemetry_Offline',
+      data: data_insert,
+    })
+      .then((msg) => console.log('msg', msg))
+      .catch((err) => console.error('err', err));
+  } catch (e) {
+    console.log(e);
+  }
+};
+export const getSyncTelemetryOffline = async (user_id) => {
+  try {
+    //get result
+    const data_get = {
+      user_id: user_id,
+    };
+    let result_data = null;
+    await getData({
+      tableName: 'Telemetry_Offline',
+      where: data_get,
+    })
+      .then((rows) => {
+        //console.log('rows', rows);
+        if (rows.length > 0) {
+          try {
+            result_data = rows;
+          } catch (e) {}
+        }
+      })
+      .catch((err) => {
+        console.error('err', err);
+      });
+    return result_data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+export const deleteTelemetryOffline = async (id) => {
+  try {
+    //delete if exist to overwrite
+    const data_delete = {
+      id: id,
+    };
+    //console.log('data_delete', data_delete);
+    await deleteData({
+      tableName: 'Telemetry_Offline',
+      where: data_delete,
+    })
+      .then((msg) => console.log('msg', msg))
+      .catch((err) => console.error('err', err));
+  } catch (e) {
+    console.log(e);
+  }
+};
+//tracking offline
+//store
+export const storeTrackingOffline = async (
+  user_id,
+  course_id,
+  batch_id,
+  content_id,
+  content_type,
+  content_mime,
+  lastAccessOn,
+  detailsObject
+) => {
+  try {
+    //store
+    const data_insert = {
+      user_id: user_id,
+      course_id: course_id,
+      batch_id: batch_id,
+      content_id: content_id,
+      content_type: content_type,
+      content_mime: content_mime,
+      lastAccessOn: lastAccessOn,
+      detailsObject: JSON.stringify(detailsObject),
+    };
+    await insertData({
+      tableName: 'Tracking_Offline',
+      data: data_insert,
+    })
+      .then((msg) => console.log('msg', msg))
+      .catch((err) => console.error('err', err));
+  } catch (e) {
+    console.log(e);
+  }
+};
+export const getSyncTrackingOffline = async (user_id) => {
+  try {
+    //get result
+    const data_get = {
+      user_id: user_id,
+    };
+    let result_data = null;
+    await getData({
+      tableName: 'Tracking_Offline',
+      where: data_get,
+    })
+      .then((rows) => {
+        //console.log('rows', rows);
+        if (rows.length > 0) {
+          try {
+            result_data = rows;
+          } catch (e) {}
+        }
+      })
+      .catch((err) => {
+        console.error('err', err);
+      });
+    return result_data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+export const deleteTrackingOffline = async (id) => {
+  try {
+    //delete if exist to overwrite
+    const data_delete = {
+      id: id,
+    };
+    //console.log('data_delete', data_delete);
+    await deleteData({
+      tableName: 'Tracking_Offline',
+      where: data_delete,
+    })
+      .then((msg) => console.log('msg', msg))
+      .catch((err) => console.error('err', err));
+  } catch (e) {
+    console.log(e);
+  }
+};

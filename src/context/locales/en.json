@@ -169,6 +169,7 @@
   "okay":"Okay",
   "downloaded_for_offline_access":"Downloaded for offline access",
   "unsupported_content":"Unsupported Content",
+  "content_not_in_device":"The content isn't downloaded for offline playback. Please connect to the internet to play.",
   "enable":"Enable",
   "not_now":"Not now",
   "enable_location_to_discover_nearby_skilling_centers_and_more_opportunities_tailored_just_for_you":"Enable location to discover nearby skilling centers and more opportunities tailored just for you!",
