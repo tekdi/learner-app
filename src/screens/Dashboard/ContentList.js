@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   FlatList,
   SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -20,29 +21,28 @@ import DownloadCard from '../../components/DownloadCard/DownloadCard';
 const ContentList = ({ route }) => {
   const { do_id } = route.params;
   const navigation = useNavigation();
-  const [courses, setCourses] = useState([]);
+  const [coursesContent, setCoursesContent] = useState();
   const [identifiers, setIdentifiers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedItem, setExpandedItem] = useState(null); // State to track which item is expanded
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         const content_do_id = do_id;
-        console.log({ content_do_id });
 
         // Fetch course details
         const data = await courseDetails(content_do_id);
 
         // Set courses
-        const coursesData = data?.result?.content?.children?.[0]?.children;
-        console.log('coursesData', coursesData);
-        setCourses(coursesData);
+        const coursescontent = data?.result?.content;
+        const coursesData = data?.result?.content?.children;
+        setCoursesContent(coursescontent);
 
         // Extract identifiers
         const identifiers_Id = coursesData?.map((course) => course?.identifier);
         setIdentifiers(identifiers_Id);
-        console.log({ identifiers_Id });
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -52,6 +52,68 @@ const ContentList = ({ route }) => {
 
     fetchData();
   }, []);
+
+  const handlecardPress = (item) => {
+    setExpandedItem(expandedItem === item.identifier ? null : item.identifier); // Toggle accordion open/close
+  };
+
+  const renderAccordionContent = (item) => {
+    return (
+      <View>
+        {item?.children?.map((card) => (
+          <TouchableOpacity
+            key={card?.identifier}
+            onPress={() => {
+              handlePress(card);
+            }}
+          >
+            <View style={styles.view}>
+              <View style={globalStyles.flexrow}>
+                <MaterialIcons
+                  name={checkArchiveType(card?.mimeType)}
+                  size={32}
+                  color="#9cb9ff"
+                  style={{ flex: 0.8 }}
+                />
+                <View style={{ flex: 3 }}>
+                  <Text style={globalStyles.text}>
+                    <TextField text={card?.name} />(
+                    <TextField text={card?.mimeType} />)
+                  </Text>
+                </View>
+                <DownloadCard
+                  contentId={card?.identifier}
+                  contentMimeType={card?.mimeType}
+                />
+              </View>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  };
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => {
+        handlecardPress(item);
+      }}
+    >
+      <View style={styles.view}>
+        <View style={styles.subview}>
+          <View style={globalStyles.flexrow}>
+            <MaterialIcons name="folder" size={32} color="#9cb9ff" />
+            <Text style={[globalStyles.text, { height: 20, marginLeft: 10 }]}>
+              {item?.name}
+            </Text>
+          </View>
+          <MaterialIcons name="keyboard-arrow-down" size={32} color="#9cb9ff" />
+        </View>
+
+        {expandedItem === item.identifier && renderAccordionContent(item)}
+      </View>
+    </TouchableOpacity>
+  );
 
   const handlePress = (data) => {
     navigation.navigate('StandAlonePlayer', {
@@ -78,42 +140,42 @@ const ContentList = ({ route }) => {
         mimeType.includes('youtube')
       ) {
         return 'play-circle';
+      } else {
+        return 'file-copy';
       }
     }
 
     return null; // or any default value you want to return if no conditions are met
   }
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      onPress={() => {
-        handlePress(item);
-      }}
-    >
-      <View style={styles.view}>
-        <View style={globalStyles.flexrow}>
-          <MaterialIcons
-            name={checkArchiveType(item?.mimeType)}
-            size={32}
-            color="#9cb9ff"
-            style={{ flex: 0.8 }}
-          />
-          <View style={{ flex: 3 }}>
-            <Text style={globalStyles.text}>
-              <TextField text={item?.name} />(
-              <TextField text={item?.mimeType} />)
-            </Text>
-          </View>
-          <DownloadCard
-            contentId={item?.identifier}
-            contentMimeType={item?.mimeType}
-          />
-        </View>
-        
-        <ProgressBar style={{ marginTop: 15 }} progress={1} width={'100%'} />
-      </View>
-    </TouchableOpacity>
-  );
+  // const renderItem = ({ item }) => (
+  //   <TouchableOpacity
+  //     onPress={() => {
+  //       handlePress(item);
+  //     }}
+  //   >
+  //     <View style={styles.view}>
+  //       <View style={globalStyles.flexrow}>
+  //         <MaterialIcons
+  //           name={checkArchiveType(item?.mimeType)}
+  //           size={32}
+  //           color="#9cb9ff"
+  //           style={{ flex: 0.8 }}
+  //         />
+  //         <View style={{ flex: 3 }}>
+  //           <Text style={globalStyles.text}>
+  //             <TextField text={item?.name} />(
+  //             <TextField text={item?.mimeType} />)
+  //           </Text>
+  //         </View>
+  //         <DownloadCard
+  //           contentId={item?.identifier}
+  //           contentMimeType={item?.mimeType}
+  //         />
+  //       </View>
+  //     </View>
+  //   </TouchableOpacity>
+  // );
 
   return (
     <SafeAreaView style={{ flex: 1, paddingTop: 50 }}>
@@ -124,9 +186,72 @@ const ContentList = ({ route }) => {
         <>
           <View style={{ padding: 20 }}>
             <TextField style={globalStyles.heading} text={'course_details'} />
+            <View style={styles.card}>
+              <TextField
+                style={[globalStyles.subHeading, { fontWeight: '800' }]}
+                text={'the_course_is_relevant_for'}
+              />
+              <View style={globalStyles.flexrow}>
+                <TextField
+                  style={globalStyles.text}
+                  text={'board_university'}
+                />
+                <Text
+                  style={[globalStyles.text, { width: '50%' }]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {coursesContent?.se_boards}
+                </Text>
+              </View>
+              <View style={globalStyles.flexrow}>
+                <TextField style={globalStyles.text} text={'medium'} />
+                <Text
+                  style={[globalStyles.text, { width: '50%' }]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {coursesContent?.se_mediums}
+                </Text>
+              </View>
+              <View style={globalStyles.flexrow}>
+                <TextField style={globalStyles.text} text={'class'} />
+                <Text
+                  style={[globalStyles.text, { width: '50%' }]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {coursesContent?.se_gradeLevels}
+                </Text>
+              </View>
+              <View style={globalStyles.flexrow}>
+                <TextField style={globalStyles.text} text={'user_type'} />
+                <Text
+                  style={[globalStyles.text, { width: '50%' }]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {coursesContent?.description}
+                </Text>
+              </View>
+              <TextField
+                style={[globalStyles.subHeading, { fontWeight: '800' }]}
+                text={'description'}
+              />
+              <Text
+                style={[globalStyles.text, { width: '80%' }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {coursesContent?.description}
+              </Text>
+            </View>
+            <View>
+              <TextField style={globalStyles.heading} text={'course_modules'} />
+            </View>
           </View>
           <FlatList
-            data={courses}
+            data={coursesContent?.children}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
           />
@@ -144,6 +269,27 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: 'white',
     borderColor: '#D0C5B4',
+  },
+  subview: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  card: {
+    borderWidth: 1,
+    borderRadius: 20,
+    padding: 10,
+    backgroundColor: '#e9e8d9',
+    marginVertical: 20,
+  },
+  cardContainer: {
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 10,
+  },
+  cardText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 

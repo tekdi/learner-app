@@ -1,16 +1,56 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-
+import { PermissionsAndroid, Platform } from 'react-native';
+import Geolocation from 'react-native-geolocation-service';
+import DeviceInfo from 'react-native-device-info';
 import Loading from './Loading';
 
 const LoadingScreen = ({ navigation }) => {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      //navigation.replace('EnableLocationScreen'); // Replace 'LanguageScreen' with your target route name
-      navigation.replace('LanguageScreen');
-    }, 500); // 500 milliseconds = 0.5 seconds
+  const checkLocationPermissionAndGPS = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        // Check if location permission is granted
+        const permissionGranted = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+        );
 
-    return () => clearTimeout(timer); // Cleanup the timer
+        if (permissionGranted) {
+          // Check if GPS is enabled
+          const gpsEnabled = await DeviceInfo.isLocationEnabled();
+          if (gpsEnabled) {
+            navigation.replace('LanguageScreen'); // Navigate to LanguageScreen if GPS and permission are granted
+          } else {
+            navigation.replace('EnableLocationScreen'); // Navigate to EnableLocationScreen if GPS is not enabled
+          }
+        } else {
+          navigation.replace('EnableLocationScreen'); // Navigate to EnableLocationScreen if permission is not granted
+        }
+      } else {
+        // For iOS, handle location permission and GPS check
+        const status = await Geolocation.requestAuthorization('whenInUse');
+        if (status === 'granted') {
+          Geolocation.getCurrentPosition(
+            (position) => {
+              navigation.replace('LanguageScreen'); // Navigate to LanguageScreen if permission and GPS are enabled
+            },
+            (error) => {
+              if (error.code === 1) {
+                navigation.replace('EnableLocationScreen'); // GPS is disabled, navigate to EnableLocationScreen
+              }
+            }
+          );
+        } else {
+          navigation.replace('EnableLocationScreen'); // Navigate to EnableLocationScreen if permission is not granted
+        }
+      }
+    } catch (error) {
+      console.warn(error);
+      navigation.replace('EnableLocationScreen'); // Navigate to EnableLocationScreen if there's an error
+    }
+  };
+
+  useEffect(() => {
+    checkLocationPermissionAndGPS();
   }, [navigation]);
 
   return <Loading />;

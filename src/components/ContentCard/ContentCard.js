@@ -25,7 +25,7 @@ const ContentCard = ({
   appIcon,
 }) => {
   const { width } = Dimensions.get('window');
-  const cardWidth = (width - setCardWidth) / 2;
+  const cardWidth = setCardWidth;
   const [downloadIcon, setDownloadIcon] = useState(download);
 
   const handleDownload = () => {
