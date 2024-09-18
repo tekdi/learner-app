@@ -33,12 +33,12 @@ const LoginSignUpScreen = () => {
         <Text style={styles.title}>{t('let_log_in')}</Text>
       </View>
       <View style={styles.buttonContainer}>
-        {/* <PrimaryButton
+        <PrimaryButton
           text={t('i_am_new_user')}
           onPress={() => {
             nav.navigate('RegisterStart');
           }}
-        /> */}
+        />
         <View style={{ padding: 10 }}></View>
         <SecondaryButton
           text={'already_login'}
