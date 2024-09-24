@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import React from 'react';
 import { Button } from '@ui-kitten/components';
 
-const PrimaryButton = ({ text, onPress,isDisabled,color }) => {
+const PrimaryButton = ({ text, onPress, isDisabled, color }) => {
   return (
     <View>
       <Button
@@ -11,10 +11,11 @@ const PrimaryButton = ({ text, onPress,isDisabled,color }) => {
         status="primary"
         style={{
           borderRadius: 30,
+          zIndex: 4,
           height: 50,
           justifyContent: 'center',
           alignItems: 'center',
-          ...(color && {backgroundColor:color}) 
+          ...(color && { backgroundColor: color }),
         }}
         disabled={isDisabled}
       >
@@ -30,8 +31,8 @@ const PrimaryButton = ({ text, onPress,isDisabled,color }) => {
 PrimaryButton.propTypes = {
   text: PropTypes.string,
   onPress: PropTypes.func,
-  isDisabled:PropTypes.bool,
-  color:PropTypes.string
+  isDisabled: PropTypes.bool,
+  color: PropTypes.string,
 };
 const styles = StyleSheet.create({
   buttontext: {

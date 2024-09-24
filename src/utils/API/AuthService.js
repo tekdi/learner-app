@@ -91,8 +91,8 @@ ${Object.entries(headers || {})
   .join('\n')}`;
 
     // Log the curl command to the console
-    console.log('Generated curl command:');
-    console.log(curlCommand);
+    // console.log('Generated curl command:');
+    // console.log(curlCommand);
 
     // Make the API request
     const result = await get(url, {
@@ -761,4 +761,38 @@ export const deleteTrackingOffline = async (id) => {
   } catch (e) {
     console.log(e);
   }
+};
+
+export const getGeoLocation = async ({ payload }) => {
+  try {
+    const url = `${EndUrls.geolocation}`; // Define the URL
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    // console.log(
+    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+
+export const reverseGeocode = async (latitude, longitude) => {
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+  );
+  const data = await response.json();
+  return data;
 };
