@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
@@ -7,7 +7,7 @@ import FastImage from '@changwoolab/react-native-fast-image';
 const HeaderComponent = ({ question, questionIndex, totalForms }) => {
   const { t } = useTranslation();
   return (
-    <KeyboardAvoidingView style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.block}>
         {/* <Image style={styles.image} source={Logo} resizeMode="contain" /> */}
         <FastImage
@@ -23,7 +23,7 @@ const HeaderComponent = ({ question, questionIndex, totalForms }) => {
           <Text style={styles.text2}>{t(question)}</Text>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -59,8 +59,6 @@ const styles = StyleSheet.create({
   block: {
     flexDirection: 'row',
     alignItems: 'center',
-    // borderColor: 'black',
-    // borderWidth: 1,
     padding: 10,
   },
   textContainer: {

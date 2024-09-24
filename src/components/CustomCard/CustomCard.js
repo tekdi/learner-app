@@ -49,6 +49,20 @@ const CustomCards = ({
     <View style={styles.container} key={field.name}>
       <ScrollView>
         <View style={styles.cardContainer}>
+          {field.name === 'gender' && (
+            <Text
+              style={{
+                color: 'black',
+                fontSize: 20,
+                fontFamily: 'Poppins-Regular',
+                width: '100%',
+                marginBottom: 20,
+                marginLeft: 20,
+              }}
+            >
+              {t('gender')}
+            </Text>
+          )}
           {field.options.map((option) => (
             <TouchableOpacity
               key={option.value}
@@ -65,6 +79,7 @@ const CustomCards = ({
                     color: 'black',
                     fontSize: 20,
                     fontFamily: 'Poppins-Regular',
+                    textAlign: 'center',
                   },
                   selectedIds[name]?.value === option.value && {
                     fontFamily: 'Poppins-Medium',
@@ -94,14 +109,9 @@ CustomCards.propTypes = {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 30,
-    height: '80%',
-  },
   cardContainer: {
     flexWrap: 'wrap',
     flexDirection: 'row',
-    marginTop: 10,
     justifyContent: 'center',
     width: '100%',
   },
@@ -111,7 +121,7 @@ const styles = StyleSheet.create({
     padding: 7,
     borderRadius: 10,
     height: 60,
-    width: '100%',
+    width: 150,
     borderWidth: 1,
     borderColor: '#D0C5B4',
     justifyContent: 'center',

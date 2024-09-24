@@ -32,6 +32,7 @@ const EndUrls = {
   telemetryTracking: TELEMETRY_URL,
   ContentCreate: `${tracking_assessment}/v1/tracking/content/create`,
   ContentTrackingStatus: `${tracking_assessment}/v1/tracking/content/search/status`,
+  geolocation: `${API_URL}/user/v1/fields/options/read`,
 };
 
 export default EndUrls;

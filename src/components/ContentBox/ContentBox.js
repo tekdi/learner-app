@@ -34,7 +34,7 @@ const ContentBox = ({
         onPress={() => handlePress(item)}
         appIcon={item?.appIcon}
         index={index}
-        setCardWidth={20}
+        setCardWidth={250}
         item={item}
       />
     </View>
