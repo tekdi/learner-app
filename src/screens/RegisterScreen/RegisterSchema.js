@@ -1,6 +1,6 @@
 // SchemaConverting
 
-export const registerSchema = async (data) => {
+export const registerSchema = async (data, states) => {
   try {
     // Fix field order and labels
     const schema = [
@@ -9,16 +9,13 @@ export const registerSchema = async (data) => {
         question: 'q1_name',
         fields: [
           {
-            type: data?.[0]?.type,
+            type: 'text',
             label: data?.[0]?.label.replace(/ /g, '_').toLowerCase(),
             name: data?.[0]?.name.replace(/ /g, '_').toLowerCase(),
             coreField: data?.[0]?.coreField,
             fieldId: data?.[0]?.fieldId,
             validation: {
               // required: true,
-              // pattern: data?.[0]?.pattern, // Only letters, no numbers
-              // minLength: data?.[0]?.minLength,
-              // maxLength: data?.[0]?.maxLength,
               pattern: /^[A-Za-z]+$/, // Only letters, no numbers
               minLength: 3,
               maxLength: 30,
@@ -32,10 +29,6 @@ export const registerSchema = async (data) => {
             fieldId: data?.[1]?.fieldId,
             validation: {
               // required: true,
-              // pattern: data?.[1]?.pattern, // Only letters, no numbers
-              // minLength: data?.[1]?.minLength,
-              // maxLength: data?.[1]?.maxLength,
-
               pattern: /^[A-Za-z]+$/, // Only letters, no numbers
               minLength: 3,
               maxLength: 30,
@@ -44,7 +37,7 @@ export const registerSchema = async (data) => {
           {
             type: 'number',
             label: 'phone_number',
-            name: 'phone_number',
+            name: 'mobile',
             coreField: data?.[1]?.coreField,
             fieldId: data?.[1]?.fieldId,
             validation: {
@@ -56,19 +49,6 @@ export const registerSchema = async (data) => {
               pattern: /^[0-9]{10}$/, // Only numbers,
               minLength: 3,
               maxLength: 10,
-            },
-          },
-          {
-            type: 'select_drop_down',
-            label: 'state',
-            name: 'state',
-            coreField: data?.[1]?.coreField,
-            fieldId: data?.[1]?.fieldId,
-            validation: {
-              required: true,
-              // pattern: data?.[1]?.pattern, // Only letters, no numbers
-              // minLength: data?.[1]?.minLength,
-              // maxLength: data?.[1]?.maxLength,
             },
           },
         ],
@@ -83,9 +63,8 @@ export const registerSchema = async (data) => {
             name: data?.[2]?.name.replace(/ /g, '_').toLowerCase(),
             coreField: data?.[2]?.coreField,
             fieldId: data?.[2]?.fieldId,
-            // options: data?.[2]?.options,
             validation: {
-              // required: true,
+              //required: true,
               pattern: /^[0-9]+$/, // Only letters, no numbers
               minLength: 1,
               maxLength: 2,
@@ -99,7 +78,7 @@ export const registerSchema = async (data) => {
             fieldId: data?.[3]?.fieldId,
             options: data?.[3]?.options,
             validation: {
-              // required: true,
+              //required: true,
             },
           },
         ],
@@ -116,7 +95,7 @@ export const registerSchema = async (data) => {
             fieldId: data?.[4]?.fieldId,
             options: data?.[4]?.options,
             validation: {
-              required: true,
+              //required: true,
             },
           },
         ],
@@ -130,9 +109,9 @@ export const registerSchema = async (data) => {
             type: 'radio',
             label: 'program',
             name: 'program',
-            coreField: data?.[4]?.coreField,
-            fieldId: data?.[4]?.fieldId,
-            options: data?.[4]?.options,
+            // coreField: data?.[4]?.coreField,
+            // fieldId: data?.[4]?.fieldId,
+            // options: data?.[4]?.options,
             validation: {
               required: true,
             },
@@ -141,7 +120,7 @@ export const registerSchema = async (data) => {
       },
       {
         formNumber: 5,
-        question: 'where_are_you_located',
+        question: 'q5_interested_in',
         fields: [
           {
             type: data?.[5]?.type,
@@ -159,6 +138,54 @@ export const registerSchema = async (data) => {
       },
       {
         formNumber: 6,
+        question: 'where_are_you_located',
+        fields: [
+          {
+            type: 'select_drop_down',
+            label: 'state',
+            name: 'state',
+            coreField: data?.[1]?.coreField,
+            fieldId: data?.[1]?.fieldId,
+            options: states,
+            validation: {
+              required: true,
+            },
+          },
+          {
+            type: 'select_drop_down',
+            label: 'district',
+            name: 'district',
+            coreField: data?.[1]?.coreField,
+            fieldId: data?.[1]?.fieldId,
+            validation: {
+              required: true,
+            },
+          },
+          {
+            type: 'select_drop_down',
+            label: 'block',
+            name: 'block',
+            coreField: data?.[1]?.coreField,
+            fieldId: data?.[1]?.fieldId,
+            validation: {
+              required: true,
+            },
+          },
+          // {
+          //   type: 'select_drop_down',
+          //   label: 'village',
+          //   name: 'village',
+          //   coreField: data?.[1]?.coreField,
+          //   fieldId: data?.[1]?.fieldId,
+          //   validation: {
+          //     required: true,
+
+          //   },
+          // },
+        ],
+      },
+      {
+        formNumber: 7,
         question: 'q6_login_cred',
         fields: [
           {
@@ -210,7 +237,7 @@ export const registerSchema = async (data) => {
         ],
       },
       {
-        formNumber: 7,
+        formNumber: 8,
         question: '',
         fields: [
           {
@@ -223,7 +250,7 @@ export const registerSchema = async (data) => {
         ],
       },
       {
-        formNumber: 8,
+        formNumber: 9,
         question: '',
         fields: [
           {

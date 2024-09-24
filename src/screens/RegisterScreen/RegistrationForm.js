@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Image,
@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   Text,
   ScrollView,
+  BackHandler,
 } from 'react-native';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -21,17 +22,27 @@ import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
+import Geolocation from 'react-native-geolocation-service';
 
 //multi language
 import { useTranslation } from '../../context/LanguageContext';
 
 import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
 import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
-import { saveToken, translateLanguage } from '../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  saveToken,
+  translateLanguage,
+} from '../../utils/JsHelper/Helper';
 import PlainText from '../../components/PlainText/PlainText';
 import PlainTcText from '../../components/PlainText/PlainTcText';
 import { transformPayload } from './TransformPayload';
-import { registerUser, userExist } from '../../utils/API/AuthService';
+import {
+  getGeoLocation,
+  registerUser,
+  reverseGeocode,
+  userExist,
+} from '../../utils/API/AuthService';
 import { getAccessToken } from '../../utils/API/ApiCalls';
 import globalStyles from '../../utils/Helper/Style';
 import CustomRadioCard from '../../components/CustomRadioCard/CustomRadioCard';
@@ -87,18 +98,16 @@ const buildYupSchema = (form, currentForm, t) => {
             );
           }
           break;
-        case 'select':
-          validator = yup.lazy((value) =>
-            typeof value === 'object'
-              ? yup.object({
-                  value: yup
-                    .string()
-                    .required(`${t(field.name)} ${t('is_required')}`),
-                })
-              : yup.string().required(`${t(field.name)} ${t('is_required')}`)
-          );
+        case 'select_drop_down':
+          validator = yup.string();
+          if (field.validation.required) {
+            validator = validator.required(
+              `${t(field.name)} ${t('is_required')}`
+            );
+          }
           break;
         case 'radio':
+        case 'select':
           validator = yup.lazy((value) =>
             typeof value === 'object'
               ? yup.object({
@@ -190,10 +199,13 @@ const RegistrationForm = ({ schema }) => {
 
   const currentschema = stepSchema[currentForm - 1];
 
+  // console.log(JSON.stringify(stepSchema));
+
   const {
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(currentschema),
@@ -211,17 +223,21 @@ const RegistrationForm = ({ schema }) => {
     },
   });
 
-  const states = {
+  const programData = {
     options: [
-      { label: 'maharashtra', value: 'maharashtra' },
-      { label: 'kerala', value: 'kerala' },
-      { label: 'delhi', value: 'delhi' },
+      {
+        tenantId: 'd8b6634f-a9a9-404b-8771-0c1ebff36d96',
+        name: 'YothNet',
+        domain: 'pratham.shiksha.com',
+        description: 'sdadasdsa',
+        images: [],
+      },
     ],
   };
 
   const onSubmit = async (data) => {
-    const payload = await transformPayload(data);
     console.log(JSON.stringify(data));
+    // const payload = await transformPayload(data);
     const token = await getAccessToken();
     // await saveToken(token);
     const register = await registerUser(payload);
@@ -246,6 +262,78 @@ const RegistrationForm = ({ schema }) => {
       navigation.navigate('Dashboard');
     }
   };
+
+  const programValue = watch('program') || null;
+  const stateValue = watch('state') || null;
+  const districtValue = watch('district') || null;
+
+  console.log({ stateValue, districtValue });
+
+  function addOptionsToField(formObject, fieldName, newOptions) {
+    // Find the field in the 'fields' array where the name or label matches the given fieldName
+    const field = formObject.fields.find(
+      (field) => field.name === fieldName || field.label === fieldName
+    );
+
+    // If the field is found, add the new options
+    if (field) {
+      field.options = newOptions;
+    }
+
+    // Return the updated formObject
+    return formObject;
+  }
+
+  const fetchDistricts = async () => {
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'districts',
+      controllingfieldfk: stateValue?.value || stateValue,
+    };
+    const geoData = JSON.parse(await getDataFromStorage('geoData'));
+    const data = await getGeoLocation({ payload });
+    const foundDistrict = data?.values?.find(
+      (item) => item?.label === geoData?.state_district
+    );
+
+    const district = {
+      label: foundDistrict?.label,
+      value: foundDistrict?.value,
+    };
+    console.log({ district });
+    setValue('district', district);
+    const newSchema = addOptionsToField(
+      currentSchema,
+      'district',
+      data?.values
+    );
+    currentSchema = newSchema;
+  };
+
+  const fetchBlock = async () => {
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'blocks',
+      controllingfieldfk: districtValue?.value,
+    };
+    const data = await getGeoLocation({ payload });
+    const newSchema = addOptionsToField(currentSchema, 'block', data?.values);
+    currentSchema = newSchema;
+  };
+
+  useEffect(() => {
+    if (!districtValue) {
+      fetchDistricts();
+    }
+  }, [stateValue]);
+
+  useEffect(() => {
+    if (districtValue) {
+      fetchBlock();
+    }
+  }, [districtValue]);
 
   const renderFields = (fields) => {
     return fields?.map((field) => {
@@ -290,7 +378,7 @@ const RegistrationForm = ({ schema }) => {
           return (
             <View key={field.name} style={styles.inputContainer}>
               <CustomRadioCard
-                field={field}
+                field={programData}
                 name={field.name}
                 errors={errors}
                 control={control}
@@ -304,7 +392,7 @@ const RegistrationForm = ({ schema }) => {
           return (
             <View key={field.name} style={styles.inputContainer}>
               <DropdownSelect
-                field={states}
+                field={field || districts}
                 name={field.name}
                 errors={errors}
                 control={control}
@@ -359,9 +447,19 @@ const RegistrationForm = ({ schema }) => {
     });
   };
 
-  const nextForm = (data) => {
+  const nextForm = async (data) => {
+    let nextFormNumber = currentForm + 1;
+
+    // Skip a specific form, e.g., form number 4
+    if (
+      currentForm === 4 &&
+      programValue == 'd8b6634f-a9a9-404b-8771-0c1ebff36d96'
+    ) {
+      nextFormNumber = 6; // Skip form number 4 and move to form 5
+    }
+
     if (currentForm < schema?.length) {
-      setCurrentForm(currentForm + 1);
+      setCurrentForm(nextFormNumber);
     }
 
     if (currentForm === 3) {
@@ -369,18 +467,55 @@ const RegistrationForm = ({ schema }) => {
       const fullName = `${data.first_name}${data.last_name}${randomThreeDigitNumber}`;
       setValue('username', fullName);
     }
-  };
 
-  const prevForm = () => {
-    if (currentForm > 1) {
-      setCurrentForm(currentForm - 1);
-      setIsDisable(true);
-    } else {
-      navigation.goBack();
+    if (currentForm === 2) {
+      const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
+      const geoData = JSON.parse(await getDataFromStorage('geoData'));
+      const foundState = stateAPIdata.find(
+        (item) => item?.label === geoData?.state
+      );
+
+      const state = {
+        label: foundState?.label,
+        value: foundState?.value,
+      };
+
+      setValue('state', state);
     }
   };
 
-  const currentSchema = schema?.find((form) => form.formNumber === currentForm);
+  const prevForm = () => {
+    let prevFormNumber = currentForm - 1;
+
+    if (
+      currentForm === 6 &&
+      programValue === 'd8b6634f-a9a9-404b-8771-0c1ebff36d96'
+    ) {
+      prevFormNumber = 4; // Skip form number 4 and move to form 5
+    }
+
+    if (currentForm > 1) {
+      setCurrentForm(prevFormNumber);
+      setIsDisable(true);
+      return true; // Indicates that the back action has been handled
+    } else {
+      navigation.goBack();
+      return false; // Indicates that the back action should continue (exit)
+    }
+  };
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      prevForm
+    );
+
+    return () => {
+      backHandler.remove();
+    };
+  }, [currentForm]);
+
+  let currentSchema = schema?.find((form) => form.formNumber === currentForm);
 
   return (
     <KeyboardAvoidingView
@@ -401,21 +536,40 @@ const RegistrationForm = ({ schema }) => {
         questionIndex={currentForm}
         totalForms={schema?.length}
       />
-
-      <View style={{ flex: 1 }}>
+      {currentForm === 6 && (
+        <>
+          <Text style={[globalStyles.text, { marginLeft: 20 }]}>
+            {t('location_des')}
+          </Text>
+          <View
+            style={{
+              padding: 15,
+              borderRadius: 20,
+              backgroundColor: '#EDE1CF',
+              marginTop: 10,
+            }}
+          >
+            <Text style={[globalStyles.text]}>{t('location_des2')}</Text>
+          </View>
+        </>
+      )}
+      <ScrollView style={{ flex: 1 }}>
         {schema
           ?.filter((form) => form.formNumber === currentForm)
           ?.map((form) => (
             <View key={form.formNumber}>{renderFields(form.fields)}</View>
           ))}
-
-        {/* {currentForm === 1 && (
-          <Text style={globalStyles.text}>
-            It will help us stay connected and share important updates
+        {currentForm === 1 && (
+          <Text style={[globalStyles.text, { marginLeft: 20, marginTop: -10 }]}>
+            {t('phone_des')}
           </Text>
-        )} */}
-      </View>
-
+        )}
+      </ScrollView>
+      {currentForm === 3 && (
+        <Text style={[globalStyles.text, { marginLeft: 20, marginBottom: 10 }]}>
+          {t('language_help')}
+        </Text>
+      )}
       <View style={styles.buttonContainer}>
         <RenderBtn
           currentForm={currentForm}
@@ -473,11 +627,11 @@ const RenderBtn = ({
   const { t } = useTranslation();
 
   const renderContent = () => {
-    if (currentForm !== 7 && currentForm < schema?.length) {
+    if (currentForm !== 8 && currentForm < schema?.length) {
       return (
         <PrimaryButton text={t('continue')} onPress={handleSubmit(nextForm)} />
       );
-    } else if (currentForm === 7) {
+    } else if (currentForm === 8) {
       return (
         <SafeAreaView style={{ justifyContent: 'space-between', height: 150 }}>
           <PrimaryButton

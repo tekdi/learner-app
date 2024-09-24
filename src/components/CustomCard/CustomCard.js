@@ -57,6 +57,7 @@ const CustomCards = ({
                 fontFamily: 'Poppins-Regular',
                 width: '100%',
                 marginBottom: 20,
+                marginLeft: 20,
               }}
             >
               {t('gender')}

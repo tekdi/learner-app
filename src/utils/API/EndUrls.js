@@ -31,6 +31,7 @@ const EndUrls = {
   profileDetails: `${API_URL}/user/v1/list`,
   telemetryTracking: TELEMETRY_URL,
   ContentCreate: `${tracking_assessment}/v1/tracking/content/create`,
+  geolocation: `${API_URL}/user/v1/fields/options/read`,
 };
 
 export default EndUrls;
