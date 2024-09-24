@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
- 
   FlatList,
   SafeAreaView,
   StyleSheet,
@@ -29,7 +28,7 @@ const ViewAllContent = ({ route }) => {
         onPress={() => handlePress(item)}
         appIcon={item?.appIcon}
         index={index}
-        setCardWidth={55}
+        setCardWidth={160}
         item={item}
       />
     </View>
@@ -79,6 +78,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '500',
     color: '#785913',
+  },
+  cardContainer: {
+    // borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

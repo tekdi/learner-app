@@ -4,6 +4,7 @@ import {
   BackHandler,
   Image,
   SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -23,7 +24,7 @@ import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 import { contentListApi, getAccessToken } from '../../utils/API/AuthService';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
-
+import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 const Content = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -81,8 +82,8 @@ const Content = () => {
 
   const fetchData = async () => {
     const data = await contentListApi();
-    const user_Info = await getAccessToken();
-    setUserInfo(user_Info);
+    const result = JSON.parse(await getDataFromStorage('profileData'));
+    setUserInfo(result?.getUserDetails);
     setData(data?.content);
     setLoading(false);
   };
@@ -95,11 +96,16 @@ const Content = () => {
           <ActivityIndicator style={{ top: 300 }} />
         ) : (
           <SafeAreaView>
+            <StatusBar
+              barStyle="dark-content"
+              translucent={true}
+              backgroundColor="transparent"
+            />
             <Text style={styles.text}>{t('Learning_Content')}</Text>
             <View style={styles.view2}>
               <Image source={wave} resizeMode="contain" />
               <Text style={styles.text2}>
-                {t('welcome')}, {userInfo?.result?.name} !
+                {t('welcome')}, {userInfo?.[0]?.name} !
               </Text>
             </View>
             <SyncCard doneSync={fetchData} />
