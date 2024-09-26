@@ -15,7 +15,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[0]?.coreField,
             fieldId: data?.[0]?.fieldId,
             validation: {
-              // required: true,
+              required: true,
               pattern: /^[A-Za-z]+$/, // Only letters, no numbers
               minLength: 3,
               maxLength: 30,
@@ -28,7 +28,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[1]?.coreField,
             fieldId: data?.[1]?.fieldId,
             validation: {
-              // required: true,
+              required: true,
               pattern: /^[A-Za-z]+$/, // Only letters, no numbers
               minLength: 3,
               maxLength: 30,
@@ -38,16 +38,12 @@ export const registerSchema = async (data, states) => {
             type: 'number',
             label: 'phone_number',
             name: 'mobile',
-            coreField: data?.[1]?.coreField,
-            fieldId: data?.[1]?.fieldId,
+            coreField: data?.[2]?.coreField,
+            fieldId: data?.[2]?.fieldId,
             validation: {
-              // required: true,
-              // pattern: data?.[1]?.pattern, // Only letters, no numbers
-              // minLength: data?.[1]?.minLength,
-              // maxLength: data?.[1]?.maxLength,
-
+              required: true,
               pattern: /^[0-9]{10}$/, // Only numbers,
-              minLength: 3,
+              minLength: 10,
               maxLength: 10,
             },
           },
@@ -60,11 +56,11 @@ export const registerSchema = async (data, states) => {
           {
             type: 'number',
             label: 'age',
-            name: data?.[2]?.name.replace(/ /g, '_').toLowerCase(),
-            coreField: data?.[2]?.coreField,
-            fieldId: data?.[2]?.fieldId,
+            name: 'age',
+            coreField: data?.[3]?.coreField,
+            fieldId: data?.[3]?.fieldId,
             validation: {
-              //required: true,
+              required: true,
               pattern: /^[0-9]+$/, // Only letters, no numbers
               minLength: 1,
               maxLength: 2,
@@ -72,63 +68,63 @@ export const registerSchema = async (data, states) => {
           },
           {
             type: 'select',
-            label: data?.[3]?.label,
-            name: data?.[3]?.name,
-            coreField: data?.[3]?.coreField,
-            fieldId: data?.[3]?.fieldId,
-            options: data?.[3]?.options,
-            validation: {
-              //required: true,
-            },
-          },
-        ],
-      },
-      {
-        formNumber: 3,
-        question: 'q4_language',
-        fields: [
-          {
-            type: 'select',
             label: data?.[4]?.label,
-            name: data?.[4]?.name.replace(/ /g, '_'),
+            name: data?.[4]?.name,
             coreField: data?.[4]?.coreField,
             fieldId: data?.[4]?.fieldId,
             options: data?.[4]?.options,
-            validation: {
-              //required: true,
-            },
-          },
-        ],
-      },
-
-      {
-        formNumber: 4,
-        question: 'which_program_do_you_want_to_enroll_to',
-        fields: [
-          {
-            type: 'radio',
-            label: 'program',
-            name: 'program',
-            // coreField: data?.[4]?.coreField,
-            // fieldId: data?.[4]?.fieldId,
-            // options: data?.[4]?.options,
             validation: {
               required: true,
             },
           },
         ],
       },
+      // {
+      //   formNumber: 3,
+      //   question: 'q4_language',
+      //   fields: [
+      //     {
+      //       type: 'select',
+      //       label: data?.[5]?.label,
+      //       name: data?.[5]?.name.replace(/ /g, '_'),
+      //       coreField: data?.[5]?.coreField,
+      //       fieldId: data?.[5]?.fieldId,
+      //       options: data?.[5]?.options,
+      //       validation: {
+      //         required: true,
+      //       },
+      //     },
+      //   ],
+      // },
+
+      // {
+      //   formNumber: 4,
+      //   question: 'which_program_do_you_want_to_enroll_to',
+      //   fields: [
+      //     {
+      //       type: 'radio',
+      //       label: 'program',
+      //       name: 'program',
+      //       // coreField: data?.[4]?.coreField,
+      //       // fieldId: data?.[4]?.fieldId,
+      //       // options: data?.[4]?.options,
+      //       validation: {
+      //         required: true,
+      //       },
+      //     },
+      //   ],
+      // },
       {
-        formNumber: 5,
+        formNumber: 3,
         question: 'q5_interested_in',
         fields: [
           {
-            type: data?.[5]?.type,
-            label: data?.[5]?.label,
-            name: data?.[5]?.name.replace(/ /g, '_'),
-            coreField: data?.[5]?.coreField,
-            fieldId: data?.[5]?.fieldId,
-            options: data?.[5]?.options,
+            type: data?.[9]?.type,
+            label: data?.[9]?.label,
+            name: data?.[9]?.name.replace(/ /g, '_'),
+            coreField: data?.[9]?.coreField,
+            fieldId: data?.[9]?.fieldId,
+            options: data?.[9]?.options,
             validation: {
               minSelection: 3,
               maxSelection: 6,
@@ -136,65 +132,65 @@ export const registerSchema = async (data, states) => {
           },
         ],
       },
-      {
-        formNumber: 6,
-        question: 'where_are_you_located',
-        fields: [
-          {
-            type: 'select_drop_down',
-            label: 'state',
-            name: 'state',
-            coreField: data?.[1]?.coreField,
-            fieldId: data?.[1]?.fieldId,
-            options: states,
-            validation: {
-              required: true,
-            },
-          },
-          {
-            type: 'select_drop_down',
-            label: 'district',
-            name: 'district',
-            coreField: data?.[1]?.coreField,
-            fieldId: data?.[1]?.fieldId,
-            validation: {
-              required: true,
-            },
-          },
-          {
-            type: 'select_drop_down',
-            label: 'block',
-            name: 'block',
-            coreField: data?.[1]?.coreField,
-            fieldId: data?.[1]?.fieldId,
-            validation: {
-              required: true,
-            },
-          },
-          // {
-          //   type: 'select_drop_down',
-          //   label: 'village',
-          //   name: 'village',
-          //   coreField: data?.[1]?.coreField,
-          //   fieldId: data?.[1]?.fieldId,
-          //   validation: {
-          //     required: true,
+      // {
+      //   formNumber: 6,
+      //   question: 'where_are_you_located',
+      //   fields: [
+      //     {
+      //       type: 'select_drop_down',
+      //       label: 'state',
+      //       name: 'state',
+      //       coreField: data?.[6]?.coreField,
+      //       fieldId: data?.[6]?.fieldId,
+      //       options: states,
+      //       validation: {
+      //         required: true,
+      //       },
+      //     },
+      //     {
+      //       type: 'select_drop_down',
+      //       label: 'district',
+      //       name: 'district',
+      //       coreField: data?.[7]?.coreField,
+      //       fieldId: data?.[7]?.fieldId,
+      //       validation: {
+      //         required: true,
+      //       },
+      //     },
+      //     {
+      //       type: 'select_drop_down',
+      //       label: 'block',
+      //       name: 'block',
+      //       coreField: data?.[8]?.coreField,
+      //       fieldId: data?.[8]?.fieldId,
+      //       validation: {
+      //         required: true,
+      //       },
+      //     },
+      //     // {
+      //     //   type: 'select_drop_down',
+      //     //   label: 'village',
+      //     //   name: 'village',
+      //     //   coreField: data?.[1]?.coreField,
+      //     //   fieldId: data?.[1]?.fieldId,
+      //     //   validation: {
+      //     //     required: true,
 
-          //   },
-          // },
-        ],
-      },
+      //     //   },
+      //     // },
+      //   ],
+      // },
       {
-        formNumber: 7,
+        formNumber: 4,
         question: 'q6_login_cred',
         fields: [
           {
-            type: data?.[6]?.type,
-            label: data?.[6]?.label.toLowerCase(),
-            name: data?.[6]?.name.toLowerCase(),
-            coreField: data?.[6]?.coreField,
-            fieldId: data?.[6]?.fieldId,
-            placeholder: data?.[6]?.placeholder,
+            type: data?.[10]?.type,
+            label: data?.[10]?.label.toLowerCase(),
+            name: data?.[10]?.name.toLowerCase(),
+            coreField: data?.[10]?.coreField,
+            fieldId: data?.[10]?.fieldId,
+            placeholder: data?.[10]?.placeholder,
             validation: {
               required: true,
               // minLength: data?.[6]?.minLength,
@@ -205,11 +201,11 @@ export const registerSchema = async (data, states) => {
           },
           {
             type: 'password',
-            label: data?.[7]?.label.toLowerCase(),
-            name: data?.[7]?.name.toLowerCase(),
-            coreField: data?.[7]?.coreField,
-            fieldId: data?.[7]?.fieldId,
-            placeholder: data?.[7]?.placeholder,
+            label: data?.[11]?.label.toLowerCase(),
+            name: data?.[11]?.name.toLowerCase(),
+            coreField: data?.[11]?.coreField,
+            fieldId: data?.[11]?.fieldId,
+            placeholder: data?.[11]?.placeholder,
             validation: {
               required: true,
               // minLength: data?.[7]?.minLength,
@@ -220,11 +216,11 @@ export const registerSchema = async (data, states) => {
           },
           {
             type: 'password',
-            label: data?.[8]?.name.replace(/ /g, '_').toLowerCase(),
-            name: data?.[8]?.name.replace(/ /g, '_').toLowerCase(),
-            coreField: data?.[8]?.coreField,
-            fieldId: data?.[8]?.fieldId,
-            placeholder: data?.[8]?.placeholder,
+            label: data?.[12]?.name.replace(/ /g, '_').toLowerCase(),
+            name: data?.[12]?.name.replace(/ /g, '_').toLowerCase(),
+            coreField: data?.[12]?.coreField,
+            fieldId: data?.[12]?.fieldId,
+            placeholder: data?.[12]?.placeholder,
             validation: {
               required: true,
               // minLength: data?.[8]?.minLength,
@@ -236,21 +232,21 @@ export const registerSchema = async (data, states) => {
           },
         ],
       },
+      // {
+      //   formNumber: 8,
+      //   question: '',
+      //   fields: [
+      //     {
+      //       type: 'plain_text',
+      //       label: '',
+      //       name: '',
+      //       coreField: '',
+      //       fieldId: null,
+      //     },
+      //   ],
+      // },
       {
-        formNumber: 8,
-        question: '',
-        fields: [
-          {
-            type: 'plain_text',
-            label: '',
-            name: '',
-            coreField: '',
-            fieldId: null,
-          },
-        ],
-      },
-      {
-        formNumber: 9,
+        formNumber: 5,
         question: '',
         fields: [
           {

@@ -47,6 +47,7 @@ import { getAccessToken } from '../../utils/API/ApiCalls';
 import globalStyles from '../../utils/Helper/Style';
 import CustomRadioCard from '../../components/CustomRadioCard/CustomRadioCard';
 import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
+import Config from 'react-native-config';
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -99,12 +100,15 @@ const buildYupSchema = (form, currentForm, t) => {
           }
           break;
         case 'select_drop_down':
-          validator = yup.string();
-          if (field.validation.required) {
-            validator = validator.required(
-              `${t(field.name)} ${t('is_required')}`
-            );
-          }
+          validator = yup.lazy((value) =>
+            typeof value === 'object'
+              ? yup.object({
+                  value: yup
+                    .string()
+                    .required(`${t(field.name)} ${t('is_required')}`),
+                })
+              : yup.string().required(`${t(field.name)} ${t('is_required')}`)
+          );
           break;
         case 'radio':
         case 'select':
@@ -128,13 +132,13 @@ const buildYupSchema = (form, currentForm, t) => {
           if (field.validation.minLength) {
             validator = validator.min(
               field.validation.minLength,
-              `${t(field.name)} ${t('min')} ${t(field.validation.minLength)} ${t('characters')}`
+              `${t(field.name)} ${t('min')} ${t(field.validation.minLength)} ${t('numbers')}`
             );
           }
           if (field.validation.maxLength) {
             validator = validator.max(
               field.validation.maxLength,
-              `${t(field.label)} ${t('max')} ${t(field.validation.maxLength)} ${t('characters')}`
+              `${t(field.label)} ${t('max')} ${t(field.validation.maxLength)} ${t('numbers')}`
             );
           }
           if (field.validation.pattern) {
@@ -223,28 +227,33 @@ const RegistrationForm = ({ schema }) => {
     },
   });
 
-  const programData = {
-    options: [
-      {
-        tenantId: 'd8b6634f-a9a9-404b-8771-0c1ebff36d96',
-        name: 'YothNet',
-        domain: 'pratham.shiksha.com',
-        description: 'sdadasdsa',
-        images: [],
-      },
-    ],
-  };
+  // const TENANT_ID = Config.TENANT_ID;
+
+  // console.log({ TENANT_ID });
+
+  // const programData = {
+  //   options: [
+  //     {
+  //       tenantId: TENANT_ID,
+  //       name: 'YouthNet',
+  //       domain: 'pratham.shiksha.com',
+  //       description: 'Description',
+  //       images: [],
+  //     },
+  //   ],
+  // };
 
   const onSubmit = async (data) => {
-    console.log(JSON.stringify(data));
-    // const payload = await transformPayload(data);
+    const payload = await transformPayload(data);
     const token = await getAccessToken();
     // await saveToken(token);
     const register = await registerUser(payload);
+
     if (register?.params?.status === 'failed') {
       Alert.alert(
         'Error',
-        'something_went_wrong_try_again_later',
+        `${register?.params?.err}`,
+
         [
           {
             text: 'Cancel',
@@ -253,87 +262,84 @@ const RegistrationForm = ({ schema }) => {
           },
           {
             text: 'OK',
-            onPress: () => navigation.navigate('LoginSignUpScreen'), // Replace 'TargetScreen' with your screen name
+            onPress: () => prevForm, // Replace 'TargetScreen' with your screen name
           },
         ],
         { cancelable: false }
       );
     } else {
-      navigation.navigate('Dashboard');
+      navigation.navigate('LoginScreen');
     }
   };
 
-  const programValue = watch('program') || null;
-  const stateValue = watch('state') || null;
-  const districtValue = watch('district') || null;
+  // const programValue = watch('program') || null;
+  // const stateValue = watch('state') || null;
+  // const districtValue = watch('district') || null;
 
-  console.log({ stateValue, districtValue });
+  // function addOptionsToField(formObject, fieldName, newOptions) {
+  //   // Find the field in the 'fields' array where the name or label matches the given fieldName
+  //   const field = formObject.fields.find(
+  //     (field) => field.name === fieldName || field.label === fieldName
+  //   );
 
-  function addOptionsToField(formObject, fieldName, newOptions) {
-    // Find the field in the 'fields' array where the name or label matches the given fieldName
-    const field = formObject.fields.find(
-      (field) => field.name === fieldName || field.label === fieldName
-    );
+  //   // If the field is found, add the new options
+  //   if (field) {
+  //     field.options = newOptions;
+  //   }
 
-    // If the field is found, add the new options
-    if (field) {
-      field.options = newOptions;
-    }
+  //   // Return the updated formObject
+  //   return formObject;
+  // }
 
-    // Return the updated formObject
-    return formObject;
-  }
+  // const fetchDistricts = async () => {
+  //   const payload = {
+  //     // limit: 10,
+  //     offset: 0,
+  //     fieldName: 'districts',
+  //     controllingfieldfk: stateValue?.value || stateValue,
+  //   };
+  //   const geoData = JSON.parse(await getDataFromStorage('geoData'));
+  //   const data = await getGeoLocation({ payload });
+  //   const foundDistrict = data?.values?.find(
+  //     (item) => item?.label === geoData?.state_district
+  //   );
 
-  const fetchDistricts = async () => {
-    const payload = {
-      // limit: 10,
-      offset: 0,
-      fieldName: 'districts',
-      controllingfieldfk: stateValue?.value || stateValue,
-    };
-    const geoData = JSON.parse(await getDataFromStorage('geoData'));
-    const data = await getGeoLocation({ payload });
-    const foundDistrict = data?.values?.find(
-      (item) => item?.label === geoData?.state_district
-    );
+  //   const district = {
+  //     label: foundDistrict?.label,
+  //     value: foundDistrict?.value,
+  //   };
+  //   if (!districtValue) {
+  //     setValue('district', district);
+  //   }
+  //   const newSchema = addOptionsToField(
+  //     currentSchema,
+  //     'district',
+  //     data?.values
+  //   );
+  //   currentSchema = newSchema;
+  // };
 
-    const district = {
-      label: foundDistrict?.label,
-      value: foundDistrict?.value,
-    };
-    console.log({ district });
-    setValue('district', district);
-    const newSchema = addOptionsToField(
-      currentSchema,
-      'district',
-      data?.values
-    );
-    currentSchema = newSchema;
-  };
+  // const fetchBlock = async () => {
+  //   const payload = {
+  //     // limit: 10,
+  //     offset: 0,
+  //     fieldName: 'blocks',
+  //     controllingfieldfk: districtValue?.value,
+  //   };
+  //   const data = await getGeoLocation({ payload });
+  //   const newSchema = addOptionsToField(currentSchema, 'block', data?.values);
+  //   currentSchema = newSchema;
+  // };
 
-  const fetchBlock = async () => {
-    const payload = {
-      // limit: 10,
-      offset: 0,
-      fieldName: 'blocks',
-      controllingfieldfk: districtValue?.value,
-    };
-    const data = await getGeoLocation({ payload });
-    const newSchema = addOptionsToField(currentSchema, 'block', data?.values);
-    currentSchema = newSchema;
-  };
+  // useEffect(() => {
+  //   fetchDistricts();
+  // }, [stateValue]);
 
-  useEffect(() => {
-    if (!districtValue) {
-      fetchDistricts();
-    }
-  }, [stateValue]);
-
-  useEffect(() => {
-    if (districtValue) {
-      fetchBlock();
-    }
-  }, [districtValue]);
+  // useEffect(() => {
+  //   if (districtValue) {
+  //     fetchBlock();
+  //   }
+  // }, [districtValue]);
 
   const renderFields = (fields) => {
     return fields?.map((field) => {
@@ -399,6 +405,7 @@ const RegistrationForm = ({ schema }) => {
                 secureTextEntry={true}
                 setSelectedIds={setSelectedIds}
                 selectedIds={selectedIds}
+                setValue={setValue}
               />
             </View>
           );
@@ -451,48 +458,42 @@ const RegistrationForm = ({ schema }) => {
     let nextFormNumber = currentForm + 1;
 
     // Skip a specific form, e.g., form number 4
-    if (
-      currentForm === 4 &&
-      programValue == 'd8b6634f-a9a9-404b-8771-0c1ebff36d96'
-    ) {
-      nextFormNumber = 6; // Skip form number 4 and move to form 5
-    }
+    // if (currentForm === 4 && programValue == TENANT_ID) {
+    //   nextFormNumber = 6; // Skip form number 4 and move to form 5
+    // }
 
     if (currentForm < schema?.length) {
       setCurrentForm(nextFormNumber);
     }
 
-    if (currentForm === 3) {
+    if (currentForm === 2) {
       const randomThreeDigitNumber = Math.floor(Math.random() * 900) + 100;
       const fullName = `${data.first_name}${data.last_name}${randomThreeDigitNumber}`;
-      setValue('username', fullName);
+      setValue('username', fullName.toLowerCase());
     }
 
-    if (currentForm === 2) {
-      const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
-      const geoData = JSON.parse(await getDataFromStorage('geoData'));
-      const foundState = stateAPIdata.find(
-        (item) => item?.label === geoData?.state
-      );
+    // if (currentForm === 2) {
+    //   const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
+    //   const geoData = JSON.parse(await getDataFromStorage('geoData'));
+    //   const foundState = stateAPIdata.find(
+    //     (item) => item?.label === geoData?.state
+    //   );
 
-      const state = {
-        label: foundState?.label,
-        value: foundState?.value,
-      };
+    //   const state = {
+    //     label: foundState?.label,
+    //     value: foundState?.value,
+    //   };
 
-      setValue('state', state);
-    }
+    //   setValue('state', state);
+    // }
   };
 
   const prevForm = () => {
     let prevFormNumber = currentForm - 1;
 
-    if (
-      currentForm === 6 &&
-      programValue === 'd8b6634f-a9a9-404b-8771-0c1ebff36d96'
-    ) {
-      prevFormNumber = 4; // Skip form number 4 and move to form 5
-    }
+    // if (currentForm === 6 && programValue === TENANT_ID) {
+    //   prevFormNumber = 4; // Skip form number 4 and move to form 5
+    // }
 
     if (currentForm > 1) {
       setCurrentForm(prevFormNumber);

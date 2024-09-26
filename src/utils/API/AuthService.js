@@ -131,8 +131,10 @@ export const registerUser = async (params = {}) => {
   try {
     const method = 'POST'; // Define the HTTP method
     const url = `${EndUrls.learner_register}`; // Define the URL
-    const headers = await getHeaders(); // Get headers
-
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
     // Log the cURL command
     // console.log(
     //   `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(params)}'`
@@ -163,7 +165,37 @@ export const contentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        primaryCategory: ['course'],
+        se_boards: ['west bengal board of secondary education'],
+        se_mediums: ['english'],
+        se_gradeLevels: ['class 10', 'class 09', 'class 08'],
+        primaryCategory: [
+          'Collection',
+          'Resource',
+          'Content Playlist',
+          'Course',
+          'Course Assessment',
+          'Digital Textbook',
+          'eTextbook',
+          'Explanation Content',
+          'Learning Resource',
+          'Lesson Plan Unit',
+          'Practice Question Set',
+          'Teacher Resource',
+          'Textbook Unit',
+          'LessonPlan',
+          'FocusSpot',
+          'Learning Outcome Definition',
+          'Curiosity Questions',
+          'MarkingSchemeRubric',
+          'ExplanationResource',
+          'ExperientialResource',
+          'Practice Resource',
+          'TVLesson',
+          'Course Unit',
+          'Program',
+          'Project',
+          'improvementProject',
+        ],
         visibility: ['Default', 'Parent'],
       },
       limit: 100,

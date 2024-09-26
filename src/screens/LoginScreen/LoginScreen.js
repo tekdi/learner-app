@@ -21,7 +21,6 @@ import {
   getUserId,
   saveAccessToken,
   saveRefreshToken,
-
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 import LoginTextField from '../../components/LoginTextField/LoginTextField';
@@ -61,6 +60,7 @@ const LoginScreen = () => {
         password: password,
       };
       const data = await login(payload);
+
       if (data?.params?.status !== 'failed') {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
@@ -68,16 +68,19 @@ const LoginScreen = () => {
         const profileData = await getProfileDetails({
           userId: user_id,
         });
+
         await setDataInStorage('profileData', JSON.stringify(profileData));
         await setDataInStorage(
           'Username',
           profileData?.getUserDetails?.[0]?.username
         );
+
         await setDataInStorage('userId', user_id);
         const cohort = await getCohort({ user_id });
+
         await setDataInStorage('cohortData', JSON.stringify(cohort));
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-        await setDataInStorage('cohortId', cohort_id);
+        await setDataInStorage('cohortId', cohort_id || '');
         navigation.navigate('Dashboard');
       } else {
         setLoading(false);

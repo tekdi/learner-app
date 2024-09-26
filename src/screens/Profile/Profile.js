@@ -18,7 +18,6 @@ import {
   capitalizeFirstLetter,
   deleteSavedItem,
   getDataFromStorage,
-
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 
@@ -32,10 +31,13 @@ const Profile = (props) => {
   const createNewObject = (customFields, labels) => {
     const result = {};
     customFields?.forEach((field) => {
-      if (labels.includes(field.label)) {
-        result[field.label] = field.value || '';
+      const cleanedFieldLabel = field?.label?.replace(/[^a-zA-Z0-9_ ]/g, '');
+
+      if (labels.includes(cleanedFieldLabel)) {
+        result[cleanedFieldLabel] = field.value || '';
       }
     });
+
     setUserDetails(result);
     return result;
   };
@@ -43,8 +45,9 @@ const Profile = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       const result = JSON.parse(await getDataFromStorage('profileData'));
+
       const requiredLabels = [
-        'GENDER',
+        'WHATS_YOUR_GENDER',
         'CLASS_OR_LAST_PASSED_GRADE',
         'STATES',
         'DISTRICTS',
@@ -88,7 +91,6 @@ const Profile = (props) => {
         <ScrollView style={globalStyles.container}>
           <View style={styles.view}>
             <Text style={globalStyles.heading}>{t('my_profile')}</Text>
-           
           </View>
 
           <View>
@@ -102,7 +104,7 @@ const Profile = (props) => {
                   text={`${t('state')}, ${t('district')}, ${t('block')}, ${t('unit')}`}
                 />
                 <TextField
-                  text={`${userDetails?.STATES}  ${userDetails?.DISTRICTS || ''} ${userDetails?.BLOCKS || ''}`}
+                  text={`${userDetails?.STATES || '-'}  ${userDetails?.DISTRICTS || ''} ${userDetails?.BLOCKS || ''}`}
                 />
               </View>
               <View>
@@ -123,7 +125,7 @@ const Profile = (props) => {
               </View>
               <View>
                 <Label text={`${t('gender')} `} />
-                <TextField text={userDetails?.GENDER} />
+                <TextField text={`${userDetails?.WHATS_YOUR_GENDER}`} />
               </View>
             </View>
           </View>

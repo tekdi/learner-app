@@ -68,7 +68,7 @@ const TabScreen = () => {
       <Tab.Screen
         name="AssessmentStack"
         component={AssessmentStack}
-        options={{ tabBarLabel: t('Assessment') }}
+        options={{ tabBarLabel: t('assessment') }}
       />
       {/* <Tab.Screen
         name="Courses"
