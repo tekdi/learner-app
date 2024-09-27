@@ -48,6 +48,7 @@ const ContentList = ({ route }) => {
       } finally {
         setLoading(false);
       }
+      setLoading(false);
     };
 
     fetchData();

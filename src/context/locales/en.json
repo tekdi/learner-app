@@ -102,6 +102,7 @@
   "Todays_Top_Pick": "Today's Top Pick",
   "Art": "Art",
   "Assessments": "Assessments",
+  "assessment": "Assessment",
   "PreTest": "Pre Test",
   "PostTest": "Post Test",
   "Inprogress": "In Progress",
@@ -180,5 +181,6 @@
   "optional_content_des": "Get access open content & courses to enhance your knowledge on various topics. You can enroll into a program at any time later.",
   "where_are_you_located": "Where are you located?",
   "location_des": "This will help us to show you the nearest skilling centers to your location",
-  "location_des2": "! Make sure to cross check the state, district, block, village"
+  "location_des2": "! Make sure to cross check the state, district, block, village",
+  "numbers": "numbers"
 }
