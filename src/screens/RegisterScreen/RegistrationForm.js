@@ -31,14 +31,21 @@ import InterestedCardsComponent from '../../components/InterestedComponents/Inte
 import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
 import {
   getDataFromStorage,
+  getUserId,
+  saveAccessToken,
+  saveRefreshToken,
   saveToken,
+  setDataInStorage,
   translateLanguage,
 } from '../../utils/JsHelper/Helper';
 import PlainText from '../../components/PlainText/PlainText';
 import PlainTcText from '../../components/PlainText/PlainTcText';
 import { transformPayload } from './TransformPayload';
 import {
+  getCohort,
   getGeoLocation,
+  getProfileDetails,
+  login,
   registerUser,
   reverseGeocode,
   userExist,
@@ -243,6 +250,35 @@ const RegistrationForm = ({ schema }) => {
   //   ],
   // };
 
+  const RegisterLogin = async (loginData) => {
+    const payload = {
+      username: loginData?.username,
+      password: loginData?.password,
+    };
+
+    const data = await login(payload);
+    await saveRefreshToken(data?.refresh_token || '');
+    await saveAccessToken(data?.access_token || '');
+    const user_id = await getUserId();
+    const profileData = await getProfileDetails({
+      userId: user_id,
+    });
+
+    await setDataInStorage('profileData', JSON.stringify(profileData));
+    await setDataInStorage(
+      'Username',
+      profileData?.getUserDetails?.[0]?.username
+    );
+
+    await setDataInStorage('userId', user_id);
+    const cohort = await getCohort({ user_id });
+
+    await setDataInStorage('cohortData', JSON.stringify(cohort));
+    const cohort_id = cohort?.cohortData?.[0]?.cohortId;
+    await setDataInStorage('cohortId', cohort_id || '');
+    navigation.navigate('Dashboard');
+  };
+
   const onSubmit = async (data) => {
     const payload = await transformPayload(data);
     const token = await getAccessToken();
@@ -268,7 +304,7 @@ const RegistrationForm = ({ schema }) => {
         { cancelable: false }
       );
     } else {
-      navigation.navigate('LoginScreen');
+      await RegisterLogin(data);
     }
   };
 
