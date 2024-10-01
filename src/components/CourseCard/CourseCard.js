@@ -10,30 +10,13 @@ import {
   View,
 } from 'react-native';
 import FastImage from '@changwoolab/react-native-fast-image';
-import download from '../../assets/images/png/download.png';
-import download_inprogress from '../../assets/images/png/download_inprogress.png';
-import download_complete from '../../assets/images/png/download_complete.png';
 import globalStyles from '../../utils/Helper/Style';
 import { ProgressBar } from '@ui-kitten/components';
+import StatusCard from '../StatusCard/StatusCard';
 
-const ContentCard = ({
-  onPress,
-  style,
-  setCardWidth,
-  index,
-  item,
-  appIcon,
-}) => {
+const CourseCard = ({ onPress, style, setCardWidth, index, item, appIcon }) => {
   const { width } = Dimensions.get('window');
   const cardWidth = setCardWidth;
-  const [downloadIcon, setDownloadIcon] = useState(download);
-
-  const handleDownload = () => {
-    setDownloadIcon(download_inprogress);
-    setTimeout(() => {
-      setDownloadIcon(download_complete);
-    }, 1000);
-  };
 
   const backgroundImages = [
     require('../../assets/images/CardBackground/abstract_01.png'),
@@ -45,6 +28,9 @@ const ContentCard = ({
 
   const backgroundImage = backgroundImages[index % backgroundImages.length];
 
+  console.log('identifier', item?.identifier);
+  console.log('item', item?.leafNodes);
+
   return (
     <Pressable
       onPress={onPress}
@@ -54,21 +40,6 @@ const ContentCard = ({
         { width: cardWidth, backgroundColor: 'transparent' },
       ]}
     >
-      <View style={styles.cardTitle}>
-        <FastImage
-          style={styles.cardTitleImage}
-          source={require('../../assets/images/png/cardtitle.png')}
-          resizeMode={FastImage.resizeMode.cover}
-          priority={FastImage.priority.high}
-        />
-        <Text
-          style={styles.cardTitleText}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {item?.primaryCategory}
-        </Text>
-      </View>
       <View style={styles.cardBackground}>
         <FastImage
           style={styles.cardBackgroundImage}
@@ -76,74 +47,44 @@ const ContentCard = ({
           resizeMode={FastImage.resizeMode.cover}
           priority={FastImage.priority.high}
         />
-      </View>
-      <View style={styles.circleContainer}>
-        <FastImage
-          style={styles.image}
-          source={
-            appIcon
-              ? { uri: appIcon, priority: FastImage.priority.high }
-              : require('../../assets/images/png/book.png')
-          }
-          resizeMode={FastImage.resizeMode.cover} // Adjust to cover the circular area
-          priority={FastImage.priority.high}
-        />
+        <View style={styles.downloadView}>
+          <StatusCard status="inprogress" />
+        </View>
       </View>
       <View style={styles.name}>
         <Text
-          style={[globalStyles.text, { width: '60%' }]}
-          numberOfLines={1}
+          style={[globalStyles.text, { width: '80%', fontWeight: 700 }]}
+          numberOfLines={2}
           ellipsizeMode="tail"
         >
           {item?.name}
         </Text>
+        <Text
+          style={[globalStyles.text, { width: '80%', marginVertical: 10 }]}
+          numberOfLines={3}
+          ellipsizeMode="tail"
+        >
+          {item?.description}
+        </Text>
       </View>
-      <Text
-        style={[
-          globalStyles.text,
-          {
-            width: '100%',
-            alignSelf: 'flex-start',
-            backgroundColor: '#e0f5ea',
-            paddingHorizontal: 5,
-            color: '#008840',
-          },
-        ]}
-        numberOfLines={1}
-        ellipsizeMode="tail"
-      >
-        {item?.orgDetails?.orgName}
-      </Text>
-
-      {/* <View style={styles.downloadView}>
-        <ProgressBar progress={0.3} width={100} />
-        <TouchableOpacity onPress={handleDownload}>
-          <Image
-            style={styles.img}
-            source={downloadIcon}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-      </View> */}
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    height: 180,
+    height: 200,
     backgroundColor: '#e0e0e0',
     borderRadius: 8,
-    padding: 16,
     alignItems: 'center',
     borderWidth: 1,
     margin: 10,
   },
   cardBackground: {
     width: '100%',
-    height: 60,
+    height: 70,
     borderRadius: 8,
-    overflow: 'hidden',
+    // overflow: 'hidden',
   },
   cardBackgroundImage: {
     width: '100%',
@@ -205,20 +146,14 @@ const styles = StyleSheet.create({
   },
   name: {
     width: '100%',
-    height: '100%',
     // borderWidth: 1,
-    position: 'absolute',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    top: 20,
+    paddingLeft: 10,
   },
   downloadView: {
-    flexDirection: 'row',
-    bottom: 15,
-    // borderWidth: 1,
-    alignItems: 'flex-end',
-    width: '100%',
-    justifyContent: 'space-between',
+    // top: 0,
+    bottom: 70,
   },
   img: {
     width: 30,
@@ -227,7 +162,7 @@ const styles = StyleSheet.create({
   },
 });
 
-ContentCard.propTypes = {
+CourseCard.propTypes = {
   onPress: PropTypes.func,
   style: PropTypes.object,
   setCardWidth: PropTypes.any,
@@ -236,4 +171,4 @@ ContentCard.propTypes = {
   appIcon: PropTypes.any,
 };
 
-export default ContentCard;
+export default CourseCard;

@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DashboardStack from './DashboardStack';
-import Courses from '../screens/Dashboard/Courses';
+import Contents from '../screens/Dashboard/Contents';
 import Profile from '../screens/Profile/Profile';
 import AssessmentStack from './AssessmentStack';
 
@@ -63,18 +63,18 @@ const TabScreen = () => {
       <Tab.Screen
         name="DashboardStack"
         component={DashboardStack}
-        options={{ tabBarLabel: t('content') }}
+        options={{ tabBarLabel: t('courses') }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="AssessmentStack"
         component={AssessmentStack}
         options={{ tabBarLabel: t('assessment') }}
-      />
-      {/* <Tab.Screen
-        name="Courses"
-        component={Courses}
-        options={{ tabBarLabel: t('courses') }}
       /> */}
+      <Tab.Screen
+        name="AssessmentStack"
+        component={Contents}
+        options={{ tabBarLabel: t('content') }}
+      />
       <Tab.Screen
         name="Profile"
         component={Profile}
