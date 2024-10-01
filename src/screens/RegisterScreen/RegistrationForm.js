@@ -58,6 +58,7 @@ import CustomRadioCard from '../../components/CustomRadioCard/CustomRadioCard';
 import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
 import Config from 'react-native-config';
 import FastImage from '@changwoolab/react-native-fast-image';
+import { CheckBox } from '@ui-kitten/components';
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -205,6 +206,7 @@ const RegistrationForm = ({ schema }) => {
   const navigation = useNavigation();
   const [selectedIds, setSelectedIds] = useState({});
   const [isDisable, setIsDisable] = useState(true);
+
   const [currentForm, setCurrentForm] = useState(1);
   const [modal, setModal] = useState(false);
 
@@ -596,7 +598,7 @@ const RegistrationForm = ({ schema }) => {
           </View>
         </>
       )}
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }} nestedScrollEnabled>
         {schema
           ?.filter((form) => form.formNumber === currentForm)
           ?.map((form) => (
@@ -608,11 +610,6 @@ const RegistrationForm = ({ schema }) => {
           </Text>
         )}
       </ScrollView>
-      {currentForm === 3 && (
-        <Text style={[globalStyles.text, { marginLeft: 20, marginBottom: 10 }]}>
-          {t('language_help')}
-        </Text>
-      )}
       <View style={styles.buttonContainer}>
         <RenderBtn
           currentForm={currentForm}
@@ -707,6 +704,8 @@ const RenderBtn = ({
   isDisable,
 }) => {
   const { t } = useTranslation();
+  const [isBtnDisable, setIsBtnDisable] = useState(true);
+  const [checked, setChecked] = useState(false);
 
   const renderContent = () => {
     if (currentForm !== 8 && currentForm < schema?.length) {
@@ -731,12 +730,33 @@ const RenderBtn = ({
     } else {
       return (
         <>
+          <View style={[globalStyles.flexrow, { marginVertical: 15 }]}>
+            <CheckBox
+              checked={checked}
+              onChange={(nextChecked) => {
+                setChecked(nextChecked);
+                setIsBtnDisable(!isBtnDisable);
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+                color: '#000',
+                marginLeft: 10,
+                width: '90%',
+              }}
+            >
+              {t('T&C_12')}
+            </Text>
+          </View>
           <PrimaryButton
-            isDisabled={isDisable}
+            isDisabled={isBtnDisable}
             text={t('create_account')}
             onPress={handleSubmit(onSubmit)}
           />
-          <Text style={{ color: 'black', marginVertical: 10 }}>
+          <Text
+            style={{ color: 'black', marginVertical: 10, textAlign: 'center' }}
+          >
             {t('T&C_13')}
           </Text>
         </>

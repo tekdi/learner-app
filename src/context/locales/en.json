@@ -87,7 +87,7 @@
   "office_email": "Email:dataprotectionofficer@pratham.org",
   "office_phone": "Phone no: 011-26177200 | www.pratham.org | CIN: U80101MH2002NPL136300",
   "T&C_12": "I have read and agree to the Privacy Policy.and I consent to the collection and use of my personal data as described in the Consent Form.",
-  "T&C_13": "You can request for data deletion, updating, or changes any time from the contact details provided in ‘Data & Privacy Center in the profile page.",
+  "T&C_13": "You can request for data deletion, updating, or changes any time from the contact details provided in 'Data & Privacy Center' in the profile page.",
   "username_already_exists": "Username already exists",
   "something_went_wrong_try_again_later": "Something went wrong, please try again later.",
   "Learning_Content": "Learning Content",
@@ -139,8 +139,8 @@
   "last_passed_grade": "Last Passed Grade",
   "age": "Age",
   "en": "EN",
-  "hi": "हि",
-  "ma": "मा",
+  "hi": "हिं",
+  "ma": "म",
   "ba": "বা",
   "te": "తె.",
   "ka": "ಕಾ.",
@@ -187,5 +187,7 @@
   "transgender": "Transgender",
   "other": "Other",
   "read_more": "Read More",
-  "congratulations": "Congratulations, You are now registered to Second Chance Program!"
+  "congratulations": "Congratulations, You are now registered to Second Chance Program!",
+  "can_only_contain_numbers": "can only contain numbers",
+  "mobile": "Mobile"
 }

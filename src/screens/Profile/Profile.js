@@ -83,6 +83,8 @@ const Profile = (props) => {
     fetchData();
   };
 
+  console.log({ userData });
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <SecondaryHeader logo />
@@ -126,7 +128,9 @@ const Profile = (props) => {
               </View>
               <View>
                 <Label text={`${t('gender')} `} />
-                <TextField text={`${userDetails?.WHATS_YOUR_GENDER}`} />
+                <TextField
+                  text={`${capitalizeFirstLetter(userDetails?.WHATS_YOUR_GENDER)}`}
+                />
               </View>
             </View>
           </View>
