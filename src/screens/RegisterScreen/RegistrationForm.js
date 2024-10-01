@@ -11,6 +11,8 @@ import {
   Text,
   ScrollView,
   BackHandler,
+  Modal,
+  Button,
 } from 'react-native';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -55,6 +57,7 @@ import globalStyles from '../../utils/Helper/Style';
 import CustomRadioCard from '../../components/CustomRadioCard/CustomRadioCard';
 import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
 import Config from 'react-native-config';
+import FastImage from '@changwoolab/react-native-fast-image';
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -203,6 +206,7 @@ const RegistrationForm = ({ schema }) => {
   const [selectedIds, setSelectedIds] = useState({});
   const [isDisable, setIsDisable] = useState(true);
   const [currentForm, setCurrentForm] = useState(1);
+  const [modal, setModal] = useState(false);
 
   const stepSchema = schema?.map((form) =>
     buildYupSchema(form, currentForm, t)
@@ -276,6 +280,7 @@ const RegistrationForm = ({ schema }) => {
     await setDataInStorage('cohortData', JSON.stringify(cohort));
     const cohort_id = cohort?.cohortData?.[0]?.cohortId;
     await setDataInStorage('cohortId', cohort_id || '');
+    setModal(false);
     navigation.navigate('Dashboard');
   };
 
@@ -304,6 +309,7 @@ const RegistrationForm = ({ schema }) => {
         { cancelable: false }
       );
     } else {
+      setModal(true);
       await RegisterLogin(data);
     }
   };
@@ -502,7 +508,7 @@ const RegistrationForm = ({ schema }) => {
       setCurrentForm(nextFormNumber);
     }
 
-    if (currentForm === 2) {
+    if (currentForm === 1) {
       const randomThreeDigitNumber = Math.floor(Math.random() * 900) + 100;
       const fullName = `${data.first_name}${data.last_name}${randomThreeDigitNumber}`;
       setValue('username', fullName.toLowerCase());
@@ -617,6 +623,28 @@ const RegistrationForm = ({ schema }) => {
           isDisable={isDisable}
         />
       </View>
+      {modal && (
+        <Modal transparent={true} animationType="slide">
+          <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
+            <View style={styles.alertBox}>
+              <FastImage
+                style={styles.image}
+                source={require('../../assets/images/gif/party.gif')}
+                resizeMode={FastImage.resizeMode.contain}
+                priority={FastImage.priority.high} // Set the priority here
+              />
+              <Text
+                style={[
+                  globalStyles.heading2,
+                  { marginVertical: 10, textAlign: 'center' },
+                ]}
+              >
+                {t('congratulations')}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
     </KeyboardAvoidingView>
   );
 };
@@ -644,7 +672,24 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 4,
   },
-  backbutton: {},
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  alertBox: {
+    width: 300,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+    padding: 10,
+  },
+  image: {
+    margin: 20,
+    height: 60,
+    width: 60,
+  },
 });
 
 RegistrationForm.propTypes = {
