@@ -26,8 +26,8 @@
   "q2_op_3": "10 - 14 years",
   "q2_op_4": "14 and above",
   "gender": "Gender",
-  "FEMALE": "Female",
-  "MALE": "Male",
+  "female": "Female",
+  "male": "Male",
   "q4_language": "Preferred language of learning?",
   "q5_interested_in": "What type of content are your interested in?",
   "interested_content": "What type of content are your interested in?",
@@ -183,5 +183,9 @@
   "location_des": "This will help us to show you the nearest skilling centers to your location",
   "location_des2": "! Make sure to cross check the state, district, block, village",
   "numbers": "numbers",
-  "course_modules": "Course Modules"
+  "course_modules": "Course Modules",
+  "transgender": "Transgender",
+  "other": "Other",
+  "read_more": "Read More",
+  "congratulations": "Congratulations, You are now registered to Second Chance Program!"
 }

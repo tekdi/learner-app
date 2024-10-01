@@ -114,24 +114,24 @@ export const registerSchema = async (data, states) => {
       //     },
       //   ],
       // },
-      {
-        formNumber: 3,
-        question: 'q5_interested_in',
-        fields: [
-          {
-            type: data?.[9]?.type,
-            label: data?.[9]?.label,
-            name: data?.[9]?.name.replace(/ /g, '_'),
-            coreField: data?.[9]?.coreField,
-            fieldId: data?.[9]?.fieldId,
-            options: data?.[9]?.options,
-            validation: {
-              minSelection: 3,
-              maxSelection: 6,
-            },
-          },
-        ],
-      },
+      // {
+      //   formNumber: 3,
+      //   question: 'q5_interested_in',
+      //   fields: [
+      //     {
+      //       type: data?.[9]?.type,
+      //       label: data?.[9]?.label,
+      //       name: data?.[9]?.name.replace(/ /g, '_'),
+      //       coreField: data?.[9]?.coreField,
+      //       fieldId: data?.[9]?.fieldId,
+      //       options: data?.[9]?.options,
+      //       validation: {
+      //         minSelection: 3,
+      //         maxSelection: 6,
+      //       },
+      //     },
+      //   ],
+      // },
       // {
       //   formNumber: 6,
       //   question: 'where_are_you_located',
@@ -181,7 +181,7 @@ export const registerSchema = async (data, states) => {
       //   ],
       // },
       {
-        formNumber: 4,
+        formNumber: 3,
         question: 'q6_login_cred',
         fields: [
           {
@@ -246,7 +246,7 @@ export const registerSchema = async (data, states) => {
       //   ],
       // },
       {
-        formNumber: 5,
+        formNumber: 4,
         question: '',
         fields: [
           {
