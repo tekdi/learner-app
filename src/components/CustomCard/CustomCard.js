@@ -4,11 +4,15 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
+import female from '../../assets/images/png/female.png';
+import male from '../../assets/images/png/male.png';
+import transgender from '../../assets/images/png/transgender.png';
 
 const CustomCards = ({
   field,
@@ -63,9 +67,9 @@ const CustomCards = ({
               {t('gender')}
             </Text>
           )}
-          {field.options.map((option) => (
+          {field.options.map((option, index) => (
             <TouchableOpacity
-              key={option.value}
+              key={index}
               onPress={() => handlePress(name, option.value)}
               style={[
                 styles.card,
@@ -73,20 +77,35 @@ const CustomCards = ({
                   styles.selectedCard,
               ]}
             >
+              <Image
+                source={
+                  option.label == 'FEMALE'
+                    ? female
+                    : option.label == 'MALE'
+                      ? male
+                      : option.label == 'TRANSGENDER'
+                        ? transgender
+                        : ''
+                }
+              />
               <Text
                 style={[
                   {
                     color: 'black',
-                    fontSize: 20,
+                    fontSize: 16,
                     fontFamily: 'Poppins-Regular',
-                    textAlign: 'center',
+                    // textAlign: 'center',
+                    width: '60%',
+                    marginLeft: 5,
                   },
                   selectedIds[name]?.value === option.value && {
                     fontFamily: 'Poppins-Medium',
                   },
                 ]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
               >
-                {t(option.label)}
+                {t(option.label.toLowerCase())}
               </Text>
             </TouchableOpacity>
           ))}
@@ -121,11 +140,13 @@ const styles = StyleSheet.create({
     padding: 7,
     borderRadius: 10,
     height: 60,
-    width: 150,
+    width: '40%',
     borderWidth: 1,
     borderColor: '#D0C5B4',
-    justifyContent: 'center',
+    // justifyContent: 'center',
     paddingLeft: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   selectedCard: {
     backgroundColor: '#FEEDA1',

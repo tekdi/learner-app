@@ -37,7 +37,7 @@ PrimaryButton.propTypes = {
 const styles = StyleSheet.create({
   buttontext: {
     textAlign: 'center',
-    fontSize: 16,
+    fontSize: 14.5,
     color: 'black',
     width: '100%',
     fontFamily: 'Poppins-Medium',

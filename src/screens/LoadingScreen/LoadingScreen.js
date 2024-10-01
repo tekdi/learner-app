@@ -50,7 +50,8 @@ const LoadingScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    checkLocationPermissionAndGPS();
+    // checkLocationPermissionAndGPS();
+    navigation.replace('LanguageScreen');
   }, [navigation]);
 
   return <Loading />;

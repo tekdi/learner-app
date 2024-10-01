@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   list: {
-    height: '60%',
+    height: '55%',
     marginTop: 20,
   },
   gif_image: {

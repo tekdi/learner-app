@@ -33,6 +33,8 @@ const RegisterScreen = () => {
           position.coords.latitude,
           position.coords.longitude
         );
+        // console.log(data);
+
         setDataInStorage('geoData', JSON.stringify(data?.address));
       },
       (error) => {
@@ -46,6 +48,7 @@ const RegisterScreen = () => {
     const fetchData = async () => {
       const data = await getStudentForm();
       const states = await fetchstates();
+      setDataInStorage('studentForm', JSON.stringify(data?.fields));
       let schema = await registerSchema(data?.fields, states);
       getLocation();
       setMainSchema(schema);

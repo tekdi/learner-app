@@ -18,9 +18,9 @@ import {
   capitalizeFirstLetter,
   deleteSavedItem,
   getDataFromStorage,
-
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
+import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 
 const Profile = (props) => {
   const { t } = useTranslation();
@@ -32,10 +32,13 @@ const Profile = (props) => {
   const createNewObject = (customFields, labels) => {
     const result = {};
     customFields?.forEach((field) => {
-      if (labels.includes(field.label)) {
-        result[field.label] = field.value || '';
+      const cleanedFieldLabel = field?.label?.replace(/[^a-zA-Z0-9_ ]/g, '');
+
+      if (labels.includes(cleanedFieldLabel)) {
+        result[cleanedFieldLabel] = field.value || '';
       }
     });
+
     setUserDetails(result);
     return result;
   };
@@ -43,8 +46,9 @@ const Profile = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       const result = JSON.parse(await getDataFromStorage('profileData'));
+
       const requiredLabels = [
-        'GENDER',
+        'WHATS_YOUR_GENDER',
         'CLASS_OR_LAST_PASSED_GRADE',
         'STATES',
         'DISTRICTS',
@@ -79,16 +83,17 @@ const Profile = (props) => {
     fetchData();
   };
 
+  console.log({ userData });
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Header />
+      <SecondaryHeader logo />
       {loading ? (
         <ActiveLoading />
       ) : (
         <ScrollView style={globalStyles.container}>
           <View style={styles.view}>
             <Text style={globalStyles.heading}>{t('my_profile')}</Text>
-           
           </View>
 
           <View>
@@ -97,14 +102,14 @@ const Profile = (props) => {
                 <Label text={`${t('full_name')}`} />
                 <TextField text={capitalizeFirstLetter(userData?.name)} />
               </View>
-              <View>
+              {/* <View>
                 <Label
                   text={`${t('state')}, ${t('district')}, ${t('block')}, ${t('unit')}`}
                 />
                 <TextField
-                  text={`${userDetails?.STATES}  ${userDetails?.DISTRICTS || ''} ${userDetails?.BLOCKS || ''}`}
+                  text={`${userDetails?.STATES || '-'}  ${userDetails?.DISTRICTS || ''} ${userDetails?.BLOCKS || ''}`}
                 />
-              </View>
+              </View> */}
               <View>
                 <Label text={`${t('enrollment_number')}`} />
                 <TextField text={userData?.username} />
@@ -113,17 +118,19 @@ const Profile = (props) => {
                 <Label text={`${t('contact_number')}`} />
                 <TextField text={userData?.mobile} />
               </View>
-              <View>
+              {/* <View>
                 <Label text={`${t('class')} (${t('last_passed_grade')})`} />
                 <TextField text={userDetails?.CLASS_OR_LAST_PASSED_GRADE} />
-              </View>
+              </View> */}
               <View>
                 <Label text={`${t('age')} `} />
                 <TextField text={userDetails?.AGE} />
               </View>
               <View>
                 <Label text={`${t('gender')} `} />
-                <TextField text={userDetails?.GENDER} />
+                <TextField
+                  text={`${capitalizeFirstLetter(userDetails?.WHATS_YOUR_GENDER)}`}
+                />
               </View>
             </View>
           </View>

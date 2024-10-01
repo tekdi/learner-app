@@ -11,6 +11,8 @@ import {
   Text,
   ScrollView,
   BackHandler,
+  Modal,
+  Button,
 } from 'react-native';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -31,14 +33,21 @@ import InterestedCardsComponent from '../../components/InterestedComponents/Inte
 import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
 import {
   getDataFromStorage,
+  getUserId,
+  saveAccessToken,
+  saveRefreshToken,
   saveToken,
+  setDataInStorage,
   translateLanguage,
 } from '../../utils/JsHelper/Helper';
 import PlainText from '../../components/PlainText/PlainText';
 import PlainTcText from '../../components/PlainText/PlainTcText';
 import { transformPayload } from './TransformPayload';
 import {
+  getCohort,
   getGeoLocation,
+  getProfileDetails,
+  login,
   registerUser,
   reverseGeocode,
   userExist,
@@ -47,6 +56,9 @@ import { getAccessToken } from '../../utils/API/ApiCalls';
 import globalStyles from '../../utils/Helper/Style';
 import CustomRadioCard from '../../components/CustomRadioCard/CustomRadioCard';
 import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
+import Config from 'react-native-config';
+import FastImage from '@changwoolab/react-native-fast-image';
+import { CheckBox } from '@ui-kitten/components';
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -99,12 +111,15 @@ const buildYupSchema = (form, currentForm, t) => {
           }
           break;
         case 'select_drop_down':
-          validator = yup.string();
-          if (field.validation.required) {
-            validator = validator.required(
-              `${t(field.name)} ${t('is_required')}`
-            );
-          }
+          validator = yup.lazy((value) =>
+            typeof value === 'object'
+              ? yup.object({
+                  value: yup
+                    .string()
+                    .required(`${t(field.name)} ${t('is_required')}`),
+                })
+              : yup.string().required(`${t(field.name)} ${t('is_required')}`)
+          );
           break;
         case 'radio':
         case 'select':
@@ -128,13 +143,13 @@ const buildYupSchema = (form, currentForm, t) => {
           if (field.validation.minLength) {
             validator = validator.min(
               field.validation.minLength,
-              `${t(field.name)} ${t('min')} ${t(field.validation.minLength)} ${t('characters')}`
+              `${t(field.name)} ${t('min')} ${t(field.validation.minLength)} ${t('numbers')}`
             );
           }
           if (field.validation.maxLength) {
             validator = validator.max(
               field.validation.maxLength,
-              `${t(field.label)} ${t('max')} ${t(field.validation.maxLength)} ${t('characters')}`
+              `${t(field.label)} ${t('max')} ${t(field.validation.maxLength)} ${t('numbers')}`
             );
           }
           if (field.validation.pattern) {
@@ -191,7 +206,9 @@ const RegistrationForm = ({ schema }) => {
   const navigation = useNavigation();
   const [selectedIds, setSelectedIds] = useState({});
   const [isDisable, setIsDisable] = useState(true);
+
   const [currentForm, setCurrentForm] = useState(1);
+  const [modal, setModal] = useState(false);
 
   const stepSchema = schema?.map((form) =>
     buildYupSchema(form, currentForm, t)
@@ -223,28 +240,63 @@ const RegistrationForm = ({ schema }) => {
     },
   });
 
-  const programData = {
-    options: [
-      {
-        tenantId: 'd8b6634f-a9a9-404b-8771-0c1ebff36d96',
-        name: 'YothNet',
-        domain: 'pratham.shiksha.com',
-        description: 'sdadasdsa',
-        images: [],
-      },
-    ],
+  // const TENANT_ID = Config.TENANT_ID;
+
+  // console.log({ TENANT_ID });
+
+  // const programData = {
+  //   options: [
+  //     {
+  //       tenantId: TENANT_ID,
+  //       name: 'YouthNet',
+  //       domain: 'pratham.shiksha.com',
+  //       description: 'Description',
+  //       images: [],
+  //     },
+  //   ],
+  // };
+
+  const RegisterLogin = async (loginData) => {
+    const payload = {
+      username: loginData?.username,
+      password: loginData?.password,
+    };
+
+    const data = await login(payload);
+    await saveRefreshToken(data?.refresh_token || '');
+    await saveAccessToken(data?.access_token || '');
+    const user_id = await getUserId();
+    const profileData = await getProfileDetails({
+      userId: user_id,
+    });
+
+    await setDataInStorage('profileData', JSON.stringify(profileData));
+    await setDataInStorage(
+      'Username',
+      profileData?.getUserDetails?.[0]?.username
+    );
+
+    await setDataInStorage('userId', user_id);
+    const cohort = await getCohort({ user_id });
+
+    await setDataInStorage('cohortData', JSON.stringify(cohort));
+    const cohort_id = cohort?.cohortData?.[0]?.cohortId;
+    await setDataInStorage('cohortId', cohort_id || '');
+    setModal(false);
+    navigation.navigate('Dashboard');
   };
 
   const onSubmit = async (data) => {
-    console.log(JSON.stringify(data));
-    // const payload = await transformPayload(data);
+    const payload = await transformPayload(data);
     const token = await getAccessToken();
     // await saveToken(token);
     const register = await registerUser(payload);
+
     if (register?.params?.status === 'failed') {
       Alert.alert(
         'Error',
-        'something_went_wrong_try_again_later',
+        `${register?.params?.err}`,
+
         [
           {
             text: 'Cancel',
@@ -253,87 +305,85 @@ const RegistrationForm = ({ schema }) => {
           },
           {
             text: 'OK',
-            onPress: () => navigation.navigate('LoginSignUpScreen'), // Replace 'TargetScreen' with your screen name
+            onPress: () => prevForm, // Replace 'TargetScreen' with your screen name
           },
         ],
         { cancelable: false }
       );
     } else {
-      navigation.navigate('Dashboard');
+      setModal(true);
+      await RegisterLogin(data);
     }
   };
 
-  const programValue = watch('program') || null;
-  const stateValue = watch('state') || null;
-  const districtValue = watch('district') || null;
+  // const programValue = watch('program') || null;
+  // const stateValue = watch('state') || null;
+  // const districtValue = watch('district') || null;
 
-  console.log({ stateValue, districtValue });
+  // function addOptionsToField(formObject, fieldName, newOptions) {
+  //   // Find the field in the 'fields' array where the name or label matches the given fieldName
+  //   const field = formObject.fields.find(
+  //     (field) => field.name === fieldName || field.label === fieldName
+  //   );
 
-  function addOptionsToField(formObject, fieldName, newOptions) {
-    // Find the field in the 'fields' array where the name or label matches the given fieldName
-    const field = formObject.fields.find(
-      (field) => field.name === fieldName || field.label === fieldName
-    );
+  //   // If the field is found, add the new options
+  //   if (field) {
+  //     field.options = newOptions;
+  //   }
 
-    // If the field is found, add the new options
-    if (field) {
-      field.options = newOptions;
-    }
+  //   // Return the updated formObject
+  //   return formObject;
+  // }
 
-    // Return the updated formObject
-    return formObject;
-  }
+  // const fetchDistricts = async () => {
+  //   const payload = {
+  //     // limit: 10,
+  //     offset: 0,
+  //     fieldName: 'districts',
+  //     controllingfieldfk: stateValue?.value || stateValue,
+  //   };
+  //   const geoData = JSON.parse(await getDataFromStorage('geoData'));
+  //   const data = await getGeoLocation({ payload });
+  //   const foundDistrict = data?.values?.find(
+  //     (item) => item?.label === geoData?.state_district
+  //   );
 
-  const fetchDistricts = async () => {
-    const payload = {
-      // limit: 10,
-      offset: 0,
-      fieldName: 'districts',
-      controllingfieldfk: stateValue?.value || stateValue,
-    };
-    const geoData = JSON.parse(await getDataFromStorage('geoData'));
-    const data = await getGeoLocation({ payload });
-    const foundDistrict = data?.values?.find(
-      (item) => item?.label === geoData?.state_district
-    );
+  //   const district = {
+  //     label: foundDistrict?.label,
+  //     value: foundDistrict?.value,
+  //   };
+  //   if (!districtValue) {
+  //     setValue('district', district);
+  //   }
+  //   const newSchema = addOptionsToField(
+  //     currentSchema,
+  //     'district',
+  //     data?.values
+  //   );
+  //   currentSchema = newSchema;
+  // };
 
-    const district = {
-      label: foundDistrict?.label,
-      value: foundDistrict?.value,
-    };
-    console.log({ district });
-    setValue('district', district);
-    const newSchema = addOptionsToField(
-      currentSchema,
-      'district',
-      data?.values
-    );
-    currentSchema = newSchema;
-  };
+  // const fetchBlock = async () => {
+  //   const payload = {
+  //     // limit: 10,
+  //     offset: 0,
+  //     fieldName: 'blocks',
+  //     controllingfieldfk: districtValue?.value,
+  //   };
+  //   const data = await getGeoLocation({ payload });
+  //   const newSchema = addOptionsToField(currentSchema, 'block', data?.values);
+  //   currentSchema = newSchema;
+  // };
 
-  const fetchBlock = async () => {
-    const payload = {
-      // limit: 10,
-      offset: 0,
-      fieldName: 'blocks',
-      controllingfieldfk: districtValue?.value,
-    };
-    const data = await getGeoLocation({ payload });
-    const newSchema = addOptionsToField(currentSchema, 'block', data?.values);
-    currentSchema = newSchema;
-  };
+  // useEffect(() => {
+  //   fetchDistricts();
+  // }, [stateValue]);
 
-  useEffect(() => {
-    if (!districtValue) {
-      fetchDistricts();
-    }
-  }, [stateValue]);
-
-  useEffect(() => {
-    if (districtValue) {
-      fetchBlock();
-    }
-  }, [districtValue]);
+  // useEffect(() => {
+  //   if (districtValue) {
+  //     fetchBlock();
+  //   }
+  // }, [districtValue]);
 
   const renderFields = (fields) => {
     return fields?.map((field) => {
@@ -399,6 +449,7 @@ const RegistrationForm = ({ schema }) => {
                 secureTextEntry={true}
                 setSelectedIds={setSelectedIds}
                 selectedIds={selectedIds}
+                setValue={setValue}
               />
             </View>
           );
@@ -451,48 +502,42 @@ const RegistrationForm = ({ schema }) => {
     let nextFormNumber = currentForm + 1;
 
     // Skip a specific form, e.g., form number 4
-    if (
-      currentForm === 4 &&
-      programValue == 'd8b6634f-a9a9-404b-8771-0c1ebff36d96'
-    ) {
-      nextFormNumber = 6; // Skip form number 4 and move to form 5
-    }
+    // if (currentForm === 4 && programValue == TENANT_ID) {
+    //   nextFormNumber = 6; // Skip form number 4 and move to form 5
+    // }
 
     if (currentForm < schema?.length) {
       setCurrentForm(nextFormNumber);
     }
 
-    if (currentForm === 3) {
+    if (currentForm === 1) {
       const randomThreeDigitNumber = Math.floor(Math.random() * 900) + 100;
       const fullName = `${data.first_name}${data.last_name}${randomThreeDigitNumber}`;
-      setValue('username', fullName);
+      setValue('username', fullName.toLowerCase());
     }
 
-    if (currentForm === 2) {
-      const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
-      const geoData = JSON.parse(await getDataFromStorage('geoData'));
-      const foundState = stateAPIdata.find(
-        (item) => item?.label === geoData?.state
-      );
+    // if (currentForm === 2) {
+    //   const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
+    //   const geoData = JSON.parse(await getDataFromStorage('geoData'));
+    //   const foundState = stateAPIdata.find(
+    //     (item) => item?.label === geoData?.state
+    //   );
 
-      const state = {
-        label: foundState?.label,
-        value: foundState?.value,
-      };
+    //   const state = {
+    //     label: foundState?.label,
+    //     value: foundState?.value,
+    //   };
 
-      setValue('state', state);
-    }
+    //   setValue('state', state);
+    // }
   };
 
   const prevForm = () => {
     let prevFormNumber = currentForm - 1;
 
-    if (
-      currentForm === 6 &&
-      programValue === 'd8b6634f-a9a9-404b-8771-0c1ebff36d96'
-    ) {
-      prevFormNumber = 4; // Skip form number 4 and move to form 5
-    }
+    // if (currentForm === 6 && programValue === TENANT_ID) {
+    //   prevFormNumber = 4; // Skip form number 4 and move to form 5
+    // }
 
     if (currentForm > 1) {
       setCurrentForm(prevFormNumber);
@@ -553,7 +598,7 @@ const RegistrationForm = ({ schema }) => {
           </View>
         </>
       )}
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }} nestedScrollEnabled>
         {schema
           ?.filter((form) => form.formNumber === currentForm)
           ?.map((form) => (
@@ -565,11 +610,6 @@ const RegistrationForm = ({ schema }) => {
           </Text>
         )}
       </ScrollView>
-      {currentForm === 3 && (
-        <Text style={[globalStyles.text, { marginLeft: 20, marginBottom: 10 }]}>
-          {t('language_help')}
-        </Text>
-      )}
       <View style={styles.buttonContainer}>
         <RenderBtn
           currentForm={currentForm}
@@ -580,6 +620,28 @@ const RegistrationForm = ({ schema }) => {
           isDisable={isDisable}
         />
       </View>
+      {modal && (
+        <Modal transparent={true} animationType="slide">
+          <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
+            <View style={styles.alertBox}>
+              <FastImage
+                style={styles.image}
+                source={require('../../assets/images/gif/party.gif')}
+                resizeMode={FastImage.resizeMode.contain}
+                priority={FastImage.priority.high} // Set the priority here
+              />
+              <Text
+                style={[
+                  globalStyles.heading2,
+                  { marginVertical: 10, textAlign: 'center' },
+                ]}
+              >
+                {t('congratulations')}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
     </KeyboardAvoidingView>
   );
 };
@@ -607,7 +669,24 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 4,
   },
-  backbutton: {},
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  alertBox: {
+    width: 300,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+    padding: 10,
+  },
+  image: {
+    margin: 20,
+    height: 60,
+    width: 60,
+  },
 });
 
 RegistrationForm.propTypes = {
@@ -625,6 +704,8 @@ const RenderBtn = ({
   isDisable,
 }) => {
   const { t } = useTranslation();
+  const [isBtnDisable, setIsBtnDisable] = useState(true);
+  const [checked, setChecked] = useState(false);
 
   const renderContent = () => {
     if (currentForm !== 8 && currentForm < schema?.length) {
@@ -649,12 +730,33 @@ const RenderBtn = ({
     } else {
       return (
         <>
+          <View style={[globalStyles.flexrow, { marginVertical: 15 }]}>
+            <CheckBox
+              checked={checked}
+              onChange={(nextChecked) => {
+                setChecked(nextChecked);
+                setIsBtnDisable(!isBtnDisable);
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+                color: '#000',
+                marginLeft: 10,
+                width: '90%',
+              }}
+            >
+              {t('T&C_12')}
+            </Text>
+          </View>
           <PrimaryButton
-            isDisabled={isDisable}
+            isDisabled={isBtnDisable}
             text={t('create_account')}
             onPress={handleSubmit(onSubmit)}
           />
-          <Text style={{ color: 'black', marginVertical: 10 }}>
+          <Text
+            style={{ color: 'black', marginVertical: 10, textAlign: 'center' }}
+          >
             {t('T&C_13')}
           </Text>
         </>
