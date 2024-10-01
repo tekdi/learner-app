@@ -45,6 +45,7 @@ const LoginSignUpScreen = () => {
           onPress={() => {
             nav.navigate('LoginScreen');
           }}
+          style={{ fontSize: 14.5 }}
         />
         <View style={{ padding: 10 }}></View>
         {/* <PrimaryButton

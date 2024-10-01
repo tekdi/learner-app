@@ -19,17 +19,6 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
   const [isScrollEnd, setIsScrollEnd] = useState(false);
   const [showMore, setShowMore] = useState(false); // State for showing more content
 
-  const handleScroll = (event) => {
-    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
-    const paddingToBottom = 20; // You can adjust this value as needed
-
-    const isEnd =
-      contentOffset.y + layoutMeasurement.height >=
-      contentSize.height - paddingToBottom;
-
-    setIsScrollEnd(isEnd);
-  };
-
   const handleReadMore = () => {
     setShowMore(true); // Show the additional text when button is clicked
   };
@@ -42,50 +31,43 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
         {t('button')}
       </Text>
 
-      <ScrollView
-        style={styles.scroll}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        showsVerticalScrollIndicator={true}
-        persistentScrollbar={true}
-      >
-        <Text style={styles.text2}>{t('T&C_1')}</Text>
-        <Text style={styles.text2}>{t('T&C_2')}</Text>
+      <Text style={styles.text2}>{t('T&C_1')}</Text>
+      <Text style={styles.text2}>{t('T&C_2')}</Text>
 
-        {/* Read More Button */}
-        {!showMore && (
-          <Text
-            style={[
-              globalStyles.subHeading,
-              { color: '#0563C1', textAlign: 'center', top: -10 },
-            ]}
-            onPress={handleReadMore}
-          >
-            {t('read_more')}
-          </Text>
-        )}
+      {/* Read More Button */}
+      {!showMore && (
+        <Text
+          style={[
+            globalStyles.subHeading,
+            { color: '#0563C1', textAlign: 'center', top: -10 },
+          ]}
+          onPress={handleReadMore}
+        >
+          {t('read_more')}
+        </Text>
+      )}
 
-        {/* Additional text content shown when "Read More" is clicked */}
-        {showMore && (
-          <>
-            <Text style={styles.text2}>{t('T&C_3')}</Text>
-            <Text style={styles.text2}>{t('T&C_4')}</Text>
-            <Text style={styles.text2}>{t('T&C_5')}</Text>
-            <Text style={styles.text2}>{t('T&C_6')}</Text>
-            <Text style={styles.text2}>{t('T&C_7')}</Text>
-            <Text style={styles.text2}>{t('T&C_8')}</Text>
-            <Text style={styles.text2}>{t('T&C_9')}</Text>
-            <Text style={styles.text2}>{t('T&C_10')}</Text>
-            <Text style={styles.text2}>{t('T&C_11')}</Text>
-            <Text style={styles.text2}>{t('office_adrress')}</Text>
-            <Text style={styles.text2}>{t('office_email')}</Text>
-            <Text style={styles.text2}>{t('office_phone')}</Text>
-          </>
-        )}
+      {/* Additional text content shown when "Read More" is clicked */}
+      {showMore && (
+        <>
+          <Text style={styles.text2}>{t('T&C_3')}</Text>
+          <Text style={styles.text2}>{t('T&C_4')}</Text>
+          <Text style={styles.text2}>{t('T&C_5')}</Text>
+          <Text style={styles.text2}>{t('T&C_6')}</Text>
+          <Text style={styles.text2}>{t('T&C_7')}</Text>
+          <Text style={styles.text2}>{t('T&C_8')}</Text>
+          <Text style={styles.text2}>{t('T&C_9')}</Text>
+          <Text style={styles.text2}>{t('T&C_10')}</Text>
+          <Text style={styles.text2}>{t('T&C_11')}</Text>
+          <Text style={styles.text2}>{t('office_adrress')}</Text>
+          <Text style={styles.text2}>{t('office_email')}</Text>
+          <Text style={styles.text2}>{t('office_phone')}</Text>
+        </>
+      )}
 
-        <HorizontalLine />
-      </ScrollView>
-      <View style={styles.view}>
+      <HorizontalLine />
+
+      {/* <View style={styles.view}>
         <CheckBox
           checked={checked}
           onChange={(nextChecked) => {
@@ -94,7 +76,7 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
           }}
         />
         <Text style={[styles.text3]}>{t('T&C_12')}</Text>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };
