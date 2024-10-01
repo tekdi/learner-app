@@ -8,12 +8,12 @@ import {
   View,
   FlatList,
 } from 'react-native';
-import ContentCard from '../../components/ContentCard/ContentCard';
+import CourseCard from '../CourseCard/CourseCard';
 import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useNavigation } from '@react-navigation/native';
 
-const ContentBox = ({
+const CoursesBox = ({
   ContentData,
   viewAllLink,
   style,
@@ -25,16 +25,16 @@ const ContentBox = ({
 
   const handlePress = (item) => {
     //console.log('Card pressed!', item);
-    navigation.navigate('ContentList', { do_id: item?.identifier });
+    navigation.navigate('CourseContentList', { do_id: item?.identifier });
   };
 
   const renderItem = ({ item, index }) => (
     <View>
-      <ContentCard
+      <CourseCard
         onPress={() => handlePress(item)}
         appIcon={item?.appIcon}
         index={index}
-        setCardWidth={250}
+        setCardWidth={160}
         item={item}
       />
     </View>
@@ -51,7 +51,7 @@ const ContentBox = ({
         <Text style={[styles.description, { color: 'black' }]}>
           {t(description)}
         </Text>
-        <View style={styles.view}>
+        {/* <View style={styles.view}>
           <TouchableOpacity onPress={viewAllLink}>
             <Text style={[styles.description, { color: '#0D599E' }]}>
               {t('view_all')}
@@ -63,16 +63,17 @@ const ContentBox = ({
             color={'#0D599E'}
             size={20}
           />
-        </View>
+        </View> */}
       </View>
       <FlatList
         data={ContentData}
         renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-        horizontal={true} // Enable horizontal scrolling
-        showsHorizontalScrollIndicator={false} // Hide horizontal scroll indicator if desired
-        initialNumToRender={3} // Adjust the number of items to render initially
-        maxToRenderPerBatch={3} // Number of items rendered per batch
+        keyExtractor={(item) => item?.identifier}
+        // horizontal={true} // Enable horizontal scrolling
+        initialNumToRender={10} // Adjust the number of items to render initially
+        maxToRenderPerBatch={10} // Number of items rendered per batch
+        numColumns={2}
+        windowSize={21} // Controls the number of items rendered around the current index
       />
     </SafeAreaView>
   );
@@ -80,8 +81,8 @@ const ContentBox = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 20,
-    marginVertical: 10,
+    height: '85%',
+    // borderWidth: 1,
   },
   title: {
     fontSize: 20,
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
   },
 });
 
-ContentBox.propTypes = {
+CoursesBox.propTypes = {
   title: PropTypes.string,
   style: PropTypes.object,
   description: PropTypes.string,
@@ -109,4 +110,4 @@ ContentBox.propTypes = {
   ContentData: PropTypes.array.isRequired,
 };
 
-export default ContentBox;
+export default CoursesBox;

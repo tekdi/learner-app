@@ -16,16 +16,17 @@ import {
   useNavigationState,
 } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
-import ScrollViewLayout from '../../components/Layout/ScrollViewLayout';
-import { useTranslation } from '../../context/LanguageContext';
-import wave from '../../assets/images/png/wave.png';
-import ContentBox from '../../components/ContentBox/ContentBox';
-import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
-import { contentListApi, getAccessToken } from '../../utils/API/AuthService';
-import SyncCard from '../../components/SyncComponent/SyncCard';
-import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
-import { getDataFromStorage } from '../../utils/JsHelper/Helper';
-const Content = () => {
+import ScrollViewLayout from '../../../components/Layout/ScrollViewLayout';
+import { useTranslation } from '../../../context/LanguageContext';
+import wave from '../../../assets/images/png/wave.png';
+import CoursesBox from '../../../components/CoursesBox/CoursesBox';
+import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
+import { contentListApi, getAccessToken } from '../../../utils/API/AuthService';
+import SyncCard from '../../../components/SyncComponent/SyncCard';
+import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
+import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
+
+const Courses = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
@@ -70,12 +71,6 @@ const Content = () => {
     navigation.navigate('Preference');
   };
 
-  /*useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );*/
-
   useEffect(() => {
     fetchData();
   }, [navigation]);
@@ -89,8 +84,8 @@ const Content = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, top: 40 }}>
-      {/* <Header /> */}
+    <SafeAreaView style={{ flex: 1 }}>
+      <SecondaryHeader logo />
       <View style={styles.view}>
         {loading ? (
           <ActivityIndicator style={{ top: 300 }} />
@@ -101,7 +96,7 @@ const Content = () => {
               translucent={true}
               backgroundColor="transparent"
             />
-            <Text style={styles.text}>{t('Learning_Content')}</Text>
+            <Text style={styles.text}>{t('courses')}</Text>
             <View style={styles.view2}>
               <Image source={wave} resizeMode="contain" />
               <Text style={styles.text2}>
@@ -110,20 +105,19 @@ const Content = () => {
             </View>
             <SyncCard doneSync={fetchData} />
 
-            <ScrollViewLayout horizontalScroll={false}>
-              <ContentBox
-                title={'Continue_Learning'}
-                description={'Food_Production'}
-                style={{ titlecolor: '#06A816' }}
-                viewAllLink={() =>
-                  navigation.navigate('ViewAll', {
-                    title: 'Continue_Learning',
-                    data: data,
-                  })
-                }
-                ContentData={data}
-              />
-              <HorizontalLine />
+            <CoursesBox
+              // title={'Continue_Learning'}
+              // description={'Food_Production'}
+              style={{ titlecolor: '#06A816' }}
+              viewAllLink={() =>
+                navigation.navigate('ViewAll', {
+                  title: 'Continue_Learning',
+                  data: data,
+                })
+              }
+              ContentData={data}
+            />
+            {/* <HorizontalLine />
               <TouchableOpacity onPress={handlePress}>
                 <View
                   style={{
@@ -155,7 +149,7 @@ const Content = () => {
                   />
                 </View>
               </TouchableOpacity>
-              <ContentBox
+              <CoursesBox
                 title={'Based_on_Your_Interests'}
                 description={'Financial_Literacy'}
                 style={{ titlecolor: '#785913' }}
@@ -168,7 +162,7 @@ const Content = () => {
                 ContentData={data}
               />
 
-              <ContentBox
+              <CoursesBox
                 description={'Conceptual_Thinking'}
                 viewAllLink={() =>
                   navigation.navigate('ViewAll', {
@@ -181,7 +175,7 @@ const Content = () => {
 
               <HorizontalLine />
 
-              <ContentBox
+              <CoursesBox
                 title={'Todays_Top_Pick'}
                 description={'Art'}
                 style={{ titlecolor: '#785913' }}
@@ -193,8 +187,7 @@ const Content = () => {
                 }
                 ContentData={data}
               />
-              <HorizontalLine />
-            </ScrollViewLayout>
+              <HorizontalLine /> */}
           </SafeAreaView>
         )}
         {showExitModal && (
@@ -233,4 +226,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Content;
+export default Courses;

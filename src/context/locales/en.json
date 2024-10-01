@@ -182,5 +182,6 @@
   "where_are_you_located": "Where are you located?",
   "location_des": "This will help us to show you the nearest skilling centers to your location",
   "location_des2": "! Make sure to cross check the state, district, block, village",
-  "numbers": "numbers"
+  "numbers": "numbers",
+  "course_modules": "Course Modules"
 }

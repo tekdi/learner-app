@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Octicons';
-import ContentCard from '../../components/ContentCard/ContentCard';
+import CourseCard from '../../components/CourseCard/CourseCard';
 import { useTranslation } from '../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 
@@ -19,12 +19,12 @@ const ViewAllContent = ({ route }) => {
   const { title, data } = route.params;
 
   const handlePress = (item) => {
-    navigation.navigate('ContentList', { do_id: item?.identifier });
+    navigation.navigate('CourseContentList', { do_id: item?.identifier });
   };
 
   const renderItem = ({ item, index }) => (
     <View style={styles.cardContainer}>
-      <ContentCard
+      <CourseCard
         onPress={() => handlePress(item)}
         appIcon={item?.appIcon}
         index={index}
