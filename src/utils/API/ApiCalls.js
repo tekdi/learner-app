@@ -173,7 +173,9 @@ export const assessmentTracking = async (
   seconds,
   userId,
   batchId,
-  lastAttemptedOn
+  lastAttemptedOn,
+  courseId,
+  unitId
 ) => {
   const attemptId = uuid.v4();
   let scoreDetails;
@@ -203,7 +205,8 @@ export const assessmentTracking = async (
 
     let data = JSON.stringify({
       userId: userId,
-      courseId: identifierWithoutImg,
+      courseId: courseId,
+      unitId: unitId,
       batchId: batchId,
       contentId: identifierWithoutImg,
       attemptId: attemptId,
@@ -302,7 +305,8 @@ export const contentTracking = async (
   contentType,
   contentMime,
   lastAccessOn,
-  detailsObject
+  detailsObject,
+  unitId
 ) => {
   try {
     const url = EndUrls.ContentCreate;
@@ -316,7 +320,11 @@ export const contentTracking = async (
       contentMime: contentMime,
       lastAccessOn: lastAccessOn,
       detailsObject: detailsObject,
+      unitId: unitId,
     });
+
+    console.log('data', data);
+    console.log('url', url);
 
     let api_response = null;
 
@@ -347,7 +355,13 @@ export const contentTracking = async (
 };
 
 //status of content
-export const contentTrackingStatus = async (userId, contentId, batchId) => {
+export const contentTrackingStatus = async (
+  userId,
+  contentId,
+  batchId,
+  courseId,
+  unitId
+) => {
   try {
     const url = EndUrls.ContentTrackingStatus;
 
@@ -355,6 +369,8 @@ export const contentTrackingStatus = async (userId, contentId, batchId) => {
       userId: [userId],
       contentId: contentId,
       batchId: batchId,
+      courseId: courseId,
+      unitId: unitId,
     });
 
     let api_response = null;

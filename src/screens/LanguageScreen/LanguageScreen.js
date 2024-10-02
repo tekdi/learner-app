@@ -28,7 +28,7 @@ import {
 import { refreshToken } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { useInternet } from '../../context/NetworkContext';
-import { createTable } from '../../utils/JsHelper/SqliteHelper';
+import { alterTable, createTable } from '../../utils/JsHelper/SqliteHelper';
 
 const LanguageScreen = () => {
   const navigation = useNavigation();
@@ -86,6 +86,16 @@ const LanguageScreen = () => {
       ];
       const query_Tracking_Offline = await createTable({ tableName, columns });
       console.log('query_Tracking_Offline', query_Tracking_Offline);
+
+      //alter table for new columns add
+      //add unit_id in Tracking_Offline
+      tableName = 'Tracking_Offline';
+      columns = ['unit_id TEXT'];
+      const query_alter_Tracking_Offline = await alterTable({
+        tableName,
+        newColumns: columns,
+      });
+      console.log('query_alter_Tracking_Offline', query_alter_Tracking_Offline);
 
       const token = await getDataFromStorage('Accesstoken');
       if (token) {

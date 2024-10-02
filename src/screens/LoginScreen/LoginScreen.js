@@ -77,10 +77,12 @@ const LoginScreen = () => {
 
         await setDataInStorage('userId', user_id);
         const cohort = await getCohort({ user_id });
-
         await setDataInStorage('cohortData', JSON.stringify(cohort));
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-        await setDataInStorage('cohortId', cohort_id || '');
+        await setDataInStorage(
+          'cohortId',
+          cohort_id || '00000000-0000-0000-0000-000000000000'
+        );
         navigation.navigate('Dashboard');
       } else {
         setLoading(false);

@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import FastImage from '@changwoolab/react-native-fast-image';
 import DownloadCard from '../../components/DownloadCard/DownloadCard';
 
-const ContentCard = ({ item, index }) => {
+const ContentCard = ({ item, index, course_id, unit_id }) => {
   const navigation = useNavigation();
 
   const backgroundImages = [
@@ -28,6 +28,8 @@ const ContentCard = ({ item, index }) => {
       content_do_id: data?.identifier,
       content_mime_type: data?.mimeType,
       isOffline: false,
+      course_id: course_id,
+      unit_id: unit_id,
     });
   };
 

@@ -62,8 +62,17 @@ const desktopUserAgent =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
 
 const StandAlonePlayer = ({ route }) => {
+  console.log('route', route);
+  //get courseId and unitId in standalone player
   const navigation = useNavigation();
-  const { content_do_id, content_mime_type, title, isOffline } = route.params;
+  const {
+    content_do_id,
+    content_mime_type,
+    title,
+    isOffline,
+    course_id,
+    unit_id,
+  } = route.params;
   // console.log('content_do_id', content_do_id);
   // console.log('content_mime_type', content_mime_type);
   //   ##content_mime_type
@@ -88,6 +97,10 @@ const StandAlonePlayer = ({ route }) => {
   //   application/vnd.sunbird.question
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [courseId, setCourseId] = useState(
+    course_id ? course_id : content_do_id
+  );
+  const [unitId, setUnitId] = useState(unit_id ? unit_id : content_do_id);
   //const [telemetryObject, setTelemetryObject] = useState([]);
   let telemetryObject = [];
   let contentEidSTART = [];
@@ -136,6 +149,8 @@ const StandAlonePlayer = ({ route }) => {
       await storeData('contentId', content_do_id, '');
       await storeData('contentType', contentType, '');
       await storeData('contentMimeType', content_mime_type, '');
+      await storeData('courseId', course_id, '');
+      await storeData('unitId', unit_id, '');
     };
     fetchData();
 
@@ -284,7 +299,9 @@ const StandAlonePlayer = ({ route }) => {
             seconds,
             userId,
             batchId,
-            lastAttemptedOn
+            lastAttemptedOn,
+            courseId,
+            unitId
           );
           if (
             create_assessment &&
@@ -304,6 +321,8 @@ const StandAlonePlayer = ({ route }) => {
               userId,
               batchId,
               lastAttemptedOn,
+              courseId,
+              unitId,
             };
             //store result in offline mode
             await storeAsessmentOffline(
@@ -1049,7 +1068,8 @@ const StandAlonePlayer = ({ route }) => {
     }
 
     let userId = await getDataFromStorage('userId');
-    let courseId = await getData('contentId', '');
+    let courseId = await getData('courseId', '');
+    let unitId = await getData('unitId', '');
     let batchId = await getDataFromStorage('cohortId');
     let contentId = await getData('contentId', '');
     let contentType = await getData('contentType', '');
@@ -1066,7 +1086,8 @@ const StandAlonePlayer = ({ route }) => {
           contentType,
           contentMime,
           lastAccessOn,
-          detailsObject
+          detailsObject,
+          unitId
         );
         console.log('create_tracking', create_tracking);
         if (create_tracking && create_tracking?.response?.responseCode == 201) {
@@ -1082,7 +1103,8 @@ const StandAlonePlayer = ({ route }) => {
             contentType,
             contentMime,
             lastAccessOn,
-            detailsObject
+            detailsObject,
+            unitId
           );
         }
       } catch (e) {

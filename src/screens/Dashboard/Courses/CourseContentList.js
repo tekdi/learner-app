@@ -23,7 +23,7 @@ import FastImage from '@changwoolab/react-native-fast-image';
 import UnitCard from './UnitCard';
 
 const CourseContentList = ({ route }) => {
-  const { do_id } = route.params;
+  const { do_id, course_id, content_list_node } = route.params;
   const navigation = useNavigation();
   const [coursesContent, setCoursesContent] = useState();
   const [identifiers, setIdentifiers] = useState([]);
@@ -125,7 +125,14 @@ const CourseContentList = ({ route }) => {
             }}
           >
             {coursesContent?.children?.map((item) => {
-              return <UnitCard key={item?.name} item={item} />;
+              return (
+                <UnitCard
+                  key={item?.name}
+                  item={item}
+                  course_id={course_id}
+                  unit_id={item?.identifier}
+                />
+              );
             })}
           </View>
         </ScrollView>

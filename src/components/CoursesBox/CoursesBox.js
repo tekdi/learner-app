@@ -25,7 +25,13 @@ const CoursesBox = ({
 
   const handlePress = (item) => {
     //console.log('Card pressed!', item);
-    navigation.navigate('CourseContentList', { do_id: item?.identifier });
+    console.log('identifier', item?.identifier);
+    console.log('item', item?.leafNodes);
+    navigation.navigate('CourseContentList', {
+      do_id: item?.identifier,
+      course_id: item?.identifier,
+      content_list_node: item?.leafNodes,
+    });
   };
 
   const renderItem = ({ item, index }) => (

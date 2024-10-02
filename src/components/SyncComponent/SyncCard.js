@@ -128,15 +128,15 @@ const SyncCard = ({ doneSync }) => {
         let result_sync_offline_tracking = await getSyncTrackingOffline(
           user_id
         );
-        console.log('result_sync_offline', result_sync_offline);
-        console.log(
-          'result_sync_offline_telemetry',
-          result_sync_offline_telemetry
-        );
-        console.log(
-          'result_sync_offline_tracking',
-          result_sync_offline_tracking
-        );
+        // console.log('result_sync_offline', result_sync_offline);
+        // console.log(
+        //   'result_sync_offline_telemetry',
+        //   result_sync_offline_telemetry
+        // );
+        // console.log(
+        //   'result_sync_offline_tracking',
+        //   result_sync_offline_tracking
+        // );
         if (
           (result_sync_offline && !isProgress) ||
           (result_sync_offline_telemetry && !isProgress) ||
@@ -148,7 +148,7 @@ const SyncCard = ({ doneSync }) => {
             setSyncCall('Assessments');
             //sync data to online
             let isError = false;
-            console.log('result_sync_offline', result_sync_offline.length);
+            //console.log('result_sync_offline', result_sync_offline.length);
             for (let i = 0; i < result_sync_offline.length; i++) {
               let assessment_result = result_sync_offline[i];
               try {
@@ -160,14 +160,16 @@ const SyncCard = ({ doneSync }) => {
                   payload?.seconds,
                   payload?.userId,
                   payload?.batchId,
-                  payload?.lastAttemptedOn
+                  payload?.lastAttemptedOn,
+                  payload?.courseId,
+                  payload?.unitId
                 );
                 if (
                   create_assessment &&
                   create_assessment?.response?.responseCode == 201
                 ) {
                   //success
-                  console.log('create_assessment', create_assessment);
+                  //console.log('create_assessment', create_assessment);
                   //delete from storage
                   await deleteAsessmentOffline(
                     assessment_result?.user_id,
@@ -178,13 +180,13 @@ const SyncCard = ({ doneSync }) => {
                   isError = true;
                 }
               } catch (e) {
-                console.log('error in result_sync_offline ', e);
+                //console.log('error in result_sync_offline ', e);
               }
             }
             setIsSyncPending(false);
             setIsProgress(false);
             if (!isError && doneSync) {
-              doneSync(); //call back function
+              //doneSync(); //call back function
             }
           }
           if (result_sync_offline_telemetry) {
@@ -193,10 +195,10 @@ const SyncCard = ({ doneSync }) => {
             setIsProgress(true);
             setSyncCall('Telemetry');
             let isError = false;
-            console.log(
-              'result_sync_offline_telemetry',
-              result_sync_offline_telemetry.length
-            );
+            // console.log(
+            //   'result_sync_offline_telemetry',
+            //   result_sync_offline_telemetry.length
+            // );
             for (let i = 0; i < result_sync_offline_telemetry.length; i++) {
               let telemetry_result = result_sync_offline_telemetry[i];
               try {
@@ -212,20 +214,20 @@ const SyncCard = ({ doneSync }) => {
                   create_telemetry?.response?.responseCode == 'SUCCESS'
                 ) {
                   //success
-                  console.log('create_telemetry', create_telemetry);
+                  //console.log('create_telemetry', create_telemetry);
                   //delete from storage
                   await deleteTelemetryOffline(telemetry_result?.id);
                 } else {
                   isError = true;
                 }
               } catch (e) {
-                console.log('error in result_sync_offline_telemetry ', e);
+                //console.log('error in result_sync_offline_telemetry ', e);
               }
             }
             setIsSyncPending(false);
             setIsProgress(false);
             if (!isError && doneSync) {
-              doneSync(); //call back function
+              //doneSync(); //call back function
             }
           }
           if (result_sync_offline_tracking) {
@@ -234,10 +236,10 @@ const SyncCard = ({ doneSync }) => {
             setSyncCall('Tracking');
             //sync data to online
             let isError = false;
-            console.log(
-              'result_sync_offline_tracking',
-              result_sync_offline_tracking.length
-            );
+            // console.log(
+            //   'result_sync_offline_tracking',
+            //   result_sync_offline_tracking.length
+            // );
             for (let i = 0; i < result_sync_offline_tracking.length; i++) {
               let cntent_tracking = result_sync_offline_tracking[i];
               try {
@@ -250,27 +252,28 @@ const SyncCard = ({ doneSync }) => {
                   cntent_tracking?.content_type,
                   cntent_tracking?.content_mime,
                   cntent_tracking?.lastAccessOn,
-                  detailsObject
+                  detailsObject,
+                  cntent_tracking?.unit_id
                 );
                 if (
                   create_tracking &&
                   create_tracking?.response?.responseCode == 201
                 ) {
                   //success
-                  console.log('create_tracking', create_tracking);
+                  //console.log('create_tracking', create_tracking);
                   //delete from storage
                   await deleteTrackingOffline(cntent_tracking?.id);
                 } else {
                   isError = true;
                 }
               } catch (e) {
-                console.log('error in result_sync_offline ', e);
+                //console.log('error in result_sync_offline ', e);
               }
             }
             setIsSyncPending(false);
             setIsProgress(false);
             if (!isError && doneSync) {
-              doneSync(); //call back function
+              //doneSync(); //call back function
             }
           }
         } else {
@@ -282,22 +285,22 @@ const SyncCard = ({ doneSync }) => {
         result_sync_offline = await getSyncAsessmentOffline(user_id);
         result_sync_offline_telemetry = await getSyncTelemetryOffline(user_id);
         result_sync_offline_tracking = await getSyncTrackingOffline(user_id);
-        console.log('result_sync_offline', result_sync_offline);
-        console.log(
-          'result_sync_offline_telemetry',
-          result_sync_offline_telemetry
-        );
-        console.log(
-          'result_sync_offline_tracking',
-          result_sync_offline_tracking
-        );
+        // console.log('result_sync_offline', result_sync_offline);
+        // console.log(
+        //   'result_sync_offline_telemetry',
+        //   result_sync_offline_telemetry
+        // );
+        // console.log(
+        //   'result_sync_offline_tracking',
+        //   result_sync_offline_tracking
+        // );
         if (
           (result_sync_offline && !isProgress) ||
           (result_sync_offline_telemetry && !isProgress) ||
           (result_sync_offline_tracking && !isProgress)
         ) {
           setIsSyncPending(true);
-          setIsProgress(false);
+          setIsProgress(true);
         }
         console.log('Data synced successfully.');
       } catch (error) {

@@ -381,6 +381,8 @@ export const getAssessmentStatus = async (params = {}) => {
 
     const payload = {
       userId: [params?.user_id],
+      courseId: params?.uniqueAssessmentsId,
+      unitId: params?.uniqueAssessmentsId,
       contentId: params?.uniqueAssessmentsId,
       batchId: params?.cohort_id,
     };
@@ -415,6 +417,8 @@ export const getAssessmentAnswerKey = async (params = {}) => {
       userId: params?.user_id,
       contentId: params?.contentId,
       batchId: params?.cohort_id,
+      courseId: params?.contentId,
+      unitId: params?.contentId,
     };
 
     // console.log(
@@ -695,7 +699,8 @@ export const storeTrackingOffline = async (
   content_type,
   content_mime,
   lastAccessOn,
-  detailsObject
+  detailsObject,
+  unit_id
 ) => {
   try {
     //store
@@ -708,6 +713,7 @@ export const storeTrackingOffline = async (
       content_mime: content_mime,
       lastAccessOn: lastAccessOn,
       detailsObject: JSON.stringify(detailsObject),
+      unit_id: unit_id,
     };
     await insertData({
       tableName: 'Tracking_Offline',

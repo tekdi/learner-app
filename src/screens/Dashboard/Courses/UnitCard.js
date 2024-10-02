@@ -6,13 +6,15 @@ import { useTranslation } from '../../../context/LanguageContext';
 import StatusCardIcon from '../../../components/StatusCard/StatusCardIcon';
 import globalStyles from '../../../utils/Helper/Style';
 
-const UnitCard = ({ item }) => {
+const UnitCard = ({ item, course_id, unit_id }) => {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const handleCardPress = (item) => {
     navigation.navigate('UnitList', {
       children: item?.children,
       name: item?.name,
+      course_id: course_id,
+      unit_id: item?.identifier,
     });
   };
 

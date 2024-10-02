@@ -77,13 +77,17 @@ const buildYupSchema = (form, currentForm, t) => {
           if (field.validation.minLength) {
             validator = validator.min(
               field.validation.minLength,
-              `${t(field.name)} ${t('min')} ${t(field.validation.minLength)} ${t('characters')}`
+              `${t(field.name)} ${t('min')} ${t(
+                field.validation.minLength
+              )} ${t('characters')}`
             );
           }
           if (field.validation.maxLength) {
             validator = validator.max(
               field.validation.maxLength,
-              `${t(field.label)} ${t('max')} ${t(field.validation.maxLength)} ${t('characters')}`
+              `${t(field.label)} ${t('max')} ${t(
+                field.validation.maxLength
+              )} ${t('characters')}`
             );
           }
           if (field.validation.match) {
@@ -143,13 +147,17 @@ const buildYupSchema = (form, currentForm, t) => {
           if (field.validation.minLength) {
             validator = validator.min(
               field.validation.minLength,
-              `${t(field.name)} ${t('min')} ${t(field.validation.minLength)} ${t('numbers')}`
+              `${t(field.name)} ${t('min')} ${t(
+                field.validation.minLength
+              )} ${t('numbers')}`
             );
           }
           if (field.validation.maxLength) {
             validator = validator.max(
               field.validation.maxLength,
-              `${t(field.label)} ${t('max')} ${t(field.validation.maxLength)} ${t('numbers')}`
+              `${t(field.label)} ${t('max')} ${t(
+                field.validation.maxLength
+              )} ${t('numbers')}`
             );
           }
           if (field.validation.pattern) {
@@ -173,7 +181,9 @@ const buildYupSchema = (form, currentForm, t) => {
                     )
                     .max(
                       field.validation.maxSelection,
-                      `${t('max')} ${t(field.validation.maxSelection)} ${t('can_only_contain_letters')}`
+                      `${t('max')} ${t(field.validation.maxSelection)} ${t(
+                        'can_only_contain_letters'
+                      )}`
                     )
                     .required(`${t(field.name)} selection is required`),
                 })
@@ -185,7 +195,9 @@ const buildYupSchema = (form, currentForm, t) => {
                   )
                   .max(
                     field.validation.maxSelection,
-                    `${t('max')} ${t(field.validation.maxSelection)} ${t('can_only_contain_letters')}`
+                    `${t('max')} ${t(field.validation.maxSelection)} ${t(
+                      'can_only_contain_letters'
+                    )}`
                   )
                   .required(`${t(field.name)} selection is required`)
           );
@@ -281,7 +293,10 @@ const RegistrationForm = ({ schema }) => {
 
     await setDataInStorage('cohortData', JSON.stringify(cohort));
     const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-    await setDataInStorage('cohortId', cohort_id || '');
+    await setDataInStorage(
+      'cohortId',
+      cohort_id || '00000000-0000-0000-0000-000000000000'
+    );
     setModal(false);
     navigation.navigate('Dashboard');
   };

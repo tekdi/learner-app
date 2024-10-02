@@ -24,7 +24,7 @@ import UnitCard from './UnitCard';
 import ContentCard from '../ContentCard';
 
 const UnitList = ({ route }) => {
-  const { children, name } = route.params;
+  const { children, name, course_id, unit_id } = route.params;
   const navigation = useNavigation();
   const [coursesContent, setCoursesContent] = useState();
   const [identifiers, setIdentifiers] = useState([]);
@@ -36,6 +36,8 @@ const UnitList = ({ route }) => {
       content_do_id: data?.identifier,
       content_mime_type: data?.mimeType,
       isOffline: false,
+      course_id: course_id,
+      unit_id: unit_id,
     });
   };
 
@@ -70,12 +72,23 @@ const UnitList = ({ route }) => {
               ) {
                 return (
                   item?.children.length > 0 && (
-                    <UnitCard key={item?.name} item={item} />
+                    <UnitCard
+                      key={item?.name}
+                      item={item}
+                      course_id={course_id}
+                      unit_id={item?.identifier}
+                    />
                   )
                 );
               } else {
                 return (
-                  <ContentCard key={item?.name} index={index} item={item} />
+                  <ContentCard
+                    key={item?.name}
+                    index={index}
+                    item={item}
+                    course_id={course_id}
+                    unit_id={unit_id}
+                  />
                 );
               }
             })}

@@ -28,8 +28,8 @@ const CourseCard = ({ onPress, style, setCardWidth, index, item, appIcon }) => {
 
   const backgroundImage = backgroundImages[index % backgroundImages.length];
 
-  console.log('identifier', item?.identifier);
-  console.log('item', item?.leafNodes);
+  // console.log('identifier', item?.identifier);
+  // console.log('item', item?.leafNodes);
 
   return (
     <Pressable
