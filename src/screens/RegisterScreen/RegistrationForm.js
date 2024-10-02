@@ -24,7 +24,7 @@ import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import Geolocation from 'react-native-geolocation-service';
+// import Geolocation from 'react-native-geolocation-service';
 
 //multi language
 import { useTranslation } from '../../context/LanguageContext';

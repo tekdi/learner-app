@@ -3,7 +3,6 @@ import React from 'react';
 import {
   View,
   Text,
-
   PermissionsAndroid,
   Platform,
   Image,
@@ -11,7 +10,7 @@ import {
   StyleSheet,
   StatusBar,
 } from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
+// import Geolocation from 'react-native-geolocation-service'; GeoLocation Comment
 import location from '../../assets/images/png/location.png';
 import { useTranslation } from '../../context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
@@ -21,45 +20,47 @@ const EnableLocationScreen = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
-  const requestLocationPermission = async () => {
-    try {
-      if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          {
-            title: 'Location Permission',
-            message:
-              'This app needs access to your location ' +
-              'so we can show your current position.',
-            buttonNeutral: 'Ask Me Later',
-            buttonPositive: 'OK',
-          }
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Location permission granted');
-          navigation.navigate('LanguageScreen');
+  //GeoLocation Comment
 
-          Geolocation.getCurrentPosition(
-            (position) => {
-              console.log('Location: ', position);
-            },
-            (error) => {
-              console.log('Error: ', error);
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-          );
-        }
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  };
+  // const requestLocationPermission = async () => {
+  //   try {
+  //     if (Platform.OS === 'android') {
+  //       const granted = await PermissionsAndroid.request(
+  //         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  //         {
+  //           title: 'Location Permission',
+  //           message:
+  //             'This app needs access to your location ' +
+  //             'so we can show your current position.',
+  //           buttonNeutral: 'Ask Me Later',
+  //           buttonPositive: 'OK',
+  //         }
+  //       );
+  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //         console.log('Location permission granted');
+  //         navigation.navigate('LanguageScreen');
 
-  const disableLocation = () => navigation.navigate('LanguageScreen');
+  //         Geolocation.getCurrentPosition(
+  //           (position) => {
+  //             console.log('Location: ', position);
+  //           },
+  //           (error) => {
+  //             console.log('Error: ', error);
+  //           },
+  //           { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+  //         );
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.warn(err);
+  //   }
+  // };
+
+  // const disableLocation = () => navigation.navigate('LanguageScreen');
 
   return (
     <View style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
-      <StatusBar
+      {/* <StatusBar
         barStyle="dark-content"
         translucent={true}
         backgroundColor="transparent"
@@ -77,7 +78,7 @@ const EnableLocationScreen = () => {
       </View>
       <TouchableOpacity style={styles.button} onPress={disableLocation}>
         <Text style={styles.buttonText}>{t('not_now')}</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
