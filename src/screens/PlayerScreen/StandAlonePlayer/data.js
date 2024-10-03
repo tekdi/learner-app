@@ -65,7 +65,32 @@ export const contentPlayerConfig = {
     uid: '',
     userData: { firstName: '', lastName: '' },
   },
-  config: { showEndPage: true },
+  config: {
+    showEndPage: false,
+    endPage: [{ template: 'assessment', contentType: ['SelfAssess'] }],
+    showStartPage: true,
+    host: '',
+    overlay: { showUser: false },
+    splash: {
+      text: '',
+      icon: '',
+      bgImage: 'assets/icons/splacebackground_1.png',
+      webLink: '',
+    },
+    apislug: '/action',
+    repos: ['/sunbird-plugins/renderer'],
+    plugins: [
+      { id: 'org.sunbird.iframeEvent', ver: 1, type: 'plugin' },
+      { id: 'org.sunbird.player.endpage', ver: 1.1, type: 'plugin' },
+    ],
+    sideMenu: {
+      showShare: false,
+      showDownload: false,
+      showExit: false,
+      showPrint: false,
+      showReplay: true,
+    },
+  },
   metadata: {},
   data: {},
 };
