@@ -7,7 +7,7 @@ import StatusCardIcon from '../../../components/StatusCard/StatusCardIcon';
 import globalStyles from '../../../utils/Helper/Style';
 import StatusCard from '../../../components/StatusCard/StatusCard';
 
-const UnitCard = ({ item, course_id, unit_id, TrackData }) => {
+const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
   // console.log('########## UnitCard');
   // console.log('course_id', course_id);
   // console.log('unit_id', unit_id);
@@ -21,6 +21,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData }) => {
       name: item?.name,
       course_id: course_id,
       unit_id: item?.identifier,
+      headingName: headingName,
     });
   };
 
@@ -89,9 +90,9 @@ const UnitCard = ({ item, course_id, unit_id, TrackData }) => {
   };
 
   return (
-    <View>
+    <View style={styles.card}>
       <TouchableOpacity
-        style={styles.card}
+        style={styles.subcard}
         onPress={() => handleCardPress(item)}
       >
         {/* Background image */}
@@ -101,26 +102,30 @@ const UnitCard = ({ item, course_id, unit_id, TrackData }) => {
           resizeMode={FastImage.resizeMode.cover}
           priority={FastImage.priority.high}
         />
-        <StatusCard
-          status={
-            trackCompleted == 0
-              ? 'not_started'
-              : trackCompleted > 100
-              ? 'completed'
-              : 'inprogress'
-          }
-          trackCompleted={trackCompleted}
-        />
-        {/* Content overlay */}
+        <View style={{ top: 15 }}>
+          <StatusCard
+            status={
+              trackCompleted == 0
+                ? 'not_started'
+                : trackCompleted > 100
+                  ? 'completed'
+                  : 'inprogress'
+            }
+            trackCompleted={trackCompleted}
+            viewStyle={{
+              borderTopLeftRadius: 15,
+              borderTopRightRadius: 15,
+            }}
+          />
+        </View>
         <View style={styles.overlay}>
           <Text style={styles.cardText} numberOfLines={1} ellipsizeMode="tail">
             {t('unit')}
           </Text>
         </View>
       </TouchableOpacity>
-      <View
-        style={[globalStyles.flexrow, { marginLeft: 20, marginVertical: 10 }]}
-      >
+
+      <View style={[globalStyles.flexrow, { marginLeft: 20 }]}>
         <Text
           style={[styles.cardText, { color: '#000' }]}
           numberOfLines={1}
@@ -135,11 +140,19 @@ const UnitCard = ({ item, course_id, unit_id, TrackData }) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: 160,
-    height: 100,
+    width: '47%',
+    height: 160,
     borderRadius: 20,
-    margin: 5,
+    marginVertical: 10,
     overflow: 'hidden', // Ensure content doesn't overflow the card boundaries
+    // borderWidth: 1,
+  },
+  subcard: {
+    width: '95%',
+    height: 135,
+    borderRadius: 20,
+    overflow: 'hidden', // Ensure content doesn't overflow the card boundaries
+    // borderWidth: 1,
   },
   cardBackgroundImage: {
     ...StyleSheet.absoluteFillObject, // Makes the background image cover the entire card
@@ -150,7 +163,8 @@ const styles = StyleSheet.create({
     width: 70,
     padding: 5,
     fontSize: 10,
-    top: 15,
+    position: 'absolute',
+    bottom: 20,
   },
   cardText: {
     color: 'white',

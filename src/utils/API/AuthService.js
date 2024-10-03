@@ -155,7 +155,7 @@ export const registerUser = async (params = {}) => {
   }
 };
 
-export const contentListApi = async (params = {}) => {
+export const courseListApi = async (params = {}) => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList}`; // Define the URL
   const headers = {
@@ -188,6 +188,79 @@ export const contentListApi = async (params = {}) => {
         'trackable',
         'children',
         'leafNodes',
+      ],
+      facets: [
+        'se_boards',
+        'se_gradeLevels',
+        'se_subjects',
+        'se_mediums',
+        'primaryCategory',
+      ],
+      offset: 0,
+    },
+  };
+
+  try {
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      // store result
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
+      return result?.data?.result;
+    } else {
+      let result_offline = await getApiResponse(user_id, url, 'post', payload);
+      return result_offline;
+    }
+  } catch (e) {
+    console.log('no internet available');
+    let result_offline = await getApiResponse(user_id, url, 'post', payload);
+    return result_offline;
+  }
+};
+
+export const contentListApi = async (params = {}) => {
+  const user_id = await getDataFromStorage('userId');
+  const url = `${EndUrls.contentList}`; // Define the URL
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  const payload = {
+    request: {
+      filters: {
+        audience: 'student',
+        primaryCategory: ['etextbook'],
+        visibility: ['Default', 'Parent'],
+      },
+      limit: 100,
+      sort_by: {
+        lastPublishedOn: 'desc',
+      },
+      fields: [
+        'name',
+        'appIcon',
+        'mimeType',
+        'gradeLevel',
+        'identifier',
+        'medium',
+        'pkgVersion',
+        'board',
+        'subject',
+        'resourceType',
+        'primaryCategory',
+        'contentType',
+        'channel',
+        'organisation',
+        'trackable',
       ],
       facets: [
         'se_boards',
