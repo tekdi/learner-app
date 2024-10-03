@@ -229,9 +229,9 @@ const StandAlonePlayer = ({ route }) => {
       if (data_obj) {
         //add user id in actor
         data_obj.actor.id = userId;
-        // console.log('####################');
-        // console.log('data_obj', JSON.stringify(data_obj));
-        // console.log('####################');
+        console.log('####################');
+        console.log('data_obj', JSON.stringify(data_obj));
+        console.log('####################');
         //setTelemetryObject((telemetryObject) => [...telemetryObject, data_obj]);
         telemetryObject.push(data_obj);
         //console.log('telemetryObject', telemetryObject);
@@ -254,10 +254,10 @@ const StandAlonePlayer = ({ route }) => {
             },
           ];
         }
-        if (data_obj?.eid == 'END') {
+        if (data_obj?.eid == 'END' || data_obj?.edata?.type == 'END') {
           contentEidEND = [
             {
-              eid: data_obj.eid,
+              eid: 'END',
               edata: data_obj.edata,
             },
           ];
@@ -981,7 +981,7 @@ const StandAlonePlayer = ({ route }) => {
           detailsObject,
           unitId
         );
-        //console.log('create_tracking', create_tracking);
+        console.log('create_tracking', create_tracking);
         if (create_tracking && create_tracking?.response?.responseCode == 201) {
           console.log('saved data');
         } else {

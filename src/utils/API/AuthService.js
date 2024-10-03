@@ -770,6 +770,36 @@ export const deleteTrackingOffline = async (id) => {
     console.log(e);
   }
 };
+export const getSyncTrackingOfflineCourse = async (user_id, batch_id, course_id) => {
+  try {
+    //get result
+    const data_get = {
+      user_id: user_id,
+      batch_id: batch_id,
+      course_id: course_id,
+    };
+    let result_data = null;
+    await getData({
+      tableName: 'Tracking_Offline',
+      where: data_get,
+    })
+      .then((rows) => {
+        //console.log('rows', rows);
+        if (rows.length > 0) {
+          try {
+            result_data = rows;
+          } catch (e) {}
+        }
+      })
+      .catch((err) => {
+        console.error('err', err);
+      });
+    return result_data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
 
 export const getGeoLocation = async ({ payload }) => {
   try {

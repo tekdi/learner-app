@@ -15,6 +15,8 @@ import { ProgressBar } from '@ui-kitten/components';
 import StatusCard from '../StatusCard/StatusCard';
 
 import moment from 'moment';
+import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import { getSyncTrackingOfflineCourse } from '../../utils/API/AuthService';
 
 const CourseCard = ({
   onPress,
@@ -55,14 +57,84 @@ const CourseCard = ({
       if (TrackData) {
         for (let i = 0; i < TrackData.length; i++) {
           if (TrackData[i]?.courseId == item?.identifier) {
+            let userId = await getDataFromStorage('userId');
+            let batchId = await getDataFromStorage('cohortId');
+            let offlineTrack = await getSyncTrackingOfflineCourse(
+              userId,
+              batchId,
+              TrackData[i].courseId
+            );
+            let offline_in_progress = [];
+            let offline_completed = [];
+            let lastAccessOn = '';
+            // console.log(
+            //   '############ offlineTrack',
+            //   JSON.stringify(offlineTrack)
+            // );
+            if (offlineTrack) {
+              for (let jj = 0; jj < offlineTrack.length; jj++) {
+                let offlineTrackItem = offlineTrack[jj];
+                let content_id = offlineTrackItem?.content_id;
+                lastAccessOn = offlineTrack[0]?.lastAccessOn;
+                try {
+                  let detailsObject = JSON.parse(
+                    offlineTrackItem?.detailsObject
+                  );
+                  let status = 'no_started';
+                  for (let k = 0; k < detailsObject.length; k++) {
+                    let eid = detailsObject[k]?.eid;
+                    if (eid == 'START' || eid == 'INTERACT') {
+                      status = 'in_progress';
+                    }
+                    if (eid == 'END') {
+                      status = 'completed';
+                    }
+                    // console.log(
+                    //   '##### detailsObject length',
+                    //   detailsObject[k]?.eid
+                    // );
+                  }
+                  if (status == 'in_progress') {
+                    offline_in_progress.push(content_id);
+                  }
+                  if (status == 'completed') {
+                    offline_completed.push(content_id);
+                  }
+                } catch (e) {
+                  console.log('e', e);
+                }
+              }
+            }
+            // console.log(
+            //   '############ offline_in_progress',
+            //   offline_in_progress
+            // );
+            // console.log('############ offline_completed', offline_completed);
             if (TrackData[i]?.started_on) {
               let temp_startedOn = TrackData[i].started_on;
               const formattedDate =
                 moment(temp_startedOn).format('DD MMM YYYY');
               setStartedOn(formattedDate);
               // console.log('########### formattedDate', formattedDate);
+            } else if (lastAccessOn !== '') {
+              //get offlien time
+              let temp_startedOn = lastAccessOn;
+              const formattedDate =
+                moment(temp_startedOn).format('DD MMM YYYY');
+              setStartedOn(formattedDate);
+              // console.log('########### formattedDate', formattedDate);
             }
-            let completed = TrackData[i]?.completed;
+
+            //merge offlien and online
+            const mergedArray = [
+              ...TrackData[i]?.completed_list,
+              ...offline_completed,
+            ];
+            const uniqueArray = [...new Set(mergedArray)];
+            let completed_list = uniqueArray;
+
+            //get unique completed content list
+            let completed = completed_list.length;
             let totalContent = 0;
             if (item?.leafNodes) {
               totalContent = item?.leafNodes.length;
