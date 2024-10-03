@@ -137,6 +137,7 @@ const CourseContentList = ({ route }) => {
                 let offlineTrackItem = offlineTrack[jj];
                 let content_id = offlineTrackItem?.content_id;
                 lastAccessOn = offlineTrack[0]?.lastAccessOn;
+                //console.log('############ lastAccessOn', lastAccessOn);
                 try {
                   let detailsObject = JSON.parse(
                     offlineTrackItem?.detailsObject
@@ -176,14 +177,14 @@ const CourseContentList = ({ route }) => {
               const formattedDate =
                 moment(temp_startedOn).format('DD MMM YYYY');
               setStartedOn(formattedDate);
-              // console.log('########### formattedDate', formattedDate);
+              console.log('########### formattedDate', formattedDate);
             } else if (lastAccessOn !== '') {
               //get offlien time
               let temp_startedOn = lastAccessOn;
               const formattedDate =
                 moment(temp_startedOn).format('DD MMM YYYY');
               setStartedOn(formattedDate);
-              // console.log('########### formattedDate', formattedDate);
+              console.log('########### formattedDate', formattedDate);
             }
 
             //merge offlien and online
