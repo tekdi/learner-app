@@ -50,6 +50,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 
   const fetchDataTrack = async () => {
     try {
+      console.log('########### TrackData', TrackData);
       if (TrackData && item?.identifier) {
         for (let i = 0; i < TrackData.length; i++) {
           if (TrackData[i]?.courseId == course_id) {
@@ -65,7 +66,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
               status = 'inprogress';
             }
             setTrackStatus(status);
-            // console.log('########### trackStatus', status);
+            console.log('########### trackStatus', status);
           }
         }
       }

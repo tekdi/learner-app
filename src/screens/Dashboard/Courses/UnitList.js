@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import {
   ActivityIndicator,
@@ -12,7 +13,10 @@ import {
   View,
 } from 'react-native';
 import TextField from '../../../components/TextField/TextField';
-import { courseDetails } from '../../../utils/API/ApiCalls';
+import {
+  courseDetails,
+  courseTrackingStatus,
+} from '../../../utils/API/ApiCalls';
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { ProgressBar } from '@ui-kitten/components';
@@ -22,9 +26,10 @@ import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
 import FastImage from '@changwoolab/react-native-fast-image';
 import UnitCard from './UnitCard';
 import ContentCard from '../ContentCard';
+import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
 
 const UnitList = ({ route }) => {
-  const { children, name, course_id, unit_id, TrackData } = route.params;
+  const { children, name, course_id, unit_id } = route.params;
   // console.log('########## UnitList');
   // console.log('course_id', course_id);
   // console.log('unit_id', unit_id);
@@ -34,6 +39,49 @@ const UnitList = ({ route }) => {
   const [identifiers, setIdentifiers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedItem, setExpandedItem] = useState(null); // State to track which item is expanded
+
+  //set progress and start date
+  const [trackData, setTrackData] = useState([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log('############ in focus');
+      setLoading(true);
+      fetchDataTrack();
+    }, [course_id]) // Make sure to include the dependencies
+  );
+
+  const fetchDataTrack = async () => {
+    //found course progress
+    try {
+      console.log('########## contentListApi');
+      //console.log('########## contentList', contentList);
+      let courseList = [course_id];
+      //console.log('########## courseList', courseList);
+      //get course track data
+      let userId = await getDataFromStorage('userId');
+      let batchId = await getDataFromStorage('cohortId');
+      let course_track_data = await courseTrackingStatus(
+        userId,
+        batchId,
+        courseList
+      );
+      //console.log('########## course_track_data', course_track_data?.data);
+      let courseTrackData = [];
+      if (course_track_data?.data) {
+        courseTrackData =
+          course_track_data?.data.find((course) => course.userId === userId)
+            ?.course || [];
+      }
+      setTrackData(courseTrackData);
+      console.log('########## courseTrackData', courseTrackData);
+      console.log('##########');
+      setLoading(false); // Ensure to stop loading when data fetch completes
+    } catch (e) {
+      console.log('e', e);
+      setLoading(false); // Stop loading even on error
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -71,7 +119,7 @@ const UnitList = ({ route }) => {
                       item={item}
                       course_id={course_id}
                       unit_id={item?.identifier}
-                      TrackData={TrackData}
+                      TrackData={trackData}
                     />
                   )
                 );
@@ -83,7 +131,7 @@ const UnitList = ({ route }) => {
                     item={item}
                     course_id={course_id}
                     unit_id={unit_id}
-                    TrackData={TrackData}
+                    TrackData={trackData}
                   />
                 );
               }

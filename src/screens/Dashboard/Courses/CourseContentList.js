@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import {
   ActivityIndicator,
@@ -12,7 +13,10 @@ import {
   View,
 } from 'react-native';
 import TextField from '../../../components/TextField/TextField';
-import { courseDetails } from '../../../utils/API/ApiCalls';
+import {
+  courseDetails,
+  courseTrackingStatus,
+} from '../../../utils/API/ApiCalls';
 import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { CircularProgressBar } from '@ui-kitten/components';
@@ -23,9 +27,10 @@ import FastImage from '@changwoolab/react-native-fast-image';
 import UnitCard from './UnitCard';
 
 import moment from 'moment';
+import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
 
 const CourseContentList = ({ route }) => {
-  const { do_id, course_id, content_list_node, TrackData } = route.params;
+  const { do_id, course_id, content_list_node } = route.params;
   // console.log('########## CourseContentList');
   // console.log('course_id', course_id);
   // console.log('##########');
@@ -35,74 +40,104 @@ const CourseContentList = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [expandedItem, setExpandedItem] = useState(null); // State to track which item is expanded
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      // const content_do_id = 'do_1141503830938746881180';
-      // const content_do_id = 'do_11415396442603520013';
-      const content_do_id = do_id;
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, []) // Make sure to include the dependencies
+  );
 
-      // Fetch course details
-      const data = await courseDetails(content_do_id);
-      // Set courses
-      const coursescontent = data?.result?.content;
+  const fetchData = async () => {
+    setLoading(true);
+    // const content_do_id = 'do_1141503830938746881180';
+    // const content_do_id = 'do_11415396442603520013';
+    const content_do_id = do_id;
 
-      // console.log('########## coursescontent');
-      // console.log('coursescontent', JSON.stringify(coursescontent));
-      // console.log('##########');
+    // Fetch course details
+    const data = await courseDetails(content_do_id);
+    // Set courses
+    const coursescontent = data?.result?.content;
 
-      const coursesData = data?.result?.content?.children;
-      setCoursesContent(coursescontent);
+    // console.log('########## coursescontent');
+    // console.log('coursescontent', JSON.stringify(coursescontent));
+    // console.log('##########');
 
-      // Extract identifiers
-      const identifiers_Id = coursesData?.map((course) => course?.identifier);
-      setIdentifiers(identifiers_Id);
+    const coursesData = data?.result?.content?.children;
+    setCoursesContent(coursescontent);
 
-      setLoading(false);
-    };
+    // Extract identifiers
+    const identifiers_Id = coursesData?.map((course) => course?.identifier);
+    setIdentifiers(identifiers_Id);
 
-    fetchData();
-  }, []);
+    setLoading(false);
+
+    console.log('############ in focus');
+    setLoading(true);
+    fetchDataTrack();
+  };
 
   //set progress and start date
+  const [trackData, setTrackData] = useState([]);
   const [trackCompleted, setTrackCompleted] = useState(0);
   const [startedOn, setStartedOn] = useState('');
 
-  useEffect(() => {
-    fetchDataTrack();
-  }, [navigation]);
-
   const fetchDataTrack = async () => {
+    //found course progress
     try {
-      if (TrackData) {
-        for (let i = 0; i < TrackData.length; i++) {
-          if (TrackData[i]?.courseId == course_id) {
-            if (TrackData[i]?.started_on) {
-              let temp_startedOn = TrackData[i].started_on;
-              const formattedDate =
-                moment(temp_startedOn).format('DD MMM YYYY');
-              setStartedOn(formattedDate);
-              // console.log('########### formattedDate', formattedDate);
-            }
-            let completed = TrackData[i]?.completed;
-            let totalContent = 0;
-            if (content_list_node) {
-              totalContent = content_list_node.length;
-            }
-            let percentageCompleted = (completed / totalContent) * 100;
-            percentageCompleted = Math.round(percentageCompleted);
-            // console.log('########### completed', completed);
-            // console.log('########### leafNodes', totalContent);
-            // console.log('########### content_list_node', content_list_node);
-            // console.log('########### percentageCompleted', percentageCompleted);
-            setTrackCompleted(percentageCompleted);
-          }
-        }
+      console.log('########## contentListApi');
+      //console.log('########## contentList', contentList);
+      let courseList = [course_id];
+      //console.log('########## courseList', courseList);
+      //get course track data
+      let userId = await getDataFromStorage('userId');
+      let batchId = await getDataFromStorage('cohortId');
+      let course_track_data = await courseTrackingStatus(
+        userId,
+        batchId,
+        courseList
+      );
+      //console.log('########## course_track_data', course_track_data?.data);
+      let courseTrackData = [];
+      if (course_track_data?.data) {
+        courseTrackData =
+          course_track_data?.data.find((course) => course.userId === userId)
+            ?.course || [];
       }
+      setTrackData(courseTrackData);
+      console.log('########## courseTrackData', courseTrackData);
+      console.log('##########');
+      setLoading(false); // Ensure to stop loading when data fetch completes
     } catch (e) {
-      console.log('error', e);
+      console.log('e', e);
+      setLoading(false); // Stop loading even on error
     }
   };
+
+  useEffect(() => {
+    if (trackData && trackData.length > 0) {
+      for (let i = 0; i < trackData.length; i++) {
+        if (trackData[i]?.courseId == course_id) {
+          if (trackData[i]?.started_on) {
+            let temp_startedOn = trackData[i].started_on;
+            const formattedDate = moment(temp_startedOn).format('DD MMM YYYY');
+            setStartedOn(formattedDate);
+            // console.log('########### formattedDate', formattedDate);
+          }
+          let completed = trackData[i]?.completed;
+          let totalContent = 0;
+          if (content_list_node) {
+            totalContent = content_list_node.length;
+          }
+          let percentageCompleted = (completed / totalContent) * 100;
+          percentageCompleted = Math.round(percentageCompleted);
+          // console.log('########### completed', completed);
+          // console.log('########### leafNodes', totalContent);
+          // console.log('########### content_list_node', content_list_node);
+          // console.log('########### percentageCompleted', percentageCompleted);
+          setTrackCompleted(percentageCompleted);
+        }
+      }
+    }
+  }, [trackData]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -182,7 +217,7 @@ const CourseContentList = ({ route }) => {
                   item={item}
                   course_id={course_id}
                   unit_id={item?.identifier}
-                  TrackData={TrackData}
+                  TrackData={trackData}
                 />
               );
             })}
