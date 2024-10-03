@@ -29,7 +29,7 @@ import ContentCard from '../ContentCard';
 import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
 
 const UnitList = ({ route }) => {
-  const { children, name, course_id, unit_id } = route.params;
+  const { children, name, course_id, unit_id, headingName } = route.params;
   // console.log('########## UnitList');
   // console.log('course_id', course_id);
   // console.log('unit_id', unit_id);
@@ -91,8 +91,17 @@ const UnitList = ({ route }) => {
       ) : (
         <ScrollView>
           <View style={{ padding: 20, paddingBottom: 10 }}>
+            {headingName && (
+              <Text
+                style={[globalStyles.heading, { marginBottom: 10 }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {headingName}
+              </Text>
+            )}
             <Text
-              style={[globalStyles.heading, { marginBottom: 10 }]}
+              style={[globalStyles.heading2, { marginBottom: 10 }]}
               numberOfLines={1}
               ellipsizeMode="tail"
             >

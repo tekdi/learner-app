@@ -21,7 +21,7 @@ const TabScreen = () => {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ focused }) => {
-          if (route.name === 'DashboardStack') {
+          if (route.name === 'content') {
             return (
               <Icon
                 name="my-library-books"
@@ -29,7 +29,7 @@ const TabScreen = () => {
                 size={30}
               />
             );
-          } else if (route.name === 'Courses') {
+          } else if (route.name === 'DashboardStack') {
             return (
               <SimpleIcon
                 name="graduation"
@@ -71,7 +71,7 @@ const TabScreen = () => {
         options={{ tabBarLabel: t('assessment') }}
       /> */}
       <Tab.Screen
-        name="AssessmentStack"
+        name="content"
         component={Contents}
         options={{ tabBarLabel: t('content') }}
       />

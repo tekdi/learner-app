@@ -8,8 +8,10 @@ import { ProgressBar } from '@ui-kitten/components';
 
 import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
 
-const StatusCard = ({ status, trackCompleted }) => {
+const StatusCard = ({ status, trackCompleted, viewStyle }) => {
   const { t } = useTranslation();
+
+  console.log(viewStyle);
 
   if (status === 'completed') {
     return (
@@ -28,9 +30,14 @@ const StatusCard = ({ status, trackCompleted }) => {
     );
   } else {
     return (
-      <View style={styles.view}>
+      <View style={[styles.view, viewStyle]}>
         <Icon name="circle" />
-        <Text style={[globalStyles.text, { color: 'white', marginLeft: 10 }]}>
+        <Text
+          style={[
+            globalStyles.text,
+            { color: 'white', marginLeft: 10, fontSize: 12 },
+          ]}
+        >
           {t('not_started')}
         </Text>
       </View>

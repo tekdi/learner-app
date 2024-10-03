@@ -20,7 +20,7 @@ const StatusCardIcon = ({ status }) => {
       />
     );
   } else {
-    return <Icon name="circle" />;
+    return <Icon name="circle" style={{ color: '#000' }} />;
   }
 };
 
