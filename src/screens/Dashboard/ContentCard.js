@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,9 +9,15 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import FastImage from '@changwoolab/react-native-fast-image';
 import DownloadCard from '../../components/DownloadCard/DownloadCard';
+import StatusCardIcon from '../../components/StatusCard/StatusCardIcon';
+import globalStyles from '../../utils/Helper/Style';
 
-const ContentCard = ({ item, index, course_id, unit_id }) => {
+const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const navigation = useNavigation();
+  // console.log('########## ContentCard');
+  // console.log('course_id', course_id);
+  // console.log('unit_id', unit_id);
+  // console.log('##########');
 
   const backgroundImages = [
     require('../../assets/images/CardBackground/abstract_01.png'),
@@ -34,6 +40,39 @@ const ContentCard = ({ item, index, course_id, unit_id }) => {
   };
 
   const mimeType = item?.mimeType?.split('/')[1];
+
+  //set progress and start date
+  const [trackStatus, setTrackStatus] = useState('');
+
+  useEffect(() => {
+    fetchDataTrack();
+  }, [navigation]);
+
+  const fetchDataTrack = async () => {
+    try {
+      if (TrackData && item?.identifier) {
+        for (let i = 0; i < TrackData.length; i++) {
+          if (TrackData[i]?.courseId == course_id) {
+            //check all content
+            let content_id = item?.identifier;
+            let completed_list = TrackData[i]?.completed_list;
+            let status = 'notstarted';
+            if (completed_list.includes(content_id)) {
+              status = 'completed';
+            }
+            let in_progress_list = TrackData[i]?.in_progress_list;
+            if (in_progress_list.includes(content_id)) {
+              status = 'inprogress';
+            }
+            setTrackStatus(status);
+            // console.log('########### trackStatus', status);
+          }
+        }
+      }
+    } catch (e) {
+      console.log('error', e);
+    }
+  };
 
   return (
     <View>
@@ -63,14 +102,19 @@ const ContentCard = ({ item, index, course_id, unit_id }) => {
             contentMimeType={item?.mimeType}
           />
         </View>
+      </TouchableOpacity>
+      <View
+        style={[globalStyles.flexrow, { marginLeft: 0, marginVertical: 0 }]}
+      >
+        <StatusCardIcon status={trackStatus} />
         <Text
-          style={[styles.cardText, { color: '#000', width: '80%', top: 20 }]}
+          style={[styles.cardText, { color: '#000' }]}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {item?.name}
         </Text>
-      </TouchableOpacity>
+      </View>
     </View>
   );
 };

@@ -29,6 +29,16 @@ export const getData = async (key, type) => {
   }
 };
 
+export const removeData = async (key) => {
+  try {
+    await AsyncStorage.removeItem(key);
+    return true;
+  } catch (e) {
+    console.error('Error deleting stored JSON object', e);
+    return null;
+  }
+};
+
 export const loadFileAsBlob = async (filePath, mimetype) => {
   try {
     console.log('in loadFileAsBlob');

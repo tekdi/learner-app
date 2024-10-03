@@ -6,7 +6,9 @@ import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
 import { ProgressBar } from '@ui-kitten/components';
 
-const StatusCard = ({ status }) => {
+import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
+
+const StatusCard = ({ status, trackCompleted }) => {
   const { t } = useTranslation();
 
   if (status === 'completed') {
@@ -21,7 +23,7 @@ const StatusCard = ({ status }) => {
   } else if (status === 'inprogress') {
     return (
       <View style={[styles.view, { paddingVertical: 10 }]}>
-        <ProgressBar progress={0.3} width={100} />
+        <ProgressBarCustom progress={trackCompleted} width={100} />
       </View>
     );
   } else {

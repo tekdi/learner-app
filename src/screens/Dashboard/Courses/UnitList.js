@@ -24,22 +24,16 @@ import UnitCard from './UnitCard';
 import ContentCard from '../ContentCard';
 
 const UnitList = ({ route }) => {
-  const { children, name, course_id, unit_id } = route.params;
+  const { children, name, course_id, unit_id, TrackData } = route.params;
+  // console.log('########## UnitList');
+  // console.log('course_id', course_id);
+  // console.log('unit_id', unit_id);
+  // console.log('##########');
   const navigation = useNavigation();
   const [coursesContent, setCoursesContent] = useState();
   const [identifiers, setIdentifiers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedItem, setExpandedItem] = useState(null); // State to track which item is expanded
-
-  const handlePress = (data) => {
-    navigation.navigate('StandAlonePlayer', {
-      content_do_id: data?.identifier,
-      content_mime_type: data?.mimeType,
-      isOffline: false,
-      course_id: course_id,
-      unit_id: unit_id,
-    });
-  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -77,6 +71,7 @@ const UnitList = ({ route }) => {
                       item={item}
                       course_id={course_id}
                       unit_id={item?.identifier}
+                      TrackData={TrackData}
                     />
                   )
                 );
@@ -88,6 +83,7 @@ const UnitList = ({ route }) => {
                     item={item}
                     course_id={course_id}
                     unit_id={unit_id}
+                    TrackData={TrackData}
                   />
                 );
               }

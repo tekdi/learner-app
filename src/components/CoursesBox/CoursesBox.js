@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 
 const CoursesBox = ({
   ContentData,
+  TrackData,
   viewAllLink,
   style,
   title,
@@ -22,7 +23,9 @@ const CoursesBox = ({
 }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-
+  // console.log('########## CoursesBox');
+  // console.log('ContentData', ContentData);
+  // console.log('##########');
   const handlePress = (item) => {
     //console.log('Card pressed!', item);
     console.log('identifier', item?.identifier);
@@ -31,6 +34,7 @@ const CoursesBox = ({
       do_id: item?.identifier,
       course_id: item?.identifier,
       content_list_node: item?.leafNodes,
+      TrackData: TrackData,
     });
   };
 
@@ -42,6 +46,8 @@ const CoursesBox = ({
         index={index}
         setCardWidth={160}
         item={item}
+        TrackData={TrackData}
+        navigation={navigation}
       />
     </View>
   );

@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { getData, storeData } from '../../utils/Helper/JSHelper';
+import { getData, removeData, storeData } from '../../utils/Helper/JSHelper';
 import {
   hierarchyContent,
   listQuestion,
@@ -41,7 +41,7 @@ const DownloadCard = ({ contentId, contentMimeType }) => {
         setValidDownloadFile(true);
         let content_do_id = contentId;
         let contentObj = await getData(content_do_id, 'json');
-        console.log('contentObj', contentObj);
+        //console.log('contentObj', contentObj);
         if (contentObj == null) {
           setDownloadStatus('download');
           setDownloadIcon(download);
@@ -76,6 +76,42 @@ const DownloadCard = ({ contentId, contentMimeType }) => {
     } else if (contentMimeType == 'application/vnd.sunbird.questionset') {
       await downloadContentQuML(contentId);
     } else {
+    }
+  };
+
+  const handleDelete = async () => {
+    const content_folder = `${RNFS.DocumentDirectoryPath}/${contentId}`;
+    const content_zip_file = `${content_folder}.zip`;
+    //delete from internal storage
+    try {
+      //delete json object
+      let contentRemoveObj = await removeData(contentId);
+      console.log('contentRemoveObj', contentRemoveObj);
+      if (contentRemoveObj) {
+        // Check if the folder exists
+        const folderExists = await RNFS.exists(content_folder);
+        if (folderExists) {
+          // Delete the folder and its contents
+          await RNFS.unlink(content_folder);
+          console.log('Folder deleted successfully');
+        } else {
+          console.log('Folder does not exist');
+        }
+        // Check if the file exists
+        const fileExists = await RNFS.exists(content_zip_file);
+        if (fileExists) {
+          // Delete the file
+          await RNFS.unlink(content_zip_file);
+          console.log('File deleted successfully');
+        } else {
+          console.log('File does not exist');
+        }
+        //delete completed
+        setDownloadStatus('download');
+        setDownloadIcon(download);
+      }
+    } catch (error) {
+      console.error('Error deleting folder files:', error);
     }
   };
 
@@ -425,7 +461,7 @@ const DownloadCard = ({ contentId, contentMimeType }) => {
       {validDownloadFile && downloadStatus == 'progress' ? (
         <ActivityIndicator size="large" />
       ) : validDownloadFile && downloadStatus == 'completed' ? (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleDelete}>
           <Image
             style={styles.img}
             source={downloadIcon}

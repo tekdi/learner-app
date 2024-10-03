@@ -99,21 +99,27 @@ const LanguageScreen = () => {
 
       const token = await getDataFromStorage('Accesstoken');
       if (token) {
+        console.log('isConnected', isConnected);
         if (isConnected) {
           const refresh_token = await getRefreshToken();
+          console.log('refresh_token', refresh_token);
           const data = await refreshToken({
             refresh_token: refresh_token,
           });
+          console.log('data', data);
           if (token && data?.access_token) {
             await saveAccessToken(data?.access_token);
             await saveRefreshToken(data?.refresh_token);
             console.log('status successful');
+            navigation.replace('Dashboard');
+          } else if (token) {
             navigation.replace('Dashboard');
           } else {
             console.log('error');
             setLoading(false);
           }
         } else {
+          console.log('no connected auto login');
           navigation.replace('Dashboard');
         }
       } else {
