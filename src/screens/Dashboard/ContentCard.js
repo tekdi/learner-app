@@ -149,9 +149,9 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   };
 
   return (
-    <View>
+    <View style={styles.card}>
       <TouchableOpacity
-        style={styles.card}
+        style={styles.subcard}
         onPress={() => {
           handlePress(item);
         }}
@@ -178,9 +178,10 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         </View>
       </TouchableOpacity>
       <View
-        style={[globalStyles.flexrow, { marginLeft: 0, marginVertical: 0 }]}
+        style={[globalStyles.flexrow, { marginLeft: 20, marginVertical: 10 }]}
       >
         <StatusCardIcon status={trackStatus} />
+
         <Text
           style={[styles.cardText, { color: '#000' }]}
           numberOfLines={1}
@@ -195,12 +196,16 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: 160,
-    height: 100,
+    width: '47%',
+    height: 120,
     borderRadius: 20,
-    backgroundColor: '#EAC16C',
-    marginVertical: 15,
+    marginVertical: 25,
     // overflow: 'hidden', // Ensure the background image and content stay within the card boundaries
+  },
+  subcard: {
+    height: 120,
+    borderRadius: 20,
+    overflow: 'hidden', // Ensure content doesn't overflow the card boundaries
   },
   cardBackgroundImage: {
     ...StyleSheet.absoluteFillObject, // Make the background image cover the entire card
@@ -224,6 +229,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     right: 10,
     height: 60,
+    top: 20,
   },
 });
 

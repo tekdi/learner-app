@@ -260,19 +260,28 @@ const CourseContentList = ({ route }) => {
               ]}
             >
               <View style={globalStyles.flexrow}>
-                <TextField style={globalStyles.text} text={'started_on'} />
-                <TextField style={globalStyles.text} text={startedOn} />
+                <TextField
+                  style={[globalStyles.text, { fontSize: 14 }]}
+                  text={'started_on'}
+                />
+                <TextField
+                  style={[globalStyles.text, { fontSize: 14 }]}
+                  text={startedOn}
+                />
               </View>
               <View style={globalStyles.flexrow}>
                 <View>
                   <CircularProgressBar
                     progress={trackCompleted / 100}
-                    style={{ width: 40, height: 40 }}
+                    style={{ width: 30, height: 30 }}
                     // size="tiny"
                     textStyle={{ fontSize: 10 }}
                   />
                 </View>
-                <TextField style={globalStyles.text} text={'completed'} />
+                <TextField
+                  style={[globalStyles.text, { fontSize: 14 }]}
+                  text={'completed'}
+                />
               </View>
             </View>
           </View>
@@ -284,6 +293,7 @@ const CourseContentList = ({ route }) => {
               flexWrap: 'wrap',
               flexDirection: 'row',
               minHeight: 300,
+              borderWidth: 1,
             }}
           >
             {coursesContent?.children?.map((item) => {
@@ -291,6 +301,7 @@ const CourseContentList = ({ route }) => {
                 <UnitCard
                   key={item?.name}
                   item={item}
+                  headingName={coursesContent?.name}
                   course_id={course_id}
                   unit_id={item?.identifier}
                   TrackData={trackData}

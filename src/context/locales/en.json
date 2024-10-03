@@ -189,5 +189,6 @@
   "read_more": "Read More",
   "congratulations": "Congratulations, You are now registered to Second Chance Program!",
   "can_only_contain_numbers": "can only contain numbers",
-  "mobile": "Mobile"
+  "mobile": "Mobile",
+  "started_on": "Started on:"
 }

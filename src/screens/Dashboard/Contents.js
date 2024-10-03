@@ -7,7 +7,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
+  FlatList,
   View,
 } from 'react-native';
 import {
@@ -15,11 +15,10 @@ import {
   useNavigation,
   useNavigationState,
 } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
-import CoursesBox from '../../components/CoursesBox/CoursesBox';
+import ContentCard from './ContentCard';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
-import { contentListApi, getAccessToken } from '../../utils/API/AuthService';
+import { contentListApi } from '../../utils/API/AuthService';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
@@ -66,10 +65,6 @@ const Contents = () => {
     setShowExitModal(false); // Close the modal
   };
 
-  const handlePress = () => {
-    navigation.navigate('Preference');
-  };
-
   useEffect(() => {
     fetchData();
   }, [navigation]);
@@ -82,6 +77,17 @@ const Contents = () => {
     setLoading(false);
   };
 
+  const renderContentCard = ({ item, index }) => {
+    return (
+      <ContentCard
+        item={item}
+        index={index}
+        course_id={item?.identifier}
+        unit_id={item?.identifier}
+      />
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <SecondaryHeader logo />
@@ -90,103 +96,24 @@ const Contents = () => {
           <ActivityIndicator style={{ top: 300 }} />
         ) : (
           <SafeAreaView>
-            <StatusBar
-              barStyle="dark-content"
-              translucent={true}
-              backgroundColor="transparent"
-            />
             <Text style={styles.text}>{t('Learning_Content')}</Text>
             <View style={styles.view2}>
               <Image source={wave} resizeMode="contain" />
               <Text style={styles.text2}>
-                {t('welcome')}, {userInfo?.[0]?.name} !
+                {t('welcome')}, {userInfo?.[0]?.name}!
               </Text>
             </View>
             <SyncCard doneSync={fetchData} />
-
-            <CoursesBox
-              // title={'Continue_Learning'}
-              // description={'Food_Production'}
-              style={{ titlecolor: '#06A816' }}
-              viewAllLink={() =>
-                navigation.navigate('ViewAll', {
-                  title: 'Continue_Learning',
-                  data: data,
-                })
-              }
-              ContentData={data}
-            />
-            {/* <HorizontalLine />
-              <TouchableOpacity onPress={handlePress}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    borderRadius: 10,
-                    width: '98%',
-                    padding: 20,
-                    marginTop: 10,
-                    backgroundColor: '#ffdea1',
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.description,
-                      { color: 'black', width: '90%' },
-                    ]}
-                  >
-                    {t(
-                      'Update_your_preferences_to_get_the_best_picks_just_for_you'
-                    )}
-                  </Text>
-                  <Icon
-                    name="arrow-right"
-                    style={{ marginHorizontal: 10 }}
-                    color={'black'}
-                    size={20}
-                  />
-                </View>
-              </TouchableOpacity>
-              <CoursesBox
-                title={'Based_on_Your_Interests'}
-                description={'Financial_Literacy'}
-                style={{ titlecolor: '#785913' }}
-                viewAllLink={() =>
-                  navigation.navigate('ViewAll', {
-                    title: 'Based_on_Your_Interests',
-                    data: data,
-                  })
-                }
-                ContentData={data}
+            <View style={{ height: '85%' }}>
+              <FlatList
+                data={data}
+                renderItem={renderContentCard}
+                keyExtractor={(item, index) => index.toString()}
+                numColumns={2} // Number of columns for side by side view
+                contentContainerStyle={styles.flatListContent}
+                columnWrapperStyle={styles.columnWrapper} // Adds space between columns
               />
-
-              <CoursesBox
-                description={'Conceptual_Thinking'}
-                viewAllLink={() =>
-                  navigation.navigate('ViewAll', {
-                    title: 'Conceptual_Thinking',
-                    data: data,
-                  })
-                }
-                ContentData={data}
-              />
-
-              <HorizontalLine />
-
-              <CoursesBox
-                title={'Todays_Top_Pick'}
-                description={'Art'}
-                style={{ titlecolor: '#785913' }}
-                viewAllLink={() =>
-                  navigation.navigate('ViewAll', {
-                    title: 'Todays_Top_Pick',
-                    data: data,
-                  })
-                }
-                ContentData={data}
-              />
-              <HorizontalLine /> */}
+            </View>
           </SafeAreaView>
         )}
         {showExitModal && (
@@ -204,7 +131,6 @@ const Contents = () => {
 const styles = StyleSheet.create({
   view: {
     width: '100%',
-    //backgroundColor: 'white',
     padding: 15,
   },
   view2: {
@@ -222,6 +148,13 @@ const styles = StyleSheet.create({
     color: 'black',
     marginLeft: 10,
     fontWeight: '500',
+  },
+  flatListContent: {
+    paddingBottom: 30,
+  },
+  columnWrapper: {
+    justifyContent: 'space-between', // Spacing between columns
+    paddingHorizontal: 10,
   },
 });
 
