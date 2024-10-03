@@ -8,6 +8,9 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Modal,
+  View,
+  Text,
 } from 'react-native';
 import { getData, removeData, storeData } from '../../utils/Helper/JSHelper';
 import {
@@ -19,13 +22,20 @@ import RNFS from 'react-native-fs';
 import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
 import NetworkAlert from '../NetworkError/NetworkAlert';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import { useTranslation } from '../../context/LanguageContext';
+import SecondaryButton from '../SecondaryButton/SecondaryButton';
+import globalStyles from '../../utils/Helper/Style';
+import HorizontalLine from '../HorizontalLine/HorizontalLine';
 
-const DownloadCard = ({ contentId, contentMimeType }) => {
+const DownloadCard = ({ contentId, contentMimeType, name }) => {
   const [downloadIcon, setDownloadIcon] = useState(download);
   const [downloadStatus, setDownloadStatus] = useState('');
   const questionListUrl = Config.QUESTION_LIST_URL;
   const [validDownloadFile, setValidDownloadFile] = useState(null);
   const [networkstatus, setNetworkstatus] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,6 +119,7 @@ const DownloadCard = ({ contentId, contentMimeType }) => {
         //delete completed
         setDownloadStatus('download');
         setDownloadIcon(download);
+        setModalVisible(false);
       }
     } catch (error) {
       console.error('Error deleting folder files:', error);
@@ -461,7 +472,7 @@ const DownloadCard = ({ contentId, contentMimeType }) => {
       {validDownloadFile && downloadStatus == 'progress' ? (
         <ActivityIndicator size="large" />
       ) : validDownloadFile && downloadStatus == 'completed' ? (
-        <TouchableOpacity onPress={handleDelete}>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Image
             style={styles.img}
             source={downloadIcon}
@@ -486,6 +497,50 @@ const DownloadCard = ({ contentId, contentMimeType }) => {
           setNetworkstatus(!networkstatus);
         }}
       />
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text
+              style={globalStyles.heading2}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {name}
+            </Text>
+            <Text
+              style={[
+                globalStyles.text,
+                { marginVertical: 10, textAlign: 'center' },
+              ]}
+            >
+              {t('delete_msg')}
+            </Text>
+            <HorizontalLine />
+            <View style={styles.modalButtonContainer}>
+              <View>
+                <SecondaryButton
+                  onPress={() => {
+                    setModalVisible(false);
+                  }}
+                  text={'cancel'}
+                />
+              </View>
+              <View style={{ width: 120 }}>
+                <PrimaryButton
+                  onPress={handleDelete}
+                  text={t('delete')}
+                ></PrimaryButton>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -495,6 +550,26 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     marginHorizontal: 10,
+  },
+
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingVertical: 20,
   },
 });
 
