@@ -21,7 +21,6 @@ const UnitCard = ({ item, course_id, unit_id, TrackData }) => {
       name: item?.name,
       course_id: course_id,
       unit_id: item?.identifier,
-      TrackData: TrackData,
     });
   };
 
@@ -30,7 +29,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData }) => {
 
   useEffect(() => {
     fetchDataTrack();
-  }, [navigation]);
+  }, [course_id]);
   // Recursive function to collect leaf nodes
   const getLeafNodes = (node) => {
     let result = [];

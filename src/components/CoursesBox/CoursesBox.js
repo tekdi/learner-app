@@ -34,7 +34,6 @@ const CoursesBox = ({
       do_id: item?.identifier,
       course_id: item?.identifier,
       content_list_node: item?.leafNodes,
-      TrackData: TrackData,
     });
   };
 

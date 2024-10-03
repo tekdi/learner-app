@@ -73,11 +73,16 @@ const Courses = () => {
     navigation.navigate('Preference');
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [navigation]);
+  useFocusEffect(
+    useCallback(() => {
+      console.log('########## in focus course');
+
+      fetchData();
+    }, []) // Make sure to include the dependencies
+  );
 
   const fetchData = async () => {
+    setLoading(true);
     const data = await contentListApi();
 
     //found course progress
@@ -103,12 +108,9 @@ const Courses = () => {
       //console.log('########## course_track_data', course_track_data?.data);
       let courseTrackData = [];
       if (course_track_data?.data) {
-        course_track_data = course_track_data?.data;
-        for (let i = 0; i < course_track_data.length; i++) {
-          if (course_track_data[i]?.userId == userId) {
-            courseTrackData = course_track_data[i]?.course;
-          }
-        }
+        courseTrackData =
+          course_track_data?.data.find((course) => course.userId === userId)
+            ?.course || [];
       }
       setTrackData(courseTrackData);
       console.log('########## courseTrackData', courseTrackData);

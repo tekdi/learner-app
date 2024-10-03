@@ -48,7 +48,7 @@ const CourseCard = ({
 
   useEffect(() => {
     fetchDataTrack();
-  }, [navigation]);
+  }, [item?.identifier]);
 
   const fetchDataTrack = async () => {
     try {
@@ -81,8 +81,6 @@ const CourseCard = ({
       console.log('error', e);
     }
   };
-
-  TrackData;
 
   return (
     <Pressable
