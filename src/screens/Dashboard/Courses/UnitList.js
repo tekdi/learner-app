@@ -24,20 +24,16 @@ import UnitCard from './UnitCard';
 import ContentCard from '../ContentCard';
 
 const UnitList = ({ route }) => {
-  const { children, name } = route.params;
+  const { children, name, course_id, unit_id, TrackData } = route.params;
+  // console.log('########## UnitList');
+  // console.log('course_id', course_id);
+  // console.log('unit_id', unit_id);
+  // console.log('##########');
   const navigation = useNavigation();
   const [coursesContent, setCoursesContent] = useState();
   const [identifiers, setIdentifiers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedItem, setExpandedItem] = useState(null); // State to track which item is expanded
-
-  const handlePress = (data) => {
-    navigation.navigate('StandAlonePlayer', {
-      content_do_id: data?.identifier,
-      content_mime_type: data?.mimeType,
-      isOffline: false,
-    });
-  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -70,12 +66,25 @@ const UnitList = ({ route }) => {
               ) {
                 return (
                   item?.children.length > 0 && (
-                    <UnitCard key={item?.name} item={item} />
+                    <UnitCard
+                      key={item?.name}
+                      item={item}
+                      course_id={course_id}
+                      unit_id={item?.identifier}
+                      TrackData={TrackData}
+                    />
                   )
                 );
               } else {
                 return (
-                  <ContentCard key={item?.name} index={index} item={item} />
+                  <ContentCard
+                    key={item?.name}
+                    index={index}
+                    item={item}
+                    course_id={course_id}
+                    unit_id={unit_id}
+                    TrackData={TrackData}
+                  />
                 );
               }
             })}

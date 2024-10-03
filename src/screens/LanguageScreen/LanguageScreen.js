@@ -28,7 +28,7 @@ import {
 import { refreshToken } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { useInternet } from '../../context/NetworkContext';
-import { createTable } from '../../utils/JsHelper/SqliteHelper';
+import { alterTable, createTable } from '../../utils/JsHelper/SqliteHelper';
 
 const LanguageScreen = () => {
   const navigation = useNavigation();
@@ -87,23 +87,39 @@ const LanguageScreen = () => {
       const query_Tracking_Offline = await createTable({ tableName, columns });
       console.log('query_Tracking_Offline', query_Tracking_Offline);
 
+      //alter table for new columns add
+      //add unit_id in Tracking_Offline
+      tableName = 'Tracking_Offline';
+      columns = ['unit_id TEXT'];
+      const query_alter_Tracking_Offline = await alterTable({
+        tableName,
+        newColumns: columns,
+      });
+      console.log('query_alter_Tracking_Offline', query_alter_Tracking_Offline);
+
       const token = await getDataFromStorage('Accesstoken');
       if (token) {
+        console.log('isConnected', isConnected);
         if (isConnected) {
           const refresh_token = await getRefreshToken();
+          console.log('refresh_token', refresh_token);
           const data = await refreshToken({
             refresh_token: refresh_token,
           });
+          console.log('data', data);
           if (token && data?.access_token) {
             await saveAccessToken(data?.access_token);
             await saveRefreshToken(data?.refresh_token);
             console.log('status successful');
+            navigation.replace('Dashboard');
+          } else if (token) {
             navigation.replace('Dashboard');
           } else {
             console.log('error');
             setLoading(false);
           }
         } else {
+          console.log('no connected auto login');
           navigation.replace('Dashboard');
         }
       } else {

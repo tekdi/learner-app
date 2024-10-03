@@ -34,11 +34,7 @@ import {
   epubPlayerConfig,
   questionsData,
 } from './data';
-import {
-  getData,
-  loadFileAsBlob,
-  storeData,
-} from '../../../utils/Helper/JSHelper';
+import { getData, storeData } from '../../../utils/Helper/JSHelper';
 import RNFS from 'react-native-fs';
 import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
@@ -62,10 +58,19 @@ const desktopUserAgent =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
 
 const StandAlonePlayer = ({ route }) => {
+  console.log('route', route);
+  //get courseId and unitId in standalone player
   const navigation = useNavigation();
-  const { content_do_id, content_mime_type, title, isOffline } = route.params;
-  // console.log('content_do_id', content_do_id);
-  // console.log('content_mime_type', content_mime_type);
+  const {
+    content_do_id,
+    content_mime_type,
+    title,
+    isOffline,
+    course_id,
+    unit_id,
+  } = route.params;
+  console.log('content_do_id', content_do_id);
+  console.log('content_mime_type', content_mime_type);
   //   ##content_mime_type
 
   //   #sunbird-content-player
@@ -88,6 +93,10 @@ const StandAlonePlayer = ({ route }) => {
   //   application/vnd.sunbird.question
   const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [courseId, setCourseId] = useState(
+    course_id ? course_id : content_do_id
+  );
+  const [unitId, setUnitId] = useState(unit_id ? unit_id : content_do_id);
   //const [telemetryObject, setTelemetryObject] = useState([]);
   let telemetryObject = [];
   let contentEidSTART = [];
@@ -136,6 +145,8 @@ const StandAlonePlayer = ({ route }) => {
       await storeData('contentId', content_do_id, '');
       await storeData('contentType', contentType, '');
       await storeData('contentMimeType', content_mime_type, '');
+      await storeData('courseId', course_id, '');
+      await storeData('unitId', unit_id, '');
     };
     fetchData();
 
@@ -218,9 +229,9 @@ const StandAlonePlayer = ({ route }) => {
       if (data_obj) {
         //add user id in actor
         data_obj.actor.id = userId;
-        console.log('####################');
-        console.log('data_obj', JSON.stringify(data_obj));
-        console.log('####################');
+        // console.log('####################');
+        // console.log('data_obj', JSON.stringify(data_obj));
+        // console.log('####################');
         //setTelemetryObject((telemetryObject) => [...telemetryObject, data_obj]);
         telemetryObject.push(data_obj);
         //console.log('telemetryObject', telemetryObject);
@@ -284,7 +295,9 @@ const StandAlonePlayer = ({ route }) => {
             seconds,
             userId,
             batchId,
-            lastAttemptedOn
+            lastAttemptedOn,
+            courseId,
+            unitId
           );
           if (
             create_assessment &&
@@ -304,6 +317,8 @@ const StandAlonePlayer = ({ route }) => {
               userId,
               batchId,
               lastAttemptedOn,
+              courseId,
+              unitId,
             };
             //store result in offline mode
             await storeAsessmentOffline(
@@ -465,41 +480,50 @@ const StandAlonePlayer = ({ route }) => {
     try {
       let contentObj = await getData(content_do_id, 'json');
       if (contentObj == null) {
-        //download start
-        set_is_download(true);
-        await downloadContentPDFEpubVideo();
-      } else if (contentObj?.mimeType == 'application/pdf') {
-        //get content file name
-        let temp_file_url = contentObj?.artifactUrl;
-        const dividedArray = temp_file_url.split(content_do_id);
-        const file_name =
-          dividedArray[
-            dividedArray.length > 0
-              ? dividedArray.length - 1
-              : dividedArray.length
-          ];
-        filePath = `${content_file}/${content_do_id}${file_name}`;
-        //console.log('filePath', filePath);
-        let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
-        //console.log('blobContent', blobContent);
-        if (blobContent) {
-          //console.log('create blob url');
-          contentObj.artifactUrl = blobContent;
-
-          //previewUrl streamingUrl no needed for offline use
-          delete contentObj.previewUrl;
-          delete contentObj.streamingUrl;
-
-          pdfPlayerConfig.metadata = contentObj;
-          //console.log('pdfPlayerConfig set', pdfPlayerConfig);
-          set_is_valid_file(true);
-        } else {
+        //no offline content found
+        //play online directly
+        let content_response = await readContent(content_do_id);
+        if (content_response == null) {
+          //Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
+          setAlertModal(true);
+          setErrorDetail('content_not_in_device');
           set_is_valid_file(false);
+        } else {
+          let contentObj = content_response?.result?.content;
+          if (
+            contentObj?.mimeType == 'application/pdf' ||
+            contentObj?.mimeType == 'video/mp4' ||
+            contentObj?.mimeType == 'video/webm' ||
+            contentObj?.mimeType == 'application/epub'
+          ) {
+            if (contentObj?.mimeType == 'application/pdf') {
+              pdfPlayerConfig.metadata = contentObj;
+              //console.log('pdfPlayerConfig set', pdfPlayerConfig);
+            }
+            if (
+              contentObj?.mimeType == 'video/mp4' ||
+              contentObj?.mimeType == 'video/webm'
+            ) {
+              videoPlayerConfig.metadata = contentObj;
+              //console.log('videoPlayerConfig set', videoPlayerConfig);
+            }
+            if (contentObj?.mimeType == 'application/epub') {
+              epubPlayerConfig.metadata = contentObj;
+              //console.log('epubPlayerConfig set', epubPlayerConfig);
+            }
+            set_is_valid_file(true);
+          } else {
+            set_is_valid_file(false);
+            Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+          }
         }
       } else if (
+        contentObj?.mimeType == 'application/pdf' ||
         contentObj?.mimeType == 'video/mp4' ||
-        contentObj?.mimeType == 'video/webm'
+        contentObj?.mimeType == 'video/webm' ||
+        contentObj?.mimeType == 'application/epub'
       ) {
+        //play offline content
         //get content file name
         let temp_file_url = contentObj?.artifactUrl;
         const dividedArray = temp_file_url.split(content_do_id);
@@ -509,56 +533,38 @@ const StandAlonePlayer = ({ route }) => {
               ? dividedArray.length - 1
               : dividedArray.length
           ];
-        filePath = `${content_file}/${content_do_id}${file_name}`;
+        filePath = `file://${content_file}/${content_do_id}${file_name}`;
         //console.log('filePath', filePath);
-        let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
-        //console.log('blobContent', blobContent);
-        if (blobContent) {
-          //console.log('create blob url');
-          contentObj.artifactUrl = blobContent;
+        //console.log('create blob url');
+        contentObj.artifactUrl = filePath;
 
-          //previewUrl streamingUrl no needed for offline use
-          delete contentObj.previewUrl;
-          delete contentObj.streamingUrl;
-
+        //previewUrl streamingUrl no needed for offline use
+        delete contentObj.previewUrl;
+        delete contentObj.streamingUrl;
+        if (contentObj?.mimeType == 'application/pdf') {
+          pdfPlayerConfig.metadata = contentObj;
+          //console.log('pdfPlayerConfig set', pdfPlayerConfig);
+        }
+        if (
+          contentObj?.mimeType == 'video/mp4' ||
+          contentObj?.mimeType == 'video/webm'
+        ) {
           videoPlayerConfig.metadata = contentObj;
           //console.log('videoPlayerConfig set', videoPlayerConfig);
-          set_is_valid_file(true);
-        } else {
-          set_is_valid_file(false);
         }
-      } else if (contentObj?.mimeType == 'application/epub') {
-        //get content file name
-        let temp_file_url = contentObj?.artifactUrl;
-        const dividedArray = temp_file_url.split(content_do_id);
-        const file_name =
-          dividedArray[
-            dividedArray.length > 0
-              ? dividedArray.length - 1
-              : dividedArray.length
-          ];
-        filePath = `${content_file}/${content_do_id}${file_name}`;
-        let blobContent = await loadFileAsBlob(filePath, contentObj.mimeType);
-        //console.log('blobContent', blobContent);
-        if (blobContent) {
-          //console.log('create blob url');
-          contentObj.artifactUrl = blobContent;
-
-          //previewUrl streamingUrl no needed for offline use
-          delete contentObj.previewUrl;
-          delete contentObj.streamingUrl;
-
+        if (contentObj?.mimeType == 'application/epub') {
           epubPlayerConfig.metadata = contentObj;
           //console.log('epubPlayerConfig set', epubPlayerConfig);
-          set_is_valid_file(true);
-        } else {
-          set_is_valid_file(false);
         }
+        set_is_valid_file(true);
       } else {
+        //invalid file
         set_is_valid_file(false);
+        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
       }
     } catch (e) {
       set_is_valid_file(false);
+      Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
     }
     set_is_download(false);
     set_loading_text('');
@@ -852,101 +858,6 @@ const StandAlonePlayer = ({ route }) => {
     setLoading(false);
   };
 
-  const downloadContentPDFEpubVideo = async () => {
-    //content read
-    setLoading(true);
-    set_loading_text('Reading Content...');
-    //get data online
-    let content_response = await readContent(content_do_id);
-    if (content_response == null) {
-      //Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
-      setAlertModal(true);
-      setErrorDetail('content_not_in_device');
-      set_is_valid_file(false);
-    } else {
-      let contentObj = content_response?.result?.content;
-      let filePath = '';
-      if (contentObj?.mimeType == 'application/pdf') {
-        filePath = `${content_file}.pdf`;
-      } else if (contentObj?.mimeType == 'application/epub') {
-        filePath = `${content_file}.epub`;
-      } else if (contentObj?.mimeType == 'video/mp4') {
-        filePath = `${content_file}.mp4`;
-      } else if (contentObj?.mimeType == 'video/webm') {
-        filePath = `${content_file}.webm`;
-      }
-      if (filePath != '') {
-        //download file and store object in local
-        //download file
-        // URL of the file to download
-        //const fileUrl = contentObj?.artifactUrl;
-        const fileUrl = contentObj?.downloadUrl;
-        filePath = `${content_file}.zip`;
-        //console.log('fileUrl', fileUrl);
-        try {
-          //console.log('permission got');
-          try {
-            const download = RNFS.downloadFile({
-              fromUrl: fileUrl,
-              toFile: filePath,
-              begin: (res) => {
-                console.log('Download started');
-              },
-              progress: (res) => {
-                const progressPercent =
-                  (res.bytesWritten / res.contentLength) * 100;
-                setProgress(progressPercent);
-              },
-            });
-            const result = await download.promise;
-            if (result.statusCode === 200) {
-              console.log('File downloaded successfully:', filePath);
-              setProgress(0);
-              set_loading_text('Unzip content ecar file...');
-              // Define the paths
-              const sourcePath = filePath;
-              const targetPath = content_file;
-              try {
-                // Ensure the target directory exists
-                await RNFS.mkdir(targetPath);
-                // Unzip the file
-                const path = await unzip(sourcePath, targetPath);
-                console.log(`Unzipped to ${path}`);
-                //store content obj
-                //console.log(contentObj);
-                await storeData(content_do_id, contentObj, 'json');
-                await fetchDataPdfVideoEpub();
-              } catch (error) {
-                console.error(`Error extracting zip file: ${error}`);
-              }
-            } else {
-              Alert.alert(
-                'Error Internal',
-                `Failed to download file: ${JSON.stringify(result)}`,
-                [{ text: 'OK' }]
-              );
-              console.log('Failed to download file:', result.statusCode);
-            }
-          } catch (error) {
-            Alert.alert('Error Catch', `Failed to download file: ${error}`, [
-              { text: 'OK' },
-            ]);
-            console.error('Error downloading file:', error);
-          }
-        } catch (err) {
-          Alert.alert('Error Catch', `Failed to download file: ${err}`, [
-            { text: 'OK' },
-          ]);
-          console.log('display error', err);
-        }
-      } else {
-        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
-      }
-    }
-    //content read
-    setLoading(false);
-  };
-
   //call content url
   let injectedJS =
     content_mime_type == 'application/vnd.sunbird.questionset'
@@ -1015,7 +926,7 @@ const StandAlonePlayer = ({ route }) => {
     if (storedTelemetryObject && storedTelemetryObject.length > 0) {
       try {
         let create_telemetry = await telemetryTracking(storedTelemetryObject);
-        console.log('create_telemetry', create_telemetry);
+        //console.log('create_telemetry', create_telemetry);
         if (
           create_telemetry &&
           create_telemetry?.response?.responseCode == 'SUCCESS'
@@ -1049,7 +960,8 @@ const StandAlonePlayer = ({ route }) => {
     }
 
     let userId = await getDataFromStorage('userId');
-    let courseId = await getData('contentId', '');
+    let courseId = await getData('courseId', '');
+    let unitId = await getData('unitId', '');
     let batchId = await getDataFromStorage('cohortId');
     let contentId = await getData('contentId', '');
     let contentType = await getData('contentType', '');
@@ -1066,9 +978,10 @@ const StandAlonePlayer = ({ route }) => {
           contentType,
           contentMime,
           lastAccessOn,
-          detailsObject
+          detailsObject,
+          unitId
         );
-        console.log('create_tracking', create_tracking);
+        //console.log('create_tracking', create_tracking);
         if (create_tracking && create_tracking?.response?.responseCode == 201) {
           console.log('saved data');
         } else {
@@ -1082,7 +995,8 @@ const StandAlonePlayer = ({ route }) => {
             contentType,
             contentMime,
             lastAccessOn,
-            detailsObject
+            detailsObject,
+            unitId
           );
         }
       } catch (e) {
@@ -1132,8 +1046,6 @@ const StandAlonePlayer = ({ route }) => {
                 content_mime_type == 'application/vnd.ekstep.h5p-archive'
               ) {
                 downloadContentECMLH5pHTMLYoutube();
-              } else {
-                downloadContentPDFEpubVideo();
               }
             }}
           />

@@ -25,12 +25,14 @@ import { contentListApi, getAccessToken } from '../../../utils/API/AuthService';
 import SyncCard from '../../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
 import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
+import { courseTrackingStatus } from '../../../utils/API/ApiCalls';
 
 const Courses = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
+  const [trackData, setTrackData] = useState([]);
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
@@ -77,6 +79,43 @@ const Courses = () => {
 
   const fetchData = async () => {
     const data = await contentListApi();
+
+    //found course progress
+    try {
+      console.log('########## contentListApi');
+      const contentList = data?.content;
+      //console.log('########## contentList', contentList);
+      let courseList = [];
+      if (contentList) {
+        for (let i = 0; i < contentList.length; i++) {
+          courseList.push(contentList[i]?.identifier);
+        }
+      }
+      //console.log('########## courseList', courseList);
+      //get course track data
+      let userId = await getDataFromStorage('userId');
+      let batchId = await getDataFromStorage('cohortId');
+      let course_track_data = await courseTrackingStatus(
+        userId,
+        batchId,
+        courseList
+      );
+      //console.log('########## course_track_data', course_track_data?.data);
+      let courseTrackData = [];
+      if (course_track_data?.data) {
+        course_track_data = course_track_data?.data;
+        for (let i = 0; i < course_track_data.length; i++) {
+          if (course_track_data[i]?.userId == userId) {
+            courseTrackData = course_track_data[i]?.course;
+          }
+        }
+      }
+      setTrackData(courseTrackData);
+      console.log('########## courseTrackData', courseTrackData);
+      console.log('##########');
+    } catch (e) {
+      console.log('e', e);
+    }
     const result = JSON.parse(await getDataFromStorage('profileData'));
     setUserInfo(result?.getUserDetails);
     setData(data?.content);
@@ -116,6 +155,7 @@ const Courses = () => {
                 })
               }
               ContentData={data}
+              TrackData={trackData}
             />
             {/* <HorizontalLine />
               <TouchableOpacity onPress={handlePress}>

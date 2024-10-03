@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-
-} from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 import globalStyles from '../../utils/Helper/Style';
@@ -20,16 +13,12 @@ const TestResultModal = ({ modal, title }) => {
   const navigation = useNavigation();
 
   const closeModal = () => {
-    navigation.replace('Dashboard');
+    //navigation.replace('Dashboard');
+    navigation.goBack();
   };
 
   return (
-    <Modal
-      visible={!!modal}
-      transparent={true}
-      animationType="slide"
-      onclo
-    >
+    <Modal visible={!!modal} transparent={true} animationType="slide" onclo>
       <TouchableOpacity
         style={styles.modalContainer}
         activeOpacity={1}
@@ -40,7 +29,6 @@ const TestResultModal = ({ modal, title }) => {
             <Text style={globalStyles.heading}>
               {t(capitalizeFirstLetter(title))}
             </Text>
-            
           </View>
           <TouchableOpacity
             activeOpacity={1} // Prevent closing the modal when clicking inside the alert box
@@ -84,10 +72,9 @@ const TestResultModal = ({ modal, title }) => {
           <View style={styles.btnbox}>
             <Button status="primary" style={styles.btn} onPress={closeModal}>
               {() => (
-                
-                  <Text style={[globalStyles.subHeading, { marginRight: 10 }]}>
-                    {t('okay')}
-                  </Text>
+                <Text style={[globalStyles.subHeading, { marginRight: 10 }]}>
+                  {t('okay')}
+                </Text>
               )}
             </Button>
           </View>
@@ -139,8 +126,8 @@ const styles = StyleSheet.create({
 });
 
 TestResultModal.propTypes = {
-  modal:PropTypes.any,
-  title:PropTypes.any
+  modal: PropTypes.any,
+  title: PropTypes.any,
 };
 
 export default TestResultModal;

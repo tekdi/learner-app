@@ -28,6 +28,8 @@ const createTable = ({ tableName, columns }) => {
 //  alterTable if new column need to be added.
 
 const alterTable = ({ tableName, newColumns }) => {
+  console.log('tableName', tableName);
+  console.log('newColumns', newColumns);
   return new Promise((resolve, reject) => {
     const db = openDatabase();
 
@@ -167,8 +169,6 @@ const deleteData = ({ tableName, where }) => {
     });
   });
 };
-
-
 
 export {
   openDatabase,
