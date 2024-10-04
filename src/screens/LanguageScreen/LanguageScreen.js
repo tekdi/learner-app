@@ -38,6 +38,7 @@ const LanguageScreen = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       //create tables local
       //APIResponses
       let tableName = 'APIResponses';
