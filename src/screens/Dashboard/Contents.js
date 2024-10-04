@@ -39,24 +39,6 @@ const Contents = () => {
     return route.name;
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        if (routeName === 'Content') {
-          setShowExitModal(true);
-          return true; // Prevent default back behavior
-        }
-        return false; // Allow default back behavior
-      };
-
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
-      return () => {
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-      };
-    }, [routeName])
-  );
-
   const handleExitApp = () => {
     setShowExitModal(false);
     BackHandler.exitApp(); // Exit the app
@@ -88,6 +70,23 @@ const Contents = () => {
       />
     );
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack(); // Navigate back to the previous screen
+      return true; // Returning true prevents the default behavior (exiting the app)
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    // Clean up the event listener on component unmount
+    return () => {
+      backHandler.remove();
+    };
+  }, [navigation]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
