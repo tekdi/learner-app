@@ -21,7 +21,7 @@ const EndUrls = {
   read_content: `${CONTENT_URL}/api/content/v1/read/`, //pass do id at end
 
   userExist: API_URL + `/user/v1/check`,
-  contentList: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
+  contentList: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName%2Cemail&framework=gujaratboardfw'`,
   cohort: API_URL + `/user/v1/cohort/mycohorts`,
   contentSearch: `${CONTENT_URL}/api/content/v1/search`,
   trackAssessment: `${tracking_assessment}/v1/tracking/assessment/list`,

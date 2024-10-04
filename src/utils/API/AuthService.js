@@ -165,9 +165,7 @@ export const courseListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        se_boards: ['west bengal board of secondary education'],
-        se_mediums: ['english'],
-        se_gradeLevels: ['class 10', 'class 09', 'class 08'],
+        se_boards: ['Odisha'],
         primaryCategory: ['Course'],
         visibility: ['Default', 'Parent'],
       },
@@ -238,7 +236,7 @@ export const contentListApi = async (params = {}) => {
     request: {
       filters: {
         audience: 'student',
-        primaryCategory: ['etextbook'],
+        primaryCategory: ['Content'],
         visibility: ['Default', 'Parent'],
       },
       limit: 100,
@@ -843,7 +841,11 @@ export const deleteTrackingOffline = async (id) => {
     console.log(e);
   }
 };
-export const getSyncTrackingOfflineCourse = async (user_id, batch_id, course_id) => {
+export const getSyncTrackingOfflineCourse = async (
+  user_id,
+  batch_id,
+  course_id
+) => {
   try {
     //get result
     const data_get = {
