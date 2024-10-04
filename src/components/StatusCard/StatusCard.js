@@ -25,7 +25,7 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
     );
   } else if (status === 'inprogress') {
     return (
-      <View style={[styles.view, { paddingVertical: 10 }]}>
+      <View style={[styles.view, viewStyle]}>
         <ProgressBarCustom progress={trackCompleted} width={100} />
       </View>
     );
@@ -72,7 +72,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 10,
     paddingVertical: 3,
-    borderRadius: 5,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
   },
 });
 

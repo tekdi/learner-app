@@ -227,6 +227,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     margin: 10,
+    borderColor: '#aaaaaa',
   },
   cardBackground: {
     width: '100%',

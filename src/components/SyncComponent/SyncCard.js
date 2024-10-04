@@ -183,8 +183,8 @@ const SyncCard = ({ doneSync }) => {
                 //console.log('error in result_sync_offline ', e);
               }
             }
-            setIsSyncPending(false);
-            setIsProgress(false);
+            //setIsSyncPending(false);
+            //setIsProgress(false);
             if (!isError && doneSync) {
               //doneSync(); //call back function
             }
@@ -224,8 +224,8 @@ const SyncCard = ({ doneSync }) => {
                 //console.log('error in result_sync_offline_telemetry ', e);
               }
             }
-            setIsSyncPending(false);
-            setIsProgress(false);
+            //setIsSyncPending(false);
+            //setIsProgress(false);
             if (!isError && doneSync) {
               //doneSync(); //call back function
             }
@@ -270,8 +270,8 @@ const SyncCard = ({ doneSync }) => {
                 //console.log('error in result_sync_offline ', e);
               }
             }
-            setIsSyncPending(false);
-            setIsProgress(false);
+            //setIsSyncPending(false);
+            //setIsProgress(false);
             if (!isError && doneSync) {
               //doneSync(); //call back function
             }
@@ -299,8 +299,10 @@ const SyncCard = ({ doneSync }) => {
           (result_sync_offline_telemetry && !isProgress) ||
           (result_sync_offline_tracking && !isProgress)
         ) {
-          setIsSyncPending(true);
-          setIsProgress(true);
+          await performDataSync();
+        } else {
+          setIsSyncPending(false);
+          setIsProgress(false);
         }
         console.log('Data synced successfully.');
       } catch (error) {

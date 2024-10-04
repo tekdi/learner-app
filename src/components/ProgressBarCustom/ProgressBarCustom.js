@@ -16,9 +16,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row', // Align items horizontally
     alignItems: 'center', // Center vertically
-    backgroundColor: '#000000',
+    backgroundColor: '#3A3A3ACC',
     borderRadius: 5,
-    height: 15,
+    height: 18,
     position: 'relative',
   },
   progressBar: {

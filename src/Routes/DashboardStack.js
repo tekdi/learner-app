@@ -11,31 +11,11 @@ const Stack = createNativeStackNavigator();
 const DashboardStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen
-        name="Courses"
-        component={Courses}
-        options={{ lazy: true }} // Lazily load LoadingScreen
-      />
-      <Stack.Screen
-        name="CourseContentList"
-        component={CourseContentList}
-        options={{ lazy: true }} // Lazily load LoadingScreen
-      />
-      <Stack.Screen
-        name="UnitList"
-        component={UnitList}
-        options={{ lazy: true }} // Lazily load LoadingScreen
-      />
-      <Stack.Screen
-        name="Preference"
-        component={Preference}
-        options={{ lazy: true }} // Lazily load LoadingScreen
-      />
-      <Stack.Screen
-        name="ViewAll"
-        component={ViewAllContent}
-        options={{ lazy: true }} // Lazily load LoadingScreen
-      />
+      <Stack.Screen name="Courses" component={Courses} />
+      <Stack.Screen name="CourseContentList" component={CourseContentList} />
+      <Stack.Screen name="UnitList" component={UnitList} />
+      <Stack.Screen name="Preference" component={Preference} />
+      <Stack.Screen name="ViewAll" component={ViewAllContent} />
     </Stack.Navigator>
   );
 };

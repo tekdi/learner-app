@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { ApplicationProvider } from '@ui-kitten/components';
 //importing all designs from eva as eva
@@ -10,7 +10,7 @@ import { LanguageProvider } from './context/LanguageContext'; // Adjust path as 
 import { NetworkProvider } from './context/NetworkContext'; // Adjust path as needed
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/StackScreen';
-import { BackHandler, View } from 'react-native';
+import { BackHandler, Text, View } from 'react-native';
 
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
 
@@ -67,6 +67,7 @@ async function checkAndRequestStoragePermission() {
   return true;
 }
 const App = () => {
+  console.log('started app');
   useEffect(() => {
     // const initializeApp = async () => {
     //   const hasPermission = await checkAndRequestStoragePermission();
@@ -91,7 +92,9 @@ const App = () => {
       work */}
         <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
           <NavigationContainer>
-            <StackScreen />
+            <Suspense fallback={<Text>Loading Screen...</Text>}>
+              <StackScreen />
+            </Suspense>
           </NavigationContainer>
         </ApplicationProvider>
       </LanguageProvider>
