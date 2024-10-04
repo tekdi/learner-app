@@ -9,6 +9,7 @@ import {
   Text,
   FlatList,
   View,
+  ScrollView,
 } from 'react-native';
 import {
   useFocusEffect,
@@ -91,39 +92,42 @@ const Contents = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <SecondaryHeader logo />
-      <View style={styles.view}>
-        {loading ? (
-          <ActivityIndicator style={{ top: 300 }} />
-        ) : (
-          <SafeAreaView>
-            <Text style={styles.text}>{t('Learning_Content')}</Text>
-            <View style={styles.view2}>
-              <Image source={wave} resizeMode="contain" />
-              <Text style={styles.text2}>
-                {t('welcome')}, {userInfo?.[0]?.name}!
-              </Text>
-            </View>
-            <SyncCard doneSync={fetchData} />
-            <View style={{ height: '85%' }}>
-              <FlatList
-                data={data}
-                renderItem={renderContentCard}
-                keyExtractor={(item, index) => index.toString()}
-                numColumns={2} // Number of columns for side by side view
-                contentContainerStyle={styles.flatListContent}
-                columnWrapperStyle={styles.columnWrapper} // Adds space between columns
-              />
-            </View>
-          </SafeAreaView>
-        )}
-        {showExitModal && (
-          <BackButtonHandler
-            exitRoute={true} // You can pass any props needed by the modal here
-            onCancel={handleCancel}
-            onExit={handleExitApp}
-          />
-        )}
-      </View>
+      <ScrollView nestedScrollEnabled>
+        <View style={styles.view}>
+          {loading ? (
+            <ActivityIndicator style={{ top: 300 }} />
+          ) : (
+            <SafeAreaView>
+              <Text style={styles.text}>{t('Learning_Content')}</Text>
+              <View style={styles.view2}>
+                <Image source={wave} resizeMode="contain" />
+                <Text style={styles.text2}>
+                  {t('welcome')}, {userInfo?.[0]?.name}!
+                </Text>
+              </View>
+              <SyncCard doneSync={fetchData} />
+              <View>
+                <FlatList
+                  data={data}
+                  renderItem={renderContentCard}
+                  keyExtractor={(item, index) => index.toString()}
+                  numColumns={2} // Number of columns for side by side view
+                  contentContainerStyle={styles.flatListContent}
+                  columnWrapperStyle={styles.columnWrapper} // Adds space between columns
+                  scrollEnabled={false}
+                />
+              </View>
+            </SafeAreaView>
+          )}
+          {showExitModal && (
+            <BackButtonHandler
+              exitRoute={true} // You can pass any props needed by the modal here
+              onCancel={handleCancel}
+              onExit={handleExitApp}
+            />
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

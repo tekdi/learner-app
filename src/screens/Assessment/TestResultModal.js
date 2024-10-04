@@ -18,11 +18,11 @@ const TestResultModal = ({ modal, title }) => {
   };
 
   return (
-    <Modal visible={!!modal} transparent={true} animationType="slide" onclo>
+    <Modal visible={!!modal} transparent={true} animationType="slide">
       <TouchableOpacity
         style={styles.modalContainer}
         activeOpacity={1}
-        onPress={closeModal} // Close the modal when pressing outside the alert box
+        // onPress={closeModal} // Close the modal when pressing outside the alert box
       >
         <View style={styles.alertBox}>
           <View style={styles.View}>
