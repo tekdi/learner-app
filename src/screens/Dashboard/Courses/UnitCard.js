@@ -203,8 +203,8 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
             }
             trackCompleted={trackCompleted}
             viewStyle={{
-              borderTopLeftRadius: 15,
-              borderTopRightRadius: 15,
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
             }}
           />
         </View>
@@ -215,7 +215,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
         </View>
       </TouchableOpacity>
 
-      <View style={[globalStyles.flexrow, { marginLeft: 20 }]}>
+      <View style={[globalStyles.flexrow]}>
         <Text
           style={[styles.cardText, { color: '#000' }]}
           numberOfLines={1}
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
     paddingHorizontal: 5,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   downloadView: {
     // top: 0,

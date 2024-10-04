@@ -178,9 +178,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
           />
         </View>
       </TouchableOpacity>
-      <View
-        style={[globalStyles.flexrow, { marginLeft: 20, marginVertical: 10 }]}
-      >
+      <View style={[globalStyles.flexrow, { marginVertical: 10 }]}>
         <StatusCardIcon status={trackStatus} />
 
         <Text

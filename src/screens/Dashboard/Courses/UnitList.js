@@ -3,6 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import {
   ActivityIndicator,
+  BackHandler,
   FlatList,
   SafeAreaView,
   ScrollView,
@@ -55,6 +56,23 @@ const UnitList = ({ route }) => {
       }, 500); // 1000 milliseconds = 1 second
     }, [course_id]) // Make sure to include the dependencies
   );
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack(); // Navigate back to the previous screen
+      return true; // Returning true prevents the default behavior (exiting the app)
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    // Clean up the event listener on component unmount
+    return () => {
+      backHandler.remove();
+    };
+  }, [navigation]);
 
   const fetchDataTrack = async () => {
     //found course progress
