@@ -31,15 +31,17 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
         {t('button')}
       </Text>
 
-      <Text style={styles.text2}>{t('T&C_1')}</Text>
-      <Text style={styles.text2}>{t('T&C_2')}</Text>
+      <View style={{ top: -10 }}>
+        <Text style={styles.text2}>{t('T&C_1')}</Text>
+        <Text style={styles.text2}>{t('T&C_2')}</Text>
+      </View>
 
       {/* Read More Button */}
       {!showMore && (
         <Text
           style={[
             globalStyles.subHeading,
-            { color: '#0563C1', textAlign: 'center', top: -10 },
+            { color: '#0563C1', textAlign: 'center', top: -20 },
           ]}
           onPress={handleReadMore}
         >
@@ -93,13 +95,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flexWrap: 'wrap',
     textAlign: 'center',
+    top: -10,
   },
   text2: {
     fontFamily: 'Poppins-Medium',
     textAlign: 'justify',
     color: 'black',
     fontSize: 12,
-    paddingVertical: 10,
     paddingRight: 10,
     flexWrap: 'wrap',
   },

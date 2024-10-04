@@ -11,20 +11,23 @@ import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
 const StatusCard = ({ status, trackCompleted, viewStyle }) => {
   const { t } = useTranslation();
 
-  console.log(viewStyle);
-
   if (status === 'completed') {
     return (
-      <View style={styles.view}>
-        <Icon name="check-circle" style={{ color: '#50EE42' }} />
-        <Text style={[globalStyles.text, { color: '#50EE42', marginLeft: 10 }]}>
+      <View style={[styles.view, viewStyle]}>
+        <Icon name="check-circle-fill" style={{ color: '#50EE42' }} />
+        <Text
+          style={[
+            globalStyles.text,
+            { color: '#50EE42', marginLeft: 10, fontSize: 12 },
+          ]}
+        >
           {t('completed')}
         </Text>
       </View>
     );
   } else if (status === 'inprogress') {
     return (
-      <View style={[styles.view, { paddingVertical: 10 }]}>
+      <View style={[styles.view, viewStyle, { paddingVertical: 10 }]}>
         <ProgressBarCustom progress={trackCompleted} width={100} />
       </View>
     );

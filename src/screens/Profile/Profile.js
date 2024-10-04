@@ -16,6 +16,7 @@ import TextField from '../../components/TextField/TextField';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 import {
   capitalizeFirstLetter,
+  capitalizeName,
   deleteSavedItem,
   getDataFromStorage,
 } from '../../utils/JsHelper/Helper';
@@ -100,7 +101,7 @@ const Profile = (props) => {
             <View style={styles.viewBox}>
               <View>
                 <Label text={`${t('full_name')}`} />
-                <TextField text={capitalizeFirstLetter(userData?.name)} />
+                <TextField text={capitalizeName(userData?.name)} />
               </View>
               {/* <View>
                 <Label
