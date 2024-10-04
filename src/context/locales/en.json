@@ -190,5 +190,6 @@
   "congratulations": "Congratulations, You are now registered to Second Chance Program!",
   "can_only_contain_numbers": "can only contain numbers",
   "mobile": "Mobile",
-  "started_on": "Started on:"
+  "started_on": "Started on:",
+  "delete_msg": "Are you sure you want to remove this from your downloads?"
 }

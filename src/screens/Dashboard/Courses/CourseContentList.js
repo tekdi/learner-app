@@ -274,7 +274,7 @@ const CourseContentList = ({ route }) => {
                   <CircularProgressBar
                     progress={trackCompleted / 100}
                     style={{ width: 30, height: 30 }}
-                    // size="tiny"
+                    status="success" // Changes to a green status if UI Kitten supports it
                     textStyle={{ fontSize: 10 }}
                   />
                 </View>

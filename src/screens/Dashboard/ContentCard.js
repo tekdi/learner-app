@@ -172,6 +172,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         </View>
         <View style={styles.view}>
           <DownloadCard
+            name={item?.name}
             contentId={item?.identifier}
             contentMimeType={item?.mimeType}
           />

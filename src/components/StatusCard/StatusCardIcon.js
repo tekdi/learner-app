@@ -10,7 +10,9 @@ const StatusCardIcon = ({ status }) => {
   const { t } = useTranslation();
 
   if (status === 'completed') {
-    return <Icon name="check-circle-fill" style={{ color: '#50EE42' }} />;
+    return (
+      <Icon name="check-circle-fill" style={{ color: '#50EE42' }} size={15} />
+    );
   } else if (status === 'inprogress') {
     return (
       <Image
@@ -20,7 +22,7 @@ const StatusCardIcon = ({ status }) => {
       />
     );
   } else {
-    return <Icon name="circle" style={{ color: '#000' }} />;
+    return <Icon name="circle" style={{ color: '#000' }} size={15} />;
   }
 };
 
