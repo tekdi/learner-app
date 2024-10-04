@@ -45,16 +45,21 @@ const UnitList = ({ route }) => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('############ in focus');
+      console.log('############ in focus unit list');
       setLoading(true);
-      fetchDataTrack();
+      //bug fix for not realtime tracking
+      //fetchDataTrack();
+      setTimeout(() => {
+        // Code to run after 1 second
+        fetchDataTrack();
+      }, 500); // 1000 milliseconds = 1 second
     }, [course_id]) // Make sure to include the dependencies
   );
 
   const fetchDataTrack = async () => {
     //found course progress
     try {
-      console.log('########## contentListApi');
+      console.log('########## fetchDataTrack');
       //console.log('########## contentList', contentList);
       let courseList = [course_id];
       //console.log('########## courseList', courseList);

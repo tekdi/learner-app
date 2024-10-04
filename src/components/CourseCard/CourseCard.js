@@ -45,6 +45,7 @@ const CourseCard = ({
 
   //set progress and start date
   const [trackCompleted, setTrackCompleted] = useState(0);
+  const [trackProgress, setTrackProgress] = useState(0);
   const [startedOn, setStartedOn] = useState('');
 
   useEffect(() => {
@@ -132,6 +133,14 @@ const CourseCard = ({
             const uniqueArray = [...new Set(mergedArray)];
             let completed_list = uniqueArray;
 
+            //merge offlien and online
+            const mergedArray_progress = [
+              ...TrackData[i]?.in_progress_list,
+              ...offline_in_progress,
+            ];
+            const uniqueArray_progress = [...new Set(mergedArray_progress)];
+            let in_progress_list = uniqueArray_progress;
+
             //get unique completed content list
             let completed = completed_list.length;
             let totalContent = 0;
@@ -145,6 +154,12 @@ const CourseCard = ({
             // console.log('########### item?.leafNodes', item?.leafNodes);
             // console.log('########### percentageCompleted', percentageCompleted);
             setTrackCompleted(percentageCompleted);
+
+            //get unique in progress content list
+            let in_progress = in_progress_list.length;
+            let percentageInProgress = (in_progress / totalContent) * 100;
+            percentageInProgress = Math.round(percentageInProgress);
+            setTrackProgress(percentageInProgress);
           }
         }
       }
@@ -172,11 +187,13 @@ const CourseCard = ({
         <View style={styles.downloadView}>
           <StatusCard
             status={
-              trackCompleted == 0
-                ? 'not_started'
-                : trackCompleted > 100
-                  ? 'completed'
-                  : 'inprogress'
+              trackCompleted >= 100
+                ? 'completed'
+                : trackCompleted > 0
+                ? 'inprogress'
+                : trackProgress > 0
+                ? 'progress'
+                : 'not_started'
             }
             trackCompleted={trackCompleted}
           />

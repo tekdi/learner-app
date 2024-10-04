@@ -41,8 +41,8 @@ const StackScreen = (props) => {
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
       //solved blanck screen issue for long time
-      initialRouteName="LoadingScreen"
-      //initialRouteName="LanguageScreen"
+      //initialRouteName="LoadingScreen"
+      initialRouteName="LanguageScreen"
     >
       <Stack.Screen
         name="LoadingScreen"

@@ -122,10 +122,12 @@ const SyncCard = ({ doneSync }) => {
         //get sync pending
         const user_id = await getDataFromStorage('userId');
         let result_sync_offline = await getSyncAsessmentOffline(user_id);
-        let result_sync_offline_telemetry =
-          await getSyncTelemetryOffline(user_id);
-        let result_sync_offline_tracking =
-          await getSyncTrackingOffline(user_id);
+        let result_sync_offline_telemetry = await getSyncTelemetryOffline(
+          user_id
+        );
+        let result_sync_offline_tracking = await getSyncTrackingOffline(
+          user_id
+        );
         // console.log('result_sync_offline', result_sync_offline);
         // console.log(
         //   'result_sync_offline_telemetry',
@@ -181,8 +183,8 @@ const SyncCard = ({ doneSync }) => {
                 //console.log('error in result_sync_offline ', e);
               }
             }
-            //setIsSyncPending(false);
-            //setIsProgress(false);
+            setIsSyncPending(false);
+            setIsProgress(false);
             if (!isError && doneSync) {
               //doneSync(); //call back function
             }
@@ -204,8 +206,9 @@ const SyncCard = ({ doneSync }) => {
                   telemetry_result?.telemetry_object
                 );
 
-                let create_telemetry =
-                  await telemetryTracking(telemetry_object);
+                let create_telemetry = await telemetryTracking(
+                  telemetry_object
+                );
                 if (
                   create_telemetry &&
                   create_telemetry?.response?.responseCode == 'SUCCESS'
@@ -221,8 +224,8 @@ const SyncCard = ({ doneSync }) => {
                 //console.log('error in result_sync_offline_telemetry ', e);
               }
             }
-            //setIsSyncPending(false);
-            //setIsProgress(false);
+            setIsSyncPending(false);
+            setIsProgress(false);
             if (!isError && doneSync) {
               //doneSync(); //call back function
             }
@@ -267,8 +270,8 @@ const SyncCard = ({ doneSync }) => {
                 //console.log('error in result_sync_offline ', e);
               }
             }
-            //setIsSyncPending(false);
-            //setIsProgress(false);
+            setIsSyncPending(false);
+            setIsProgress(false);
             if (!isError && doneSync) {
               //doneSync(); //call back function
             }

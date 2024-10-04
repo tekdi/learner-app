@@ -22,7 +22,11 @@ import { useTranslation } from '../../../context/LanguageContext';
 import wave from '../../../assets/images/png/wave.png';
 import CoursesBox from '../../../components/CoursesBox/CoursesBox';
 import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
-import { courseListApi, getAccessToken } from '../../../utils/API/AuthService';
+import {
+  courseListApi,
+  courseListApi_testing,
+  getAccessToken,
+} from '../../../utils/API/AuthService';
 import SyncCard from '../../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
 import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
@@ -85,7 +89,9 @@ const Courses = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const data = await courseListApi();
+    //const data = await courseListApi();
+
+    const data = await courseListApi_testing();
 
     //found course progress
     try {

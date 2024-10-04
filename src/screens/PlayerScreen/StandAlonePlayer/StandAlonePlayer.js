@@ -254,7 +254,11 @@ const StandAlonePlayer = ({ route }) => {
             },
           ];
         }
-        if (data_obj?.eid == 'END' || data_obj?.edata?.type == 'END') {
+        if (
+          data_obj?.eid == 'END' ||
+          data_obj?.edata?.type == 'END' ||
+          data_obj?.eid == 'SUMMARY'
+        ) {
           contentEidEND = [
             {
               eid: 'END',
@@ -345,6 +349,8 @@ const StandAlonePlayer = ({ route }) => {
           console.log('error', e);
         }
         //setRetrievedData(data);
+        //sent assessments track
+        fetchExitData();
       }
     } catch (e) {
       console.log('error', e);

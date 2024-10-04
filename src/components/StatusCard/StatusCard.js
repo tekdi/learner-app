@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import globalStyles from '../../utils/Helper/Style';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
 import { ProgressBar } from '@ui-kitten/components';
 
 import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
+import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
 
 const StatusCard = ({ status, trackCompleted, viewStyle }) => {
   const { t } = useTranslation();
@@ -26,6 +27,24 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
     return (
       <View style={[styles.view, { paddingVertical: 10 }]}>
         <ProgressBarCustom progress={trackCompleted} width={100} />
+      </View>
+    );
+  } else if (status === 'progress') {
+    return (
+      <View style={[styles.view, viewStyle]}>
+        <Image
+          style={styles.img}
+          source={arrow_upload_progress}
+          resizeMode="contain"
+        />
+        <Text
+          style={[
+            globalStyles.text,
+            { color: 'white', marginLeft: 10, fontSize: 12 },
+          ]}
+        >
+          {t('Inprogress')}
+        </Text>
       </View>
     );
   } else {
