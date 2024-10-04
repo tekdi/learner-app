@@ -196,7 +196,7 @@ export const registerSchema = async (data, states) => {
               // minLength: data?.[6]?.minLength,
               // maxLength: data?.[6]?.maxLength,
               minLength: 8,
-              maxLength: 16,
+              maxLength: 32,
             },
           },
           {

@@ -156,3 +156,10 @@ export const capitalizeFirstLetter = (str) => {
   if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
+
+export const capitalizeName = (name) => {
+  return name
+    .split(' ') // Split the name by spaces into an array of words
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
+    .join(' '); // Join the words back into a single string
+};

@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   overlap: {
-    top: -65,
+    top: -60,
     left: 13,
     // top: -76,
     // left: -120,

@@ -86,7 +86,7 @@
   "office_adrress": "Delhi Office: B4/59, Safdarjung Enclave, New Delhi-110029",
   "office_email": "Email:dataprotectionofficer@pratham.org",
   "office_phone": "Phone no: 011-26177200 | www.pratham.org | CIN: U80101MH2002NPL136300",
-  "T&C_12": "I have read and agree to the Privacy Policy.and I consent to the collection and use of my personal data as described in the Consent Form.",
+  "T&C_12": "I have read and agree to the Privacy Policy and I consent to the collection and use of my personal data as described in the Consent Form.",
   "T&C_13": "You can request for data deletion, updating, or changes any time from the contact details provided in 'Data & Privacy Center' in the profile page.",
   "username_already_exists": "Username already exists",
   "something_went_wrong_try_again_later": "Something went wrong, please try again later.",
@@ -191,5 +191,7 @@
   "can_only_contain_numbers": "can only contain numbers",
   "mobile": "Mobile",
   "started_on": "Started on:",
-  "delete_msg": "Are you sure you want to remove this from your downloads?"
+  "delete_msg": "Are you sure you want to remove this from your downloads?",
+  "delete": "Delete",
+  "cancel": "Cancel"
 }
