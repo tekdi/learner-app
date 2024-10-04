@@ -11,11 +11,31 @@ const Stack = createNativeStackNavigator();
 const AssessmentStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Assessment" component={Assessment} />
-      <Stack.Screen name="TestView" component={TestView} />
-      <Stack.Screen name="AnswerKeyView" component={AnswerKeyView} />
-      <Stack.Screen name="TestDetailView" component={TestDetailView} />
-      <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen
+        name="Assessment"
+        component={Assessment}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="TestView"
+        component={TestView}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="AnswerKeyView"
+        component={AnswerKeyView}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="TestDetailView"
+        component={TestDetailView}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="Profile"
+        component={Profile}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
     </Stack.Navigator>
   );
 };

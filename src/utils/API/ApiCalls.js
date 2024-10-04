@@ -238,6 +238,7 @@ export const assessmentTracking = async (
       })
       .catch((error) => {
         console.log('error', error);
+        api_response = { response: null, data: data };
       });
     return api_response;
   } catch (error) {

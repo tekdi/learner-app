@@ -229,9 +229,9 @@ const StandAlonePlayer = ({ route }) => {
       if (data_obj) {
         //add user id in actor
         data_obj.actor.id = userId;
-        console.log('####################');
-        console.log('data_obj', JSON.stringify(data_obj));
-        console.log('####################');
+        // console.log('####################');
+        // console.log('data_obj', JSON.stringify(data_obj));
+        // console.log('####################');
         //setTelemetryObject((telemetryObject) => [...telemetryObject, data_obj]);
         telemetryObject.push(data_obj);
         //console.log('telemetryObject', telemetryObject);
@@ -299,6 +299,7 @@ const StandAlonePlayer = ({ route }) => {
             courseId,
             unitId
           );
+          //console.log('############# create_assessment', create_assessment);
           if (
             create_assessment &&
             create_assessment?.response?.responseCode == 201
@@ -327,8 +328,16 @@ const StandAlonePlayer = ({ route }) => {
               identifierWithoutImg,
               payload
             );
-
-            setModal(true);
+            console.log('############# create_assessment', create_assessment);
+            if (create_assessment && create_assessment?.data) {
+              let exam_data = JSON.parse(create_assessment?.data);
+              const percentage =
+                (exam_data?.totalScore / exam_data?.totalMaxScore) * 100;
+              const roundedPercentage = percentage.toFixed(2); // Rounds to 2 decimal places
+              setModal(exam_data);
+            } else {
+              setModal(true);
+            }
           }
           set_loading_text('');
           setLoading(false);

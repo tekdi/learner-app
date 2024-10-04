@@ -27,6 +27,7 @@ import SyncCard from '../../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
 import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
 import { courseTrackingStatus } from '../../../utils/API/ApiCalls';
+import ActiveLoading from '../../LoadingScreen/ActiveLoading';
 
 const Courses = () => {
   const navigation = useNavigation();
@@ -131,7 +132,7 @@ const Courses = () => {
       <ScrollView nestedScrollEnabled>
         <View style={styles.view}>
           {loading ? (
-            <ActivityIndicator style={{ top: 300 }} />
+            <ActiveLoading />
           ) : (
             <SafeAreaView>
               <StatusBar
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
     width: '100%',
     //backgroundColor: 'white',
     padding: 15,
-    borderWidth: 1,
+    //borderWidth: 1,
   },
   view2: {
     flexDirection: 'row',

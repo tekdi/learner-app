@@ -40,16 +40,27 @@ const StackScreen = (props) => {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
+      //solved blanck screen issue for long time
       initialRouteName="LoadingScreen"
+      //initialRouteName="LanguageScreen"
     >
-      <Stack.Screen name="LoadingScreen" component={LoadingScreen} />
-      <Stack.Screen name="LanguageScreen" component={LanguageScreen} />
+      <Stack.Screen
+        name="LoadingScreen"
+        component={LoadingScreen}
+        options={{ lazy: true }} // Lazily load the screen
+      />
+      <Stack.Screen
+        name="LanguageScreen"
+        component={LanguageScreen}
+        options={{ lazy: true }} // Lazily load the screen
+      />
       <Stack.Screen
         name="RegisterScreen"
         component={RegisterScreen}
         options={{
           headerShown: false,
           headerBackground: () => headerBackground(),
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -58,20 +69,21 @@ const StackScreen = (props) => {
         options={{
           headerShown: false,
           headerBackground: () => headerBackground(),
+          lazy: true,
         }}
       />
       <Stack.Screen name="RegisterStart" component={RegisterStart} />
       <Stack.Screen
         name="LoginScreen"
         component={LoginScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, lazy: true }}
       />
 
       <Stack.Screen
         name="Dashboard"
         component={TabScreen} // Changed to TabScreen for now to show content in dashboard
         //component={AssessmentStack} // Changed to AssessmentStack for now to show only Assessment
-        options={{ headerShown: false }}
+        options={{ headerShown: false, lazy: true }}
       />
 
       <Stack.Screen
@@ -82,6 +94,7 @@ const StackScreen = (props) => {
           headerBackground: () => (
             <View style={{ backgroundColor: 'white', flex: 1 }}></View>
           ),
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -89,6 +102,7 @@ const StackScreen = (props) => {
         component={QuMLPlayer}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -96,6 +110,7 @@ const StackScreen = (props) => {
         component={QuMLPlayerOffline}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -103,6 +118,7 @@ const StackScreen = (props) => {
         component={PdfPlayer}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -110,6 +126,7 @@ const StackScreen = (props) => {
         component={PdfPlayerOffline}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -117,6 +134,7 @@ const StackScreen = (props) => {
         component={VideoPlayer}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -124,6 +142,7 @@ const StackScreen = (props) => {
         component={VideoPlayerOffline}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -131,6 +150,7 @@ const StackScreen = (props) => {
         component={EpubPlayer}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -138,6 +158,7 @@ const StackScreen = (props) => {
         component={EpubPlayerOffline}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -145,6 +166,7 @@ const StackScreen = (props) => {
         component={ECMLPlayer}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -152,6 +174,7 @@ const StackScreen = (props) => {
         component={ECMLPlayerOffline}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -159,6 +182,7 @@ const StackScreen = (props) => {
         component={H5PPlayer}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -166,6 +190,7 @@ const StackScreen = (props) => {
         component={H5PPlayerOffline}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -173,6 +198,7 @@ const StackScreen = (props) => {
         component={HTMLPlayer}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -180,6 +206,7 @@ const StackScreen = (props) => {
         component={HTMLPlayerOffline}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -187,6 +214,7 @@ const StackScreen = (props) => {
         component={YoutubePlayer}
         options={{
           headerShown: true,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -194,6 +222,7 @@ const StackScreen = (props) => {
         component={StandAlonePlayer}
         options={{
           headerShown: false,
+          lazy: true,
         }}
       />
       <Stack.Screen
@@ -201,19 +230,20 @@ const StackScreen = (props) => {
         component={TermsAndCondition}
         options={{
           headerShown: false,
+          lazy: true,
         }}
       />
 
       <Stack.Screen
         name="DashboardStack"
         component={DashboardStack} // Changed to Assessment for now
-        options={{ headerShown: false }}
+        options={{ headerShown: false, lazy: true }}
       />
 
       <Stack.Screen
         name="EnableLocationScreen"
         component={EnableLocationScreen} // Changed to Assessment for now
-        options={{ headerShown: false }}
+        options={{ headerShown: false, lazy: true }}
       />
     </Stack.Navigator>
   );
