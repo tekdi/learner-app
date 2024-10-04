@@ -18,17 +18,14 @@ import {
   courseTrackingStatus,
 } from '../../../utils/API/ApiCalls';
 import { useNavigation } from '@react-navigation/native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { CircularProgressBar } from '@ui-kitten/components';
 import globalStyles from '../../../utils/Helper/Style';
-import DownloadCard from '../../../components/DownloadCard/DownloadCard';
 import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
 import FastImage from '@changwoolab/react-native-fast-image';
 import UnitCard from './UnitCard';
-
 import moment from 'moment';
 import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../../utils/API/AuthService';
+import CircularProgressBarCustom from '../../../components/CircularProgressBarCustom.js/CircularProgressBarCustom';
 
 const CourseContentList = ({ route }) => {
   const { do_id, course_id, content_list_node } = route.params;
@@ -261,25 +258,30 @@ const CourseContentList = ({ route }) => {
             >
               <View style={globalStyles.flexrow}>
                 <TextField
-                  style={[globalStyles.text, { fontSize: 14 }]}
+                  style={[globalStyles.text, { fontSize: 12 }]}
                   text={'started_on'}
                 />
                 <TextField
-                  style={[globalStyles.text, { fontSize: 14 }]}
+                  style={[globalStyles.text, { fontSize: 12 }]}
                   text={startedOn}
                 />
               </View>
               <View style={globalStyles.flexrow}>
-                <View>
-                  <CircularProgressBar
-                    progress={trackCompleted / 100}
-                    style={{ width: 30, height: 30 }}
-                    status="success" // Changes to a green status if UI Kitten supports it
-                    textStyle={{ fontSize: 10 }}
-                  />
-                </View>
+                <CircularProgressBarCustom
+                  size={30}
+                  strokeWidth={5}
+                  progress={trackCompleted / 100}
+                  color="green"
+                  backgroundColor="#e6e6e6"
+                  textStyle={{ fontSize: 8, color: 'black' }}
+                />
+                <Text
+                  style={{ marginLeft: 10, color: '#000' }}
+                >{`${Math.round((trackCompleted / 100) * 100)}%`}</Text>
+              </View>
+              <View>
                 <TextField
-                  style={[globalStyles.text, { fontSize: 14 }]}
+                  style={[globalStyles.text, { fontSize: 12 }]}
                   text={'completed'}
                 />
               </View>

@@ -4,6 +4,7 @@ import {
   BackHandler,
   Image,
   SafeAreaView,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -45,7 +46,7 @@ const Courses = () => {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        if (routeName === 'Content') {
+        if (routeName === 'Courses') {
           setShowExitModal(true);
           return true; // Prevent default back behavior
         }
@@ -127,119 +128,50 @@ const Courses = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <SecondaryHeader logo />
-      <View style={styles.view}>
-        {loading ? (
-          <ActivityIndicator style={{ top: 300 }} />
-        ) : (
-          <SafeAreaView>
-            <StatusBar
-              barStyle="dark-content"
-              translucent={true}
-              backgroundColor="transparent"
+      <ScrollView nestedScrollEnabled>
+        <View style={styles.view}>
+          {loading ? (
+            <ActivityIndicator style={{ top: 300 }} />
+          ) : (
+            <SafeAreaView>
+              <StatusBar
+                barStyle="dark-content"
+                translucent={true}
+                backgroundColor="transparent"
+              />
+              <Text style={styles.text}>{t('courses')}</Text>
+              <View style={styles.view2}>
+                <Image source={wave} resizeMode="contain" />
+                <Text style={styles.text2}>
+                  {t('welcome')}, {userInfo?.[0]?.name} !
+                </Text>
+              </View>
+              <SyncCard doneSync={fetchData} />
+
+              <CoursesBox
+                // title={'Continue_Learning'}
+                // description={'Food_Production'}
+                style={{ titlecolor: '#06A816' }}
+                viewAllLink={() =>
+                  navigation.navigate('ViewAll', {
+                    title: 'Continue_Learning',
+                    data: data,
+                  })
+                }
+                ContentData={data}
+                TrackData={trackData}
+              />
+            </SafeAreaView>
+          )}
+          {showExitModal && (
+            <BackButtonHandler
+              exitRoute={true} // You can pass any props needed by the modal here
+              onCancel={handleCancel}
+              onExit={handleExitApp}
             />
-            <Text style={styles.text}>{t('courses')}</Text>
-            <View style={styles.view2}>
-              <Image source={wave} resizeMode="contain" />
-              <Text style={styles.text2}>
-                {t('welcome')}, {userInfo?.[0]?.name} !
-              </Text>
-            </View>
-            <SyncCard doneSync={fetchData} />
-
-            <CoursesBox
-              // title={'Continue_Learning'}
-              // description={'Food_Production'}
-              style={{ titlecolor: '#06A816' }}
-              viewAllLink={() =>
-                navigation.navigate('ViewAll', {
-                  title: 'Continue_Learning',
-                  data: data,
-                })
-              }
-              ContentData={data}
-              TrackData={trackData}
-            />
-            {/* <HorizontalLine />
-              <TouchableOpacity onPress={handlePress}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    borderRadius: 10,
-                    width: '98%',
-                    padding: 20,
-                    marginTop: 10,
-                    backgroundColor: '#ffdea1',
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.description,
-                      { color: 'black', width: '90%' },
-                    ]}
-                  >
-                    {t(
-                      'Update_your_preferences_to_get_the_best_picks_just_for_you'
-                    )}
-                  </Text>
-                  <Icon
-                    name="arrow-right"
-                    style={{ marginHorizontal: 10 }}
-                    color={'black'}
-                    size={20}
-                  />
-                </View>
-              </TouchableOpacity>
-              <CoursesBox
-                title={'Based_on_Your_Interests'}
-                description={'Financial_Literacy'}
-                style={{ titlecolor: '#785913' }}
-                viewAllLink={() =>
-                  navigation.navigate('ViewAll', {
-                    title: 'Based_on_Your_Interests',
-                    data: data,
-                  })
-                }
-                ContentData={data}
-              />
-
-              <CoursesBox
-                description={'Conceptual_Thinking'}
-                viewAllLink={() =>
-                  navigation.navigate('ViewAll', {
-                    title: 'Conceptual_Thinking',
-                    data: data,
-                  })
-                }
-                ContentData={data}
-              />
-
-              <HorizontalLine />
-
-              <CoursesBox
-                title={'Todays_Top_Pick'}
-                description={'Art'}
-                style={{ titlecolor: '#785913' }}
-                viewAllLink={() =>
-                  navigation.navigate('ViewAll', {
-                    title: 'Todays_Top_Pick',
-                    data: data,
-                  })
-                }
-                ContentData={data}
-              />
-              <HorizontalLine /> */}
-          </SafeAreaView>
-        )}
-        {showExitModal && (
-          <BackButtonHandler
-            exitRoute={true} // You can pass any props needed by the modal here
-            onCancel={handleCancel}
-            onExit={handleExitApp}
-          />
-        )}
-      </View>
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -249,6 +181,7 @@ const styles = StyleSheet.create({
     width: '100%',
     //backgroundColor: 'white',
     padding: 15,
+    borderWidth: 1,
   },
   view2: {
     flexDirection: 'row',

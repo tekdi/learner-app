@@ -21,7 +21,7 @@ import { getSyncTrackingOfflineCourse } from '../../utils/API/AuthService';
 const CourseCard = ({
   onPress,
   style,
-  setCardWidth,
+  cardWidth,
   index,
   item,
   appIcon,
@@ -29,7 +29,6 @@ const CourseCard = ({
   navigation,
 }) => {
   const { width } = Dimensions.get('window');
-  const cardWidth = setCardWidth;
 
   const backgroundImages = [
     require('../../assets/images/CardBackground/abstract_01.png'),
@@ -176,8 +175,8 @@ const CourseCard = ({
               trackCompleted == 0
                 ? 'not_started'
                 : trackCompleted > 100
-                ? 'completed'
-                : 'inprogress'
+                  ? 'completed'
+                  : 'inprogress'
             }
             trackCompleted={trackCompleted}
           />

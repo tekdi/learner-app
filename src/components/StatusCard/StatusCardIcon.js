@@ -11,7 +11,7 @@ const StatusCardIcon = ({ status }) => {
 
   if (status === 'completed') {
     return (
-      <Icon name="check-circle-fill" style={{ color: '#50EE42' }} size={15} />
+      <Icon name="check-circle-fill" style={{ color: '#08A835' }} size={15} />
     );
   } else if (status === 'inprogress') {
     return (

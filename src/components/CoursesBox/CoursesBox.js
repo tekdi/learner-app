@@ -43,7 +43,7 @@ const CoursesBox = ({
         onPress={() => handlePress(item)}
         appIcon={item?.appIcon}
         index={index}
-        setCardWidth={160}
+        cardWidth={145}
         item={item}
         TrackData={TrackData}
         navigation={navigation}
@@ -76,25 +76,28 @@ const CoursesBox = ({
           />
         </View> */}
       </View>
-      <FlatList
-        data={ContentData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item?.identifier}
-        // horizontal={true} // Enable horizontal scrolling
-        initialNumToRender={10} // Adjust the number of items to render initially
-        maxToRenderPerBatch={10} // Number of items rendered per batch
-        numColumns={2}
-        windowSize={21} // Controls the number of items rendered around the current index
-      />
+      <View style={{ alignItems: 'center' }}>
+        <FlatList
+          data={ContentData}
+          renderItem={renderItem}
+          keyExtractor={(item) => item?.identifier}
+          // horizontal={true} // Enable horizontal scrolling
+          initialNumToRender={10} // Adjust the number of items to render initially
+          maxToRenderPerBatch={10} // Number of items rendered per batch
+          numColumns={2}
+          windowSize={21} // Controls the number of items rendered around the current index
+          scrollEnabled={false}
+        />
+      </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    height: '85%',
-    // borderWidth: 1,
-  },
+  // container: {
+  //   height: '85%',
+  //   borderWidth: 1,
+  // },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
