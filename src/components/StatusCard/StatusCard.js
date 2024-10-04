@@ -28,7 +28,7 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
     );
   } else if (status === 'inprogress') {
     return (
-      <View style={[styles.view, viewStyle, { paddingVertical: 10 }]}>
+      <View style={[styles.view, viewStyle, { paddingVertical: 5 }]}>
         <ProgressBarCustom progress={trackCompleted} width={100} />
       </View>
     );

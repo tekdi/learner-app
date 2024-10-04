@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Center vertically
     backgroundColor: '#3A3A3ACC',
     borderRadius: 5,
-    height: 18,
+    height: 10,
     position: 'relative',
   },
   progressBar: {

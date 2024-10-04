@@ -89,9 +89,9 @@ const Courses = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    //const data = await courseListApi();
+    const data = await courseListApi();
 
-    const data = await courseListApi_testing();
+    //const data = await courseListApi_testing();
 
     //found course progress
     try {

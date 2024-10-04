@@ -71,6 +71,26 @@ const StandAlonePlayer = ({ route }) => {
   } = route.params;
   console.log('content_do_id', content_do_id);
   console.log('content_mime_type', content_mime_type);
+
+  //back button handle
+
+  useEffect(() => {
+    const backAction = () => {
+      navigation.goBack(); // Navigate back to the previous screen
+      return true; // Returning true prevents the default behavior (exiting the app)
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    // Clean up the event listener on component unmount
+    return () => {
+      backHandler.remove();
+    };
+  }, [navigation]);
+
   //   ##content_mime_type
 
   //   #sunbird-content-player
