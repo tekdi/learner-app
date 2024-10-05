@@ -26,7 +26,7 @@ const TestResultModal = ({ modal, title }) => {
       >
         <View style={styles.alertBox}>
           <View style={styles.View}>
-            <Text style={globalStyles.heading}>
+            <Text allowFontScaling={false} style={globalStyles.heading}>
               {t(capitalizeFirstLetter(title))}
             </Text>
           </View>
@@ -39,11 +39,15 @@ const TestResultModal = ({ modal, title }) => {
               size={48}
               color="#1A8825"
             />
-            <Text style={[globalStyles.heading2, { marginVertical: 10 }]}>
+            <Text
+              allowFontScaling={false}
+              style={[globalStyles.heading2, { marginVertical: 10 }]}
+            >
               {t('test_completed')}
             </Text>
             {modal?.totalMaxScore && (
               <Text
+                allowFontScaling={false}
                 style={[
                   globalStyles.subHeading,
                   {
@@ -60,6 +64,7 @@ const TestResultModal = ({ modal, title }) => {
             )}
             {!modal?.totalMaxScore && (
               <Text
+                allowFontScaling={false}
                 style={[
                   globalStyles.text,
                   { textAlign: 'center', marginVertical: 10 },
@@ -72,7 +77,10 @@ const TestResultModal = ({ modal, title }) => {
           <View style={styles.btnbox}>
             <Button status="primary" style={styles.btn} onPress={closeModal}>
               {() => (
-                <Text style={[globalStyles.subHeading, { marginRight: 10 }]}>
+                <Text
+                  allowFontScaling={false}
+                  style={[globalStyles.subHeading, { marginRight: 10 }]}
+                >
                   {t('okay')}
                 </Text>
               )}

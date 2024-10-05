@@ -218,7 +218,11 @@ const QuMLPlayerOffline = () => {
     return (
       <View style={styles.middle_screen}>
         <ActivityIndicator size="large" color="#0000ff" />
-        {loading_text != '' ? <Text>{loading_text}</Text> : <></>}
+        {loading_text != '' ? (
+          <Text allowFontScaling={false}>{loading_text}</Text>
+        ) : (
+          <></>
+        )}
       </View>
     );
   }
@@ -241,7 +245,7 @@ const QuMLPlayerOffline = () => {
     <View style={styles.container}>
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
-          <Text>Invalid Player File</Text>
+          <Text allowFontScaling={false}>Invalid Player File</Text>
         </View>
       ) : is_download == true ? (
         <View style={styles.middle_screen}>
@@ -283,7 +287,7 @@ const QuMLPlayerOffline = () => {
           }
         }}
       />
-      {retrievedData && <Text>{retrievedData}</Text>} */}
+      {retrievedData && <Text allowFontScaling={false}>{retrievedData}</Text>} */}
     </View>
   );
 };

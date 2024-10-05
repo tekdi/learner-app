@@ -14,6 +14,7 @@ const CustomBottomCard = ({ onPress }) => {
       <View style={styles.overlap}>
         <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
           <Text
+            allowFontScaling={false}
             category="p2"
             style={{
               marginBottom: 10,

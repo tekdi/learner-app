@@ -9,7 +9,10 @@ const ProgressBarCustom = ({ progress, width }) => {
         <View style={[styles.progressBar, { width: `${progress}%` }]} />
         {/* Percentage Label */}
       </View>
-      <Text style={styles.label}>{`${progress}%`}</Text>
+      <Text
+        allowFontScaling={false}
+        style={styles.label}
+      >{`${progress}%`}</Text>
     </>
   );
 };

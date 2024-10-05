@@ -55,6 +55,7 @@ const CustomCards = ({
         <View style={styles.cardContainer}>
           {field.name === 'gender' && (
             <Text
+              allowFontScaling={false}
               style={{
                 color: 'black',
                 fontSize: 20,
@@ -82,13 +83,14 @@ const CustomCards = ({
                   option.label == 'FEMALE'
                     ? female
                     : option.label == 'MALE'
-                      ? male
-                      : option.label == 'TRANSGENDER'
-                        ? transgender
-                        : ''
+                    ? male
+                    : option.label == 'TRANSGENDER'
+                    ? transgender
+                    : ''
                 }
               />
               <Text
+                allowFontScaling={false}
                 style={[
                   {
                     color: 'black',
@@ -111,7 +113,9 @@ const CustomCards = ({
           ))}
         </View>
         {errors[name] && (
-          <Text style={styles.error}>{errors[name].message}</Text>
+          <Text allowFontScaling={false} style={styles.error}>
+            {errors[name].message}
+          </Text>
         )}
       </ScrollView>
     </View>

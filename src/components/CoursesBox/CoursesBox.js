@@ -54,17 +54,23 @@ const CoursesBox = ({
   return (
     <SafeAreaView style={[styles.container]}>
       {title && (
-        <Text style={[styles.title, { color: style.titlecolor }]}>
+        <Text
+          allowFontScaling={false}
+          style={[styles.title, { color: style.titlecolor }]}
+        >
           {t(title)}
         </Text>
       )}
       <View style={styles.view}>
-        <Text style={[styles.description, { color: 'black' }]}>
+        <Text
+          allowFontScaling={false}
+          style={[styles.description, { color: 'black' }]}
+        >
           {t(description)}
         </Text>
         {/* <View style={styles.view}>
           <TouchableOpacity onPress={viewAllLink}>
-            <Text style={[styles.description, { color: '#0D599E' }]}>
+            <Text allowFontScaling={false} style={[styles.description, { color: '#0D599E' }]}>
               {t('view_all')}
             </Text>
           </TouchableOpacity>

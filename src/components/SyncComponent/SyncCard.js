@@ -329,7 +329,10 @@ const SyncCard = ({ doneSync }) => {
           {isConnected ? (
             <>
               <Icon name="cloud-outline" color={'black'} size={22} />
-              <Text style={[globalStyles.text, { marginLeft: 10 }]}>
+              <Text
+                allowFontScaling={false}
+                style={[globalStyles.text, { marginLeft: 10 }]}
+              >
                 {t('back_online_syncing')}
                 {'\n'}
                 {syncCall}
@@ -340,6 +343,7 @@ const SyncCard = ({ doneSync }) => {
             <>
               <Icon name="cloud-offline-outline" color={'#7C766F'} size={22} />
               <Text
+                allowFontScaling={false}
                 style={[globalStyles.text, { marginLeft: 10, fontSize: 12 }]}
               >
                 {t('sync_pending_no_internet_available')}

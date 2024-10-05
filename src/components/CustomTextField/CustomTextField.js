@@ -22,6 +22,7 @@ const CustomTextField = ({
       render={({ field: { onChange, value, onBlur } }) => (
         <View style={styles.container}>
           <TextInput
+            allowFontScaling={false}
             style={[
               styles.input,
               { position: position },
@@ -34,6 +35,7 @@ const CustomTextField = ({
           />
           <View style={styles.overlap}>
             <Text
+              allowFontScaling={false}
               style={[
                 styles.text,
                 { color: errors[field.name] ? 'red' : '#4D4639' },
@@ -44,6 +46,7 @@ const CustomTextField = ({
           </View>
           {errors[field.name] && (
             <Text
+              allowFontScaling={false}
               style={{
                 color: 'red',
                 alignSelf: 'flex-start',

@@ -201,6 +201,7 @@ const CourseCard = ({
       </View>
       <View style={styles.name}>
         <Text
+          allowFontScaling={false}
           style={[globalStyles.text, { width: '80%', fontWeight: 700 }]}
           numberOfLines={2}
           ellipsizeMode="tail"
@@ -208,6 +209,7 @@ const CourseCard = ({
           {item?.name}
         </Text>
         <Text
+          allowFontScaling={false}
           style={[globalStyles.text, { width: '80%', marginVertical: 10 }]}
           numberOfLines={3}
           ellipsizeMode="tail"

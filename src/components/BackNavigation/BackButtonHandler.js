@@ -30,6 +30,7 @@ const BackButtonHandler = ({ exitRoute, onCancel, onExit }) => {
             <Image source={question} resizeMode="contain" />
 
             <Text
+              allowFontScaling={false}
               style={[
                 globalStyles.subHeading,
                 { fontWeight: '700', textAlign: 'center', marginVertical: 20 },
@@ -40,12 +41,18 @@ const BackButtonHandler = ({ exitRoute, onCancel, onExit }) => {
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={onCancel}>
-              <Text style={[globalStyles.subHeading, { color: '#0D599E' }]}>
+              <Text
+                allowFontScaling={false}
+                style={[globalStyles.subHeading, { color: '#0D599E' }]}
+              >
                 {t('no')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={onExit}>
-              <Text style={[globalStyles.subHeading, { color: '#0D599E' }]}>
+              <Text
+                allowFontScaling={false}
+                style={[globalStyles.subHeading, { color: '#0D599E' }]}
+              >
                 {t('yes')}
               </Text>
             </TouchableOpacity>

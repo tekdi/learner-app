@@ -206,16 +206,19 @@ const SubjectBox = ({ name, disabled, data }) => {
       <TouchableOpacity disabled={disabled} onPress={handlePress}>
         <View style={styles.card}>
           <View style={styles.rightContainer}>
-            <Text style={globalStyles.subHeading}>
+            <Text allowFontScaling={false} style={globalStyles.subHeading}>
               {t(capitalizeFirstLetter(name))}
             </Text>
             {disabled && !isSyncPending ? (
-              <Text style={[globalStyles.subHeading, { color: '#7C766F' }]}>
+              <Text
+                allowFontScaling={false}
+                style={[globalStyles.subHeading, { color: '#7C766F' }]}
+              >
                 {t('not_started')}
               </Text>
             ) : !isSyncPending ? (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ color: '#000' }}>
+                <Text allowFontScaling={false} style={{ color: '#000' }}>
                   {data?.totalScore}/{data?.totalMaxScore}
                 </Text>
                 <View
@@ -227,6 +230,7 @@ const SubjectBox = ({ name, disabled, data }) => {
                 >
                   <Icon name="circle" size={8} color="#7C766F" />
                   <Text
+                    allowFontScaling={false}
                     style={[
                       globalStyles.text,
                       { color: '#7C766F', marginLeft: 5 },
@@ -241,6 +245,7 @@ const SubjectBox = ({ name, disabled, data }) => {
                       size={15}
                     />
                     <Text
+                      allowFontScaling={false}
                       style={[
                         globalStyles.text,
                         { color: '#7C766F', marginLeft: 5 },
@@ -266,6 +271,7 @@ const SubjectBox = ({ name, disabled, data }) => {
                   size={22}
                 />
                 <Text
+                  allowFontScaling={false}
                   style={[
                     globalStyles.subHeading,
                     { color: '#7C766F', marginLeft: 10 },

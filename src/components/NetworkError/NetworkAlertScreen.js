@@ -15,10 +15,14 @@ const NetworkAlertScreen = ({ onTryAgain, routes, currentRoute }) => {
       <View style={styles.alertSubBox}>
         <Image style={styles.img} source={lightning} resizeMode="contain" />
 
-        <Text style={[globalStyles.heading2, { fontWeight: '700' }]}>
+        <Text
+          allowFontScaling={false}
+          style={[globalStyles.heading2, { fontWeight: '700' }]}
+        >
           {t('no_internet_connection')}
         </Text>
         <Text
+          allowFontScaling={false}
           style={[
             globalStyles.subHeading,
             { textAlign: 'center', marginVertical: 10 },
@@ -31,7 +35,10 @@ const NetworkAlertScreen = ({ onTryAgain, routes, currentRoute }) => {
         <Button status="primary" style={styles.btn} onPress={onTryAgain}>
           {() => (
             <>
-              <Text style={[globalStyles.subHeading, { marginRight: 10 }]}>
+              <Text
+                allowFontScaling={false}
+                style={[globalStyles.subHeading, { marginRight: 10 }]}
+              >
                 {t('try_again')}
               </Text>
               <MaterialIcons name="replay" size={18} color="black" />

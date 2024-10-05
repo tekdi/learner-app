@@ -239,6 +239,7 @@ const CourseContentList = ({ route }) => {
         <ScrollView>
           <View style={{ padding: 20, paddingBottom: 10 }}>
             <Text
+              allowFontScaling={false}
               style={[globalStyles.heading, { marginBottom: 10 }]}
               numberOfLines={1}
               ellipsizeMode="tail"
@@ -258,7 +259,10 @@ const CourseContentList = ({ route }) => {
               resizeMode={FastImage.resizeMode.cover} // Adjust to cover the circular area
             />
             <View style={globalStyles.flexrow}>
-              <Text style={[globalStyles.subHeading, { marginVertical: 10 }]}>
+              <Text
+                allowFontScaling={false}
+                style={[globalStyles.subHeading, { marginVertical: 10 }]}
+              >
                 {coursesContent?.description}
               </Text>
             </View>
@@ -294,6 +298,7 @@ const CourseContentList = ({ route }) => {
                   textStyle={{ fontSize: 8, color: 'black' }}
                 />
                 <Text
+                  allowFontScaling={false}
                   style={{ marginLeft: 10, color: '#000' }}
                 >{`${Math.round((trackCompleted / 100) * 100)}%`}</Text>
               </View>

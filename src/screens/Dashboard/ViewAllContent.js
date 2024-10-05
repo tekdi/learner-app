@@ -57,7 +57,9 @@ const ViewAllContent = ({ route }) => {
               size={30}
             />
           </TouchableOpacity>
-          <Text style={styles.text}>{t(title)}</Text>
+          <Text allowFontScaling={false} style={styles.text}>
+            {t(title)}
+          </Text>
         </View>
         <FlatList
           data={data}

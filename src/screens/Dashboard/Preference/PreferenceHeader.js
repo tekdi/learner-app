@@ -23,11 +23,15 @@ const PreferenceHeader = () => {
             color={'#0D599E'}
             size={30}
           />
-          {/* <Text>Back</Text> */}
+          {/* <Text allowFontScaling={false}>Back</Text> */}
         </TouchableOpacity>
-        <Text style={styles.text}>{t('Preferences')}</Text>
+        <Text allowFontScaling={false} style={styles.text}>
+          {t('Preferences')}
+        </Text>
       </View>
-      <Text style={styles.text2}>{t('save')}</Text>
+      <Text allowFontScaling={false} style={styles.text2}>
+        {t('save')}
+      </Text>
     </View>
   );
 };

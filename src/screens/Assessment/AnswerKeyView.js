@@ -149,13 +149,16 @@ const AnswerKeyView = ({ route }) => {
                 size={30}
               />
             </TouchableOpacity>
-            <Text style={globalStyles.heading}>
+            <Text allowFontScaling={false} style={globalStyles.heading}>
               {t(capitalizeFirstLetter(title))}
             </Text>
           </View>
           {isConnected && (
             <View style={[globalStyles.flexrow, { marginTop: 10 }]}>
-              <Text style={[globalStyles.subHeading, { color: '#000' }]}>
+              <Text
+                allowFontScaling={false}
+                style={[globalStyles.subHeading, { color: '#000' }]}
+              >
                 {t('downloaded_for_offline_access')}
               </Text>
               <Icon
@@ -168,7 +171,10 @@ const AnswerKeyView = ({ route }) => {
           )}
           <View style={styles.container}>
             <View>
-              <Text style={[globalStyles.text, { color: '#7C766F' }]}>
+              <Text
+                allowFontScaling={false}
+                style={[globalStyles.text, { color: '#7C766F' }]}
+              >
                 {t('submitted_On')}
                 {moment(scoreData?.lastAttemptedOn).format('DD MMM, YYYY')}
               </Text>
@@ -178,15 +184,22 @@ const AnswerKeyView = ({ route }) => {
                   { justifyContent: 'space-between', marginVertical: 10 },
                 ]}
               >
-                <Text style={[globalStyles.subHeading, { fontWeight: '700' }]}>
+                <Text
+                  allowFontScaling={false}
+                  style={[globalStyles.subHeading, { fontWeight: '700' }]}
+                >
                   {unansweredCount} {t('unanswered')}
                 </Text>
-                <Text style={[globalStyles.subHeading, { fontWeight: '700' }]}>
+                <Text
+                  allowFontScaling={false}
+                  style={[globalStyles.subHeading, { fontWeight: '700' }]}
+                >
                   {scoreData?.totalScore || 0}/{scoreData?.totalMaxScore || 0}
                 </Text>
               </View>
               <View style={{ borderBottomWidth: 1 }}></View>
               <Text
+                allowFontScaling={false}
                 style={[
                   globalStyles.text,
                   { marginVertical: 20, color: '#7C766F' },
@@ -203,7 +216,7 @@ const AnswerKeyView = ({ route }) => {
               renderItem={({ item, index }) => (
                 <View style={styles.questionContainer}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={styles.questionText}>
+                    <Text allowFontScaling={false} style={styles.questionText}>
                       {`Q${startIndex + index + 1}.`}
                     </Text>
                     <RenderHtml
@@ -213,6 +226,7 @@ const AnswerKeyView = ({ route }) => {
                     />
                   </View>
                   <Text
+                    allowFontScaling={false}
                     style={[
                       styles.questionText,
                       { color: item?.pass == 'Yes' ? 'green' : 'red' },
@@ -243,6 +257,7 @@ const AnswerKeyView = ({ route }) => {
             </TouchableOpacity>
 
             <Text
+              allowFontScaling={false}
               style={[
                 globalStyles.subHeading,
                 { flex: 2, textAlign: 'center' },

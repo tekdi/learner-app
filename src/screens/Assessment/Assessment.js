@@ -103,7 +103,10 @@ const Assessment = (props) => {
       ) : (
         <View>
           <SyncCard doneSync={fetchData} />
-          <Text style={[globalStyles.heading, { padding: 20 }]}>
+          <Text
+            allowFontScaling={false}
+            style={[globalStyles.heading, { padding: 20 }]}
+          >
             {t('Assessments')}
           </Text>
 
@@ -120,7 +123,9 @@ const Assessment = (props) => {
                 );
               })
             ) : (
-              <Text style={globalStyles.subHeading}>{t('no_data_found')}</Text>
+              <Text allowFontScaling={false} style={globalStyles.subHeading}>
+                {t('no_data_found')}
+              </Text>
             )}
           </View>
           {/* Use the BackButtonHandler component */}

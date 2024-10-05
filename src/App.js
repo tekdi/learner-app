@@ -92,7 +92,9 @@ const App = () => {
       work */}
         <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
           <NavigationContainer>
-            <Suspense fallback={<Text>Loading Screen...</Text>}>
+            <Suspense
+              fallback={<Text allowFontScaling={false}>Loading Screen...</Text>}
+            >
               <StackScreen />
             </Suspense>
           </NavigationContainer>

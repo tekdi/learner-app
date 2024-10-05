@@ -7,7 +7,6 @@ import { useTranslation } from '../../context/LanguageContext';
 import {
   getDataFromStorage,
   getLastMatchingData,
-
 } from '../../utils/JsHelper/Helper';
 import SubjectBox from '../../components/TestBox.js/SubjectBox.';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
@@ -113,7 +112,9 @@ const TestView = ({ route }) => {
           questionsets={questionsets}
         />
         <View style={styles.container}>
-          <Text style={globalStyles.text}>{t('assessment_instructions')}</Text>
+          <Text allowFontScaling={false} style={globalStyles.text}>
+            {t('assessment_instructions')}
+          </Text>
           {questionsets?.map((item, index) => {
             return (
               <SubjectBox
@@ -125,11 +126,15 @@ const TestView = ({ route }) => {
             );
           })}
           <View style={styles.note}>
-            <Text style={[globalStyles.text, { fontWeight: '700' }]}>
+            <Text
+              allowFontScaling={false}
+              style={[globalStyles.text, { fontWeight: '700' }]}
+            >
               {t('assessment_note')}
             </Text>
           </View>
           <Text
+            allowFontScaling={false}
             style={[
               globalStyles.subHeading,
               { fontWeight: '700', paddingVertical: 20 },
@@ -140,8 +145,15 @@ const TestView = ({ route }) => {
           {instructions?.map((item) => {
             return (
               <View key={item.id.toString()} style={styles.itemContainer}>
-                <Text style={styles.bullet}>{'\u2022'}</Text>
-                <Text style={[globalStyles.subHeading]}>{t(item.title)}</Text>
+                <Text allowFontScaling={false} style={styles.bullet}>
+                  {'\u2022'}
+                </Text>
+                <Text
+                  allowFontScaling={false}
+                  style={[globalStyles.subHeading]}
+                >
+                  {t(item.title)}
+                </Text>
               </View>
             );
           })}

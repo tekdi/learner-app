@@ -25,20 +25,27 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
 
   return (
     <SafeAreaView>
-      <Text style={styles.text1}>
+      <Text allowFontScaling={false} style={styles.text1}>
         {t('T&C')}{' '}
-        <Text style={{ fontWeight: 'bold' }}>{t('create_account')}</Text>{' '}
+        <Text allowFontScaling={false} style={{ fontWeight: 'bold' }}>
+          {t('create_account')}
+        </Text>{' '}
         {t('button')}
       </Text>
 
       <View style={{ top: -10 }}>
-        <Text style={styles.text2}>{t('T&C_1')}</Text>
-        <Text style={styles.text2}>{t('T&C_2')}</Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_1')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_2')}
+        </Text>
       </View>
 
       {/* Read More Button */}
       {!showMore && (
         <Text
+          allowFontScaling={false}
           style={[
             globalStyles.subHeading,
             { color: '#0563C1', textAlign: 'center', top: -20 },
@@ -52,18 +59,42 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
       {/* Additional text content shown when "Read More" is clicked */}
       {showMore && (
         <>
-          <Text style={styles.text2}>{t('T&C_3')}</Text>
-          <Text style={styles.text2}>{t('T&C_4')}</Text>
-          <Text style={styles.text2}>{t('T&C_5')}</Text>
-          <Text style={styles.text2}>{t('T&C_6')}</Text>
-          <Text style={styles.text2}>{t('T&C_7')}</Text>
-          <Text style={styles.text2}>{t('T&C_8')}</Text>
-          <Text style={styles.text2}>{t('T&C_9')}</Text>
-          <Text style={styles.text2}>{t('T&C_10')}</Text>
-          <Text style={styles.text2}>{t('T&C_11')}</Text>
-          <Text style={styles.text2}>{t('office_adrress')}</Text>
-          <Text style={styles.text2}>{t('office_email')}</Text>
-          <Text style={styles.text2}>{t('office_phone')}</Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('T&C_3')}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('T&C_4')}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('T&C_5')}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('T&C_6')}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('T&C_7')}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('T&C_8')}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('T&C_9')}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('T&C_10')}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('T&C_11')}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('office_adrress')}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('office_email')}
+          </Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('office_phone')}
+          </Text>
         </>
       )}
 
@@ -77,7 +108,7 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
             setIsDisable(!isDisable);
           }}
         />
-        <Text style={[styles.text3]}>{t('T&C_12')}</Text>
+        <Text allowFontScaling={false} style={[styles.text3]}>{t('T&C_12')}</Text>
       </View> */}
     </SafeAreaView>
   );

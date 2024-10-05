@@ -5,7 +5,11 @@ import PropTypes from 'prop-types';
 
 const PlainText = ({ text }) => {
   const { t } = useTranslation();
-  return <Text style={styles.text2}>{t(text)}</Text>;
+  return (
+    <Text allowFontScaling={false} style={styles.text2}>
+      {t(text)}
+    </Text>
+  );
 };
 
 PlainText.propTypes = {

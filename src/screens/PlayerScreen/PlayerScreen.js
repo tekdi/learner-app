@@ -50,7 +50,9 @@ const PlayerScreen = () => {
       {/* Icon png here */}
       <View style={styles.container_image}>
         <Image style={styles.image} source={Logo} resizeMode="contain" />
-        <Text style={styles.title}>Content Players</Text>
+        <Text allowFontScaling={false} style={styles.title}>
+          Content Players
+        </Text>
       </View>
       <ScrollView contentContainerStyle={styles.container_scroll}>
         <View style={{ padding: 10 }}></View>

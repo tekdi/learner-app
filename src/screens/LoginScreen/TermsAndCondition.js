@@ -18,7 +18,9 @@ const TermsAndCondition = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.View}>
-        <Text style={styles.text}>{t('terms_and_conditions2')}</Text>
+        <Text allowFontScaling={false} style={styles.text}>
+          {t('terms_and_conditions2')}
+        </Text>
         <Pressable
           onPress={() => {
             navigation.goBack();
@@ -28,20 +30,48 @@ const TermsAndCondition = () => {
         </Pressable>
       </View>
       <ScrollView style={styles.scroll} scrollEventThrottle={16}>
-        <Text style={styles.text2}>{t('T&C_1')}</Text>
-        <Text style={styles.text2}>{t('T&C_2')}</Text>
-        <Text style={styles.text2}>{t('T&C_3')}</Text>
-        <Text style={styles.text2}>{t('T&C_4')}</Text>
-        <Text style={styles.text2}>{t('T&C_5')}</Text>
-        <Text style={styles.text2}>{t('T&C_6')}</Text>
-        <Text style={styles.text2}>{t('T&C_7')}</Text>
-        <Text style={styles.text2}>{t('T&C_8')}</Text>
-        <Text style={styles.text2}>{t('T&C_9')}</Text>
-        <Text style={styles.text2}>{t('T&C_10')}</Text>
-        <Text style={styles.text2}>{t('T&C_11')}</Text>
-        <Text style={styles.text2}>{t('office_adrress')}</Text>
-        <Text style={styles.text2}>{t('office_email')}</Text>
-        <Text style={styles.text2}>{t('office_phone')}</Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_1')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_2')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_3')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_4')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_5')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_6')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_7')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_8')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_9')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_10')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_11')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('office_adrress')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('office_email')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('office_phone')}
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );

@@ -76,13 +76,15 @@ const InterestedCardsComponent = ({
                     styles.selectedCard,
                 ]}
               >
-                <Text style={styles.cardText}>{t(item.label)}</Text>
+                <Text allowFontScaling={false} style={styles.cardText}>
+                  {t(item.label)}
+                </Text>
               </View>
             </TouchableOpacity>
           ))}
         </View>
         {errors[name] && (
-          <Text style={styles.error}>
+          <Text allowFontScaling={false} style={styles.error}>
             {errors[name]?.value?.message || errors[name]?.message}
           </Text>
         )}

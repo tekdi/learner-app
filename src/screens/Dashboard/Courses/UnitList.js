@@ -116,6 +116,7 @@ const UnitList = ({ route }) => {
           <View style={{ padding: 20, paddingBottom: 10 }}>
             {headingName && (
               <Text
+                allowFontScaling={false}
                 style={[globalStyles.heading, { marginBottom: 10 }]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
@@ -124,6 +125,7 @@ const UnitList = ({ route }) => {
               </Text>
             )}
             <Text
+              allowFontScaling={false}
               style={[globalStyles.heading2, { marginBottom: 10 }]}
               numberOfLines={1}
               ellipsizeMode="tail"

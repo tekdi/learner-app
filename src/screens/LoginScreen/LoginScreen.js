@@ -120,17 +120,24 @@ const LoginScreen = () => {
               resizeMode="contain"
               style={{ width: 30, height: 30 }}
             />
-            <Text style={[globalStyles.heading2, { color: '#4D4639' }]}>
+            <Text
+              allowFontScaling={false}
+              style={[globalStyles.heading2, { color: '#4D4639' }]}
+            >
               {t('back')}
             </Text>
           </TouchableOpacity>
           <View style={{ paddingVertical: 5 }}>
             <Text
+              allowFontScaling={false}
               style={[globalStyles.heading, { marginTop: 15, color: 'black' }]}
             >
               {t('login')}
             </Text>
-            <Text style={[globalStyles.subHeading, { marginVertical: 5 }]}>
+            <Text
+              allowFontScaling={false}
+              style={[globalStyles.subHeading, { marginVertical: 5 }]}
+            >
               {t('login_with_the_cred')}
             </Text>
           </View>
@@ -146,13 +153,16 @@ const LoginScreen = () => {
               value={password}
             />
             {errmsg !== '' && (
-              <Text style={{ color: 'red', top: -10, left: 20 }}>
+              <Text
+                allowFontScaling={false}
+                style={{ color: 'red', top: -10, left: 20 }}
+              >
                 {t(errmsg)}
               </Text>
             )}
           </View>
           {/* <TouchableOpacity style={{ paddingLeft: 20, marginBottom: 30 }}>
-            <Text
+            <Text allowFontScaling={false}
               style={{
                 color: '#0D599E',
                 fontFamily: 'Poppins-Medium',
@@ -165,7 +175,7 @@ const LoginScreen = () => {
           {/* <View style={globalStyles.flexrow}>
             <CustomCheckbox value={savePassword} onChange={setSavePassword} />
             <View>
-              <Text style={globalStyles.subHeading}>{t('remember_me')}</Text>
+              <Text allowFontScaling={false} style={globalStyles.subHeading}>{t('remember_me')}</Text>
             </View>
           </View> */}
           <View style={[globalStyles.flexrow, { paddingTop: 10 }]}>
@@ -173,13 +183,18 @@ const LoginScreen = () => {
               <CustomCheckbox value={acceptTerms} onChange={setAcceptTerms} />
             </View>
             <View>
-              <Text style={globalStyles.subHeading}>{t('Read_T_&_C')}</Text>
+              <Text allowFontScaling={false} style={globalStyles.subHeading}>
+                {t('Read_T_&_C')}
+              </Text>
               <Pressable
                 onPress={() => {
                   navigation.navigate('TermsAndCondition');
                 }}
               >
-                <Text style={[globalStyles.subHeading, { color: '#0D599E' }]}>
+                <Text
+                  allowFontScaling={false}
+                  style={[globalStyles.subHeading, { color: '#0D599E' }]}
+                >
                   {t('terms_and_conditions2')}
                 </Text>
               </Pressable>

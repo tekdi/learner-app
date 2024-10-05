@@ -146,10 +146,12 @@ const Courses = () => {
                 translucent={true}
                 backgroundColor="transparent"
               />
-              <Text style={styles.text}>{t('courses')}</Text>
+              <Text allowFontScaling={false} style={styles.text}>
+                {t('courses')}
+              </Text>
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
-                <Text style={styles.text2}>
+                <Text allowFontScaling={false} style={styles.text2}>
                   {t('welcome')}, {userInfo?.[0]?.name} !
                 </Text>
               </View>

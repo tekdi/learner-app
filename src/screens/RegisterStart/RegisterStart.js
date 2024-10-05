@@ -33,7 +33,9 @@ const RegisterStart = () => {
           resizeMode={FastImage.resizeMode.contain}
           priority={FastImage.priority.high} // Set the priority here
         />
-        <Text style={styles.title}>{t('form_start_lable')}</Text>
+        <Text allowFontScaling={false} style={styles.title}>
+          {t('form_start_lable')}
+        </Text>
       </View>
       <View style={styles.buttonContainer}>
         <PrimaryButton

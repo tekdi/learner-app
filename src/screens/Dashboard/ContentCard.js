@@ -166,7 +166,12 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 
         {/* Content overlaid on top of the image */}
         <View style={styles.overlay}>
-          <Text style={styles.cardText} numberOfLines={1} ellipsizeMode="tail">
+          <Text
+            allowFontScaling={false}
+            style={styles.cardText}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {mimeType.toUpperCase()}
           </Text>
         </View>
@@ -182,6 +187,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         <StatusCardIcon status={trackStatus} />
 
         <Text
+          allowFontScaling={false}
           style={[styles.cardText, { color: '#000' }]}
           numberOfLines={1}
           ellipsizeMode="tail"

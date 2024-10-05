@@ -46,28 +46,37 @@ const StatusCondition = ({ status, styles, t, percentage }) => {
     case 'Completed':
       content = (
         <View style={globalStyles.flexrow}>
-          <Text style={globalStyles.subHeading}>
+          <Text allowFontScaling={false} style={globalStyles.subHeading}>
             {t('Overallscore')}
-            <Text style={{ color: percentage > 35 ? '#1A8825' : 'red' }}>
+            <Text
+              allowFontScaling={false}
+              style={{ color: percentage > 35 ? '#1A8825' : 'red' }}
+            >
               {' '}
               {percentage}%
             </Text>
           </Text>
-          <Text style={styles.smileyText}>{percentage > 35 && `😄`}</Text>
+          <Text allowFontScaling={false} style={styles.smileyText}>
+            {percentage > 35 && `😄`}
+          </Text>
         </View>
       );
       break;
     case 'In_Progress':
       content = (
         <View style={globalStyles.flexrow}>
-          <Text style={globalStyles.subHeading}>{t('Inprogress')}</Text>
+          <Text allowFontScaling={false} style={globalStyles.subHeading}>
+            {t('Inprogress')}
+          </Text>
         </View>
       );
       break;
     default:
       content = (
         <View style={globalStyles.flexrow}>
-          <Text style={globalStyles.subHeading}>{t('not_started')}</Text>
+          <Text allowFontScaling={false} style={globalStyles.subHeading}>
+            {t('not_started')}
+          </Text>
         </View>
       );
   }
@@ -89,7 +98,9 @@ const TestBox = ({ testText, status, percentage }) => {
         <View style={styles.card}>
           <IconConditions status={status} styles={styles} />
           <View style={styles.rightContainer}>
-            <Text style={globalStyles.subHeading}>{t(testText)}</Text>
+            <Text allowFontScaling={false} style={globalStyles.subHeading}>
+              {t(testText)}
+            </Text>
 
             <StatusCondition
               status={status}

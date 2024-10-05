@@ -17,6 +17,7 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
       <View style={[styles.view, viewStyle]}>
         <Icon name="check-circle-fill" style={{ color: '#50EE42' }} />
         <Text
+          allowFontScaling={false}
           style={[
             globalStyles.text,
             { color: '#50EE42', marginLeft: 10, fontSize: 12 },
@@ -41,6 +42,7 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
           resizeMode="contain"
         />
         <Text
+          allowFontScaling={false}
           style={[
             globalStyles.text,
             { color: 'white', marginLeft: 10, fontSize: 12 },
@@ -55,6 +57,7 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
       <View style={[styles.view, viewStyle]}>
         <Icon name="circle" />
         <Text
+          allowFontScaling={false}
           style={[
             globalStyles.text,
             { color: 'white', marginLeft: 10, fontSize: 12 },

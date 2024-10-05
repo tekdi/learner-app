@@ -9,7 +9,9 @@ const SecondaryButton = ({ onPress, text, style }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text style={[styles.buttontext, style]}>{t(text)}</Text>
+        <Text allowFontScaling={false} style={[styles.buttontext, style]}>
+          {t(text)}
+        </Text>
       </TouchableOpacity>
     </View>
   );

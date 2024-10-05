@@ -28,14 +28,20 @@ const MimeAlertModal = ({ textTitle }) => {
             style={styles.alertSubBox}
           >
             <MaterialIcons name="close" size={48} color="red" />
-            <Text style={[globalStyles.heading2, { marginVertical: 10 }]}>
+            <Text
+              allowFontScaling={false}
+              style={[globalStyles.heading2, { marginVertical: 10 }]}
+            >
               {t(textTitle)}
             </Text>
           </TouchableOpacity>
           <View style={styles.btnbox}>
             <Button status="primary" style={styles.btn} onPress={closeModal}>
               {() => (
-                <Text style={[globalStyles.subHeading, { marginRight: 10 }]}>
+                <Text
+                  allowFontScaling={false}
+                  style={[globalStyles.subHeading, { marginRight: 10 }]}
+                >
                   {t('okay')}
                 </Text>
               )}

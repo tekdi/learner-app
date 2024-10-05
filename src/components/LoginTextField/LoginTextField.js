@@ -11,6 +11,7 @@ const LoginTextField = ({ text, position = 'static', onChangeText, value }) => {
   return (
     <View style={styles.container}>
       <TextInput
+        allowFontScaling={false}
         autoCapitalize="none" // Ensures keyboard stays in lowercase
         secureTextEntry={text === 'password' && !passwordView}
         onChangeText={onChangeText}
@@ -19,7 +20,10 @@ const LoginTextField = ({ text, position = 'static', onChangeText, value }) => {
       />
 
       <View style={styles.overlap}>
-        <Text style={styles.text}> {t(text)} </Text>
+        <Text allowFontScaling={false} style={styles.text}>
+          {' '}
+          {t(text)}{' '}
+        </Text>
       </View>
       {text === 'password' && (
         <TouchableWithoutFeedback

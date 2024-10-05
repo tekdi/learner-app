@@ -209,7 +209,12 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
           />
         </View>
         <View style={styles.overlay}>
-          <Text style={styles.cardText} numberOfLines={1} ellipsizeMode="tail">
+          <Text
+            allowFontScaling={false}
+            style={styles.cardText}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {t('unit')}
           </Text>
         </View>
@@ -217,6 +222,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
 
       <View style={[globalStyles.flexrow]}>
         <Text
+          allowFontScaling={false}
           style={[styles.cardText, { color: '#000' }]}
           numberOfLines={1}
           ellipsizeMode="tail"
