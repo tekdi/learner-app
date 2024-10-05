@@ -9,7 +9,10 @@ const ProgressBarCustom = ({ progress, width }) => {
         <View style={[styles.progressBar, { width: `${progress}%` }]} />
         {/* Percentage Label */}
       </View>
-      <Text style={styles.label}>{`${progress}%`}</Text>
+      <Text
+        allowFontScaling={false}
+        style={styles.label}
+      >{`${progress}%`}</Text>
     </>
   );
 };
@@ -18,9 +21,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row', // Align items horizontally
     alignItems: 'center', // Center vertically
-    backgroundColor: '#000000',
+    backgroundColor: '#3A3A3ACC',
     borderRadius: 5,
-    height: 15,
+    height: 10,
     position: 'relative',
   },
   progressBar: {

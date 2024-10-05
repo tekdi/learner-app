@@ -22,28 +22,39 @@ const AssessmentHeader = ({
   if (status === 'Completed') {
     content = (
       <View style={globalStyles.flexrow}>
-        <Text style={globalStyles.subHeading}>
+        <Text allowFontScaling={false} style={globalStyles.subHeading}>
           {t('Overallscore')}{' '}
-          <Text style={{ color: percentage > 35 ? '#1A8825' : 'red' }}>
+          <Text
+            allowFontScaling={false}
+            style={{ color: percentage > 35 ? '#1A8825' : 'red' }}
+          >
             {percentage}%
           </Text>
         </Text>
-        <Text style={styles.smileyText}>{percentage > 35 && `😄`}</Text>
+        <Text allowFontScaling={false} style={styles.smileyText}>
+          {percentage > 35 && `😄`}
+        </Text>
       </View>
     );
   } else if (status === 'In_Progress') {
     content = (
       <View style={globalStyles.flexrow}>
         <Icon name="circle-o" size={24} color="#4D4639" />
-        <Text style={[globalStyles.subHeading, { marginLeft: 10 }]}>
-          {t('Inprogress')} ({completedCount} {t('out_of')} {questionsets?.length} {t('completed')})
+        <Text
+          allowFontScaling={false}
+          style={[globalStyles.subHeading, { marginLeft: 10 }]}
+        >
+          {t('Inprogress')} ({completedCount} {t('out_of')}{' '}
+          {questionsets?.length} {t('completed')})
         </Text>
       </View>
     );
   } else {
     content = (
       <View style={globalStyles.flexrow}>
-        <Text style={globalStyles.subHeading}>{t('not_started')}</Text>
+        <Text allowFontScaling={false} style={globalStyles.subHeading}>
+          {t('not_started')}
+        </Text>
       </View>
     );
   }
@@ -62,11 +73,13 @@ const AssessmentHeader = ({
             color={'#000'}
             size={30}
           />
-          {/* <Text>Back</Text> */}
+          {/* <Text allowFontScaling={false}>Back</Text> */}
         </TouchableOpacity>
       </View>
       <View style={styles.rightContainer}>
-        <Text style={globalStyles.subHeading}>{t(testText)}</Text>
+        <Text allowFontScaling={false} style={globalStyles.subHeading}>
+          {t(testText)}
+        </Text>
         {content}
       </View>
     </View>

@@ -6,7 +6,11 @@ import { StyleSheet, Text } from 'react-native';
 const Label = ({ text }) => {
   const { t } = useTranslation();
 
-  return <Text style={styles.text}>{t(text)}</Text>;
+  return (
+    <Text allowFontScaling={false} style={styles.text}>
+      {t(text)}
+    </Text>
+  );
 };
 
 Label.propTypes = {

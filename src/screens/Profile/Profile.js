@@ -94,7 +94,9 @@ const Profile = (props) => {
       ) : (
         <ScrollView style={globalStyles.container}>
           <View style={styles.view}>
-            <Text style={globalStyles.heading}>{t('my_profile')}</Text>
+            <Text allowFontScaling={false} style={globalStyles.heading}>
+              {t('my_profile')}
+            </Text>
           </View>
 
           <View>
@@ -130,7 +132,9 @@ const Profile = (props) => {
               <View>
                 <Label text={`${t('gender')} `} />
                 <TextField
-                  text={`${capitalizeFirstLetter(userDetails?.WHATS_YOUR_GENDER)}`}
+                  text={`${capitalizeFirstLetter(
+                    userDetails?.WHATS_YOUR_GENDER
+                  )}`}
                 />
               </View>
             </View>
@@ -146,7 +150,10 @@ const Profile = (props) => {
                 marginBottom: 40,
               }}
             >
-              <Text style={[globalStyles.heading2, { padding: 10 }]}>
+              <Text
+                allowFontScaling={false}
+                style={[globalStyles.heading2, { padding: 10 }]}
+              >
                 {t('logout')}
               </Text>
               <Icon name="logout" color="black" size={30} style={styles.icon} />

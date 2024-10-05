@@ -17,10 +17,12 @@ const HeaderComponent = ({ question, questionIndex, totalForms }) => {
           priority={FastImage.priority.high} // Set the priority here
         />
         <View style={styles.textContainer}>
-          <Text style={styles.text1}>
+          <Text allowFontScaling={false} style={styles.text1}>
             {questionIndex}/{totalForms}
           </Text>
-          <Text style={styles.text2}>{t(question)}</Text>
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t(question)}
+          </Text>
         </View>
       </View>
     </SafeAreaView>

@@ -46,33 +46,38 @@ const UnitList = ({ route }) => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('############ in focus');
+      console.log('############ in focus unit list');
       setLoading(true);
-      fetchDataTrack();
-    }, [course_id]) // Make sure to include the dependencies
+      //bug fix for not realtime tracking
+      //fetchDataTrack();
+      setTimeout(() => {
+        // Code to run after 1 second
+        fetchDataTrack();
+      }, 500); // 1000 milliseconds = 1 second
+    }, []) // Make sure to include the dependencies
   );
 
-  useEffect(() => {
-    const backAction = () => {
-      navigation.goBack(); // Navigate back to the previous screen
-      return true; // Returning true prevents the default behavior (exiting the app)
-    };
+  // useEffect(() => {
+  //   const backAction = () => {
+  //     navigation.goBack(); // Navigate back to the previous screen
+  //     return true; // Returning true prevents the default behavior (exiting the app)
+  //   };
 
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction
-    );
+  //   const backHandler = BackHandler.addEventListener(
+  //     'hardwareBackPress',
+  //     backAction
+  //   );
 
-    // Clean up the event listener on component unmount
-    return () => {
-      backHandler.remove();
-    };
-  }, [navigation]);
+  //   // Clean up the event listener on component unmount
+  //   return () => {
+  //     backHandler.remove();
+  //   };
+  // }, [navigation]);
 
   const fetchDataTrack = async () => {
     //found course progress
     try {
-      console.log('########## contentListApi');
+      console.log('########## fetchDataTrack');
       //console.log('########## contentList', contentList);
       let courseList = [course_id];
       //console.log('########## courseList', courseList);
@@ -111,6 +116,7 @@ const UnitList = ({ route }) => {
           <View style={{ padding: 20, paddingBottom: 10 }}>
             {headingName && (
               <Text
+                allowFontScaling={false}
                 style={[globalStyles.heading, { marginBottom: 10 }]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
@@ -119,6 +125,7 @@ const UnitList = ({ route }) => {
               </Text>
             )}
             <Text
+              allowFontScaling={false}
               style={[globalStyles.heading2, { marginBottom: 10 }]}
               numberOfLines={1}
               ellipsizeMode="tail"

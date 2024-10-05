@@ -122,10 +122,12 @@ const SyncCard = ({ doneSync }) => {
         //get sync pending
         const user_id = await getDataFromStorage('userId');
         let result_sync_offline = await getSyncAsessmentOffline(user_id);
-        let result_sync_offline_telemetry =
-          await getSyncTelemetryOffline(user_id);
-        let result_sync_offline_tracking =
-          await getSyncTrackingOffline(user_id);
+        let result_sync_offline_telemetry = await getSyncTelemetryOffline(
+          user_id
+        );
+        let result_sync_offline_tracking = await getSyncTrackingOffline(
+          user_id
+        );
         // console.log('result_sync_offline', result_sync_offline);
         // console.log(
         //   'result_sync_offline_telemetry',
@@ -204,8 +206,9 @@ const SyncCard = ({ doneSync }) => {
                   telemetry_result?.telemetry_object
                 );
 
-                let create_telemetry =
-                  await telemetryTracking(telemetry_object);
+                let create_telemetry = await telemetryTracking(
+                  telemetry_object
+                );
                 if (
                   create_telemetry &&
                   create_telemetry?.response?.responseCode == 'SUCCESS'
@@ -296,8 +299,10 @@ const SyncCard = ({ doneSync }) => {
           (result_sync_offline_telemetry && !isProgress) ||
           (result_sync_offline_tracking && !isProgress)
         ) {
-          setIsSyncPending(true);
-          setIsProgress(true);
+          await performDataSync();
+        } else {
+          setIsSyncPending(false);
+          setIsProgress(false);
         }
         console.log('Data synced successfully.');
       } catch (error) {
@@ -324,7 +329,10 @@ const SyncCard = ({ doneSync }) => {
           {isConnected ? (
             <>
               <Icon name="cloud-outline" color={'black'} size={22} />
-              <Text style={[globalStyles.text, { marginLeft: 10 }]}>
+              <Text
+                allowFontScaling={false}
+                style={[globalStyles.text, { marginLeft: 10 }]}
+              >
                 {t('back_online_syncing')}
                 {'\n'}
                 {syncCall}
@@ -335,6 +343,7 @@ const SyncCard = ({ doneSync }) => {
             <>
               <Icon name="cloud-offline-outline" color={'#7C766F'} size={22} />
               <Text
+                allowFontScaling={false}
                 style={[globalStyles.text, { marginLeft: 10, fontSize: 12 }]}
               >
                 {t('sync_pending_no_internet_available')}

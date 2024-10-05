@@ -74,11 +74,15 @@ const CustomRadioCard = ({
                   style={styles.radio}
                   onChange={() => handlePress(index)}
                 >
-                  <Text style={styles.title}>{option.name}</Text>
+                  <Text allowFontScaling={false} style={styles.title}>
+                    {option.name}
+                  </Text>
                 </Radio>
               </View>
               <Image style={styles.img} source={program} resizeMode="contain" />
-              <Text style={globalStyles.subHeading}>{option.description}</Text>
+              <Text allowFontScaling={false} style={globalStyles.subHeading}>
+                {option.description}
+              </Text>
             </TouchableOpacity>
           ))}
 
@@ -92,10 +96,13 @@ const CustomRadioCard = ({
                 style={styles.radio}
                 onChange={() => handlePress(field?.options?.length + 1)}
               >
-                <Text style={styles.title}>{t('optional_content')}</Text>
+                <Text allowFontScaling={false} style={styles.title}>
+                  {t('optional_content')}
+                </Text>
               </Radio>
             </View>
             <Text
+              allowFontScaling={false}
               style={[
                 globalStyles.subHeading,
                 {
@@ -112,7 +119,9 @@ const CustomRadioCard = ({
           </TouchableOpacity>
         </View>
         {errors[name] && (
-          <Text style={styles.error}>{errors[name]?.message}</Text>
+          <Text allowFontScaling={false} style={styles.error}>
+            {errors[name]?.message}
+          </Text>
         )}
       </ScrollView>
     </RadioGroup>

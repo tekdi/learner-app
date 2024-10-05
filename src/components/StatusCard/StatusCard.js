@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import globalStyles from '../../utils/Helper/Style';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
 import { ProgressBar } from '@ui-kitten/components';
 
 import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
+import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
 
 const StatusCard = ({ status, trackCompleted, viewStyle }) => {
   const { t } = useTranslation();
@@ -16,6 +17,7 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
       <View style={[styles.view, viewStyle]}>
         <Icon name="check-circle-fill" style={{ color: '#50EE42' }} />
         <Text
+          allowFontScaling={false}
           style={[
             globalStyles.text,
             { color: '#50EE42', marginLeft: 10, fontSize: 12 },
@@ -27,8 +29,27 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
     );
   } else if (status === 'inprogress') {
     return (
-      <View style={[styles.view, viewStyle, { paddingVertical: 10 }]}>
+      <View style={[styles.view, viewStyle, { paddingVertical: 5 }]}>
         <ProgressBarCustom progress={trackCompleted} width={100} />
+      </View>
+    );
+  } else if (status === 'progress') {
+    return (
+      <View style={[styles.view, viewStyle]}>
+        <Image
+          style={styles.img}
+          source={arrow_upload_progress}
+          resizeMode="contain"
+        />
+        <Text
+          allowFontScaling={false}
+          style={[
+            globalStyles.text,
+            { color: 'white', marginLeft: 10, fontSize: 12 },
+          ]}
+        >
+          {t('Inprogress')}
+        </Text>
       </View>
     );
   } else {
@@ -36,6 +57,7 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
       <View style={[styles.view, viewStyle]}>
         <Icon name="circle" />
         <Text
+          allowFontScaling={false}
           style={[
             globalStyles.text,
             { color: 'white', marginLeft: 10, fontSize: 12 },
@@ -56,7 +78,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: 10,
     paddingVertical: 3,
-    borderRadius: 5,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
   },
 });
 

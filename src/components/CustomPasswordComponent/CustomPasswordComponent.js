@@ -41,6 +41,7 @@ const CustomPasswordTextField = ({
         <View style={styles.container}>
           <IconRegistry icons={EvaIconsPack} />
           <TextInput
+            allowFontScaling={false}
             style={[
               styles.input,
               { position: position },
@@ -53,6 +54,7 @@ const CustomPasswordTextField = ({
           />
           <View style={styles.overlap}>
             <Text
+              allowFontScaling={false}
               style={[
                 styles.text,
                 { color: errors[field.name] ? 'red' : '#4D4639' },
@@ -66,6 +68,7 @@ const CustomPasswordTextField = ({
           </View>
           {errors[field.name] && (
             <Text
+              allowFontScaling={false}
               style={{
                 color: 'red',
                 alignSelf: 'flex-start',

@@ -33,7 +33,7 @@ const Loading = (style) => {
           <Spinner size="large" style={styles.spinner} />
         </View>
         <View style={styles.footer}>
-          <Text style={styles.versionText}>
+          <Text allowFontScaling={false} style={styles.versionText}>
             Version {version} (Build {buildNumber}){' '}
             {Config.ENV != 'PROD' ? Config.ENV : ''}
           </Text>

@@ -48,7 +48,9 @@ const EpubPlayer = () => {
     if (content_response == null) {
       Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
       set_is_valid_file(false);
-    } else if (content_response?.result?.content?.mimeType == 'application/epub') {
+    } else if (
+      content_response?.result?.content?.mimeType == 'application/epub'
+    ) {
       epubPlayerConfig.metadata = content_response.result.content;
       set_is_valid_file(true);
     } else {
@@ -81,7 +83,7 @@ const EpubPlayer = () => {
     <View style={styles.container}>
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
-          <Text>Invalid Player File</Text>
+          <Text allowFontScaling={false}>Invalid Player File</Text>
         </View>
       ) : (
         <WebView
@@ -119,7 +121,7 @@ const EpubPlayer = () => {
           }
         }}
       />
-      {retrievedData && <Text>{retrievedData}</Text>} */}
+      {retrievedData && <Text allowFontScaling={false}>{retrievedData}</Text>} */}
     </View>
   );
 };

@@ -89,7 +89,7 @@ const QuMLPlayer = () => {
     <View style={styles.container}>
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
-          <Text>Invalid Player File</Text>
+          <Text allowFontScaling={false}>Invalid Player File</Text>
         </View>
       ) : (
         <WebView
@@ -127,7 +127,7 @@ const QuMLPlayer = () => {
           }
         }}
       />
-      {retrievedData && <Text>{retrievedData}</Text>} */}
+      {retrievedData && <Text allowFontScaling={false}>{retrievedData}</Text>} */}
     </View>
   );
 };

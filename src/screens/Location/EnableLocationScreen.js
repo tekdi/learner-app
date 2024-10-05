@@ -67,7 +67,7 @@ const EnableLocationScreen = () => {
       />
       <Image style={{ width: '100%' }} source={location} resizeMode="cover" />
       <View style={{ width: '80%', marginTop: 50 }}>
-        <Text style={[globalStyles.heading2, { textAlign: 'center' }]}>
+        <Text allowFontScaling={false} style={[globalStyles.heading2, { textAlign: 'center' }]}>
           {t(
             'enable_location_to_discover_nearby_skilling_centers_and_more_opportunities_tailored_just_for_you'
           )}
@@ -77,7 +77,7 @@ const EnableLocationScreen = () => {
         <PrimaryButton onPress={requestLocationPermission} text={t('enable')} />
       </View>
       <TouchableOpacity style={styles.button} onPress={disableLocation}>
-        <Text style={styles.buttonText}>{t('not_now')}</Text>
+        <Text allowFontScaling={false} style={styles.buttonText}>{t('not_now')}</Text>
       </TouchableOpacity> */}
     </View>
   );

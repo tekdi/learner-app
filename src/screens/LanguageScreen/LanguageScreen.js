@@ -167,7 +167,7 @@ const LanguageScreen = () => {
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         {/* Text Samples here */}
         <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-          <Text category="s1" style={styles.title}>
+          <Text allowFontScaling={false} category="s1" style={styles.title}>
             {t('welcome')}!
           </Text>
           {/* Use to load gif and images fast */}
@@ -178,8 +178,10 @@ const LanguageScreen = () => {
             priority={FastImage.priority.high} // Set the priority here
           />
         </View>
-        <Text style={styles.subtitle}>{t('choose_language')}</Text>
-        <Text category="p1" style={styles.description}>
+        <Text allowFontScaling={false} style={styles.subtitle}>
+          {t('choose_language')}
+        </Text>
+        <Text allowFontScaling={false} category="p1" style={styles.description}>
           {t('select_language')}
         </Text>
         <View>

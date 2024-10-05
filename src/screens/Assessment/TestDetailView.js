@@ -83,7 +83,7 @@ const TestDetailView = ({ route }) => {
   return (
     <SafeAreaView style={{ paddingTop: 40, flex: 1 }}>
       <View style={styles.View}>
-        <Text style={globalStyles.heading}>
+        <Text allowFontScaling={false} style={globalStyles.heading}>
           {t(capitalizeFirstLetter(title))}
         </Text>
         <Pressable
@@ -98,30 +98,48 @@ const TestDetailView = ({ route }) => {
         <View style={styles.testcard}>
           <View style={[globalStyles.flexrow, { marginBottom: 10 }]}>
             <View>
-              <Text style={styles.texttime}>{time}</Text>
+              <Text allowFontScaling={false} style={styles.texttime}>
+                {time}
+              </Text>
             </View>
             <View>
-              <Text style={styles.textMin}>{t('MIN')}</Text>
-              <Text style={styles.textMin}>{data?.name}</Text>
+              <Text allowFontScaling={false} style={styles.textMin}>
+                {t('MIN')}
+              </Text>
+              <Text allowFontScaling={false} style={styles.textMin}>
+                {data?.name}
+              </Text>
             </View>
           </View>
           <HorizontalLine />
           <View>
-            <Text style={[globalStyles.text, { marginTop: 10 }]}>
+            <Text
+              allowFontScaling={false}
+              style={[globalStyles.text, { marginTop: 10 }]}
+            >
               {data?.description}
             </Text>
           </View>
           <View>
-            <Text style={styles.textmed}>{t('test_medium')}</Text>
-            <Text style={styles.mediumText}>{data?.medium?.[0]}</Text>
+            <Text allowFontScaling={false} style={styles.textmed}>
+              {t('test_medium')}
+            </Text>
+            <Text allowFontScaling={false} style={styles.mediumText}>
+              {data?.medium?.[0]}
+            </Text>
           </View>
           <View>
-            <Text style={styles.textmed}>{t('board')}</Text>
-            <Text style={styles.mediumText}>{data?.board}</Text>
+            <Text allowFontScaling={false} style={styles.textmed}>
+              {t('board')}
+            </Text>
+            <Text allowFontScaling={false} style={styles.mediumText}>
+              {data?.board}
+            </Text>
           </View>
         </View>
         <View style={{ paddingHorizontal: 20 }}>
           <Text
+            allowFontScaling={false}
             style={[
               globalStyles.subHeading,
               { fontWeight: '700', paddingVertical: 20 },
@@ -132,8 +150,15 @@ const TestDetailView = ({ route }) => {
           {instructions.map((item) => {
             return (
               <View key={item.id.toString()} style={styles.itemContainer}>
-                <Text style={styles.bullet}>{'\u2022'}</Text>
-                <Text style={[globalStyles.subHeading]}>{t(item.title)}</Text>
+                <Text allowFontScaling={false} style={styles.bullet}>
+                  {'\u2022'}
+                </Text>
+                <Text
+                  allowFontScaling={false}
+                  style={[globalStyles.subHeading]}
+                >
+                  {t(item.title)}
+                </Text>
               </View>
             );
           })}

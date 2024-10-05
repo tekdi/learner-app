@@ -7,7 +7,12 @@ const TextField = ({ text, style }) => {
   const { t } = useTranslation();
   const textStyle = style || styles.text;
 
-  return <Text style={textStyle}> {text ? t(text) : '-'} </Text>;
+  return (
+    <Text allowFontScaling={false} style={textStyle}>
+      {' '}
+      {text ? t(text) : '-'}{' '}
+    </Text>
+  );
 };
 
 TextField.propTypes = {

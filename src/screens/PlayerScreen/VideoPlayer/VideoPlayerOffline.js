@@ -143,54 +143,54 @@ const VideoPlayerOffline = () => {
         filePath = `${content_file}.zip`;
         //console.log('fileUrl', fileUrl);
         try {
-            //console.log('permission got');
-            try {
-              const download = RNFS.downloadFile({
-                fromUrl: fileUrl,
-                toFile: filePath,
-                begin: (res) => {
-                  console.log('Download started');
-                },
-                progress: (res) => {
-                  const progressPercent =
-                    (res.bytesWritten / res.contentLength) * 100;
-                  setProgress(progressPercent);
-                },
-              });
-              const result = await download.promise;
-              if (result.statusCode === 200) {
-                console.log('File downloaded successfully:', filePath);
-                setProgress(0);
-                set_loading_text('Unzip content ecar file...');
-                // Define the paths
-                const sourcePath = filePath;
-                const targetPath = content_file;
-                try {
-                  // Ensure the target directory exists
-                  await RNFS.mkdir(targetPath);
-                  // Unzip the file
-                  const path = await unzip(sourcePath, targetPath);
-                  console.log(`Unzipped to ${path}`);
-                  //store content obj
-                  //console.log(contentObj);
-                  await storeData(content_do_id, contentObj, 'json');
-                } catch (error) {
-                  console.error(`Error extracting zip file: ${error}`);
-                }
-              } else {
-                Alert.alert(
-                  'Error Internal',
-                  `Failed to download file: ${JSON.stringify(result)}`,
-                  [{ text: 'OK' }]
-                );
-                console.log('Failed to download file:', result.statusCode);
+          //console.log('permission got');
+          try {
+            const download = RNFS.downloadFile({
+              fromUrl: fileUrl,
+              toFile: filePath,
+              begin: (res) => {
+                console.log('Download started');
+              },
+              progress: (res) => {
+                const progressPercent =
+                  (res.bytesWritten / res.contentLength) * 100;
+                setProgress(progressPercent);
+              },
+            });
+            const result = await download.promise;
+            if (result.statusCode === 200) {
+              console.log('File downloaded successfully:', filePath);
+              setProgress(0);
+              set_loading_text('Unzip content ecar file...');
+              // Define the paths
+              const sourcePath = filePath;
+              const targetPath = content_file;
+              try {
+                // Ensure the target directory exists
+                await RNFS.mkdir(targetPath);
+                // Unzip the file
+                const path = await unzip(sourcePath, targetPath);
+                console.log(`Unzipped to ${path}`);
+                //store content obj
+                //console.log(contentObj);
+                await storeData(content_do_id, contentObj, 'json');
+              } catch (error) {
+                console.error(`Error extracting zip file: ${error}`);
               }
-            } catch (error) {
-              Alert.alert('Error Catch', `Failed to download file: ${error}`, [
-                { text: 'OK' },
-              ]);
-              console.error('Error downloading file:', error);
+            } else {
+              Alert.alert(
+                'Error Internal',
+                `Failed to download file: ${JSON.stringify(result)}`,
+                [{ text: 'OK' }]
+              );
+              console.log('Failed to download file:', result.statusCode);
             }
+          } catch (error) {
+            Alert.alert('Error Catch', `Failed to download file: ${error}`, [
+              { text: 'OK' },
+            ]);
+            console.error('Error downloading file:', error);
+          }
         } catch (err) {
           Alert.alert('Error Catch', `Failed to download file: ${err}`, [
             { text: 'OK' },
@@ -211,9 +211,11 @@ const VideoPlayerOffline = () => {
       <View style={styles.middle_screen}>
         <ActivityIndicator size="large" color="#0000ff" />
         {progress > 0 && progress < 100 ? (
-          <Text>{`Downloading: ${progress.toFixed(2)}%`}</Text>
+          <Text allowFontScaling={false}>{`Downloading: ${progress.toFixed(
+            2
+          )}%`}</Text>
         ) : loading_text != '' ? (
-          <Text>{loading_text}</Text>
+          <Text allowFontScaling={false}>{loading_text}</Text>
         ) : (
           <></>
         )}
@@ -232,7 +234,7 @@ const VideoPlayerOffline = () => {
     <View style={styles.container}>
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
-          <Text>Invalid Player File</Text>
+          <Text allowFontScaling={false}>Invalid Player File</Text>
         </View>
       ) : is_download == true ? (
         <View style={styles.middle_screen}>
@@ -275,7 +277,7 @@ const VideoPlayerOffline = () => {
           }
         }}
       />
-      {retrievedData && <Text>{retrievedData}</Text>} */}
+      {retrievedData && <Text allowFontScaling={false}>{retrievedData}</Text>} */}
     </View>
   );
 };

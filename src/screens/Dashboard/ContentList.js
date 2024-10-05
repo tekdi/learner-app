@@ -138,7 +138,7 @@ const ContentList = ({ route }) => {
                   style={{ flex: 0.8 }}
                 />
                 <View style={{ flex: 3 }}>
-                  <Text style={globalStyles.text}>
+                  <Text allowFontScaling={false} style={globalStyles.text}>
                     <TextField text={card?.name} />(
                     <TextField text={card?.mimeType} />)
                   </Text>
@@ -165,7 +165,10 @@ const ContentList = ({ route }) => {
         <View style={styles.subview}>
           <View style={globalStyles.flexrow}>
             <MaterialIcons name="folder" size={32} color="#9cb9ff" />
-            <Text style={[globalStyles.text, { height: 20, marginLeft: 10 }]}>
+            <Text
+              allowFontScaling={false}
+              style={[globalStyles.text, { height: 20, marginLeft: 10 }]}
+            >
               {item?.name}
             </Text>
           </View>
@@ -229,11 +232,11 @@ const ContentList = ({ route }) => {
               style={{ flex: 0.8 }}
             />
             <View style={{ flex: 3 }}>
-              <Text style={globalStyles.text}>
+              <Text allowFontScaling={false} style={globalStyles.text}>
                 <TextField text={item?.name} />(
                 <TextField text={item?.mimeType} />)
                 <TextField text={'\n'} />
-                <Text
+                <Text allowFontScaling={false}
                   style={[
                     globalStyles.subHeading,
                     { color: '#7C766F', marginLeft: 10 },
@@ -274,7 +277,7 @@ const ContentList = ({ route }) => {
   //           style={{ flex: 0.8 }}
   //         />
   //         <View style={{ flex: 3 }}>
-  //           <Text style={globalStyles.text}>
+  //           <Text allowFontScaling={false} style={globalStyles.text}>
   //             <TextField text={item?.name} />(
   //             <TextField text={item?.mimeType} />)
   //           </Text>
@@ -308,6 +311,7 @@ const ContentList = ({ route }) => {
                   text={'board_university'}
                 />
                 <Text
+                  allowFontScaling={false}
                   style={[globalStyles.text, { width: '50%' }]}
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -318,6 +322,7 @@ const ContentList = ({ route }) => {
               <View style={globalStyles.flexrow}>
                 <TextField style={globalStyles.text} text={'medium'} />
                 <Text
+                  allowFontScaling={false}
                   style={[globalStyles.text, { width: '50%' }]}
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -328,6 +333,7 @@ const ContentList = ({ route }) => {
               <View style={globalStyles.flexrow}>
                 <TextField style={globalStyles.text} text={'class'} />
                 <Text
+                  allowFontScaling={false}
                   style={[globalStyles.text, { width: '50%' }]}
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -338,6 +344,7 @@ const ContentList = ({ route }) => {
               <View style={globalStyles.flexrow}>
                 <TextField style={globalStyles.text} text={'user_type'} />
                 <Text
+                  allowFontScaling={false}
                   style={[globalStyles.text, { width: '50%' }]}
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -350,6 +357,7 @@ const ContentList = ({ route }) => {
                 text={'description'}
               />
               <Text
+                allowFontScaling={false}
                 style={[globalStyles.text, { width: '80%' }]}
                 numberOfLines={1}
                 ellipsizeMode="tail"

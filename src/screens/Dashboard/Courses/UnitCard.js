@@ -29,6 +29,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
 
   //set progress and start date
   const [trackCompleted, setTrackCompleted] = useState(0);
+  const [trackProgress, setTrackProgress] = useState(0);
 
   useEffect(() => {
     fetchDataTrack();
@@ -118,6 +119,14 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
             const uniqueArray = [...new Set(mergedArray)];
             let completed_list = uniqueArray;
 
+            //merge offlien and online
+            const mergedArray_progress = [
+              ...TrackData[i]?.in_progress_list,
+              ...offline_in_progress,
+            ];
+            const uniqueArray_progress = [...new Set(mergedArray_progress)];
+            let in_progress_list = uniqueArray_progress;
+
             //fetch all content in unit
             let unit_content_list = getLeafNodes(item);
             // console.log('########### unit_content_list', unit_content_list);
@@ -144,6 +153,22 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
                 setTrackCompleted(percentageCompleted);
               }
             }
+            let unit_content_in_progress_list = [];
+            if (unit_content_list && in_progress_list) {
+              if (unit_content_list.length > 0 && in_progress_list.length > 0) {
+                for (let ii = 0; ii < unit_content_list.length; ii++) {
+                  let temp_item = unit_content_list[ii];
+                  if (in_progress_list.includes(temp_item)) {
+                    unit_content_in_progress_list.push(temp_item);
+                  }
+                }
+                let totalContent = unit_content_list.length;
+                let in_progress = unit_content_in_progress_list.length;
+                let percentageInProgress = (in_progress / totalContent) * 100;
+                percentageInProgress = Math.round(percentageInProgress);
+                setTrackProgress(percentageInProgress);
+              }
+            }
           }
         }
       }
@@ -168,11 +193,13 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
         <View style={{ top: 15 }}>
           <StatusCard
             status={
-              trackCompleted == 0
-                ? 'not_started'
-                : trackCompleted > 100
-                  ? 'completed'
-                  : 'inprogress'
+              trackCompleted >= 100
+                ? 'completed'
+                : trackCompleted > 0
+                ? 'inprogress'
+                : trackProgress > 0
+                ? 'progress'
+                : 'not_started'
             }
             trackCompleted={trackCompleted}
             viewStyle={{
@@ -182,7 +209,12 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
           />
         </View>
         <View style={styles.overlay}>
-          <Text style={styles.cardText} numberOfLines={1} ellipsizeMode="tail">
+          <Text
+            allowFontScaling={false}
+            style={styles.cardText}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {t('unit')}
           </Text>
         </View>
@@ -190,6 +222,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
 
       <View style={[globalStyles.flexrow]}>
         <Text
+          allowFontScaling={false}
           style={[styles.cardText, { color: '#000' }]}
           numberOfLines={1}
           ellipsizeMode="tail"

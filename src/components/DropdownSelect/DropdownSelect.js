@@ -77,10 +77,14 @@ const DropdownSelect = ({
   return (
     <View style={styles.dropdownContainer}>
       <View style={styles.label}>
-        <Text style={globalStyles.text}>{t(name)}</Text>
+        <Text allowFontScaling={false} style={globalStyles.text}>
+          {t(name)}
+        </Text>
       </View>
       <TouchableOpacity onPress={toggleDropdown} style={styles.dropdownButton}>
-        <Text style={[globalStyles.text]}>{value?.label}</Text>
+        <Text allowFontScaling={false} style={[globalStyles.text]}>
+          {value?.label}
+        </Text>
         <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
       </TouchableOpacity>
       {isDropdownOpen && (
@@ -92,7 +96,9 @@ const DropdownSelect = ({
                 onPress={() => handleSelect(item)}
                 style={styles.dropdownOption}
               >
-                <Text style={styles.optionText}>{item?.label}</Text>
+                <Text allowFontScaling={false} style={styles.optionText}>
+                  {item?.label}
+                </Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -100,6 +106,7 @@ const DropdownSelect = ({
       )}
       {errors[name] && (
         <Text
+          allowFontScaling={false}
           style={{
             color: 'red',
             alignSelf: 'flex-start',

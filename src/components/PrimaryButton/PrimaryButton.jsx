@@ -20,7 +20,7 @@ const PrimaryButton = ({ text, onPress, isDisabled, color }) => {
         disabled={isDisabled}
       >
         {(props) => (
-          <Text {...props} style={styles.buttontext}>
+          <Text allowFontScaling={false} {...props} style={styles.buttontext}>
             {text}
           </Text>
         )}

@@ -598,7 +598,10 @@ const RegistrationForm = ({ schema }) => {
       />
       {currentForm === 6 && (
         <>
-          <Text style={[globalStyles.text, { marginLeft: 20 }]}>
+          <Text
+            allowFontScaling={false}
+            style={[globalStyles.text, { marginLeft: 20 }]}
+          >
             {t('location_des')}
           </Text>
           <View
@@ -609,7 +612,9 @@ const RegistrationForm = ({ schema }) => {
               marginTop: 10,
             }}
           >
-            <Text style={[globalStyles.text]}>{t('location_des2')}</Text>
+            <Text allowFontScaling={false} style={[globalStyles.text]}>
+              {t('location_des2')}
+            </Text>
           </View>
         </>
       )}
@@ -620,7 +625,10 @@ const RegistrationForm = ({ schema }) => {
             <View key={form.formNumber}>{renderFields(form.fields)}</View>
           ))}
         {currentForm === 1 && (
-          <Text style={[globalStyles.text, { marginLeft: 20, marginTop: -10 }]}>
+          <Text
+            allowFontScaling={false}
+            style={[globalStyles.text, { marginLeft: 20, marginTop: -10 }]}
+          >
             {t('phone_des')}
           </Text>
         )}
@@ -646,6 +654,7 @@ const RegistrationForm = ({ schema }) => {
                 priority={FastImage.priority.high} // Set the priority here
               />
               <Text
+                allowFontScaling={false}
                 style={[
                   globalStyles.heading2,
                   { marginVertical: 10, textAlign: 'center' },
@@ -754,6 +763,7 @@ const RenderBtn = ({
               }}
             />
             <Text
+              allowFontScaling={false}
               style={{
                 fontSize: 12,
                 color: '#000',
@@ -770,6 +780,7 @@ const RenderBtn = ({
             onPress={handleSubmit(onSubmit)}
           />
           <Text
+            allowFontScaling={false}
             style={{ color: 'black', marginVertical: 10, textAlign: 'center' }}
           >
             {t('T&C_13')}

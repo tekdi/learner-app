@@ -19,6 +19,7 @@ const CustomCardLanguage = ({
     >
       <View style={active ? [styles.cardActive, style] : [styles.card, style]}>
         <Text
+          allowFontScaling={false}
           style={[
             styles.title,
             {

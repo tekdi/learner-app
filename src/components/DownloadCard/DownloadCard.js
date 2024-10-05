@@ -507,6 +507,7 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
             <Text
+              allowFontScaling={false}
               style={globalStyles.heading2}
               numberOfLines={1}
               ellipsizeMode="tail"
@@ -514,6 +515,7 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
               {name}
             </Text>
             <Text
+              allowFontScaling={false}
               style={[
                 globalStyles.text,
                 { marginVertical: 10, textAlign: 'center' },
