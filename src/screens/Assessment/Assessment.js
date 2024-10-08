@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import Header from '../../components/Layout/Header';
@@ -7,7 +7,7 @@ import {
   assessmentListApi,
   getAssessmentStatus,
 } from '../../utils/API/AuthService';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import {
   getDataFromStorage,
   setDataInStorage,
@@ -27,9 +27,17 @@ const Assessment = (props) => {
   const [percentage, setPercentage] = useState('');
   const [networkstatus, setNetworkstatus] = useState(true);
 
-  useEffect(() => {
+  /*useEffect(() => {
     fetchData();
-  }, [navigation]);
+  }, [navigation]);*/
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log('########## in focus assessments');
+
+      fetchData();
+    }, []) // Make sure to include the dependencies
+  );
 
   const fetchData = async () => {
     setNetworkstatus(true);
@@ -38,9 +46,22 @@ const Assessment = (props) => {
     const cohortparse = await getDataFromStorage('cohortData');
     const cohort = JSON.parse(cohortparse);
     const cohort_id = await getDataFromStorage('cohortId');
-    const board = cohort?.cohortData?.[0]?.customField?.find(
-      (field) => field.label === 'STATES'
-    );
+    console.log('########### cohort', cohort);
+    let board = null;
+    try {
+      board = cohort?.cohortData?.[0]?.customField?.find(
+        (field) => field.label === 'STATES'
+      );
+    } catch (e) {
+      console.log('e', e);
+    }
+
+    //fix for public user get maharashtra board assessments
+    if (!board?.value) {
+      board = { value: 'maharashtra' };
+    }
+
+    console.log('########### board', board);
 
     if (board) {
       const boardName = board.value;
@@ -70,7 +91,8 @@ const Assessment = (props) => {
             cohort_id,
             uniqueAssessmentsId,
           })) || [];
-
+        console.log('############ ', assessmentStatusData);
+        
         if (assessmentStatusData?.[0]?.assessments) {
           await setDataInStorage(
             'assessmentStatusData',

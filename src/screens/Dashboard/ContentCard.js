@@ -172,7 +172,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
             numberOfLines={1}
             ellipsizeMode="tail"
           >
-            {mimeType.toUpperCase()}
+            {mimeType ? mimeType.toUpperCase() : ''}
           </Text>
         </View>
         <View style={styles.view}>

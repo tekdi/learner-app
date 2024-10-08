@@ -323,7 +323,7 @@ const StandAlonePlayer = ({ route }) => {
             courseId,
             unitId
           );
-          //console.log('############# create_assessment', create_assessment);
+          console.log('############# create_assessment', create_assessment);
           if (
             create_assessment &&
             create_assessment?.response?.responseCode == 201

@@ -38,7 +38,7 @@ const UnitList = ({ route }) => {
   const navigation = useNavigation();
   const [coursesContent, setCoursesContent] = useState();
   const [identifiers, setIdentifiers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [expandedItem, setExpandedItem] = useState(null); // State to track which item is expanded
 
   //set progress and start date
@@ -46,6 +46,16 @@ const UnitList = ({ route }) => {
 
   useFocusEffect(
     useCallback(() => {
+      const backAction = () => {
+        navigation.goBack(); // Navigate back to the previous screen
+        return true; // Returning true prevents the default behavior (exiting the app)
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction
+      );
+
       console.log('############ in focus unit list');
       setLoading(true);
       //bug fix for not realtime tracking
@@ -53,7 +63,12 @@ const UnitList = ({ route }) => {
       setTimeout(() => {
         // Code to run after 1 second
         fetchDataTrack();
-      }, 500); // 1000 milliseconds = 1 second
+      }, 1000); // 1000 milliseconds = 1 second
+
+      // Clean up the event listener on component unmount
+      return () => {
+        backHandler.remove();
+      };
     }, []) // Make sure to include the dependencies
   );
 

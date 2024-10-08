@@ -27,6 +27,7 @@ import moment from 'moment';
 import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../../utils/API/AuthService';
 import CircularProgressBarCustom from '../../../components/CircularProgressBarCustom.js/CircularProgressBarCustom';
+import StatusCardCourse from '../../../components/StatusCard/StatusCardCourse';
 
 const CourseContentList = ({ route }) => {
   const { do_id, course_id, content_list_node } = route.params;
@@ -94,6 +95,7 @@ const CourseContentList = ({ route }) => {
   //set progress and start date
   const [trackData, setTrackData] = useState([]);
   const [trackCompleted, setTrackCompleted] = useState(0);
+  const [trackProgress, setTrackProgress] = useState(0);
   const [startedOn, setStartedOn] = useState('');
 
   const fetchDataTrack = async () => {
@@ -210,6 +212,14 @@ const CourseContentList = ({ route }) => {
             const uniqueArray = [...new Set(mergedArray)];
             let completed_list = uniqueArray;
 
+            //merge offlien and online
+            const mergedArray_progress = [
+              ...trackData[i]?.in_progress_list,
+              ...offline_in_progress,
+            ];
+            const uniqueArray_progress = [...new Set(mergedArray_progress)];
+            let in_progress_list = uniqueArray_progress;
+
             //get unique completed content list
             let completed = completed_list.length;
             let totalContent = 0;
@@ -221,8 +231,14 @@ const CourseContentList = ({ route }) => {
             // console.log('########### completed', completed);
             // console.log('########### leafNodes', totalContent);
             // console.log('########### content_list_node', content_list_node);
-            // console.log('########### percentageCompleted', percentageCompleted);
+            console.log('########### percentageCompleted', percentageCompleted);
             setTrackCompleted(percentageCompleted);
+
+            //get unique in progress content list
+            let in_progress = in_progress_list.length;
+            let percentageInProgress = (in_progress / totalContent) * 100;
+            percentageInProgress = Math.round(percentageInProgress);
+            setTrackProgress(percentageInProgress);
           }
         }
       }
@@ -278,36 +294,60 @@ const CourseContentList = ({ route }) => {
                 },
               ]}
             >
+              {trackCompleted != 0 || trackProgress != 0 ? (
+                <View style={globalStyles.flexrow}>
+                  <TextField
+                    style={[globalStyles.text, { fontSize: 12 }]}
+                    text={'started_on'}
+                  />
+                  <TextField
+                    style={[globalStyles.text, { fontSize: 12 }]}
+                    text={startedOn}
+                  />
+                </View>
+              ) : (
+                <></>
+              )}
               <View style={globalStyles.flexrow}>
-                <TextField
-                  style={[globalStyles.text, { fontSize: 12 }]}
-                  text={'started_on'}
-                />
-                <TextField
-                  style={[globalStyles.text, { fontSize: 12 }]}
-                  text={startedOn}
-                />
+                {trackCompleted < 100 && trackCompleted > 0 ? (
+                  <>
+                    <CircularProgressBarCustom
+                      size={30}
+                      strokeWidth={5}
+                      progress={trackCompleted / 100}
+                      color="green"
+                      backgroundColor="#e6e6e6"
+                      textStyle={{ fontSize: 8, color: 'black' }}
+                    />
+                    <Text
+                      allowFontScaling={false}
+                      style={{ marginLeft: 10, color: '#000' }}
+                    >{`${Math.round((trackCompleted / 100) * 100)}%`}</Text>
+                    <TextField
+                      style={[globalStyles.text, { fontSize: 12 }]}
+                      text={'completed'}
+                    />
+                  </>
+                ) : (
+                  <StatusCardCourse
+                    status={
+                      trackCompleted >= 100
+                        ? 'completed'
+                        : trackCompleted > 0
+                        ? 'inprogress'
+                        : trackProgress > 0
+                        ? 'progress'
+                        : 'not_started'
+                    }
+                    trackCompleted={trackCompleted}
+                    viewStyle={{
+                      borderTopLeftRadius: 10,
+                      borderTopRightRadius: 10,
+                    }}
+                  />
+                )}
               </View>
-              <View style={globalStyles.flexrow}>
-                <CircularProgressBarCustom
-                  size={30}
-                  strokeWidth={5}
-                  progress={trackCompleted / 100}
-                  color="green"
-                  backgroundColor="#e6e6e6"
-                  textStyle={{ fontSize: 8, color: 'black' }}
-                />
-                <Text
-                  allowFontScaling={false}
-                  style={{ marginLeft: 10, color: '#000' }}
-                >{`${Math.round((trackCompleted / 100) * 100)}%`}</Text>
-              </View>
-              <View>
-                <TextField
-                  style={[globalStyles.text, { fontSize: 12 }]}
-                  text={'completed'}
-                />
-              </View>
+              <View></View>
             </View>
           </View>
           <View

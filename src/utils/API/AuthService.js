@@ -237,7 +237,13 @@ export const courseListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        se_boards: ['Odisha'],
+        se_boards: [
+          'Odisha',
+          'Uttar Pradesh',
+          'Madhya Pradesh',
+          'NIOS',
+          'Rajasthan',
+        ],
         primaryCategory: ['Course'],
         visibility: ['Default', 'Parent'],
       },
@@ -307,8 +313,14 @@ export const contentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        audience: 'student',
-        primaryCategory: ['Content'],
+        board: [
+          'Odisha',
+          'Uttar Pradesh',
+          'Madhya Pradesh',
+          'NIOS',
+          'Rajasthan',
+        ],
+        primaryCategory: ['Learning Resource'],
         visibility: ['Default', 'Parent'],
       },
       limit: 100,
@@ -318,19 +330,16 @@ export const contentListApi = async (params = {}) => {
       fields: [
         'name',
         'appIcon',
+        'description',
+        'posterImage',
         'mimeType',
-        'gradeLevel',
         'identifier',
-        'medium',
-        'pkgVersion',
-        'board',
-        'subject',
         'resourceType',
         'primaryCategory',
         'contentType',
-        'channel',
-        'organisation',
         'trackable',
+        'children',
+        'leafNodes',
       ],
       facets: [
         'se_boards',
