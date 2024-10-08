@@ -51,7 +51,7 @@ const CourseContentList = ({ route }) => {
   useEffect(() => {
     const logEvent = async () => {
       const obj = {
-        eventName: 'course-content-view',
+        eventName: 'course_content_view',
         method: 'on-view',
         screenName: 'Course-content-list',
       };

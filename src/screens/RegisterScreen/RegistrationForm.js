@@ -300,7 +300,7 @@ const RegistrationForm = ({ schema }) => {
     );
     setModal(false);
     const obj = {
-      eventName: 'logged-in',
+      eventName: 'logged_in',
       method: 'button-click',
       screenName: 'Registration',
     };
@@ -311,7 +311,7 @@ const RegistrationForm = ({ schema }) => {
   const logRegistrationComplete = async () => {
     // Log the registration completed event
     const obj = {
-      eventName: 'registration-completed',
+      eventName: 'registration_completed',
       method: 'button-click',
       screenName: 'Registration',
     };
@@ -587,7 +587,7 @@ const RegistrationForm = ({ schema }) => {
   useEffect(() => {
     const logRegistrationInProgress = async () => {
       const obj = {
-        eventName: 'registration-in-progress',
+        eventName: 'registration_in_progress',
         method: 'form-load',
         screenName: 'Registration',
       };

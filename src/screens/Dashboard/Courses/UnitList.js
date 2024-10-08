@@ -50,7 +50,7 @@ const UnitList = ({ route }) => {
   useEffect(() => {
     const logEvent = async () => {
       const obj = {
-        eventName: 'course-content-unit-list',
+        eventName: 'course_content_unit_list',
         method: 'on-view',
         screenName: 'Course-content-unit-list',
       };

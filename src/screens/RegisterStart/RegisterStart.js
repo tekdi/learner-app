@@ -19,7 +19,7 @@ const RegisterStart = () => {
 
   const handleClick = async () => {
     const obj = {
-      eventName: 'registration-started',
+      eventName: 'registration_started',
       method: 'button-click',
       screenName: 'Registration',
     };

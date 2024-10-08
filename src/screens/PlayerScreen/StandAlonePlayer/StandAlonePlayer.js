@@ -961,7 +961,7 @@ const StandAlonePlayer = ({ route }) => {
 
   const logEvent = async () => {
     const obj = {
-      eventName: 'content-exited',
+      eventName: 'content_exited',
       method: 'button_click',
       screenName: 'Content-Player-exit',
     };

@@ -36,7 +36,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 
   const logEvent = async () => {
     const obj = {
-      eventName: 'content-played',
+      eventName: 'content_played',
       method: 'button_click',
       screenName: 'Content-Player',
     };

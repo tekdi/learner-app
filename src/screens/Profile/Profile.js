@@ -87,7 +87,7 @@ const Profile = (props) => {
 
   const logoutEvent = async () => {
     const obj = {
-      eventName: 'logout-Event',
+      eventName: 'logout_Event',
       method: 'button-click',
       screenName: 'Profile',
     };
@@ -97,7 +97,7 @@ const Profile = (props) => {
   useEffect(() => {
     const logEvent = async () => {
       const obj = {
-        eventName: 'profile-page-view',
+        eventName: 'profile_page_view',
         method: 'on-view',
         screenName: 'Profile',
       };

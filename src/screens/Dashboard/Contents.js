@@ -54,7 +54,7 @@ const Contents = () => {
   useEffect(() => {
     const logEvent = async () => {
       const obj = {
-        eventName: 'contents-page-view',
+        eventName: 'contents_page_view',
         method: 'on-view',
         screenName: 'Contents',
       };

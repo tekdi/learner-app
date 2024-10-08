@@ -54,7 +54,7 @@ const Courses = () => {
   useEffect(() => {
     const logEvent = async () => {
       const obj = {
-        eventName: 'course-page-view',
+        eventName: 'course_page_view',
         method: 'on-view',
         screenName: 'Courses',
       };

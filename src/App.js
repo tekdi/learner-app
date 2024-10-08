@@ -86,17 +86,15 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    // Optional: You can log Firebase Analytics events here
-    const logAppOpenEvent = async () => {
-      const timestamp = new Date().toISOString(); // Get the current timestamp
-
-      // Log the event with the timestamp
-      await analytics().logEvent('LearnerApp_opened', {
-        timestamp: timestamp, // Adding the timestamp as a parameter
-      });
+    const logEvent = async () => {
+      const obj = {
+        eventName: 'LearnerApp_opened',
+        method: 'app_open',
+        screenName: 'app_launch',
+      };
+      await logEventFunction(obj);
     };
-
-    logAppOpenEvent();
+    logEvent();
   }, []);
 
   return (
