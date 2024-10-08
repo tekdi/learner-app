@@ -11,7 +11,10 @@ import FastImage from '@changwoolab/react-native-fast-image';
 import DownloadCard from '../../components/DownloadCard/DownloadCard';
 import StatusCardIcon from '../../components/StatusCard/StatusCardIcon';
 import globalStyles from '../../utils/Helper/Style';
-import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  logEventFunction,
+} from '../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../utils/API/AuthService';
 
 const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
@@ -31,7 +34,22 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 
   const backgroundImage = backgroundImages[index % backgroundImages.length];
 
+  const logEvent = async () => {
+    const obj = {
+      eventName: 'content-played',
+      method: 'button_click',
+      screenName: 'Content-Player',
+    };
+
+    await logEventFunction(obj);
+  };
+
+  useEffect(() => {
+    logEvent();
+  }, []);
+
   const handlePress = (data) => {
+    logEvent();
     navigation.navigate('StandAlonePlayer', {
       content_do_id: data?.identifier,
       content_mime_type: data?.mimeType,

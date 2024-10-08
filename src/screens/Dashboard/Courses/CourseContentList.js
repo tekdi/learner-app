@@ -24,7 +24,10 @@ import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
 import FastImage from '@changwoolab/react-native-fast-image';
 import UnitCard from './UnitCard';
 import moment from 'moment';
-import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  logEventFunction,
+} from '../../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../../utils/API/AuthService';
 import CircularProgressBarCustom from '../../../components/CircularProgressBarCustom.js/CircularProgressBarCustom';
 
@@ -44,6 +47,18 @@ const CourseContentList = ({ route }) => {
       fetchData();
     }, []) // Make sure to include the dependencies
   );
+
+  useEffect(() => {
+    const logEvent = async () => {
+      const obj = {
+        eventName: 'course-content-view',
+        method: 'on-view',
+        screenName: 'Course-content-list',
+      };
+      await logEventFunction(obj);
+    };
+    logEvent();
+  }, []);
 
   useEffect(() => {
     const backAction = () => {

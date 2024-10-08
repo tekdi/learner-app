@@ -19,6 +19,7 @@ import {
   capitalizeName,
   deleteSavedItem,
   getDataFromStorage,
+  logEventFunction,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
@@ -71,7 +72,7 @@ const Profile = (props) => {
       await deleteSavedItem('userId');
       await deleteSavedItem('cohortId');
       await deleteSavedItem('cohortData');
-
+      logoutEvent();
       // Reset the navigation stack and navigate to LoginSignUpScreen
       navigation.dispatch(
         CommonActions.reset({
@@ -84,7 +85,26 @@ const Profile = (props) => {
     fetchData();
   };
 
-  console.log({ userData });
+  const logoutEvent = async () => {
+    const obj = {
+      eventName: 'logout-Event',
+      method: 'button-click',
+      screenName: 'Profile',
+    };
+    await logEventFunction(obj);
+  };
+
+  useEffect(() => {
+    const logEvent = async () => {
+      const obj = {
+        eventName: 'profile-page-view',
+        method: 'on-view',
+        screenName: 'Profile',
+      };
+      await logEventFunction(obj);
+    };
+    logEvent();
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>

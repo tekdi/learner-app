@@ -11,8 +11,8 @@ import { NetworkProvider } from './context/NetworkContext'; // Adjust path as ne
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/StackScreen';
 import { BackHandler, Text, View } from 'react-native';
-
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
+import { logEventFunction } from './utils/JsHelper/Helper';
 
 async function checkAndRequestStoragePermission() {
   if (Platform.OS === 'android' && Platform.Version >= 33) {
@@ -83,6 +83,20 @@ const App = () => {
   useEffect(() => {
     changeNavigationBarColor('white', { barStyle: 'light-content' });
     // hideNavigationBar();
+  }, []);
+
+  useEffect(() => {
+    // Optional: You can log Firebase Analytics events here
+    const logAppOpenEvent = async () => {
+      const timestamp = new Date().toISOString(); // Get the current timestamp
+
+      // Log the event with the timestamp
+      await analytics().logEvent('LearnerApp_opened', {
+        timestamp: timestamp, // Adding the timestamp as a parameter
+      });
+    };
+
+    logAppOpenEvent();
   }, []);
 
   return (

@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
 import FastImage from '@changwoolab/react-native-fast-image';
+import { logEventFunction } from '../../utils/JsHelper/Helper';
 
 const RegisterStart = () => {
   //multi language setup
@@ -14,6 +15,16 @@ const RegisterStart = () => {
 
   const navigate = () => {
     nav.goBack();
+  };
+
+  const handleClick = async () => {
+    const obj = {
+      eventName: 'registration-started',
+      method: 'button-click',
+      screenName: 'Registration',
+    };
+    await logEventFunction(obj);
+    nav.navigate('RegisterScreen');
   };
 
   return (
@@ -41,7 +52,7 @@ const RegisterStart = () => {
         <PrimaryButton
           text={t('continue')}
           onPress={() => {
-            nav.navigate('RegisterScreen');
+            handleClick();
           }}
         />
       </View>
