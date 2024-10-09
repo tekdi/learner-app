@@ -167,7 +167,7 @@ const LoginScreen = () => {
               </Text>
             )}
           </View>
-          {/* <TouchableOpacity
+          <TouchableOpacity
             onPress={() => {
               navigation.navigate('ForgotPassword');
             }}
@@ -183,7 +183,7 @@ const LoginScreen = () => {
             >
               {t('forgot_password')}
             </Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
           {/* <View style={globalStyles.flexrow}>
             <CustomCheckbox value={savePassword} onChange={setSavePassword} />
             <View>

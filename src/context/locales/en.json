@@ -199,5 +199,8 @@
   "forgot_password_desp": "Enter your username or email address and we'll send you a link to getback into your account.",
   "back_to_login": "Back to Login",
   "dont_have_account": "Don’t have an account? Register now",
-  "email": "Email"
+  "email": "Email",
+  "we_sent_an_email_to": "We sent an email to",
+  "with_a_link_to_get_back_to_your_account": "with a link to get back to your account",
+  "username_does_not_exist": "Username does not exist"
 }

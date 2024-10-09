@@ -22,7 +22,7 @@ const EndUrls = {
 
   userExist: API_URL + `/user/v1/check`,
   contentList: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName%2Cemail&framework=gujaratboardfw`,
-  contentList_testing:`${CONTENT_URL}/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
+  contentList_testing: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
   cohort: API_URL + `/user/v1/cohort/mycohorts`,
   contentSearch: `${CONTENT_URL}/api/content/v1/search`,
   trackAssessment: `${tracking_assessment}/v1/tracking/assessment/list`,
@@ -35,6 +35,7 @@ const EndUrls = {
   ContentTrackingStatus: `${tracking_assessment}/v1/tracking/content/search/status`,
   CourseTrackingStatus: `${tracking_assessment}/v1/tracking/content/course/status`,
   geolocation: `${API_URL}/user/v1/fields/options/read`,
+  forgotPassword: `${API_URL}/user/v1/password-reset-link`,
 };
 
 export default EndUrls;
