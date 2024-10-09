@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Pressable,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import { useState, React, useEffect } from 'react';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
@@ -107,12 +108,17 @@ const LoginScreen = () => {
         <ActiveLoading />
       ) : (
         <ScrollView style={styles.scrollView}>
+          <StatusBar
+            barStyle="dark-content"
+            translucent={true}
+            backgroundColor="transparent"
+          />
           <Image style={globalStyles.logo} source={Logo} resizeMode="contain" />
 
           <TouchableOpacity
             style={[globalStyles.flexrow, globalStyles.heading]}
             onPress={() => {
-              navigation.navigate('LanguageScreen');
+              navigation.navigate('LoginSignUpScreen');
             }}
           >
             <Image
@@ -161,8 +167,14 @@ const LoginScreen = () => {
               </Text>
             )}
           </View>
-          {/* <TouchableOpacity style={{ paddingLeft: 20, marginBottom: 30 }}>
-            <Text allowFontScaling={false}
+          {/* <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ForgotPassword');
+            }}
+            style={{ paddingLeft: 20, marginBottom: 30 }}
+          >
+            <Text
+              allowFontScaling={false}
               style={{
                 color: '#0D599E',
                 fontFamily: 'Poppins-Medium',
@@ -178,7 +190,7 @@ const LoginScreen = () => {
               <Text allowFontScaling={false} style={globalStyles.subHeading}>{t('remember_me')}</Text>
             </View>
           </View> */}
-          <View style={[globalStyles.flexrow, { paddingTop: 10 }]}>
+          {/* <View style={[globalStyles.flexrow, { paddingTop: 10 }]}>
             <View>
               <CustomCheckbox value={acceptTerms} onChange={setAcceptTerms} />
             </View>
@@ -199,14 +211,27 @@ const LoginScreen = () => {
                 </Text>
               </Pressable>
             </View>
-          </View>
+          </View> */}
           <View style={{ marginTop: 50 }}>
             <PrimaryButton
               text={t('login')}
               onPress={handleLogin}
-              isDisabled={isDisabled}
+              isDisabled={!isDisabled}
             />
           </View>
+          <Pressable
+            onPress={() => {
+              navigation.navigate('RegisterScreen');
+            }}
+            style={{ alignItems: 'center', padding: 20 }}
+          >
+            <Text
+              allowFontScaling={false}
+              style={[globalStyles.text, { color: '#0D599E' }]}
+            >
+              {t('dont_have_account')}
+            </Text>
+          </Pressable>
         </ScrollView>
       )}
 

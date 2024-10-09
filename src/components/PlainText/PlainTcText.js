@@ -24,7 +24,7 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ marginTop: 20, height: '100%' }}>
       <Text allowFontScaling={false} style={styles.text1}>
         {t('T&C')}{' '}
         <Text allowFontScaling={false} style={{ fontWeight: 'bold' }}>
@@ -33,12 +33,18 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
         {t('button')}
       </Text>
 
-      <View style={{ top: -10 }}>
+      <View>
         <Text allowFontScaling={false} style={styles.text2}>
           {t('T&C_1')}
         </Text>
         <Text allowFontScaling={false} style={styles.text2}>
           {t('T&C_2')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_3')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_4')}
         </Text>
       </View>
 
@@ -48,7 +54,7 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
           allowFontScaling={false}
           style={[
             globalStyles.subHeading,
-            { color: '#0563C1', textAlign: 'center', top: -20 },
+            { color: '#0563C1', textAlign: 'center', marginTop: 10 },
           ]}
           onPress={handleReadMore}
         >
@@ -59,12 +65,6 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
       {/* Additional text content shown when "Read More" is clicked */}
       {showMore && (
         <>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('T&C_3')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('T&C_4')}
-          </Text>
           <Text allowFontScaling={false} style={styles.text2}>
             {t('T&C_5')}
           </Text>
@@ -95,10 +95,9 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
           <Text allowFontScaling={false} style={styles.text2}>
             {t('office_phone')}
           </Text>
+          <HorizontalLine />
         </>
       )}
-
-      <HorizontalLine />
 
       {/* <View style={styles.view}>
         <CheckBox
@@ -135,6 +134,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingRight: 10,
     flexWrap: 'wrap',
+    marginVertical: 5,
   },
   text3: {
     fontFamily: 'Poppins-Medium',
@@ -149,10 +149,6 @@ const styles = StyleSheet.create({
   view: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  scroll: {
-    marginTop: 10,
-    height: 280,
   },
 });
 

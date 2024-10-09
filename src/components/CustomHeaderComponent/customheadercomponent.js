@@ -1,31 +1,44 @@
-import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  SafeAreaView,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 import FastImage from '@changwoolab/react-native-fast-image';
+import backIcon from '../../assets/images/png/arrow-back-outline.png';
 
 const HeaderComponent = ({ question, questionIndex, totalForms }) => {
+  console.log({ question });
+
   const { t } = useTranslation();
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.block}>
-        {/* <Image style={styles.image} source={Logo} resizeMode="contain" /> */}
-        <FastImage
-          style={styles.image}
-          source={require('../../assets/images/gif/pen_paper.gif')}
-          resizeMode={FastImage.resizeMode.contain}
-          priority={FastImage.priority.high} // Set the priority here
-        />
-        <View style={styles.textContainer}>
-          <Text allowFontScaling={false} style={styles.text1}>
-            {questionIndex}/{totalForms}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t(question)}
-          </Text>
+    question && (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.block}>
+          {/* <Image style={styles.image} source={Logo} resizeMode="contain" /> */}
+          <FastImage
+            style={styles.image}
+            source={require('../../assets/images/gif/pen_paper.gif')}
+            resizeMode={FastImage.resizeMode.contain}
+            priority={FastImage.priority.high} // Set the priority here
+          />
+          <View style={styles.textContainer}>
+            <Text allowFontScaling={false} style={styles.text1}>
+              {questionIndex}/{totalForms}
+            </Text>
+            <Text allowFontScaling={false} style={styles.text2}>
+              {t(question)}
+            </Text>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    )
   );
 };
 
@@ -37,35 +50,38 @@ HeaderComponent.propTypes = {
 
 const styles = StyleSheet.create({
   image: {
-    margin: 20,
+    marginHorizontal: 20,
     height: 60,
     width: 60,
   },
   container: {
     backgroundColor: 'white',
-    maxHeight: 120,
+    maxHeight: 90,
     flex: 1,
+    marginBottom: 15,
+    // borderWidth: 1,
   },
   text1: {
     color: '#7C766F',
     fontFamily: 'Poppins-Regular',
-    fontSize: 18,
+    fontSize: 14,
     marginRight: 15,
   },
   text2: {
     fontFamily: 'Poppins-Medium',
     color: 'black',
-    fontSize: 20,
+    fontSize: 16,
     flexWrap: 'wrap',
   },
   block: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    paddingHorizontal: 10,
   },
   textContainer: {
     flex: 1,
     flexDirection: 'column',
+    // borderWidth: 1,
   },
 });
 

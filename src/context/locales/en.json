@@ -193,5 +193,11 @@
   "started_on": "Started on:",
   "delete_msg": "Are you sure you want to remove this from your downloads?",
   "delete": "Delete",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "next": "Next",
+  "trouble_with_logging_in": "Trouble with logging in?",
+  "forgot_password_desp": "Enter your username or email address and we'll send you a link to getback into your account.",
+  "back_to_login": "Back to Login",
+  "dont_have_account": "Don’t have an account? Register now",
+  "email": "Email"
 }

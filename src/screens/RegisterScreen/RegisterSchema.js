@@ -47,6 +47,17 @@ export const registerSchema = async (data, states) => {
               maxLength: 10,
             },
           },
+          {
+            type: 'email',
+            label: 'email',
+            name: 'email',
+            coreField: data?.[3]?.coreField,
+            fieldId: data?.[3]?.fieldId,
+            validation: {
+              required: true,
+              pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, // Only letters, no numbers
+            },
+          },
         ],
       },
       {
@@ -57,22 +68,22 @@ export const registerSchema = async (data, states) => {
             type: 'number',
             label: 'age',
             name: 'age',
-            coreField: data?.[3]?.coreField,
-            fieldId: data?.[3]?.fieldId,
+            coreField: data?.[4]?.coreField,
+            fieldId: data?.[4]?.fieldId,
             validation: {
               required: true,
-              pattern: /^[0-9]+$/, // Only letters, no numbers
+              pattern: /^[1-9]+$/, // Only letters, no numbers
               minLength: 1,
               maxLength: 2,
             },
           },
           {
             type: 'select',
-            label: data?.[4]?.label,
-            name: data?.[4]?.name,
-            coreField: data?.[4]?.coreField,
-            fieldId: data?.[4]?.fieldId,
-            options: data?.[4]?.options,
+            label: data?.[5]?.label,
+            name: data?.[5]?.name,
+            coreField: data?.[5]?.coreField,
+            fieldId: data?.[5]?.fieldId,
+            options: data?.[5]?.options,
             validation: {
               required: true,
             },
@@ -185,12 +196,12 @@ export const registerSchema = async (data, states) => {
         question: 'q6_login_cred',
         fields: [
           {
-            type: data?.[10]?.type,
-            label: data?.[10]?.label.toLowerCase(),
-            name: data?.[10]?.name.toLowerCase(),
-            coreField: data?.[10]?.coreField,
-            fieldId: data?.[10]?.fieldId,
-            placeholder: data?.[10]?.placeholder,
+            type: data?.[11]?.type,
+            label: data?.[11]?.label.toLowerCase(),
+            name: data?.[11]?.name.toLowerCase(),
+            coreField: data?.[11]?.coreField,
+            fieldId: data?.[11]?.fieldId,
+            placeholder: data?.[11]?.placeholder,
             validation: {
               required: true,
               // minLength: data?.[6]?.minLength,
@@ -201,11 +212,11 @@ export const registerSchema = async (data, states) => {
           },
           {
             type: 'password',
-            label: data?.[11]?.label.toLowerCase(),
-            name: data?.[11]?.name.toLowerCase(),
-            coreField: data?.[11]?.coreField,
-            fieldId: data?.[11]?.fieldId,
-            placeholder: data?.[11]?.placeholder,
+            label: data?.[12]?.label.toLowerCase(),
+            name: data?.[12]?.name.toLowerCase(),
+            coreField: data?.[12]?.coreField,
+            fieldId: data?.[12]?.fieldId,
+            placeholder: data?.[12]?.placeholder,
             validation: {
               required: true,
               // minLength: data?.[7]?.minLength,
@@ -216,11 +227,11 @@ export const registerSchema = async (data, states) => {
           },
           {
             type: 'password',
-            label: data?.[12]?.name.replace(/ /g, '_').toLowerCase(),
-            name: data?.[12]?.name.replace(/ /g, '_').toLowerCase(),
-            coreField: data?.[12]?.coreField,
-            fieldId: data?.[12]?.fieldId,
-            placeholder: data?.[12]?.placeholder,
+            label: data?.[13]?.name.replace(/ /g, '_').toLowerCase(),
+            name: data?.[13]?.name.replace(/ /g, '_').toLowerCase(),
+            coreField: data?.[13]?.coreField,
+            fieldId: data?.[13]?.fieldId,
+            placeholder: data?.[13]?.placeholder,
             validation: {
               required: true,
               // minLength: data?.[8]?.minLength,
@@ -247,7 +258,7 @@ export const registerSchema = async (data, states) => {
       // },
       {
         formNumber: 4,
-        question: '',
+        question: null,
         fields: [
           {
             type: 'tc_text',

@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import TabScreen from './TabScreen';
 import LoadingScreen from '../screens/LoadingScreen/LoadingScreen';
 import LanguageScreen from '../screens/LanguageScreen/LanguageScreen';
+import ForgotPassword from '../screens/ForgotPassword/ForgotPassword';
 import RegisterScreen from '../screens/RegisterScreen/RegisterScreen';
 import LoginSignUpScreen from '../screens/LoginSignUpScreen/LoginSignUpScreen';
 import RegisterStart from '../screens/RegisterStart/RegisterStart';
@@ -243,6 +244,11 @@ const StackScreen = (props) => {
       <Stack.Screen
         name="EnableLocationScreen"
         component={EnableLocationScreen} // Changed to Assessment for now
+        options={{ headerShown: false, lazy: true }}
+      />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPassword} // Changed to Assessment for now
         options={{ headerShown: false, lazy: true }}
       />
     </Stack.Navigator>

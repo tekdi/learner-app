@@ -59,6 +59,7 @@ import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
 import Config from 'react-native-config';
 import FastImage from '@changwoolab/react-native-fast-image';
 import { CheckBox } from '@ui-kitten/components';
+import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -68,6 +69,7 @@ const buildYupSchema = (form, currentForm, t) => {
       switch (field.type) {
         case 'text':
         case 'password':
+        case 'email':
           validator = yup.string();
           if (field.validation.required) {
             validator = validator.required(
@@ -98,7 +100,7 @@ const buildYupSchema = (form, currentForm, t) => {
           }
           if (field.validation.pattern) {
             validator = validator.matches(
-              /^[A-Za-z]+$/,
+              field.validation.pattern,
               `${t(field.name)} ${t('can_only_contain_letters')}`
             );
           }
@@ -403,7 +405,6 @@ const RegistrationForm = ({ schema }) => {
   const renderFields = (fields) => {
     return fields?.map((field) => {
       switch (field.type) {
-        case 'number':
         case 'text':
           return (
             <View key={field.name} style={styles.inputContainer}>
@@ -411,6 +412,28 @@ const RegistrationForm = ({ schema }) => {
                 field={field}
                 control={control}
                 errors={errors}
+              />
+            </View>
+          );
+        case 'number':
+          return (
+            <View key={field.name} style={styles.inputContainer}>
+              <CustomTextField
+                field={field}
+                control={control}
+                errors={errors}
+                keyboardType="numeric"
+              />
+            </View>
+          );
+        case 'email':
+          return (
+            <View key={field.name} style={styles.inputContainer}>
+              <CustomTextField
+                field={field}
+                control={control}
+                errors={errors}
+                autoCapitalize="none"
               />
             </View>
           );
@@ -754,20 +777,20 @@ const RenderBtn = ({
     } else {
       return (
         <>
-          <View style={[globalStyles.flexrow, { marginVertical: 15 }]}>
-            <CheckBox
-              checked={checked}
+          <View style={[globalStyles.flexrow, { marginBottom: 15 }]}>
+            <CustomCheckbox
+              value={checked}
               onChange={(nextChecked) => {
                 setChecked(nextChecked);
                 setIsBtnDisable(!isBtnDisable);
               }}
             />
+
             <Text
               allowFontScaling={false}
               style={{
                 fontSize: 12,
                 color: '#000',
-                marginLeft: 10,
                 width: '90%',
               }}
             >
