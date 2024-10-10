@@ -19,12 +19,15 @@ import {
   login,
 } from '../../utils/API/AuthService';
 import {
+  getDataFromStorage,
   getUserId,
   saveAccessToken,
   saveRefreshToken,
   setDataInStorage,
+  storeUsername,
 } from '../../utils/JsHelper/Helper';
 import LoginTextField from '../../components/LoginTextField/LoginTextField';
+import UserNameField from '../../components/LoginTextField/UserNameField';
 import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
 import { useTranslation } from '../../context/LanguageContext';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
@@ -44,6 +47,7 @@ const LoginScreen = () => {
   const [errmsg, setErrmsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [networkstatus, setNetworkstatus] = useState(true);
+  const [usernames, setUsernames] = useState([]);
 
   const onChangeText = (e) => {
     setUserName(e.trim());
@@ -75,7 +79,7 @@ const LoginScreen = () => {
           'Username',
           profileData?.getUserDetails?.[0]?.username
         );
-
+        await storeUsername(profileData?.getUserDetails?.[0]?.username);
         await setDataInStorage('userId', user_id);
         const cohort = await getCohort({ user_id });
         await setDataInStorage('cohortData', JSON.stringify(cohort));
@@ -102,12 +106,21 @@ const LoginScreen = () => {
     }
   }, [userName, password, acceptTerms]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = JSON.parse(await getDataFromStorage('usernames')) || [];
+      console.log({ data });
+      setUsernames(data);
+    };
+    fetchData();
+  }, []);
+
   return (
     <SafeAreaView style={globalStyles.container}>
       {loading ? (
         <ActiveLoading />
       ) : (
-        <ScrollView style={styles.scrollView}>
+        <ScrollView style={styles.scrollView} nestedScrollEnabled={true}>
           <StatusBar
             barStyle="dark-content"
             translucent={true}
@@ -115,7 +128,7 @@ const LoginScreen = () => {
           />
           <Image style={globalStyles.logo} source={Logo} resizeMode="contain" />
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[globalStyles.flexrow, globalStyles.heading]}
             onPress={() => {
               navigation.navigate('LoginSignUpScreen');
@@ -132,7 +145,7 @@ const LoginScreen = () => {
             >
               {t('back')}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <View style={{ paddingVertical: 5 }}>
             <Text
               allowFontScaling={false}
@@ -148,16 +161,20 @@ const LoginScreen = () => {
             </Text>
           </View>
           <View style={styles.textfieldbox}>
-            <LoginTextField
+            <UserNameField
               text="username"
               onChangeText={onChangeText}
               value={userName}
+              suggestions={usernames}
             />
-            <LoginTextField
-              text="password"
-              onChangeText={onChangePassword}
-              value={password}
-            />
+            <View style={{ marginTop: 25 }}>
+              <LoginTextField
+                text="password"
+                onChangeText={onChangePassword}
+                value={password}
+              />
+            </View>
+
             {errmsg !== '' && (
               <Text
                 allowFontScaling={false}
@@ -212,7 +229,7 @@ const LoginScreen = () => {
               </Pressable>
             </View>
           </View> */}
-          <View style={{ marginTop: 50 }}>
+          <View style={{ marginTop: 0 }}>
             <PrimaryButton
               text={t('login')}
               onPress={handleLogin}

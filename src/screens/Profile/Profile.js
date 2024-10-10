@@ -22,6 +22,7 @@ import {
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
+import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 
 const Profile = (props) => {
   const { t } = useTranslation();
@@ -29,6 +30,7 @@ const Profile = (props) => {
   const [userDetails, setUserDetails] = useState();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const [showExitModal, setShowExitModal] = useState(false);
 
   const createNewObject = (customFields, labels) => {
     const result = {};
@@ -83,6 +85,10 @@ const Profile = (props) => {
     };
 
     fetchData();
+  };
+
+  const handleCancel = () => {
+    setShowExitModal(false); // Close the modal
   };
 
   return (
@@ -143,7 +149,11 @@ const Profile = (props) => {
               </View>
             </View>
           </View>
-          <TouchableOpacity onPress={handleLogout}>
+          <TouchableOpacity
+            onPress={() => {
+              setShowExitModal(true);
+            }}
+          >
             <View
               style={{
                 borderWidth: 1,
@@ -164,6 +174,14 @@ const Profile = (props) => {
             </View>
           </TouchableOpacity>
         </ScrollView>
+      )}
+      {showExitModal && (
+        <BackButtonHandler
+          logout
+          exitRoute={true} // You can pass any props needed by the modal here
+          onCancel={handleCancel}
+          onExit={handleLogout}
+        />
       )}
     </SafeAreaView>
   );

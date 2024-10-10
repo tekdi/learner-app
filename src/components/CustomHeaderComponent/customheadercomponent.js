@@ -13,8 +13,6 @@ import FastImage from '@changwoolab/react-native-fast-image';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 
 const HeaderComponent = ({ question, questionIndex, totalForms }) => {
-  console.log({ question });
-
   const { t } = useTranslation();
 
   return (
