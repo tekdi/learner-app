@@ -34,8 +34,9 @@ const LoginTextField = ({
   const handleTextChange = (text) => {
     onChangeText(text);
     if (suggestions) {
-      const filtered = suggestions.filter((suggestion) =>
-        suggestion.toLowerCase().includes(text.toLowerCase())
+      const filtered = suggestions.filter(
+        (suggestion) =>
+          suggestion && suggestion.toLowerCase().includes(text.toLowerCase())
       );
       setFilteredSuggestions(filtered);
       setShowSuggestions(filtered.length > 0 && text.length > 0);
