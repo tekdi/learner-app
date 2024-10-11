@@ -153,12 +153,12 @@ const LoginScreen = () => {
             >
               {t('login')}
             </Text>
-            <Text
+            {/* <Text
               allowFontScaling={false}
               style={[globalStyles.subHeading, { marginVertical: 5 }]}
             >
               {t('login_with_the_cred')}
-            </Text>
+            </Text> */}
           </View>
           <View style={styles.textfieldbox}>
             <UserNameField

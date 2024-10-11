@@ -58,6 +58,8 @@ const TabScreen = () => {
         tabBarStyle: styles.footer,
         tabBarActiveTintColor: '#987100',
         tabBarInactiveTintColor: 'gray',
+        tabBarActiveBackgroundColor: '#F7ECDF',
+        tabBarLabelStyle: styles.tabLabel, // Add this for padding below label
       })}
     >
       <Tab.Screen
@@ -87,9 +89,11 @@ const TabScreen = () => {
 const styles = StyleSheet.create({
   footer: {
     height: 70,
-    paddingBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  tabLabel: {
+    paddingBottom: 10, // Add 10px padding below the label
   },
 });
 
