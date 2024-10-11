@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import download from '../../assets/images/png/download.png';
 import download_inprogress from '../../assets/images/png/download_inprogress.png';
 import download_complete from '../../assets/images/png/download_complete.png';
@@ -11,6 +11,7 @@ import {
   Modal,
   View,
   Text,
+  BackHandler,
 } from 'react-native';
 import { getData, removeData, storeData } from '../../utils/Helper/JSHelper';
 import {
@@ -27,6 +28,8 @@ import { useTranslation } from '../../context/LanguageContext';
 import SecondaryButton from '../SecondaryButton/SecondaryButton';
 import globalStyles from '../../utils/Helper/Style';
 import HorizontalLine from '../HorizontalLine/HorizontalLine';
+import { Icon } from '@ui-kitten/components';
+import Svg, { Circle, Text as SvgText } from 'react-native-svg';
 
 const DownloadCard = ({ contentId, contentMimeType, name }) => {
   const [downloadIcon, setDownloadIcon] = useState(download);
@@ -36,6 +39,11 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
   const [networkstatus, setNetworkstatus] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const { t } = useTranslation();
+
+  //download status
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const downloadTask = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -120,11 +128,53 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
         setDownloadStatus('download');
         setDownloadIcon(download);
         setModalVisible(false);
+        setIsDownloading(false);
+        setDownloadProgress(0);
+        downloadTask = null;
       }
     } catch (error) {
       console.error('Error deleting folder files:', error);
     }
   };
+
+  // Function to cancel the download
+  const cancelDownload = () => {
+    if (
+      downloadTask.current &&
+      typeof downloadTask.current.cancel === 'function'
+    ) {
+      downloadTask.current.cancel(); // Cancel the download task
+      console.log('Download canceled');
+    } else {
+      console.log('No active download to cancel');
+    }
+  };
+
+  // Handle the back button press while downloading
+  const handleBackPress = () => {
+    if (isDownloading) {
+      Alert.alert(
+        'Cancel Download',
+        'The download is in progress. Are you sure you want to cancel it?',
+        [
+          { text: 'No', style: 'cancel' },
+          { text: 'Yes', onPress: cancelDownload },
+        ]
+      );
+      return true; // Prevent default back action
+    }
+    return false; // Allow back action
+  };
+
+  useEffect(() => {
+    // Add back button event listener
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      handleBackPress
+    );
+
+    return () => backHandler.remove(); // Cleanup on unmount
+  }, [isDownloading]);
 
   const downloadContentECMLH5pHTMLYoutube = async (content_do_id) => {
     const content_file = `${RNFS.DocumentDirectoryPath}/${content_do_id}`;
@@ -404,45 +454,69 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
         try {
           //console.log('permission got');
           try {
-            const download = RNFS.downloadFile({
+            setIsDownloading(true);
+            downloadTask.current = RNFS.downloadFile({
               fromUrl: fileUrl,
               toFile: filePath,
               begin: (res) => {
                 console.log('Download started');
               },
-              progress: (res) => {},
+              progress: (res) => {
+                const progressPercent =
+                  (res.bytesWritten / res.contentLength) * 100;
+                setDownloadProgress(Math.round(progressPercent));
+              },
             });
-            const result = await download.promise;
+            // Handle download completion or errors
+            downloadTask.current.promise
+              .then(async (res) => {
+                setIsDownloading(false);
+                if (res.statusCode === 200) {
+                  console.log('File downloaded successfully:', filePath);
+                  // Define the paths
+                  const sourcePath = filePath;
+                  const targetPath = content_file;
+                  try {
+                    // Ensure the target directory exists
+                    await RNFS.mkdir(targetPath);
+                    // Unzip the file
+                    const path = await unzip(sourcePath, targetPath);
+                    console.log(`Unzipped to ${path}`);
+                    //store content obj
+                    //console.log(contentObj);
+                    await storeData(content_do_id, contentObj, 'json');
+                    setDownloadStatus('completed');
+                    setDownloadIcon(download_complete);
+                  } catch (error) {
+                    console.log('error', error);
+                    Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+                    setDownloadStatus('download');
+                    setDownloadIcon(download);
+                  }
+                } else {
+                  console.log('Download failed');
+                  Alert.alert(
+                    'Error Internal',
+                    `Failed to download file: ${JSON.stringify(res)}`,
+                    [{ text: 'OK' }]
+                  );
+                }
+              })
+              .catch((err) => {
+                setIsDownloading(false);
+                if (err.message !== 'Download canceled') {
+                  Alert.alert(
+                    'Error Internal',
+                    `Failed to download file: ${JSON.stringify(err.message)}`,
+                    [{ text: 'OK' }]
+                  );
+                }
+              });
+            /*const result = await download.promise;
             if (result.statusCode === 200) {
-              console.log('File downloaded successfully:', filePath);
-              // Define the paths
-              const sourcePath = filePath;
-              const targetPath = content_file;
-              try {
-                // Ensure the target directory exists
-                await RNFS.mkdir(targetPath);
-                // Unzip the file
-                const path = await unzip(sourcePath, targetPath);
-                console.log(`Unzipped to ${path}`);
-                //store content obj
-                //console.log(contentObj);
-                await storeData(content_do_id, contentObj, 'json');
-                setDownloadStatus('completed');
-                setDownloadIcon(download_complete);
-              } catch (error) {
-                console.log('error', error);
-                Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
-                setDownloadStatus('download');
-                setDownloadIcon(download);
-              }
             } else {
-              Alert.alert(
-                'Error Internal',
-                `Failed to download file: ${JSON.stringify(result)}`,
-                [{ text: 'OK' }]
-              );
               console.log('Failed to download file:', result.statusCode);
-            }
+            }*/
           } catch (error) {
             Alert.alert('Error Catch', `Failed to create file: ${error}`, [
               { text: 'OK' },
@@ -466,11 +540,64 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
       }
     }
   };
+  const radius = 40; // Radius of the circle
+  const circumference = 2 * Math.PI * radius; // Circumference of the circle
 
   return (
     <>
       {validDownloadFile && downloadStatus == 'progress' ? (
-        <ActivityIndicator size="large" />
+        <View style={styles.container}>
+          {/* Circular Loading Indicator */}
+          <View style={styles.circularContainer}>
+            <Svg height="100" width="100">
+              {/* Background Circle */}
+              <Circle
+                cx="50"
+                cy="50"
+                r={radius}
+                stroke="#AAAAAA"
+                strokeWidth="8"
+                fill="none"
+              />
+              {/* Progress Circle */}
+              <Circle
+                cx="50"
+                cy="50"
+                r={radius}
+                stroke="green" // Progress color
+                strokeWidth="8"
+                fill="none"
+                strokeDasharray={`${circumference} ${circumference}`} // Set strokeDasharray
+                strokeDashoffset={
+                  circumference - (circumference * downloadProgress) / 100
+                } // Update based on progress
+                rotation="-90"
+                origin="50, 50"
+              />
+            </Svg>
+
+            <SvgText
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              alignmentBaseline="middle"
+              fontSize="12"
+              fill="black"
+            >
+              {`${downloadProgress}%`}
+            </SvgText>
+            {/* Cancel Button */}
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={cancelDownload}
+            >
+              <Image
+                source={require('../../assets/images/png/cancel.png')}
+                style={styles.cancelImage}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
       ) : validDownloadFile && downloadStatus == 'completed' ? (
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Image
@@ -572,6 +699,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingVertical: 20,
+  },
+
+  //for progress center button
+  container: {
+    flex: 1, // Occupy full height and width
+    justifyContent: 'center', // Vertically center the content
+    alignItems: 'center', // Horizontally center the content
+  },
+  circularContainer: {
+    position: 'relative', // Position relative to allow absolute positioning of cancel button
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cancelButton: {
+    position: 'absolute',
+    top: 5, // Position at the top
+    right: 5, // Position at the right
+    padding: 5,
+    backgroundColor: 'transparent', // Transparent background
+  },
+  cancelImage: {
+    width: 20, // Width of the cancel image
+    height: 20, // Height of the cancel image
   },
 });
 

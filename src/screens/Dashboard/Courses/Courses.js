@@ -48,24 +48,6 @@ const Courses = () => {
     return route.name;
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        if (routeName === 'Courses') {
-          setShowExitModal(true);
-          return true; // Prevent default back behavior
-        }
-        return false; // Allow default back behavior
-      };
-
-      BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
-      return () => {
-        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-      };
-    }, [routeName])
-  );
-
   const handleExitApp = () => {
     setShowExitModal(false);
     BackHandler.exitApp(); // Exit the app
@@ -82,8 +64,21 @@ const Courses = () => {
   useFocusEffect(
     useCallback(() => {
       console.log('########## in focus course');
+      const onBackPress = () => {
+        if (routeName === 'Courses') {
+          setShowExitModal(true);
+          return true; // Prevent default back behavior
+        }
+        return false; // Allow default back behavior
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
       fetchData();
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
     }, []) // Make sure to include the dependencies
   );
 
