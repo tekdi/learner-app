@@ -10,7 +10,7 @@ import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../context/NetworkContext';
 
 const RegisterStart = () => {
-  //multi language setup
+  // Multi-language setup
   const { t } = useTranslation();
   const { isConnected } = useInternet();
   const nav = useNavigation();
@@ -40,6 +40,7 @@ const RegisterStart = () => {
           style={{ width: 30, height: 30 }}
         />
       </TouchableOpacity>
+
       {/* Icon png here */}
       <View style={styles.container_image}>
         <FastImage
@@ -52,16 +53,12 @@ const RegisterStart = () => {
           {t('form_start_lable')}
         </Text>
       </View>
+
       <View style={styles.buttonContainer}>
-        <PrimaryButton
-          text={t('continue')}
-          onPress={() => {
-            handleClick();
-          }}
-        />
+        <PrimaryButton text={t('continue')} onPress={handleClick} />
       </View>
 
-      <NetworkAlert onTryAgain={handleRegistration} isConnected={isConnected} />
+      <NetworkAlert onTryAgain={handleClick} isConnected={isConnected} />
     </View>
   );
 };
