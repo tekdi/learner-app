@@ -39,6 +39,7 @@ import {
   saveRefreshToken,
   saveToken,
   setDataInStorage,
+  storeUsername,
   translateLanguage,
 } from '../../utils/JsHelper/Helper';
 import PlainText from '../../components/PlainText/PlainText';
@@ -301,9 +302,9 @@ const RegistrationForm = ({ schema }) => {
       profileData?.getUserDetails?.[0]?.username
     );
 
+    await storeUsername(profileData?.getUserDetails?.[0]?.username);
     await setDataInStorage('userId', user_id);
     const cohort = await getCohort({ user_id });
-
     await setDataInStorage('cohortData', JSON.stringify(cohort));
     const cohort_id = cohort?.cohortData?.[0]?.cohortId;
     await setDataInStorage(
@@ -338,7 +339,7 @@ const RegistrationForm = ({ schema }) => {
     // await saveToken(token);
     const register = await registerUser(payload);
 
-    console.log({ isConnected, networkError, register });
+    // console.log({ isConnected, networkError, register });
 
     if (register?.params?.status === 'failed' || !isConnected) {
       setNetworkError(true);

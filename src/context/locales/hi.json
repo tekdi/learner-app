@@ -202,5 +202,6 @@
   "email": "ईमेल",
   "we_sent_an_email_to": "हमने",
   "with_a_link_to_get_back_to_your_account": "पर एक ईमेल भेजा है जिसमें आपके खाते में वापस जाने के लिए एक लिंक है।",
-  "username_does_not_exist": "उपयोगकर्ता नाम मौजूद नहीं है"
+  "username_does_not_exist": "उपयोगकर्ता नाम मौजूद नहीं है",
+  "is_invalid": "अमान्य है"
 }

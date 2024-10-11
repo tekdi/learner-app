@@ -203,5 +203,6 @@
   "email": "ईमेल",
   "we_sent_an_email_to": "आम्ही",
   "with_a_link_to_get_back_to_your_account": "वर एक ईमेल पाठवला आहे ज्यात तुमच्या खात्यात परत जाण्यासाठी एक लिंक आहे.",
-  "username_does_not_exist": "वापरकर्ता नाव अस्तित्वात नाही"
+  "username_does_not_exist": "वापरकर्ता नाव अस्तित्वात नाही",
+  "is_invalid": "अवैध आहे"
 }
