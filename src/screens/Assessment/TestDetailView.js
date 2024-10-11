@@ -66,8 +66,6 @@ const TestDetailView = ({ route }) => {
           content_mime_type: data?.mimeType,
           isOffline: false,
           title: title,
-          course_id: data?.IL_UNIQUE_ID,
-          unit_id: data?.IL_UNIQUE_ID,
         });
       } else {
         setNetworkstatus(false);
@@ -78,8 +76,6 @@ const TestDetailView = ({ route }) => {
         content_mime_type: data?.mimeType,
         isOffline: false,
         title: title,
-        course_id: data?.IL_UNIQUE_ID,
-        unit_id: data?.IL_UNIQUE_ID,
       });
     }
   };

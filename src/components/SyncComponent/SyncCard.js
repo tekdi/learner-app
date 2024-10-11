@@ -186,7 +186,7 @@ const SyncCard = ({ doneSync }) => {
             //setIsSyncPending(false);
             //setIsProgress(false);
             if (!isError && doneSync) {
-              //doneSync(); //call back function
+              doneSync(); //call back function
             }
           }
           if (result_sync_offline_telemetry) {

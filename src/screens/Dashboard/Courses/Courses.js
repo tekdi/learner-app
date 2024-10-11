@@ -150,7 +150,9 @@ const Courses = () => {
                   {t('welcome')}, {userInfo?.[0]?.name} !
                 </Text>
               </View>
-              <SyncCard doneSync={fetchData} />
+              <SyncCard
+              //doneSync={fetchData}
+              />
 
               <CoursesBox
                 // title={'Continue_Learning'}

@@ -69,8 +69,8 @@ const StandAlonePlayer = ({ route }) => {
     course_id,
     unit_id,
   } = route.params;
-  console.log('content_do_id', content_do_id);
-  console.log('content_mime_type', content_mime_type);
+  console.log('######### content_do_id', content_do_id);
+  console.log('######### content_mime_type', content_mime_type);
 
   //back button handle
 
@@ -165,8 +165,8 @@ const StandAlonePlayer = ({ route }) => {
       await storeData('contentId', content_do_id, '');
       await storeData('contentType', contentType, '');
       await storeData('contentMimeType', content_mime_type, '');
-      await storeData('courseId', course_id, '');
-      await storeData('unitId', unit_id, '');
+      await storeData('courseId', courseId, '');
+      await storeData('unitId', unitId, '');
     };
     fetchData();
 
@@ -305,7 +305,7 @@ const StandAlonePlayer = ({ route }) => {
           let maxScore = jsonObj.maxScore;
           let seconds = jsonObj.seconds;
           // console.log('scoreDetails', scoreDetails);
-          // console.log('identifierWithoutImg', identifierWithoutImg);
+          console.log('identifierWithoutImg', identifierWithoutImg);
           // console.log('maxScore', maxScore);
           // console.log('seconds', seconds);
           // let userId = 'fb6b2e58-0f14-4d4f-90e4-bae092e7a951';
@@ -323,7 +323,7 @@ const StandAlonePlayer = ({ route }) => {
             courseId,
             unitId
           );
-          console.log('############# create_assessment', create_assessment);
+          //console.log('############# create_assessment', create_assessment);
           if (
             create_assessment &&
             create_assessment?.response?.responseCode == 201
@@ -352,7 +352,10 @@ const StandAlonePlayer = ({ route }) => {
               identifierWithoutImg,
               payload
             );
-            console.log('############# create_assessment', create_assessment);
+            console.log(
+              '############# create_assessment offline',
+              create_assessment
+            );
             if (create_assessment && create_assessment?.data) {
               let exam_data = JSON.parse(create_assessment?.data);
               const percentage =
@@ -1118,7 +1121,11 @@ const StandAlonePlayer = ({ route }) => {
           onNavigationStateChange={handleNavigationStateChange}
         />
       )}
-      <TestResultModal modal={modal} title={title} />
+      <TestResultModal
+        modal={modal}
+        title={title}
+        isFromCourse={courseId == content_do_id ? true : false}
+      />
       {alertModal && <MimeAlertModal textTitle={errorDetail} />}
     </SafeAreaView>
   );

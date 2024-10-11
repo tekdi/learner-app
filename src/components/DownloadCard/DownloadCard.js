@@ -28,16 +28,20 @@ import { useTranslation } from '../../context/LanguageContext';
 import SecondaryButton from '../SecondaryButton/SecondaryButton';
 import globalStyles from '../../utils/Helper/Style';
 import HorizontalLine from '../HorizontalLine/HorizontalLine';
-import { Icon } from '@ui-kitten/components';
+import { Icon, TopNavigation } from '@ui-kitten/components';
 import Svg, { Circle, Text as SvgText } from 'react-native-svg';
+import { useNavigation } from '@react-navigation/native';
 
 const DownloadCard = ({ contentId, contentMimeType, name }) => {
+  const navigation = useNavigation();
   const [downloadIcon, setDownloadIcon] = useState(download);
   const [downloadStatus, setDownloadStatus] = useState('');
   const questionListUrl = Config.QUESTION_LIST_URL;
   const [validDownloadFile, setValidDownloadFile] = useState(null);
   const [networkstatus, setNetworkstatus] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [failedModalVisible, setFailedModalVisible] = useState(false);
+
   const { t } = useTranslation();
 
   //download status
@@ -125,12 +129,7 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
           console.log('File does not exist');
         }
         //delete completed
-        setDownloadStatus('download');
-        setDownloadIcon(download);
-        setModalVisible(false);
-        setIsDownloading(false);
-        setDownloadProgress(0);
-        downloadTask = null;
+        resetDownload();
       }
     } catch (error) {
       console.error('Error deleting folder files:', error);
@@ -139,26 +138,39 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
 
   // Function to cancel the download
   const cancelDownload = () => {
-    if (
-      downloadTask.current &&
-      typeof downloadTask.current.cancel === 'function'
-    ) {
-      downloadTask.current.cancel(); // Cancel the download task
+    //console.log('############## download Task', downloadTask);
+    if (downloadTask.current && downloadTask.current?.jobId) {
+      RNFS.stopDownload(downloadTask.current.jobId);
       console.log('Download canceled');
+      resetDownload();
     } else {
       console.log('No active download to cancel');
     }
+  };
+
+  const resetDownload = () => {
+    setDownloadStatus('download');
+    setDownloadIcon(download);
+    setModalVisible(false);
+    setDownloadProgress(0);
+    setIsDownloading(false);
   };
 
   // Handle the back button press while downloading
   const handleBackPress = () => {
     if (isDownloading) {
       Alert.alert(
-        'Cancel Download',
-        'The download is in progress. Are you sure you want to cancel it?',
+        t('cancel_download'),
+        t('go_back_cancel_download'),
         [
-          { text: 'No', style: 'cancel' },
-          { text: 'Yes', onPress: cancelDownload },
+          { text: t('no'), style: 'cancel' },
+          {
+            text: t('yes'),
+            onPress: () => {
+              cancelDownload();
+              navigation.goBack();
+            },
+          },
         ]
       );
       return true; // Prevent default back action
@@ -185,7 +197,6 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
     //get data online
     let content_response = await readContent(content_do_id);
     if (content_response == null) {
-      //Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
       setNetworkstatus(false);
       setDownloadStatus('download');
       setDownloadIcon(download);
@@ -424,6 +435,7 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
     //content read
     setDownloadStatus('progress');
     setDownloadIcon(download_inprogress);
+    setDownloadProgress(0);
     //get data online
     let content_response = await readContent(content_do_id);
     if (content_response == null) {
@@ -495,21 +507,23 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
                   }
                 } else {
                   console.log('Download failed');
-                  Alert.alert(
-                    'Error Internal',
-                    `Failed to download file: ${JSON.stringify(res)}`,
-                    [{ text: 'OK' }]
-                  );
+                  setFailedModalVisible(true);
+                  // Alert.alert(
+                  //   'Error Internal',
+                  //   `Failed to download file: ${JSON.stringify(res)}`,
+                  //   [{ text: 'OK' }]
+                  // );
                 }
               })
               .catch((err) => {
                 setIsDownloading(false);
-                if (err.message !== 'Download canceled') {
-                  Alert.alert(
-                    'Error Internal',
-                    `Failed to download file: ${JSON.stringify(err.message)}`,
-                    [{ text: 'OK' }]
-                  );
+                if (err.message !== 'Download has been aborted') {
+                  setFailedModalVisible(true);
+                  // Alert.alert(
+                  //   'Error Internal',
+                  //   `Failed to download file: ${JSON.stringify(err.message)}`,
+                  //   [{ text: 'OK' }]
+                  // );
                 }
               });
             /*const result = await download.promise;
@@ -547,54 +561,22 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
     <>
       {validDownloadFile && downloadStatus == 'progress' ? (
         <View style={styles.container}>
-          {/* Circular Loading Indicator */}
-          <View style={styles.circularContainer}>
-            <Svg height="100" width="100">
-              {/* Background Circle */}
-              <Circle
-                cx="50"
-                cy="50"
-                r={radius}
-                stroke="#AAAAAA"
-                strokeWidth="8"
-                fill="none"
-              />
-              {/* Progress Circle */}
-              <Circle
-                cx="50"
-                cy="50"
-                r={radius}
-                stroke="green" // Progress color
-                strokeWidth="8"
-                fill="none"
-                strokeDasharray={`${circumference} ${circumference}`} // Set strokeDasharray
-                strokeDashoffset={
-                  circumference - (circumference * downloadProgress) / 100
-                } // Update based on progress
-                rotation="-90"
-                origin="50, 50"
-              />
-            </Svg>
-
-            <SvgText
-              x="50%"
-              y="50%"
-              textAnchor="middle"
-              alignmentBaseline="middle"
-              fontSize="12"
-              fill="black"
-            >
-              {`${downloadProgress}%`}
-            </SvgText>
-            {/* Cancel Button */}
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={cancelDownload}
-            >
-              <Image
-                source={require('../../assets/images/png/cancel.png')}
-                style={styles.cancelImage}
-              />
+          {/* Right Bottom Corner */}
+          <View style={styles.bottomRightContainer}>
+            <Text style={styles.loadingText}>{`${downloadProgress}%`}</Text>
+            {/* Custom ActivityIndicator with Cancel Button */}
+            <TouchableOpacity onPress={() => cancelDownload()}>
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator
+                  size="large"
+                  color="#fff"
+                  style={styles.activityIndicator}
+                />
+                {/* Cancel Button in the center */}
+                <View style={styles.cancelButton}>
+                  <Text style={styles.cancelText}>X</Text>
+                </View>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -670,6 +652,47 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={failedModalVisible}
+        onRequestClose={() => setFailedModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text
+              allowFontScaling={false}
+              style={globalStyles.heading2}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {name}
+            </Text>
+            <HorizontalLine />
+            <Text
+              allowFontScaling={false}
+              style={[
+                globalStyles.text,
+                { marginVertical: 10, textAlign: 'center' },
+              ]}
+            >
+              {t('failed_msg')}
+            </Text>
+            <View>
+              <View>
+                <SecondaryButton
+                  onPress={() => {
+                    setFailedModalVisible(false);
+                    resetDownload();
+                  }}
+                  text={t('okay')}
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -722,6 +745,45 @@ const styles = StyleSheet.create({
   cancelImage: {
     width: 20, // Width of the cancel image
     height: 20, // Height of the cancel image
+  },
+
+  //new loader
+  bottomRightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginRight: 5,
+    fontSize: 20,
+    color: '#333',
+    marginTop: 0,
+  },
+  loadingContainer: {
+    position: 'relative', // to enable the absolute positioning of the cancel button
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
+    padding: 10,
+    borderRadius: 50,
+    marginTop: 0,
+  },
+  activityIndicator: {
+    zIndex: 1, // Ensures the indicator stays in the background
+  },
+  cancelButton: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ff3333',
+    width: 25,
+    height: 25,
+    borderRadius: 15,
+    zIndex: 2, // Makes sure the button appears on top
+  },
+  cancelText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
 

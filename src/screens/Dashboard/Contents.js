@@ -153,7 +153,9 @@ const Contents = () => {
                   {t('welcome')}, {userInfo?.[0]?.name}!
                 </Text>
               </View>
-              <SyncCard doneSync={fetchData} />
+              <SyncCard
+              //doneSync={fetchData}
+              />
               <View
                 style={{
                   padding: 20,

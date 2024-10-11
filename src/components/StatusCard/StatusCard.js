@@ -9,8 +9,12 @@ import { ProgressBar } from '@ui-kitten/components';
 import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
 import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
 
-const StatusCard = ({ status, trackCompleted, viewStyle }) => {
-  const { t } = useTranslation();
+const StatusCard = ({
+  status,
+  trackCompleted,
+  viewStyle,
+}) => {
+  const { t, language } = useTranslation();
 
   if (status === 'completed') {
     return (
@@ -30,7 +34,11 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
   } else if (status === 'inprogress') {
     return (
       <View style={[styles.view, viewStyle, { paddingVertical: 5 }]}>
-        <ProgressBarCustom progress={trackCompleted} width={100} />
+        <ProgressBarCustom
+          progress={trackCompleted}
+          language={language}
+          width={100}
+        />
       </View>
     );
   } else if (status === 'progress') {

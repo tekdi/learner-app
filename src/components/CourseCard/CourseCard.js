@@ -15,7 +15,10 @@ import { ProgressBar } from '@ui-kitten/components';
 import StatusCard from '../StatusCard/StatusCard';
 
 import moment from 'moment';
-import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  translateDigits,
+} from '../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../utils/API/AuthService';
 
 const CourseCard = ({
@@ -190,10 +193,10 @@ const CourseCard = ({
               trackCompleted >= 100
                 ? 'completed'
                 : trackCompleted > 0
-                  ? 'inprogress'
-                  : trackProgress > 0
-                    ? 'progress'
-                    : 'not_started'
+                ? 'inprogress'
+                : trackProgress > 0
+                ? 'progress'
+                : 'not_started'
             }
             trackCompleted={trackCompleted}
           />

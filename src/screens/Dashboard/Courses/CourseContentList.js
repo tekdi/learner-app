@@ -24,12 +24,19 @@ import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
 import FastImage from '@changwoolab/react-native-fast-image';
 import UnitCard from './UnitCard';
 import moment from 'moment';
-import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  translateDate,
+  translateDigits,
+} from '../../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../../utils/API/AuthService';
 import CircularProgressBarCustom from '../../../components/CircularProgressBarCustom.js/CircularProgressBarCustom';
 import StatusCardCourse from '../../../components/StatusCard/StatusCardCourse';
+import { languages } from '../../LanguageScreen/Languages';
+import { useTranslation } from '../../../context/LanguageContext';
 
 const CourseContentList = ({ route }) => {
+  const { language } = useTranslation();
   const { do_id, course_id, content_list_node } = route.params;
   // console.log('########## CourseContentList');
   // console.log('course_id', course_id);
@@ -302,7 +309,7 @@ const CourseContentList = ({ route }) => {
                   />
                   <TextField
                     style={[globalStyles.text, { fontSize: 12 }]}
-                    text={startedOn}
+                    text={`${translateDate(startedOn, language)}`}
                   />
                 </View>
               ) : (
@@ -322,7 +329,10 @@ const CourseContentList = ({ route }) => {
                     <Text
                       allowFontScaling={false}
                       style={{ marginLeft: 10, color: '#000' }}
-                    >{`${Math.round((trackCompleted / 100) * 100)}%`}</Text>
+                    >{`${translateDigits(
+                      Math.round((trackCompleted / 100) * 100),
+                      language
+                    )}%`}</Text>
                     <TextField
                       style={[globalStyles.text, { fontSize: 12 }]}
                       text={'completed'}
