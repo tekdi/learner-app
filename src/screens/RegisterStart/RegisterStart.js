@@ -5,15 +5,23 @@ import { useNavigation } from '@react-navigation/native';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
 import FastImage from '@changwoolab/react-native-fast-image';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
+import { useInternet } from '../../context/NetworkContext';
 
 const RegisterStart = () => {
   //multi language setup
   const { t } = useTranslation();
-
+  const { isConnected } = useInternet();
   const nav = useNavigation();
 
   const navigate = () => {
     nav.goBack();
+  };
+
+  const handleRegistration = () => {
+    if (isConnected) {
+      nav.navigate('RegisterScreen');
+    }
   };
 
   return (
@@ -38,13 +46,10 @@ const RegisterStart = () => {
         </Text>
       </View>
       <View style={styles.buttonContainer}>
-        <PrimaryButton
-          text={t('continue')}
-          onPress={() => {
-            nav.navigate('RegisterScreen');
-          }}
-        />
+        <PrimaryButton text={t('continue')} onPress={handleRegistration} />
       </View>
+
+      <NetworkAlert onTryAgain={handleRegistration} isConnected={isConnected} />
     </View>
   );
 };

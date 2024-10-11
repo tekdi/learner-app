@@ -38,17 +38,15 @@ const CoursesBox = ({
   };
 
   const renderItem = ({ item, index }) => (
-    <View>
-      <CourseCard
-        onPress={() => handlePress(item)}
-        appIcon={item?.appIcon}
-        index={index}
-        cardWidth={145}
-        item={item}
-        TrackData={TrackData}
-        navigation={navigation}
-      />
-    </View>
+    <CourseCard
+      onPress={() => handlePress(item)}
+      appIcon={item?.appIcon}
+      index={index}
+      cardWidth={'44%'}
+      item={item}
+      TrackData={TrackData}
+      navigation={navigation}
+    />
   );
 
   return (
@@ -100,10 +98,6 @@ const CoursesBox = ({
 };
 
 const styles = StyleSheet.create({
-  // container: {
-  //   height: '85%',
-  //   borderWidth: 1,
-  // },
   title: {
     fontSize: 20,
     fontWeight: 'bold',

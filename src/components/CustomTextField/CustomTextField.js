@@ -11,6 +11,8 @@ const CustomTextField = ({
   field,
   control,
   errors = {},
+  keyboardType,
+  autoCapitalize,
 }) => {
   const { t } = useTranslation();
 
@@ -32,6 +34,8 @@ const CustomTextField = ({
             value={value}
             onChangeText={onChange}
             secureTextEntry={secureTextEntry}
+            autoCapitalize={autoCapitalize} // Disable auto-capitalization
+            keyboardType={keyboardType} // Opens numeric keyboard by default
           />
           <View style={styles.overlap}>
             <Text
@@ -96,7 +100,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   overlap: {
-    top: -60,
+    top: -65,
     left: 13,
     // top: -76,
     // left: -120,

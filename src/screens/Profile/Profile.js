@@ -22,6 +22,7 @@ import {
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
+import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 
 const Profile = (props) => {
   const { t } = useTranslation();
@@ -29,6 +30,7 @@ const Profile = (props) => {
   const [userDetails, setUserDetails] = useState();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const [showExitModal, setShowExitModal] = useState(false);
 
   const createNewObject = (customFields, labels) => {
     const result = {};
@@ -55,6 +57,7 @@ const Profile = (props) => {
         'DISTRICTS',
         'BLOCKS',
         'AGE',
+        'EMAIL',
       ];
       const customFields = result?.getUserDetails?.[0]?.customFields;
       createNewObject(customFields, requiredLabels);
@@ -84,7 +87,9 @@ const Profile = (props) => {
     fetchData();
   };
 
-  console.log({ userData });
+  const handleCancel = () => {
+    setShowExitModal(false); // Close the modal
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -113,11 +118,16 @@ const Profile = (props) => {
                   text={`${userDetails?.STATES || '-'}  ${userDetails?.DISTRICTS || ''} ${userDetails?.BLOCKS || ''}`}
                 />
               </View> */}
-              <View>
+              <View style={{ marginVertical: 10 }}>
+                <Label text={`${t('email')}`} />
+                <TextField text={`${userData?.email || '-'}   `} />
+              </View>
+              <View style={{ marginVertical: 10 }}>
                 <Label text={`${t('enrollment_number')}`} />
                 <TextField text={userData?.username} />
+                {/* <TextField text={userData?.userId} /> */}
               </View>
-              <View>
+              <View style={{ marginVertical: 10 }}>
                 <Label text={`${t('contact_number')}`} />
                 <TextField text={userData?.mobile} />
               </View>
@@ -125,11 +135,11 @@ const Profile = (props) => {
                 <Label text={`${t('class')} (${t('last_passed_grade')})`} />
                 <TextField text={userDetails?.CLASS_OR_LAST_PASSED_GRADE} />
               </View> */}
-              <View>
+              <View style={{ marginVertical: 10 }}>
                 <Label text={`${t('age')} `} />
                 <TextField text={userDetails?.AGE} />
               </View>
-              <View>
+              <View style={{ marginVertical: 10 }}>
                 <Label text={`${t('gender')} `} />
                 <TextField
                   text={`${capitalizeFirstLetter(
@@ -139,7 +149,11 @@ const Profile = (props) => {
               </View>
             </View>
           </View>
-          <TouchableOpacity onPress={handleLogout}>
+          <TouchableOpacity
+            onPress={() => {
+              setShowExitModal(true);
+            }}
+          >
             <View
               style={{
                 borderWidth: 1,
@@ -156,10 +170,18 @@ const Profile = (props) => {
               >
                 {t('logout')}
               </Text>
-              <Icon name="logout" color="black" size={30} style={styles.icon} />
+              <Icon name="logout" color="black" size={20} style={styles.icon} />
             </View>
           </TouchableOpacity>
         </ScrollView>
+      )}
+      {showExitModal && (
+        <BackButtonHandler
+          logout
+          exitRoute={true} // You can pass any props needed by the modal here
+          onCancel={handleCancel}
+          onExit={handleLogout}
+        />
       )}
     </SafeAreaView>
   );

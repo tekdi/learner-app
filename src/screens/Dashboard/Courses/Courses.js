@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     width: '100%',
     //backgroundColor: 'white',
     padding: 15,
-    //borderWidth: 1,
+    // borderWidth: 1,
   },
   view2: {
     flexDirection: 'row',

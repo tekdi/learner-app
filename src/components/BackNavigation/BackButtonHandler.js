@@ -12,7 +12,7 @@ import { useTranslation } from '../../context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
 import PropTypes from 'prop-types';
 
-const BackButtonHandler = ({ exitRoute, onCancel, onExit }) => {
+const BackButtonHandler = ({ exitRoute, onCancel, onExit, logout }) => {
   const { t } = useTranslation();
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -36,7 +36,9 @@ const BackButtonHandler = ({ exitRoute, onCancel, onExit }) => {
                 { fontWeight: '700', textAlign: 'center', marginVertical: 20 },
               ]}
             >
-              {t('are_you_sure_you_want_to_exit_the_app')}
+              {logout
+                ? t('are_you_sure_you_want_to_logout_the_app')
+                : t('are_you_sure_you_want_to_exit_the_app')}
             </Text>
           </View>
           <View style={styles.buttonContainer}>
