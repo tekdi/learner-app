@@ -19,6 +19,7 @@ import Logo from '../../assets/images/png/logo.png';
 import lock_open from '../../assets/images/png/lock_open.png';
 import { forgotPassword } from '../../utils/API/AuthService';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 
 const ForgotPassword = () => {
   const [value, setvalue] = useState('');
@@ -27,6 +28,8 @@ const ForgotPassword = () => {
   const [modal, setmodal] = useState(false);
   const [error, seterror] = useState(false);
   const { t } = useTranslation();
+  const navigation = useNavigation();
+
   handleInput = (e) => {
     console.log({ e });
     setvalue(e.trim());
@@ -116,6 +119,9 @@ const ForgotPassword = () => {
             globalStyles.text,
             { textAlign: 'center', padding: 30, color: '#0D599E' },
           ]}
+          onPress={() => {
+            navigation.navigate('LoginScreen');
+          }}
         >
           {t('back_to_login')}
         </Text>
