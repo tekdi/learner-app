@@ -176,3 +176,21 @@ export const logEventFunction = async ({ eventName, method, screenName }) => {
     timestamp: timestamp, // Adding the timestamp as a parameter
   });
 };
+
+export const storeUsername = async (username) => {
+  try {
+    console.log({ username });
+
+    // Fetch existing usernames
+    const storedUsernames = await AsyncStorage.getItem('usernames');
+    let usernamesArray = storedUsernames ? JSON.parse(storedUsernames) : [];
+
+    // Add new username if it's not already in the list
+    if (!usernamesArray.includes(username)) {
+      usernamesArray.push(username);
+      await AsyncStorage.setItem('usernames', JSON.stringify(usernamesArray));
+    }
+  } catch (error) {
+    console.error('Error storing username:', error);
+  }
+};

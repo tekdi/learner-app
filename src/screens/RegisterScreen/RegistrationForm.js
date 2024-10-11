@@ -60,6 +60,9 @@ import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
 import Config from 'react-native-config';
 import FastImage from '@changwoolab/react-native-fast-image';
 import { CheckBox } from '@ui-kitten/components';
+import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
+import { useInternet } from '../../context/NetworkContext';
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -69,6 +72,7 @@ const buildYupSchema = (form, currentForm, t) => {
       switch (field.type) {
         case 'text':
         case 'password':
+        case 'email':
           validator = yup.string();
           if (field.validation.required) {
             validator = validator.required(
@@ -97,10 +101,16 @@ const buildYupSchema = (form, currentForm, t) => {
               `${t('Password_must_match')}`
             );
           }
-          if (field.validation.pattern) {
+          if (field.validation.pattern && field.type === 'text') {
             validator = validator.matches(
-              /^[A-Za-z]+$/,
+              field.validation.pattern,
               `${t(field.name)} ${t('can_only_contain_letters')}`
+            );
+          }
+          if (field.validation.pattern && field.type == 'email') {
+            validator = validator.matches(
+              field.validation.pattern,
+              `${t(field.name)} ${t('is_invalid')}`
             );
           }
           if (field.name === 'username' && currentForm === 6) {
@@ -164,7 +174,7 @@ const buildYupSchema = (form, currentForm, t) => {
           if (field.validation.pattern) {
             validator = validator.matches(
               field.validation.pattern,
-              `${t(field.name)} ${t('can_only_contain_numbers')}` // Update the error message to reflect numbers only
+              `${t(field.name)} ${t('is_invalid')}` // Update the error message to reflect numbers only
             );
           }
           break;
@@ -219,9 +229,11 @@ const RegistrationForm = ({ schema }) => {
   const navigation = useNavigation();
   const [selectedIds, setSelectedIds] = useState({});
   const [isDisable, setIsDisable] = useState(true);
-
   const [currentForm, setCurrentForm] = useState(1);
   const [modal, setModal] = useState(false);
+  const [networkError, setNetworkError] = useState(false);
+
+  const { isConnected } = useInternet();
 
   const stepSchema = schema?.map((form) =>
     buildYupSchema(form, currentForm, t)
@@ -326,25 +338,13 @@ const RegistrationForm = ({ schema }) => {
     // await saveToken(token);
     const register = await registerUser(payload);
 
-    if (register?.params?.status === 'failed') {
-      Alert.alert(
-        'Error',
-        `${register?.params?.err}`,
+    console.log({ isConnected, networkError, register });
 
-        [
-          {
-            text: 'Cancel',
-            onPress: () => {},
-            style: 'cancel',
-          },
-          {
-            text: 'OK',
-            onPress: () => prevForm, // Replace 'TargetScreen' with your screen name
-          },
-        ],
-        { cancelable: false }
-      );
+    if (register?.params?.status === 'failed' || !isConnected) {
+      setNetworkError(true);
+      console.log('hi');
     } else {
+      console.log('hello');
       setModal(true);
       logRegistrationComplete();
       await RegisterLogin(data);
@@ -423,7 +423,6 @@ const RegistrationForm = ({ schema }) => {
   const renderFields = (fields) => {
     return fields?.map((field) => {
       switch (field.type) {
-        case 'number':
         case 'text':
           return (
             <View key={field.name} style={styles.inputContainer}>
@@ -431,6 +430,28 @@ const RegistrationForm = ({ schema }) => {
                 field={field}
                 control={control}
                 errors={errors}
+              />
+            </View>
+          );
+        case 'number':
+          return (
+            <View key={field.name} style={styles.inputContainer}>
+              <CustomTextField
+                field={field}
+                control={control}
+                errors={errors}
+                keyboardType="numeric"
+              />
+            </View>
+          );
+        case 'email':
+          return (
+            <View key={field.name} style={styles.inputContainer}>
+              <CustomTextField
+                field={field}
+                control={control}
+                errors={errors}
+                autoCapitalize="none"
               />
             </View>
           );
@@ -674,6 +695,7 @@ const RegistrationForm = ({ schema }) => {
           nextForm={nextForm}
           onSubmit={onSubmit}
           isDisable={isDisable}
+          networkError={networkError}
         />
       </View>
       {modal && (
@@ -759,10 +781,12 @@ const RenderBtn = ({
   nextForm,
   onSubmit,
   isDisable,
+  networkError,
 }) => {
   const { t } = useTranslation();
   const [isBtnDisable, setIsBtnDisable] = useState(true);
   const [checked, setChecked] = useState(false);
+  const [showMore, setShowMore] = useState(true); // State for showing more content
 
   const renderContent = () => {
     if (currentForm !== 8 && currentForm < schema?.length) {
@@ -787,20 +811,32 @@ const RenderBtn = ({
     } else {
       return (
         <>
+          {showMore && (
+            <Text
+              allowFontScaling={false}
+              style={[
+                globalStyles.subHeading,
+                { color: '#0563C1', textAlign: 'center', marginTop: 10 },
+              ]}
+              onPress={() => setShowMore(false)}
+            >
+              {t('read_more')}
+            </Text>
+          )}
           <View style={[globalStyles.flexrow, { marginVertical: 15 }]}>
-            <CheckBox
-              checked={checked}
+            <CustomCheckbox
+              value={checked}
               onChange={(nextChecked) => {
                 setChecked(nextChecked);
                 setIsBtnDisable(!isBtnDisable);
               }}
             />
+
             <Text
               allowFontScaling={false}
               style={{
                 fontSize: 12,
                 color: '#000',
-                marginLeft: 10,
                 width: '90%',
               }}
             >
@@ -818,6 +854,11 @@ const RenderBtn = ({
           >
             {t('T&C_13')}
           </Text>
+
+          <NetworkAlert
+            onTryAgain={handleSubmit(onSubmit)}
+            isConnected={!networkError}
+          />
         </>
       );
     }

@@ -6,11 +6,13 @@ import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
 import FastImage from '@changwoolab/react-native-fast-image';
 import { logEventFunction } from '../../utils/JsHelper/Helper';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
+import { useInternet } from '../../context/NetworkContext';
 
 const RegisterStart = () => {
   //multi language setup
   const { t } = useTranslation();
-
+  const { isConnected } = useInternet();
   const nav = useNavigation();
 
   const navigate = () => {
@@ -18,13 +20,15 @@ const RegisterStart = () => {
   };
 
   const handleClick = async () => {
-    const obj = {
-      eventName: 'registration_started',
-      method: 'button-click',
-      screenName: 'Registration',
-    };
-    await logEventFunction(obj);
-    nav.navigate('RegisterScreen');
+    if (isConnected) {
+      const obj = {
+        eventName: 'registration_started',
+        method: 'button-click',
+        screenName: 'Registration',
+      };
+      await logEventFunction(obj);
+      nav.navigate('RegisterScreen');
+    }
   };
 
   return (
@@ -56,6 +60,8 @@ const RegisterStart = () => {
           }}
         />
       </View>
+
+      <NetworkAlert onTryAgain={handleRegistration} isConnected={isConnected} />
     </View>
   );
 };
