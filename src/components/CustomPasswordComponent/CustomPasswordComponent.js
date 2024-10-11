@@ -51,6 +51,7 @@ const CustomPasswordTextField = ({
             value={value}
             onChangeText={onChange}
             secureTextEntry={hidden}
+            autoCapitalize="none" // Disable auto-capitalization
           />
           <View style={styles.overlap}>
             <Text

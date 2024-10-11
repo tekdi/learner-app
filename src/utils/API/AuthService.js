@@ -982,6 +982,31 @@ export const getGeoLocation = async ({ payload }) => {
     return handleResponseException(e);
   }
 };
+export const forgotPassword = async ({ payload }) => {
+  try {
+    const url = `${EndUrls.forgotPassword}`; // Define the URL
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    // console.log(
+    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
 
 export const reverseGeocode = async (latitude, longitude) => {
   const response = await fetch(

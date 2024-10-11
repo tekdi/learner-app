@@ -78,17 +78,17 @@ const CustomCards = ({
                   styles.selectedCard,
               ]}
             >
-              <Image
-                source={
-                  option.label == 'FEMALE'
-                    ? female
-                    : option.label == 'MALE'
-                    ? male
-                    : option.label == 'TRANSGENDER'
-                    ? transgender
-                    : ''
-                }
-              />
+              {option.label !== 'OTHER' && (
+                <Image
+                  source={
+                    option.label == 'FEMALE'
+                      ? female
+                      : option.label == 'MALE'
+                        ? male
+                        : option.label == 'TRANSGENDER' && transgender
+                  }
+                />
+              )}
               <Text
                 allowFontScaling={false}
                 style={[

@@ -65,6 +65,7 @@ export const transformPayload = async (data) => {
     name: `${data.first_name} ${data.last_name}`,
     username: data.username,
     password: data.password,
+    email: data?.email,
     mobile: data?.mobile,
     tenantCohortRoleMapping, // Conditionally added based on the presence of data.program
     customFields: customFields,

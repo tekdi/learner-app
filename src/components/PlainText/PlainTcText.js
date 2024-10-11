@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import {
   Button,
+  Linking,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
@@ -23,8 +25,22 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
     setShowMore(true); // Show the additional text when button is clicked
   };
 
+  const openWebsite = () => {
+    Linking.openURL('https://www.pratham.org'); // Opens the website in a browser
+  };
+
+  // Function to open email client
+  const sendEmail = () => {
+    Linking.openURL('mailto:dataprotectionofficer@pratham.org'); // Opens the email client
+  };
+
+  // Function to make a phone call
+  const callPhone = () => {
+    Linking.openURL('tel:011-26177200'); // Opens the phone dialer
+  };
+
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ marginTop: 20, height: '100%' }}>
       <Text allowFontScaling={false} style={styles.text1}>
         {t('T&C')}{' '}
         <Text allowFontScaling={false} style={{ fontWeight: 'bold' }}>
@@ -33,72 +49,77 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
         {t('button')}
       </Text>
 
-      <View style={{ top: -10 }}>
+      <View>
         <Text allowFontScaling={false} style={styles.text2}>
           {t('T&C_1')}
         </Text>
         <Text allowFontScaling={false} style={styles.text2}>
           {t('T&C_2')}
         </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_3')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_4')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_5')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_6')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_7')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_8')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_9')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_10')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('T&C_11')}
+        </Text>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('office_adrress')}
+        </Text>
+        <Text
+          allowFontScaling={false}
+          style={[styles.text2, { color: '#0563C1' }]}
+          onPress={sendEmail}
+        >
+          {t('office_email')}
+        </Text>
+        <View style={globalStyles.flexrow}>
+          <Text
+            allowFontScaling={false}
+            style={[styles.text2, { color: '#0563C1' }]}
+            onPress={callPhone}
+          >
+            {t('office_phone')}
+          </Text>
+          <Text
+            allowFontScaling={false}
+            style={[styles.text2, { color: '#0563C1' }]}
+            onPress={openWebsite}
+          >
+            {t('office_website')}
+          </Text>
+        </View>
+        <Text allowFontScaling={false} style={styles.text2}>
+          {t('office_cin')}
+        </Text>
+
+        <HorizontalLine />
       </View>
 
       {/* Read More Button */}
-      {!showMore && (
-        <Text
-          allowFontScaling={false}
-          style={[
-            globalStyles.subHeading,
-            { color: '#0563C1', textAlign: 'center', top: -20 },
-          ]}
-          onPress={handleReadMore}
-        >
-          {t('read_more')}
-        </Text>
-      )}
 
       {/* Additional text content shown when "Read More" is clicked */}
-      {showMore && (
-        <>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('T&C_3')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('T&C_4')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('T&C_5')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('T&C_6')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('T&C_7')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('T&C_8')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('T&C_9')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('T&C_10')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('T&C_11')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('office_adrress')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('office_email')}
-          </Text>
-          <Text allowFontScaling={false} style={styles.text2}>
-            {t('office_phone')}
-          </Text>
-        </>
-      )}
-
-      <HorizontalLine />
+      {showMore && <></>}
 
       {/* <View style={styles.view}>
         <CheckBox
@@ -135,6 +156,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingRight: 10,
     flexWrap: 'wrap',
+    marginVertical: 5,
   },
   text3: {
     fontFamily: 'Poppins-Medium',
@@ -149,10 +171,6 @@ const styles = StyleSheet.create({
   view: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  scroll: {
-    marginTop: 10,
-    height: 280,
   },
 });
 

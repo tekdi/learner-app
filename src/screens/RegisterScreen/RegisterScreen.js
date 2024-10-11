@@ -9,11 +9,13 @@ import {
 import Loading from '../LoadingScreen/Loading';
 import { registerSchema } from './RegisterSchema';
 import { setDataInStorage } from '../../utils/JsHelper/Helper';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 // import Geolocation from 'react-native-geolocation-service'; //GeoLocation Comment
 
 const RegisterScreen = () => {
   const [mainSchema, setMainSchema] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [networkError, setNetworkError] = useState(false);
 
   const fetchstates = async () => {
     const payload = {
@@ -46,17 +48,23 @@ const RegisterScreen = () => {
   //   );
   // };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getStudentForm();
-      const states = await fetchstates();
+  const fetchData = async () => {
+    const data = await getStudentForm();
+    // console.log({ data });
+    if (data?.error) {
+      setNetworkError(true);
+    } else {
+      // const states = await fetchstates();
       setDataInStorage('studentForm', JSON.stringify(data?.fields));
-      let schema = await registerSchema(data?.fields, states);
+      let schema = await registerSchema(data?.fields);
       // getLocation(); // GetLocation Comment
       setMainSchema(schema);
-      setLoading(false);
-    };
+    }
 
+    setLoading(false);
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -65,6 +73,7 @@ const RegisterScreen = () => {
   ) : (
     <SafeAreaView style={styles.container}>
       <RegistrationForm schema={mainSchema} />
+      <NetworkAlert onTryAgain={fetchData} isConnected={!networkError} />
     </SafeAreaView>
   );
 };
@@ -73,10 +82,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     flex: 1,
   },
-  contentContainer: {
-    flex: 1,
-    padding: 20,
-  },
+
   title: {
     fontSize: 24,
     fontWeight: 'bold',

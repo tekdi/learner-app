@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Pressable,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import { useState, React, useEffect } from 'react';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
@@ -18,12 +19,15 @@ import {
   login,
 } from '../../utils/API/AuthService';
 import {
+  getDataFromStorage,
   getUserId,
   saveAccessToken,
   saveRefreshToken,
   setDataInStorage,
+  storeUsername,
 } from '../../utils/JsHelper/Helper';
 import LoginTextField from '../../components/LoginTextField/LoginTextField';
+import UserNameField from '../../components/LoginTextField/UserNameField';
 import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
 import { useTranslation } from '../../context/LanguageContext';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
@@ -43,6 +47,7 @@ const LoginScreen = () => {
   const [errmsg, setErrmsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [networkstatus, setNetworkstatus] = useState(true);
+  const [usernames, setUsernames] = useState([]);
 
   const onChangeText = (e) => {
     setUserName(e.trim());
@@ -74,7 +79,7 @@ const LoginScreen = () => {
           'Username',
           profileData?.getUserDetails?.[0]?.username
         );
-
+        await storeUsername(profileData?.getUserDetails?.[0]?.username);
         await setDataInStorage('userId', user_id);
         const cohort = await getCohort({ user_id });
         await setDataInStorage('cohortData', JSON.stringify(cohort));
@@ -101,18 +106,32 @@ const LoginScreen = () => {
     }
   }, [userName, password, acceptTerms]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = JSON.parse(await getDataFromStorage('usernames')) || [];
+      console.log({ data });
+      setUsernames(data);
+    };
+    fetchData();
+  }, []);
+
   return (
     <SafeAreaView style={globalStyles.container}>
       {loading ? (
         <ActiveLoading />
       ) : (
-        <ScrollView style={styles.scrollView}>
+        <ScrollView style={styles.scrollView} nestedScrollEnabled={true}>
+          <StatusBar
+            barStyle="dark-content"
+            translucent={true}
+            backgroundColor="transparent"
+          />
           <Image style={globalStyles.logo} source={Logo} resizeMode="contain" />
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[globalStyles.flexrow, globalStyles.heading]}
             onPress={() => {
-              navigation.navigate('LanguageScreen');
+              navigation.navigate('LoginSignUpScreen');
             }}
           >
             <Image
@@ -126,7 +145,7 @@ const LoginScreen = () => {
             >
               {t('back')}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <View style={{ paddingVertical: 5 }}>
             <Text
               allowFontScaling={false}
@@ -142,16 +161,20 @@ const LoginScreen = () => {
             </Text>
           </View>
           <View style={styles.textfieldbox}>
-            <LoginTextField
+            <UserNameField
               text="username"
               onChangeText={onChangeText}
               value={userName}
+              suggestions={usernames}
             />
-            <LoginTextField
-              text="password"
-              onChangeText={onChangePassword}
-              value={password}
-            />
+            <View style={{ marginTop: 25 }}>
+              <LoginTextField
+                text="password"
+                onChangeText={onChangePassword}
+                value={password}
+              />
+            </View>
+
             {errmsg !== '' && (
               <Text
                 allowFontScaling={false}
@@ -161,8 +184,14 @@ const LoginScreen = () => {
               </Text>
             )}
           </View>
-          {/* <TouchableOpacity style={{ paddingLeft: 20, marginBottom: 30 }}>
-            <Text allowFontScaling={false}
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ForgotPassword');
+            }}
+            style={{ paddingLeft: 20, marginBottom: 30 }}
+          >
+            <Text
+              allowFontScaling={false}
               style={{
                 color: '#0D599E',
                 fontFamily: 'Poppins-Medium',
@@ -171,14 +200,14 @@ const LoginScreen = () => {
             >
               {t('forgot_password')}
             </Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
           {/* <View style={globalStyles.flexrow}>
             <CustomCheckbox value={savePassword} onChange={setSavePassword} />
             <View>
               <Text allowFontScaling={false} style={globalStyles.subHeading}>{t('remember_me')}</Text>
             </View>
           </View> */}
-          <View style={[globalStyles.flexrow, { paddingTop: 10 }]}>
+          {/* <View style={[globalStyles.flexrow, { paddingTop: 10 }]}>
             <View>
               <CustomCheckbox value={acceptTerms} onChange={setAcceptTerms} />
             </View>
@@ -199,14 +228,27 @@ const LoginScreen = () => {
                 </Text>
               </Pressable>
             </View>
-          </View>
-          <View style={{ marginTop: 50 }}>
+          </View> */}
+          <View style={{ marginTop: 0 }}>
             <PrimaryButton
               text={t('login')}
               onPress={handleLogin}
-              isDisabled={isDisabled}
+              isDisabled={!isDisabled}
             />
           </View>
+          <Pressable
+            onPress={() => {
+              navigation.navigate('RegisterScreen');
+            }}
+            style={{ alignItems: 'center', padding: 20 }}
+          >
+            <Text
+              allowFontScaling={false}
+              style={[globalStyles.text, { color: '#0D599E' }]}
+            >
+              {t('dont_have_account')}
+            </Text>
+          </Pressable>
         </ScrollView>
       )}
 

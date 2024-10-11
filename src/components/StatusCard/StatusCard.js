@@ -73,7 +73,7 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
 const styles = StyleSheet.create({
   view: {
     flexDirection: 'row',
-    width: '100%',
+    width: '103%',
     backgroundColor: '#3A3A3ACC',
     alignItems: 'center',
     paddingLeft: 10,
@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 5,
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
+    overflow: 'hidden',
   },
 });
 
