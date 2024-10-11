@@ -205,5 +205,6 @@
   "email": "Email",
   "we_sent_an_email_to": "We sent an email to",
   "with_a_link_to_get_back_to_your_account": "with a link to get back to your account",
-  "username_does_not_exist": "Username does not exist"
+  "username_does_not_exist": "Username does not exist",
+  "is_invalid": "is invalid"
 }
