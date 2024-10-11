@@ -166,7 +166,8 @@ export const capitalizeName = (name) => {
 };
 
 export const logEventFunction = async ({ eventName, method, screenName }) => {
-  const timestamp = new Date().toISOString(); // Get the current timestamp
+  const timestamp = new Date().toLocaleString(); // Get the current timestamp
+
   let userId = await getDataFromStorage('userId');
 
   analytics().logEvent(eventName, {
