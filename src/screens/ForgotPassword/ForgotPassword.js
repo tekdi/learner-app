@@ -90,11 +90,11 @@ const ForgotPassword = () => {
         <Text style={[globalStyles.heading, { marginBottom: 10 }]}>
           {t('trouble_with_logging_in')}
         </Text>
-        <Text
+        {/* <Text
           style={[globalStyles.text, { marginBottom: 20, textAlign: 'center' }]}
         >
           {t('forgot_password_desp')}
-        </Text>
+        </Text> */}
         <CustomTextInput
           error={error}
           field="username"
