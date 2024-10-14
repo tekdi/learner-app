@@ -277,11 +277,12 @@ export const courseListApi = async (params = {}) => {
   };
 
   //get language user
-  const result = JSON.parse(await getDataFromStorage('profileData'));
+  //removed below filter for Pilot release
+  /*const result = JSON.parse(await getDataFromStorage('profileData'));
   if (result?.getUserDetails?.[0]?.customFields?.[0]?.value) {
     let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
     payload.request.filters['se_mediums'] = language;
-  }
+  }*/
   //console.log('######## payload ', JSON.stringify(payload));
 
   try {
@@ -361,11 +362,12 @@ export const contentListApi = async (params = {}) => {
   };
 
   //get language user
-  const result = JSON.parse(await getDataFromStorage('profileData'));
+  //removed below filter for Pilot release
+  /*const result = JSON.parse(await getDataFromStorage('profileData'));
   if (result?.getUserDetails?.[0]?.customFields?.[0]?.value) {
     let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
     payload.request.filters['se_mediums'] = language;
-  }
+  }*/
   //console.log('######## payload ', JSON.stringify(payload));
 
   try {

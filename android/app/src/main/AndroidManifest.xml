@@ -20,6 +20,10 @@ package="com.pratham.learning">
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     no need as we download in secure storage-->
     <!-- added android:requestLegacyExternalStorage="true" for api level 30 higher targeted device-->
+
+    <!-- for google analysis -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+    
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
