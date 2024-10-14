@@ -80,7 +80,7 @@ const CoursesBox = ({
           />
         </View> */}
       </View>
-      <View style={{ alignItems: 'center' }}>
+      <View>
         <FlatList
           data={ContentData}
           renderItem={renderItem}

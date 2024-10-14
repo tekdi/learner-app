@@ -1,3 +1,5 @@
+import { object } from 'prop-types';
+
 export const qumlPlayerConfig = {
   context: {
     threshold: 3,
@@ -60,7 +62,8 @@ export const questionsData = {
   questions_data: {},
 };
 
-export const contentPlayerConfig = {
+//old object has issue with html player
+/*export const contentPlayerConfig = {
   context: {
     uid: '',
     userData: { firstName: '', lastName: '' },
@@ -83,6 +86,23 @@ export const contentPlayerConfig = {
       { id: 'org.sunbird.iframeEvent', ver: 1, type: 'plugin' },
       { id: 'org.sunbird.player.endpage', ver: 1.1, type: 'plugin' },
     ],
+    sideMenu: {
+      showShare: false,
+      showDownload: false,
+      showExit: false,
+      showPrint: false,
+      showReplay: true,
+    },
+  },
+  metadata: {},
+  data: {},
+};*/
+
+//new object
+export const contentPlayerConfig = {
+  context: {},
+  config: {
+    showEndPage: true,
     sideMenu: {
       showShare: false,
       showDownload: false,

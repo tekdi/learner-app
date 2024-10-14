@@ -130,9 +130,10 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'video/x-youtube' ||
       content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
       content_mime_type == 'video/mp4' ||
-      content_mime_type == 'video/webm'
+      content_mime_type == 'video/webm' ||
+      content_mime_type == 'application/vnd.ekstep.html-archive'
     ) {
-      //Orientation.lockToLandscape();
+      Orientation.lockToLandscape();
     }
 
     const fetchData = async () => {
@@ -172,7 +173,7 @@ const StandAlonePlayer = ({ route }) => {
 
     // Unlock orientation when component is unmounted
     return () => {
-      //Orientation.lockToPortrait();
+      Orientation.lockToPortrait();
     };
   }, []);
 
@@ -491,12 +492,6 @@ const StandAlonePlayer = ({ route }) => {
           contentPlayerConfig.metadata = contentObj;
           contentPlayerConfig.data = '';
           contentPlayerConfig.context = { host: `file://${content_file}` };
-          //set user id and full name
-          contentPlayerConfig.context.uid = userId;
-          contentPlayerConfig.context.userData = {
-            firstName: userName,
-            lastName: '',
-          };
           //console.log('contentPlayerConfig set', contentPlayerConfig);
           set_is_valid_file(true);
         } catch (e) {
@@ -1067,74 +1062,82 @@ const StandAlonePlayer = ({ route }) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-      {is_valid_file == false ? (
-        <View style={styles.middle_screen}>
-          <Text allowFontScaling={false}>Invalid Player File</Text>
-        </View>
-      ) : is_download == true ? (
-        <View style={styles.middle_screen}>
-          <Button
-            title="Download Content"
-            onPress={() => {
-              if (content_mime_type == 'application/vnd.sunbird.questionset') {
-                downloadContentQuML();
-              } else if (
-                content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-                content_mime_type == 'video/x-youtube' ||
-                content_mime_type == 'application/vnd.ekstep.html-archive' ||
-                content_mime_type == 'application/vnd.ekstep.h5p-archive'
-              ) {
-                downloadContentECMLH5pHTMLYoutube();
-              }
+    <>
+      {/* Hides the status bar */}
+      <StatusBar hidden={true} />
+      <SafeAreaView style={styles.container}>
+        {/* <StatusBar barStyle="dark-content" /> */}
+        {is_valid_file == false ? (
+          <View style={styles.middle_screen}>
+            <Text allowFontScaling={false}>Invalid Player File</Text>
+          </View>
+        ) : is_download == true ? (
+          <View style={styles.middle_screen}>
+            <Button
+              title="Download Content"
+              onPress={() => {
+                if (
+                  content_mime_type == 'application/vnd.sunbird.questionset'
+                ) {
+                  downloadContentQuML();
+                } else if (
+                  content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+                  content_mime_type == 'video/x-youtube' ||
+                  content_mime_type == 'application/vnd.ekstep.html-archive' ||
+                  content_mime_type == 'application/vnd.ekstep.h5p-archive'
+                ) {
+                  downloadContentECMLH5pHTMLYoutube();
+                }
+              }}
+            />
+          </View>
+        ) : (
+          <WebView
+            ref={webviewRef}
+            originWhitelist={['*']}
+            source={
+              Platform.OS === 'ios' ? htmlFilePath : { uri: htmlFilePath }
+            }
+            style={styles.webview}
+            userAgent={
+              lib_folder == 'sunbird-content-player'
+                ? desktopUserAgent
+                : undefined
+            }
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            scalesPageToFit={true}
+            startInLoadingState={true}
+            allowFileAccess={true}
+            allowUniversalAccessFromFileURLs={true}
+            allowingReadAccessToURL={true}
+            mixedContentMode={'always'}
+            allowsFullscreenVideo={true}
+            mediaPlaybackRequiresUserAction={false}
+            injectedJavaScript={injectedJS}
+            onMessage={handleMessage}
+            onError={(syntheticEvent) => {
+              const { nativeEvent } = syntheticEvent;
+              console.warn('WebView error: ', nativeEvent);
             }}
+            onNavigationStateChange={handleNavigationStateChange}
           />
-        </View>
-      ) : (
-        <WebView
-          ref={webviewRef}
-          originWhitelist={['*']}
-          source={Platform.OS === 'ios' ? htmlFilePath : { uri: htmlFilePath }}
-          style={styles.webview}
-          userAgent={
-            lib_folder == 'sunbird-content-player'
-              ? desktopUserAgent
-              : undefined
-          }
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-          scalesPageToFit={true}
-          startInLoadingState={true}
-          allowFileAccess={true}
-          allowUniversalAccessFromFileURLs={true}
-          allowingReadAccessToURL={true}
-          mixedContentMode={'always'}
-          allowsFullscreenVideo={true}
-          mediaPlaybackRequiresUserAction={false}
-          injectedJavaScript={injectedJS}
-          onMessage={handleMessage}
-          onError={(syntheticEvent) => {
-            const { nativeEvent } = syntheticEvent;
-            console.warn('WebView error: ', nativeEvent);
-          }}
-          onNavigationStateChange={handleNavigationStateChange}
+        )}
+        <TestResultModal
+          modal={modal}
+          title={title}
+          isFromCourse={courseId == content_do_id ? true : false}
         />
-      )}
-      <TestResultModal
-        modal={modal}
-        title={title}
-        isFromCourse={courseId == content_do_id ? true : false}
-      />
-      {alertModal && <MimeAlertModal textTitle={errorDetail} />}
-    </SafeAreaView>
+        {alertModal && <MimeAlertModal textTitle={errorDetail} />}
+      </SafeAreaView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Removes top padding for Android
+    //paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Removes top padding for Android
   },
   webview: {
     flex: 1,

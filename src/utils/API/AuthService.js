@@ -234,7 +234,7 @@ export const courseListApi = async (params = {}) => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
-  const payload = {
+  let payload = {
     request: {
       filters: {
         se_boards: [
@@ -276,6 +276,14 @@ export const courseListApi = async (params = {}) => {
     },
   };
 
+  //get language user
+  const result = JSON.parse(await getDataFromStorage('profileData'));
+  if (result?.getUserDetails?.[0]?.customFields?.[0]?.value) {
+    let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
+    payload.request.filters['se_mediums'] = language;
+  }
+  //console.log('######## payload ', JSON.stringify(payload));
+
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -310,7 +318,7 @@ export const contentListApi = async (params = {}) => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
-  const payload = {
+  let payload = {
     request: {
       filters: {
         board: [
@@ -351,6 +359,14 @@ export const contentListApi = async (params = {}) => {
       offset: 0,
     },
   };
+
+  //get language user
+  const result = JSON.parse(await getDataFromStorage('profileData'));
+  if (result?.getUserDetails?.[0]?.customFields?.[0]?.value) {
+    let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
+    payload.request.filters['se_mediums'] = language;
+  }
+  //console.log('######## payload ', JSON.stringify(payload));
 
   try {
     // Make the actual request
