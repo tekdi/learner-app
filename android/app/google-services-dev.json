@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "338058217461",
+    "project_id": "pratham-learner-app",
+    "storage_bucket": "pratham-learner-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338058217461:android:325f182d6131ebc60e02bc",
+        "android_client_info": {
+          "package_name": "com.pratham.learning"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqmmsHvYp87X-jRUbOw5P5F8Ciw10lty0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

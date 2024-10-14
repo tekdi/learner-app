@@ -22,7 +22,10 @@ import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import { contentListApi } from '../../utils/API/AuthService';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
-import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  logEventFunction,
+} from '../../utils/JsHelper/Helper';
 import wave from '../../assets/images/png/wave.png';
 
 const Contents = () => {
@@ -47,6 +50,19 @@ const Contents = () => {
   const handleCancel = () => {
     setShowExitModal(false); // Close the modal
   };
+
+  useEffect(() => {
+    const logEvent = async () => {
+      const obj = {
+        eventName: 'contents_page_view',
+        method: 'on-view',
+        screenName: 'Contents',
+      };
+
+      await logEventFunction(obj);
+    };
+    logEvent();
+  }, []);
 
   useEffect(() => {
     fetchData();

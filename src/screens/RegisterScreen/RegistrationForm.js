@@ -34,6 +34,7 @@ import CustomPasswordTextField from '../../components/CustomPasswordComponent/Cu
 import {
   getDataFromStorage,
   getUserId,
+  logEventFunction,
   saveAccessToken,
   saveRefreshToken,
   saveToken,
@@ -311,7 +312,25 @@ const RegistrationForm = ({ schema }) => {
       cohort_id || '00000000-0000-0000-0000-000000000000'
     );
     setModal(false);
+    const obj = {
+      eventName: 'logged_in',
+      method: 'button-click',
+      screenName: 'Registration',
+    };
+    await logEventFunction(obj);
     navigation.navigate('Dashboard');
+  };
+
+  const logRegistrationComplete = async () => {
+    // Log the registration completed event
+    const obj = {
+      eventName: 'registration_completed',
+      method: 'button-click',
+      screenName: 'Registration',
+    };
+    await logEventFunction(obj);
+
+    // Handle your registration logic here
   };
 
   const onSubmit = async (data) => {
@@ -328,6 +347,7 @@ const RegistrationForm = ({ schema }) => {
     } else {
       console.log('hello');
       setModal(true);
+      logRegistrationComplete();
       await RegisterLogin(data);
     }
   };
@@ -585,6 +605,19 @@ const RegistrationForm = ({ schema }) => {
       return false; // Indicates that the back action should continue (exit)
     }
   };
+
+  useEffect(() => {
+    const logRegistrationInProgress = async () => {
+      const obj = {
+        eventName: 'registration_in_progress',
+        method: 'form-load',
+        screenName: 'Registration',
+      };
+      await logEventFunction(obj);
+    };
+
+    logRegistrationInProgress();
+  }, []);
 
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(

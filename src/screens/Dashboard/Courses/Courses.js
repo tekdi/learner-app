@@ -29,7 +29,10 @@ import {
 } from '../../../utils/API/AuthService';
 import SyncCard from '../../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
-import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  logEventFunction,
+} from '../../../utils/JsHelper/Helper';
 import { courseTrackingStatus } from '../../../utils/API/ApiCalls';
 import ActiveLoading from '../../LoadingScreen/ActiveLoading';
 
@@ -47,6 +50,18 @@ const Courses = () => {
     const route = state.routes[state.index];
     return route.name;
   });
+
+  useEffect(() => {
+    const logEvent = async () => {
+      const obj = {
+        eventName: 'course_page_view',
+        method: 'on-view',
+        screenName: 'Courses',
+      };
+      await logEventFunction(obj);
+    };
+    logEvent();
+  }, [userInfo]);
 
   useFocusEffect(
     useCallback(() => {

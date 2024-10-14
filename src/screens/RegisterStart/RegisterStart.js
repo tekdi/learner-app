@@ -5,11 +5,12 @@ import { useNavigation } from '@react-navigation/native';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
 import FastImage from '@changwoolab/react-native-fast-image';
+import { logEventFunction } from '../../utils/JsHelper/Helper';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../context/NetworkContext';
 
 const RegisterStart = () => {
-  //multi language setup
+  // Multi-language setup
   const { t } = useTranslation();
   const { isConnected } = useInternet();
   const nav = useNavigation();
@@ -18,8 +19,14 @@ const RegisterStart = () => {
     nav.goBack();
   };
 
-  const handleRegistration = () => {
+  const handleClick = async () => {
     if (isConnected) {
+      const obj = {
+        eventName: 'registration_started',
+        method: 'button-click',
+        screenName: 'Registration',
+      };
+      await logEventFunction(obj);
       nav.navigate('RegisterScreen');
     }
   };
@@ -33,6 +40,7 @@ const RegisterStart = () => {
           style={{ width: 30, height: 30 }}
         />
       </TouchableOpacity>
+
       {/* Icon png here */}
       <View style={styles.container_image}>
         <FastImage
@@ -45,11 +53,12 @@ const RegisterStart = () => {
           {t('form_start_lable')}
         </Text>
       </View>
+
       <View style={styles.buttonContainer}>
-        <PrimaryButton text={t('continue')} onPress={handleRegistration} />
+        <PrimaryButton text={t('continue')} onPress={handleClick} />
       </View>
 
-      <NetworkAlert onTryAgain={handleRegistration} isConnected={isConnected} />
+      <NetworkAlert onTryAgain={handleClick} isConnected={isConnected} />
     </View>
   );
 };
