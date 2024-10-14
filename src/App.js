@@ -11,8 +11,8 @@ import { NetworkProvider } from './context/NetworkContext'; // Adjust path as ne
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/StackScreen';
 import { BackHandler, Text, View } from 'react-native';
-
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
+import { logEventFunction } from './utils/JsHelper/Helper';
 
 async function checkAndRequestStoragePermission() {
   if (Platform.OS === 'android' && Platform.Version >= 33) {
@@ -83,6 +83,18 @@ const App = () => {
   useEffect(() => {
     changeNavigationBarColor('white', { barStyle: 'light-content' });
     // hideNavigationBar();
+  }, []);
+
+  useEffect(() => {
+    const logEvent = async () => {
+      const obj = {
+        eventName: 'LearnerApp_opened',
+        method: 'app_open',
+        screenName: 'app_launch',
+      };
+      await logEventFunction(obj);
+    };
+    logEvent();
   }, []);
 
   return (

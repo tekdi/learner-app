@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BackHandler, PermissionsAndroid } from 'react-native';
 import { getAccessToken } from '../API/AuthService';
+import analytics from '@react-native-firebase/analytics';
 
 // Get Saved Data from AsyncStorage
 
@@ -162,6 +163,19 @@ export const capitalizeName = (name) => {
     .split(' ') // Split the name by spaces into an array of words
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
     .join(' '); // Join the words back into a single string
+};
+
+export const logEventFunction = async ({ eventName, method, screenName }) => {
+  const timestamp = new Date().toLocaleString(); // Get the current timestamp
+
+  let userId = await getDataFromStorage('userId');
+
+  analytics().logEvent(eventName, {
+    method: method,
+    screen_name: screenName,
+    userId: userId || '-',
+    timestamp: timestamp, // Adding the timestamp as a parameter
+  });
 };
 
 export const storeUsername = async (username) => {

@@ -22,7 +22,10 @@ import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import { contentListApi } from '../../utils/API/AuthService';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
-import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  logEventFunction,
+} from '../../utils/JsHelper/Helper';
 import wave from '../../assets/images/png/wave.png';
 import { courseTrackingStatus } from '../../utils/API/ApiCalls';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
@@ -63,6 +66,18 @@ const Contents = () => {
       }, 500); // 1000 milliseconds = 1 second
     }, []) // Make sure to include the dependencies
   );
+  useEffect(() => {
+    const logEvent = async () => {
+      const obj = {
+        eventName: 'contents_page_view',
+        method: 'on-view',
+        screenName: 'Contents',
+      };
+
+      await logEventFunction(obj);
+    };
+    logEvent();
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);

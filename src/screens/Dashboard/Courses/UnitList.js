@@ -27,7 +27,10 @@ import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
 import FastImage from '@changwoolab/react-native-fast-image';
 import UnitCard from './UnitCard';
 import ContentCard from '../ContentCard';
-import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  logEventFunction,
+} from '../../../utils/JsHelper/Helper';
 
 const UnitList = ({ route }) => {
   const { children, name, course_id, unit_id, headingName } = route.params;
@@ -43,6 +46,18 @@ const UnitList = ({ route }) => {
 
   //set progress and start date
   const [trackData, setTrackData] = useState([]);
+
+  useEffect(() => {
+    const logEvent = async () => {
+      const obj = {
+        eventName: 'course_content_unit_list',
+        method: 'on-view',
+        screenName: 'Course-content-unit-list',
+      };
+      await logEventFunction(obj);
+    };
+    logEvent();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

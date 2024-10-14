@@ -28,6 +28,7 @@ import {
   getDataFromStorage,
   translateDate,
   translateDigits,
+  logEventFunction,
 } from '../../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../../utils/API/AuthService';
 import CircularProgressBarCustom from '../../../components/CircularProgressBarCustom.js/CircularProgressBarCustom';
@@ -52,6 +53,18 @@ const CourseContentList = ({ route }) => {
       fetchData();
     }, []) // Make sure to include the dependencies
   );
+
+  useEffect(() => {
+    const logEvent = async () => {
+      const obj = {
+        eventName: 'course_content_view',
+        method: 'on-view',
+        screenName: 'Course-content-list',
+      };
+      await logEventFunction(obj);
+    };
+    logEvent();
+  }, []);
 
   useEffect(() => {
     const backAction = () => {
