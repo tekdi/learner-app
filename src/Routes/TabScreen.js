@@ -67,15 +67,15 @@ const TabScreen = () => {
         component={DashboardStack}
         options={{ tabBarLabel: t('courses') }}
       />
-      {/* <Tab.Screen
-        name="AssessmentStack"
-        component={AssessmentStack}
-        options={{ tabBarLabel: t('assessment') }}
-      /> */}
       <Tab.Screen
         name="content"
         component={Contents}
         options={{ tabBarLabel: t('content') }}
+      />
+      <Tab.Screen
+        name="AssessmentStack"
+        component={AssessmentStack}
+        options={{ tabBarLabel: t('assessment') }}
       />
       <Tab.Screen
         name="Profile"

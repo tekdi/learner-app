@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.4,
     color: 'black',
     paddingLeft: 20,
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'Poppins-Regular',
   },
   overlap2: {

@@ -234,10 +234,16 @@ export const courseListApi = async (params = {}) => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
-  const payload = {
+  let payload = {
     request: {
       filters: {
-        se_boards: ['Odisha'],
+        se_boards: [
+          'Odisha',
+          'Uttar Pradesh',
+          'Madhya Pradesh',
+          'NIOS',
+          'Rajasthan',
+        ],
         primaryCategory: ['Course'],
         visibility: ['Default', 'Parent'],
       },
@@ -269,6 +275,15 @@ export const courseListApi = async (params = {}) => {
       offset: 0,
     },
   };
+
+  //get language user
+  //removed below filter for Pilot release
+  /*const result = JSON.parse(await getDataFromStorage('profileData'));
+  if (result?.getUserDetails?.[0]?.customFields?.[0]?.value) {
+    let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
+    payload.request.filters['se_mediums'] = language;
+  }*/
+  //console.log('######## payload ', JSON.stringify(payload));
 
   try {
     // Make the actual request
@@ -304,11 +319,17 @@ export const contentListApi = async (params = {}) => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
-  const payload = {
+  let payload = {
     request: {
       filters: {
-        audience: 'student',
-        primaryCategory: ['Content'],
+        board: [
+          'Odisha',
+          'Uttar Pradesh',
+          'Madhya Pradesh',
+          'NIOS',
+          'Rajasthan',
+        ],
+        primaryCategory: ['Learning Resource'],
         visibility: ['Default', 'Parent'],
       },
       limit: 100,
@@ -318,19 +339,16 @@ export const contentListApi = async (params = {}) => {
       fields: [
         'name',
         'appIcon',
+        'description',
+        'posterImage',
         'mimeType',
-        'gradeLevel',
         'identifier',
-        'medium',
-        'pkgVersion',
-        'board',
-        'subject',
         'resourceType',
         'primaryCategory',
         'contentType',
-        'channel',
-        'organisation',
         'trackable',
+        'children',
+        'leafNodes',
       ],
       facets: [
         'se_boards',
@@ -342,6 +360,15 @@ export const contentListApi = async (params = {}) => {
       offset: 0,
     },
   };
+
+  //get language user
+  //removed below filter for Pilot release
+  /*const result = JSON.parse(await getDataFromStorage('profileData'));
+  if (result?.getUserDetails?.[0]?.customFields?.[0]?.value) {
+    let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
+    payload.request.filters['se_mediums'] = language;
+  }*/
+  //console.log('######## payload ', JSON.stringify(payload));
 
   try {
     // Make the actual request

@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { translateDigits } from '../../utils/JsHelper/Helper';
 
-const ProgressBarCustom = ({ progress, width }) => {
+const ProgressBarCustom = ({ progress, language, width }) => {
   return (
     <>
       <View style={[styles.container, { width }]}>
@@ -9,10 +10,10 @@ const ProgressBarCustom = ({ progress, width }) => {
         <View style={[styles.progressBar, { width: `${progress}%` }]} />
         {/* Percentage Label */}
       </View>
-      <Text
-        allowFontScaling={false}
-        style={styles.label}
-      >{`${progress}%`}</Text>
+      <Text allowFontScaling={false} style={styles.label}>{`${translateDigits(
+        progress,
+        language
+      )}%`}</Text>
     </>
   );
 };

@@ -97,8 +97,21 @@ const Courses = () => {
   useFocusEffect(
     useCallback(() => {
       console.log('########## in focus course');
+      const onBackPress = () => {
+        if (routeName === 'Courses') {
+          setShowExitModal(true);
+          return true; // Prevent default back behavior
+        }
+        return false; // Allow default back behavior
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
       fetchData();
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
     }, []) // Make sure to include the dependencies
   );
 
@@ -170,7 +183,9 @@ const Courses = () => {
                   {t('welcome')}, {userInfo?.[0]?.name} !
                 </Text>
               </View>
-              <SyncCard doneSync={fetchData} />
+              <SyncCard
+              //doneSync={fetchData}
+              />
 
               <CoursesBox
                 // title={'Continue_Learning'}

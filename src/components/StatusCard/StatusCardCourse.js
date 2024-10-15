@@ -9,22 +9,18 @@ import { ProgressBar } from '@ui-kitten/components';
 import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
 import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
 
-const StatusCard = ({
-  status,
-  trackCompleted,
-  viewStyle,
-}) => {
-  const { t, language } = useTranslation();
+const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
+  const { t } = useTranslation();
 
   if (status === 'completed') {
     return (
       <View style={[styles.view, viewStyle]}>
-        <Icon name="check-circle-fill" style={{ color: '#50EE42' }} />
+        <Icon name="check-circle-fill" style={{ color: 'green' }} />
         <Text
           allowFontScaling={false}
           style={[
             globalStyles.text,
-            { color: '#50EE42', marginLeft: 10, fontSize: 12 },
+            { color: 'black', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('completed')}
@@ -34,11 +30,7 @@ const StatusCard = ({
   } else if (status === 'inprogress') {
     return (
       <View style={[styles.view, viewStyle, { paddingVertical: 5 }]}>
-        <ProgressBarCustom
-          progress={trackCompleted}
-          language={language}
-          width={100}
-        />
+        <ProgressBarCustom progress={trackCompleted} width={100} />
       </View>
     );
   } else if (status === 'progress') {
@@ -53,7 +45,7 @@ const StatusCard = ({
           allowFontScaling={false}
           style={[
             globalStyles.text,
-            { color: 'white', marginLeft: 10, fontSize: 12 },
+            { color: 'black', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('Inprogress')}
@@ -63,12 +55,12 @@ const StatusCard = ({
   } else {
     return (
       <View style={[styles.view, viewStyle]}>
-        <Icon name="circle" />
+        <Icon name="circle" style={{ color: 'black' }} />
         <Text
           allowFontScaling={false}
           style={[
             globalStyles.text,
-            { color: 'white', marginLeft: 10, fontSize: 12 },
+            { color: 'black', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('not_started')}
@@ -81,8 +73,7 @@ const StatusCard = ({
 const styles = StyleSheet.create({
   view: {
     flexDirection: 'row',
-    width: '100%',
-    backgroundColor: '#3A3A3ACC',
+    width: '70%',
     alignItems: 'center',
     paddingLeft: 10,
     paddingVertical: 3,
@@ -90,10 +81,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 5,
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
-    overflow: 'hidden',
   },
 });
 
-StatusCard.propTypes = {};
+StatusCardCourse.propTypes = {};
 
-export default StatusCard;
+export default StatusCardCourse;

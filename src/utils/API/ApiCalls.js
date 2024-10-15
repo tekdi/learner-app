@@ -240,6 +240,7 @@ export const assessmentTracking = async (
         console.log('error', error);
         api_response = { response: null, data: data };
       });
+    console.log('############ create assessments ', api_response);
     return api_response;
   } catch (error) {
     throw new Error(

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Header from '../../components/Layout/Header';
@@ -11,6 +11,7 @@ import {
 import SubjectBox from '../../components/TestBox.js/SubjectBox.';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import globalStyles from '../../utils/Helper/Style';
+import { useFocusEffect } from '@react-navigation/native';
 
 const instructions = [
   {
@@ -64,39 +65,49 @@ const TestView = ({ route }) => {
   const [status, setStatus] = useState('');
   const [percentage, setPercentage] = useState('');
   const [completedCount, setCompletedCount] = useState(0);
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getDataFromStorage('QuestionSet');
 
-      const parseData = JSON.parse(data);
-      // Extract DO_id from assessmentList (content)
-
-      const uniqueAssessmentsId = [
-        ...new Set(parseData?.map((item) => item.IL_UNIQUE_ID)),
-      ];
-
-      // Get data of exam if given
-
-      const assessmentStatusData = JSON.parse(
-        await getDataFromStorage('assessmentStatusData')
-      );
-
-      // console.log(JSON.stringify(assessmentStatusData));
-      setStatus(assessmentStatusData?.[0]?.status || 'not_started');
-      setPercentage(assessmentStatusData?.[0]?.percentage || '');
-      setCompletedCount(assessmentStatusData?.[0]?.assessments.length || 0);
-      const datatest = await getLastMatchingData(
-        assessmentStatusData,
-        uniqueAssessmentsId
-      );
-
-      const finalData = mergeDataWithQuestionSet(parseData, datatest);
-      setQuestionsets(finalData);
-      // console.log(JSON.stringify(finalData));
-      setLoading(false);
-    };
+  /*useEffect(() => {
     fetchData();
-  }, []);
+  }, []);*/
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log('########## in focus assessments');
+
+      fetchData();
+    }, []) // Make sure to include the dependencies
+  );
+
+  const fetchData = async () => {
+    const data = await getDataFromStorage('QuestionSet');
+
+    const parseData = JSON.parse(data);
+    // Extract DO_id from assessmentList (content)
+
+    const uniqueAssessmentsId = [
+      ...new Set(parseData?.map((item) => item.IL_UNIQUE_ID)),
+    ];
+
+    // Get data of exam if given
+
+    const assessmentStatusData = JSON.parse(
+      await getDataFromStorage('assessmentStatusData')
+    );
+
+    // console.log(JSON.stringify(assessmentStatusData));
+    setStatus(assessmentStatusData?.[0]?.status || 'not_started');
+    setPercentage(assessmentStatusData?.[0]?.percentage || '');
+    setCompletedCount(assessmentStatusData?.[0]?.assessments.length || 0);
+    const datatest = await getLastMatchingData(
+      assessmentStatusData,
+      uniqueAssessmentsId
+    );
+
+    const finalData = mergeDataWithQuestionSet(parseData, datatest);
+    setQuestionsets(finalData);
+    // console.log(JSON.stringify(finalData));
+    setLoading(false);
+  };
 
   return loading ? (
     <ActiveLoading />

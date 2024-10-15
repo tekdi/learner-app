@@ -45,7 +45,9 @@ const SubjectBox = ({ name, disabled, data }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log('########### IN SUBJECT BOX');
       let content_do_id = data?.IL_UNIQUE_ID;
+      console.log('########### content_do_id', content_do_id);
       let contentObj = await getData(content_do_id, 'json');
       if (contentObj == null) {
         setDownloadStatus('download');
@@ -63,7 +65,7 @@ const SubjectBox = ({ name, disabled, data }) => {
         batch_id,
         content_id
       );
-      console.log({ result_sync_offline });
+      console.log('############ result_sync_offline', result_sync_offline);
       if (result_sync_offline) {
         setIsSyncPending(true);
       } else {

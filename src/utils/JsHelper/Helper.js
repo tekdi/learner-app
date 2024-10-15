@@ -195,3 +195,105 @@ export const storeUsername = async (username) => {
     console.error('Error storing username:', error);
   }
 };
+
+//translate digits in language
+const regionalDigits = {
+  en: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+  hi: ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'], // Hindi
+  ma: ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'], // Marathi
+};
+const monthNames = {
+  en: [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ],
+  hi: [
+    'जनवरी',
+    'फेब्रुवारी',
+    'मार्च',
+    'एप्रिल',
+    'मे',
+    'जून',
+    'जुलै',
+    'ऑगस्ट',
+    'सप्टेंबर',
+    'ऑक्टोबर',
+    'नोव्हेंबर',
+    'डिसेंबर',
+  ],
+  ma: [
+    'जानेवारी',
+    'फेब्रुवारी',
+    'मार्च',
+    'एप्रिल',
+    'मे',
+    'जून',
+    'जुलै',
+    'ऑगस्ट',
+    'सप्टेंबर',
+    'ऑक्टोबर',
+    'नोव्हेंबर',
+    'डिसेंबर',
+  ],
+};
+// Create a mapping for month abbreviations to indices
+const monthAbbrToIndex = {
+  Jan: 0,
+  Feb: 1,
+  Mar: 2,
+  Apr: 3,
+  May: 4,
+  Jun: 5,
+  Jul: 6,
+  Aug: 7,
+  Sep: 8,
+  Oct: 9,
+  Nov: 10,
+  Dec: 11,
+};
+export const translateDigits = (number, lang) => {
+  return number
+    .toString()
+    .split('')
+    .map((digit) => regionalDigits[lang][parseInt(digit, 10)] || digit)
+    .join('');
+};
+export const translateDate = (dateStr, lang) => {
+  // Split the date string into components
+  const [day, monthAbbr, year] = dateStr.split(' ');
+  console.log('###### dateStr', dateStr);
+  console.log('###### day', day);
+  console.log('###### monthAbbr', monthAbbr);
+  console.log('###### year', year);
+  // Translate the day
+  const translatedDay = translateDigits(day, lang).toString();
+
+  const translatedYear = translateDigits(year, lang).toString();
+
+  console.log('###### translatedDay', translatedDay);
+  console.log('###### translatedYear', translatedYear);
+  // Translate the month
+  const monthIndex = monthAbbrToIndex[monthAbbr];
+
+  console.log('###### monthIndex', monthIndex);
+  const translatedMonth = monthNames[lang][monthIndex];
+  const translatedDate = `${translatedDay} ${translatedMonth} ${translatedYear}`;
+  /*const translatedDate = {
+    translatedDay: translatedDay,
+    translatedMonth: translatedMonth,
+    translatedYear: translatedYear,
+  };*/
+  console.log('###### translatedDate', JSON.stringify(translatedDate));
+  // Combine translated components
+  return translatedDate;
+};

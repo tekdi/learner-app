@@ -8,13 +8,23 @@ import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { capitalizeFirstLetter } from '../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
 
-const TestResultModal = ({ modal, title }) => {
+const TestResultModal = ({ modal, title, isFromCourse }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
   const closeModal = () => {
     //navigation.replace('Dashboard');
-    navigation.goBack();
+    if (isFromCourse && isFromCourse == true) {
+      console.log('############# isFromCourse', isFromCourse);
+      navigation.navigate('AssessmentStack');
+      // After navigating to the 'Profile' tab, reset the stack inside the tab
+      navigation.reset({
+        index: 0, // Reset to the zeroth index screen of the tab
+        routes: [{ name: 'Assessment' }], // Ensure this is the initial screen of the stack
+      });
+    } else {
+      navigation.goBack();
+    }
   };
 
   return (

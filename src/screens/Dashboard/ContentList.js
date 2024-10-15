@@ -185,6 +185,8 @@ const ContentList = ({ route }) => {
       content_do_id: data?.identifier,
       content_mime_type: data?.mimeType,
       isOffline: false,
+      course_id: data?.identifier,
+      unit_id: data?.identifier,
     });
   };
 
