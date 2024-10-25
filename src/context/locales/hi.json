@@ -234,5 +234,7 @@
   "planned_sessions": "नियोजित सत्र",
   "no_sessions_scheduled": "कोई सत्र निर्धारित नहीं",
   "no_data": "कोई डेटा नहीं",
-  "pre_requisites": "(पूर्व-आवश्यकताएँ)"
+  "pre_requisites": "(पूर्व-आवश्यकताएँ)",
+  "pre_requisites_2": "पूर्व-आवश्यकताएँ",
+  "post_requisites_2": "पोस्ट-आवश्यकताएँ"
 }

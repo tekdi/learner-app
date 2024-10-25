@@ -41,7 +41,7 @@ function getFilteredData(data) {
   });
 }
 
-const Accordion = ({ item, postrequisites }) => {
+const Accordion = ({ item, postrequisites, title }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [trackData, setTrackData] = useState([]);
@@ -82,14 +82,24 @@ const Accordion = ({ item, postrequisites }) => {
         ]}
         onPress={() => setAccordionOpen(!isAccordionOpen)}
       >
-        <Text
-          numberOfLines={1}
-          ellipsizeMode="tail"
-          style={[globalStyles.text]}
-        >
-          {item?.metadata?.subject || ''}{' '}
-          {item?.shortDescription && `- ${item?.shortDescription}`}
-        </Text>
+        {title ? (
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[globalStyles.text]}
+          >
+            {t(title)}
+          </Text>
+        ) : (
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[globalStyles.text]}
+          >
+            {item?.metadata?.subject || ''}{' '}
+            {item?.shortDescription && `- ${item?.shortDescription}`}
+          </Text>
+        )}
         <Icon
           name={isAccordionOpen ? 'angle-up' : 'angle-down'}
           color="#0D599E"
@@ -153,7 +163,9 @@ const Accordion = ({ item, postrequisites }) => {
               </View>
             ))
           ) : (
-            <Text style={globalStyles.text}>{t('no_topics')}</Text>
+            <Text style={[globalStyles.text, { marginLeft: 10 }]}>
+              {t('no_topics')}
+            </Text>
           )}
         </View>
       )}

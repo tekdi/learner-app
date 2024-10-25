@@ -15,11 +15,13 @@ import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from '../../../../context/LanguageContext';
 import { formatDateTimeRange } from '../../../../utils/JsHelper/Helper';
+import { useNavigation } from '@react-navigation/native';
 
 const SubjectCard = ({ item }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const { t } = useTranslation();
+  const navigation = useNavigation();
 
   const handleCopyLink = () => {
     Clipboard.setString(zoomLink); // Copy the Zoom link to the clipboard
@@ -51,9 +53,7 @@ const SubjectCard = ({ item }) => {
           </Text>
         </View>
 
-        <Text
-          style={[globalStyles.text, { color: '#7C766F', marginVertical: 5 }]}
-        >
+        <Text style={[globalStyles.text, { color: '#7C766F', marginTop: 5 }]}>
           {item?.metadata?.teacherName}
         </Text>
         {/* Zoom Link with Copy Icon */}
@@ -65,7 +65,7 @@ const SubjectCard = ({ item }) => {
               >
                 <Text
                   style={styles.zoomLink}
-                  numberOfLines={2}
+                  numberOfLines={1}
                   ellipsizeMode="tail"
                 >
                   {item?.onlineDetails?.url}
@@ -109,7 +109,18 @@ const SubjectCard = ({ item }) => {
         {isAccordionOpen && (
           <View style={styles.accordionContent}>
             {item?.erMetaData?.topic ? (
-              <>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('SubjectDetails', {
+                    topic: item?.erMetaData?.topic,
+                    subTopic: item?.erMetaData?.subTopic,
+                    courseType: item?.metadata?.courseType,
+                    item: item,
+                  });
+                }}
+              >
+                {console.log(item?.erMetaData?.topic)}
+
                 <View style={globalStyles.flexrow}>
                   <Icon name="book-open" size={20} color="#0D599E" />
 
@@ -123,15 +134,19 @@ const SubjectCard = ({ item }) => {
                     size={20}
                     color="#0D599E"
                   />
-                  {item?.erMetaData?.subTopic?.map((item, key) => {
+                  {item?.erMetaData?.subTopic?.map((subItem, index) => {
+                    const isLastItem =
+                      index === item.erMetaData.subTopic.length - 1; // Check if it's the last item
                     return (
-                      <Text key={key} style={styles.accordionDetails}>
-                        {item},
+                      <Text key={index} style={styles.accordionDetails}>
+                        {subItem}
+                        {!isLastItem && ','}
+                        {/* Only add comma if not the last item */}
                       </Text>
                     );
                   })}
                 </View>
-              </>
+              </TouchableOpacity>
             ) : (
               <Text style={globalStyles.text}>{t('no_topics')}</Text>
             )}
@@ -161,7 +176,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 15,
   },
 
   zoomLink: {
@@ -184,7 +198,7 @@ const styles = StyleSheet.create({
   },
 
   accordionContent: {
-    paddingVertical: 10,
+    paddingVertical: 0,
   },
   accordionDetails: {
     color: '#0D599E',

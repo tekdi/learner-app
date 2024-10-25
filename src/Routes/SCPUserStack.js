@@ -8,6 +8,7 @@ import PreviousClassMaterial from '../screens/Dashboard/Preference/SCPDashboard/
 import FullAttendance from '../screens/Dashboard/Calendar/FullAttendance';
 import TimeTable from '../screens/Dashboard/Calendar/TimeTable';
 import PreviousClassMaterialFullView from '../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterialFullView';
+import SubjectDetails from '../screens/Dashboard/Preference/SCPDashboard/SubjectDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +43,11 @@ const SCPUserStack = () => {
       <Stack.Screen
         name="PreviousClassMaterialFullView"
         component={PreviousClassMaterialFullView}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="SubjectDetails"
+        component={SubjectDetails}
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
     </Stack.Navigator>

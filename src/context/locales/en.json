@@ -237,5 +237,7 @@
   "planned_sessions": "Planned Sessions",
   "no_sessions_scheduled": "No sessions scheduled",
   "no_data": "No Data",
-  "pre_requisites": "(Pre-requisites)"
+  "pre_requisites": "(Pre-requisites)",
+  "pre_requisites_2": "Pre-requisites",
+  "post_requisites_2": "Post-requisites"
 }

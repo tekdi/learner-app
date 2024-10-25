@@ -100,7 +100,9 @@ const AttendanceCard = ({ attendance }) => {
             />
           </View>
           <View style={{ width: '80%', marginLeft: 25 }}>
-            <Text style={globalStyles.heading3}>{presentPercentage}%</Text>
+            <Text style={[globalStyles.heading2, { fontWeight: 800 }]}>
+              {presentPercentage}%
+            </Text>
             <Text style={[globalStyles.subHeading, { color: '#635E57' }]}>
               {t('overall_attendance')}
             </Text>
@@ -141,7 +143,7 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'space-between',
     // backgroundColor: 'rgba(255, 255, 255, 0.5)', // Optional: Add a semi-transparent background to make text readable
-    borderRadius: 15,
+    borderRadius: 20,
     // borderWidth: 1,
     // borderColor: 'red',
   },
