@@ -1,7 +1,7 @@
-import { getDataFromStorage } from '../JsHelper/Helper';
+import { createNewObject, getDataFromStorage } from '../JsHelper/Helper';
 import { deleteData, getData, insertData } from '../JsHelper/SqliteHelper';
 import EndUrls from './EndUrls';
-import { get, handleResponseException, post } from './RestClient';
+import { get, handleResponseException, patch, post } from './RestClient';
 
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
@@ -142,6 +142,37 @@ export const registerUser = async (params = {}) => {
 
     // Make the actual request
     const result = await post(url, params, {
+      headers: headers || {},
+    });
+
+    if (result?.data) {
+      return result?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const updateUser = async ({ payload, user_id }) => {
+  try {
+    const method = 'PATCH'; // Define the HTTP method
+    const url = `${EndUrls.update_profile}/${user_id}`; // Define the URL
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Cookie:
+        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+      Authorization: `Bearer ${token}`,
+    };
+    // Log the cURL command
+    // console.log(
+    //   `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await patch(url, payload, {
       headers: headers || {},
     });
 
@@ -1032,4 +1063,179 @@ export const reverseGeocode = async (latitude, longitude) => {
   );
   const data = await response.json();
   return data;
+};
+
+export const eventList = async ({ startDate, endDate }) => {
+  try {
+    const url = `${EndUrls.eventList}`; // Define the URL
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    const payload = {
+      limit: 0,
+      offset: 0,
+      filters: {
+        date: {
+          after: startDate,
+          before: endDate,
+        },
+        status: ['live'],
+      },
+    };
+    // console.log(
+    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const targetedSolutions = async ({ subjectName, type }) => {
+  try {
+    const method = 'POST'; // Define the HTTP method
+    const url = `${EndUrls.targetedSolutions}`; // Define the URL
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Cookie:
+        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+      'x-auth-token': token,
+    };
+    const cohort = JSON.parse(await getDataFromStorage('cohortData'));
+    const requiredLabels = ['GRADE', 'STATES', 'MEDIUM', 'BOARD'];
+    const customFields = cohort?.cohortData?.[0]?.customField;
+    const data = createNewObject(customFields, requiredLabels);
+
+    const payload = {
+      subject: subjectName,
+      state: data?.STATES,
+      medium: data?.MEDIUM,
+      class: data?.GRADE,
+      board: data?.BOARD,
+      type: type,
+    };
+    // const payload = {
+    //   subject: 'Science',
+    //   state: 'Maharashtra',
+    //   medium: 'Marathi',
+    //   class: 'Grade 10',
+    //   board: 'Maharashtra',
+    //   type: 'Main Course',
+    // };
+
+    // console.log(
+    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const EventDetails = async ({ id }) => {
+  try {
+    const method = 'POST'; // Define the HTTP method
+    const url = `${EndUrls.EventDetails}/${id}`; // Define the URL
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Cookie:
+        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+      'x-auth-token': token,
+    };
+
+    const payload = {};
+
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
+    );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const getAttendance = async ({ todate, fromDate }) => {
+  try {
+    const method = 'POST'; // Define the HTTP method
+    const url = `${EndUrls.attendance}`; // Define the URL
+    const token = await getDataFromStorage('Accesstoken');
+    let userId = await getDataFromStorage('userId');
+    let cohortId = await getDataFromStorage('cohortId');
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Cookie:
+        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+      Authorization: `Bearer ${token}`,
+      tenantid: `ef99949b-7f3a-4a5f-806a-e67e683e38f3`,
+    };
+
+    const payload = {
+      limit: 300,
+      page: 0,
+      filters: {
+        contextId: cohortId,
+        scope: 'student',
+        toDate: todate,
+        fromDate: fromDate,
+        userId: userId,
+      },
+    };
+
+    // console.log(
+    //   `curl -X ${method} '${url}' \\\n` +
+    //     `-H 'Content-Type: application/json' \\\n` +
+    //     `-H 'Accept: application/json' \\\n` +
+    //     `-H 'Cookie: ${headers.Cookie}' \\\n` +
+    //     `-H 'Authorization: ${headers.Authorization}' \\\n` +
+    //     `-H 'tenantid: ${headers.tenantid}' \\\n` +
+    //     `-d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
 };

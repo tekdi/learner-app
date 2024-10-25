@@ -11,6 +11,7 @@ const TELEMETRY_URL = Config.TELEMETRY_URL;
 const EndUrls = {
   login: API_URL + '/user/v1/auth/login',
   learner_register: API_URL + '/user/v1/create',
+  update_profile: API_URL + '/user/v1/update',
   get_current_token: API_URL + '/user/v1/auth',
   refresh_token: API_URL + '/user/v1/auth/refresh',
   get_form: API_URL + '/user/v1/form/read?context=USERS&contextType=STUDENT',
@@ -36,6 +37,10 @@ const EndUrls = {
   CourseTrackingStatus: `${tracking_assessment}/v1/tracking/content/course/status`,
   geolocation: `${API_URL}/user/v1/fields/options/read`,
   forgotPassword: `${API_URL}/user/v1/password-reset-link`,
+  eventList: `https://event.prathamdigital.org/event-service/event/v1/list`,
+  targetedSolutions: `https://project.prathamdigital.org/project/v1/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
+  EventDetails: `https://project.prathamdigital.org/project/v1/userProjects/details`,
+  attendance: `${API_URL}/user/v1/attendance/list`,
 };
 
 export default EndUrls;

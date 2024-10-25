@@ -297,3 +297,47 @@ export const translateDate = (dateStr, lang) => {
   // Combine translated components
   return translatedDate;
 };
+
+export const createNewObject = (customFields, labels) => {
+  const result = {};
+  customFields?.forEach((field) => {
+    const cleanedFieldLabel = field?.label?.replace(/[^a-zA-Z0-9_ ]/g, '');
+
+    if (labels.includes(cleanedFieldLabel)) {
+      result[cleanedFieldLabel] = field.value || '';
+    }
+  });
+
+  return result;
+};
+
+export const categorizeEvents = async (events) => {
+  const plannedSessions = [];
+  const extraSessions = [];
+
+  events?.forEach((event) => {
+    if (event.isRecurring) {
+      plannedSessions.push(event);
+    } else {
+      extraSessions.push(event);
+    }
+  });
+
+  return { plannedSessions, extraSessions };
+};
+
+export const formatDateTimeRange = (startDateTime) => {
+  // Parse the input date string
+  const date = new Date(startDateTime);
+
+  // Format date to "25 Oct"
+  const options = { day: 'numeric', month: 'short' };
+  const formattedDate = date.toLocaleDateString('en-US', options);
+
+  // Format start time in 12-hour format
+  const startTimeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+  const formattedStartTime = date.toLocaleTimeString('en-US', startTimeOptions);
+
+  // Combine everything into the final output string
+  return ` ${formattedStartTime} `;
+};

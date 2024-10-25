@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "658644463718",
-    "project_id": "plp-learner-app",
-    "storage_bucket": "plp-learner-app.appspot.com"
+    "project_number": "338058217461",
+    "project_id": "pratham-learner-app",
+    "storage_bucket": "pratham-learner-app.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:658644463718:android:545601a033995e47633da7",
+        "mobilesdk_app_id": "1:338058217461:android:325f182d6131ebc60e02bc",
         "android_client_info": {
           "package_name": "com.pratham.learning"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC-yMm6pLNCAAAWz8LkElosR_NnDeb73RI"
+          "current_key": "AIzaSyDqmmsHvYp87X-jRUbOw5P5F8Ciw10lty0"
         }
       ],
       "services": {

@@ -17,8 +17,9 @@ import ActiveLoading from '../LoadingScreen/ActiveLoading';
 
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import SyncCard from '../../components/SyncComponent/SyncCard';
+import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 
-const Assessment = (props) => {
+const Assessment = ({ header, background }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [assessments, setAssessments] = useState([]);
@@ -92,7 +93,7 @@ const Assessment = (props) => {
             uniqueAssessmentsId,
           })) || [];
         console.log('############ ', assessmentStatusData);
-        
+
         if (assessmentStatusData?.[0]?.assessments) {
           await setDataInStorage(
             'assessmentStatusData',
@@ -119,20 +120,24 @@ const Assessment = (props) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <Header />
+      {!header && <SecondaryHeader logo />}
       {loading ? (
         <ActiveLoading />
       ) : (
         <View>
           <SyncCard doneSync={fetchData} />
-          <Text
-            allowFontScaling={false}
-            style={[globalStyles.heading, { padding: 20 }]}
-          >
-            {t('Assessments')}
-          </Text>
+          {!header && (
+            <Text
+              allowFontScaling={false}
+              style={[globalStyles.heading, { padding: 20 }]}
+            >
+              {t('Assessments')}
+            </Text>
+          )}
 
-          <View style={styles.card}>
+          <View
+            style={[styles.card, { backgroundColor: !background && '#FBF4E4' }]}
+          >
             {assessments.length > 0 ? (
               assessments?.map((item) => {
                 return (
@@ -170,7 +175,6 @@ Assessment.propTypes = {};
 const styles = StyleSheet.create({
   card: {
     justifyContent: 'space-between',
-    backgroundColor: '#FBF4E4',
     paddingVertical: 30,
     paddingHorizontal: 20,
   },

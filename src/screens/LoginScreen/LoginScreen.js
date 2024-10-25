@@ -82,13 +82,19 @@ const LoginScreen = () => {
         await storeUsername(profileData?.getUserDetails?.[0]?.username);
         await setDataInStorage('userId', user_id);
         const cohort = await getCohort({ user_id });
+        console.log(JSON.stringify(cohort));
+
         await setDataInStorage('cohortData', JSON.stringify(cohort));
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
         await setDataInStorage(
           'cohortId',
           cohort_id || '00000000-0000-0000-0000-000000000000'
         );
-        navigation.navigate('Dashboard');
+        if (cohort_id) {
+          navigation.navigate('SCPUserTabScreen');
+        } else {
+          navigation.navigate('Dashboard');
+        }
       } else {
         setLoading(false);
         setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));
@@ -109,7 +115,7 @@ const LoginScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = JSON.parse(await getDataFromStorage('usernames')) || [];
-      console.log({ data });
+      // console.log({ data });
       setUsernames(data);
     };
     fetchData();

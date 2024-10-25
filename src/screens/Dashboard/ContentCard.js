@@ -12,6 +12,7 @@ import DownloadCard from '../../components/DownloadCard/DownloadCard';
 import StatusCardIcon from '../../components/StatusCard/StatusCardIcon';
 import globalStyles from '../../utils/Helper/Style';
 import {
+  capitalizeFirstLetter,
   getDataFromStorage,
   logEventFunction,
 } from '../../utils/JsHelper/Helper';
@@ -20,7 +21,7 @@ import { getSyncTrackingOfflineCourse } from '../../utils/API/AuthService';
 const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const navigation = useNavigation();
   // console.log('########## ContentCard');
-  // console.log('course_id', course_id);
+  console.log('course_id', item?.name);
   // console.log('unit_id', unit_id);
   // console.log('##########');
 
@@ -51,15 +52,17 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const handlePress = (data) => {
     logEvent();
     navigation.navigate('StandAlonePlayer', {
-      content_do_id: data?.identifier,
-      content_mime_type: data?.mimeType,
+      content_do_id: data?.identifier || data?.id,
+      content_mime_type: data?.mimeType || data?.app,
       isOffline: false,
       course_id: course_id,
       unit_id: unit_id,
     });
   };
 
-  const mimeType = item?.mimeType?.split('/')[1];
+  const mimeType = item?.mimeType?.split('/')[1] || item?.app?.split('/')[1];
+
+  // console.log({ mimeType });
 
   //set progress and start date
   const [trackStatus, setTrackStatus] = useState('');
@@ -186,11 +189,15 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         <View style={styles.overlay}>
           <Text
             allowFontScaling={false}
-            style={styles.cardText}
+            style={{ fontSize: 13 }}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
-            {mimeType ? mimeType.toUpperCase() : ''}
+            {mimeType === 'x-youtube'
+              ? `YouTube`
+              : mimeType === 'vnd.ekstep.html-archive'
+                ? `Web`
+                : capitalizeFirstLetter(mimeType)}
           </Text>
         </View>
         <View style={styles.view}>
@@ -201,13 +208,18 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
           />
         </View>
       </TouchableOpacity>
-      <View style={[globalStyles.flexrow, { marginVertical: 10 }]}>
+      <View
+        style={[
+          globalStyles.flexrow,
+          { marginBottom: 10, alignItems: 'flex-start', marginTop: 5 },
+        ]}
+      >
         <StatusCardIcon status={trackStatus} />
 
         <Text
           allowFontScaling={false}
           style={[styles.cardText, { color: '#000' }]}
-          numberOfLines={1}
+          numberOfLines={3}
           ellipsizeMode="tail"
         >
           {item?.name}
@@ -220,15 +232,17 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 const styles = StyleSheet.create({
   card: {
     width: '47%',
-    height: 120,
+    height: 135,
     borderRadius: 20,
     marginVertical: 25,
+    // borderWidth: 1,
     // overflow: 'hidden', // Ensure the background image and content stay within the card boundaries
   },
   subcard: {
     height: 120,
     borderRadius: 20,
     overflow: 'hidden', // Ensure content doesn't overflow the card boundaries
+    // borderWidth: 1,
   },
   cardBackgroundImage: {
     ...StyleSheet.absoluteFillObject, // Make the background image cover the entire card
@@ -243,7 +257,7 @@ const styles = StyleSheet.create({
   },
   cardText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 14,
     paddingHorizontal: 5,
   },
   view: {

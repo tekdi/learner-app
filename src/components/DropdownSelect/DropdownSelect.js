@@ -72,7 +72,7 @@ const DropdownSelect = ({
     setIsDropdownOpen(false);
   };
 
-  console.log('errors', errors[name]);
+  // console.log('errors', errors[name]);
 
   return (
     <View style={styles.dropdownContainer}>

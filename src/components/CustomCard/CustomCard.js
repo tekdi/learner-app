@@ -49,6 +49,7 @@ const CustomCards = ({
       }));
     }
   }, [value]);
+
   return (
     <View style={styles.container} key={field.name}>
       <ScrollView>

@@ -1,20 +1,35 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { translateDigits } from '../../utils/JsHelper/Helper';
+import globalStyles from '../../utils/Helper/Style';
 
-const ProgressBarCustom = ({ progress, language, width }) => {
+const ProgressBarCustom = ({
+  progress,
+  language,
+  width,
+  color,
+  horizontal,
+}) => {
   return (
-    <>
+    <SafeAreaView style={horizontal && globalStyles.flexrow}>
       <View style={[styles.container, { width }]}>
         {/* Progress Bar */}
-        <View style={[styles.progressBar, { width: `${progress}%` }]} />
+        <View
+          style={[
+            styles.progressBar,
+            {
+              width: `${progress}%`,
+              backgroundColor: progress >= 50 ? 'green' : 'red',
+            },
+          ]}
+        />
         {/* Percentage Label */}
       </View>
-      <Text allowFontScaling={false} style={styles.label}>{`${translateDigits(
-        progress,
-        language
-      )}%`}</Text>
-    </>
+      <Text
+        allowFontScaling={false}
+        style={[styles.label, { color: color }]}
+      >{`${translateDigits(progress, language)}%`}</Text>
+    </SafeAreaView>
   );
 };
 
