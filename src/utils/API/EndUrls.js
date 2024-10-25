@@ -37,9 +37,9 @@ const EndUrls = {
   CourseTrackingStatus: `${tracking_assessment}/v1/tracking/content/course/status`,
   geolocation: `${API_URL}/user/v1/fields/options/read`,
   forgotPassword: `${API_URL}/user/v1/password-reset-link`,
-  eventList: `https://event.prathamdigital.org/event-service/event/v1/list`,
-  targetedSolutions: `https://project.prathamdigital.org/project/v1/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
-  EventDetails: `https://project.prathamdigital.org/project/v1/userProjects/details`,
+  eventList: `${NEXT_PUBLIC_EVENT_BASE_URL}/list`,
+  targetedSolutions: `${EVENT_DETAILS}/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
+  EventDetails: `${EVENT_DETAILS}/userProjects/details`,
   attendance: `${API_URL}/user/v1/attendance/list`,
 };
 

@@ -1072,6 +1072,10 @@ export const eventList = async ({ startDate, endDate }) => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
+    const cohort = JSON.parse(await getDataFromStorage('cohortData'));
+    // console.log({ startDate, endDate, cohort });
+    // console.log(cohort?.cohortData?.[0]?.cohortId);
+
     const payload = {
       limit: 0,
       offset: 0,
@@ -1080,6 +1084,7 @@ export const eventList = async ({ startDate, endDate }) => {
           after: startDate,
           before: endDate,
         },
+        cohortId: cohort?.cohortData?.[0]?.cohortId,
         status: ['live'],
       },
     };
