@@ -21,9 +21,9 @@ import { getSyncTrackingOfflineCourse } from '../../utils/API/AuthService';
 const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const navigation = useNavigation();
   // console.log('########## ContentCard');
-  console.log('course_id', item?.name);
+  // console.log('course_id', item?.name);
   // console.log('unit_id', unit_id);
-  // console.log('##########');
+  // console.log('##########', TrackData);
 
   const backgroundImages = [
     require('../../assets/images/CardBackground/abstract_01.png'),
@@ -74,7 +74,9 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const fetchDataTrack = async () => {
     try {
       console.log('########### TrackData', TrackData);
-      if (TrackData && item?.identifier) {
+      if (TrackData && (item?.identifier || item?.id)) {
+        console.log('hi');
+
         for (let i = 0; i < TrackData.length; i++) {
           if (TrackData[i]?.courseId == course_id) {
             let userId = await getDataFromStorage('userId');
@@ -151,7 +153,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
             let completed = completed_list.length;
 
             //check all content
-            let content_id = item?.identifier;
+            let content_id = item?.identifier || item?.id;
             let status = 'notstarted';
             if (in_progress_list.includes(content_id)) {
               status = 'inprogress';
@@ -203,8 +205,8 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         <View style={styles.view}>
           <DownloadCard
             name={item?.name}
-            contentId={item?.identifier}
-            contentMimeType={item?.mimeType}
+            contentId={item?.identifier || item?.id}
+            contentMimeType={item?.mimeType || item?.app}
           />
         </View>
       </TouchableOpacity>

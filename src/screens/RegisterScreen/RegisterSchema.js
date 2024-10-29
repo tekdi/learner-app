@@ -143,56 +143,56 @@ export const registerSchema = async (data, states) => {
       //     },
       //   ],
       // },
-      // {
-      //   formNumber: 6,
-      //   question: 'where_are_you_located',
-      //   fields: [
-      //     {
-      //       type: 'select_drop_down',
-      //       label: 'state',
-      //       name: 'state',
-      //       coreField: data?.[6]?.coreField,
-      //       fieldId: data?.[6]?.fieldId,
-      //       options: states,
-      //       validation: {
-      //         required: true,
-      //       },
-      //     },
-      //     {
-      //       type: 'select_drop_down',
-      //       label: 'district',
-      //       name: 'district',
-      //       coreField: data?.[7]?.coreField,
-      //       fieldId: data?.[7]?.fieldId,
-      //       validation: {
-      //         required: true,
-      //       },
-      //     },
-      //     {
-      //       type: 'select_drop_down',
-      //       label: 'block',
-      //       name: 'block',
-      //       coreField: data?.[8]?.coreField,
-      //       fieldId: data?.[8]?.fieldId,
-      //       validation: {
-      //         required: true,
-      //       },
-      //     },
-      //     // {
-      //     //   type: 'select_drop_down',
-      //     //   label: 'village',
-      //     //   name: 'village',
-      //     //   coreField: data?.[1]?.coreField,
-      //     //   fieldId: data?.[1]?.fieldId,
-      //     //   validation: {
-      //     //     required: true,
-
-      //     //   },
-      //     // },
-      //   ],
-      // },
       {
         formNumber: 3,
+        question: 'where_are_you_located',
+        fields: [
+          {
+            type: 'select_drop_down',
+            label: 'state',
+            name: 'state',
+            coreField: data?.[6]?.coreField,
+            fieldId: data?.[6]?.fieldId,
+            options: states,
+            validation: {
+              required: true,
+            },
+          },
+          {
+            type: 'select_drop_down',
+            label: 'district',
+            name: 'district',
+            coreField: data?.[7]?.coreField,
+            fieldId: data?.[7]?.fieldId,
+            validation: {
+              required: true,
+            },
+          },
+          {
+            type: 'select_drop_down',
+            label: 'block',
+            name: 'block',
+            coreField: data?.[8]?.coreField,
+            fieldId: data?.[8]?.fieldId,
+            validation: {
+              required: true,
+            },
+          },
+          // {
+          //   type: 'select_drop_down',
+          //   label: 'village',
+          //   name: 'village',
+          //   coreField: data?.[1]?.coreField,
+          //   fieldId: data?.[1]?.fieldId,
+          //   validation: {
+          //     required: true,
+
+          //   },
+          // },
+        ],
+      },
+      {
+        formNumber: 4,
         question: 'q6_login_cred',
         fields: [
           {
@@ -257,7 +257,7 @@ export const registerSchema = async (data, states) => {
       //   ],
       // },
       {
-        formNumber: 4,
+        formNumber: 5,
         question: null,
         fields: [
           {

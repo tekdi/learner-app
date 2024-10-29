@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   ImageBackground,
@@ -11,16 +11,18 @@ import {
 import globalStyles from '../../../../utils/Helper/Style';
 import { useTranslation } from '../../../../context/LanguageContext';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import ProgressBarCustom from '../../../../components/ProgressBarCustom/ProgressBarCustom';
 import subjectwave2 from '../../../../assets/images/png/subjectwave2.png';
 import subjectwave3 from '../../../../assets/images/png/subjectwave3.png';
 import RocketImageClub from '../../../../components/rocketImageClub/RocketImageClub';
 import FastImage from '@changwoolab/react-native-fast-image';
+import { getDataFromStorage } from '../../../../utils/JsHelper/Helper';
 
 const SessionCard = ({ percentage }) => {
   const { t, language } = useTranslation();
   const navigation = useNavigation();
+  const [percent, setPercent] = useState();
 
   // Function to get tomorrow's date in "DD Month" format
   const getTomorrowDate = () => {
@@ -33,6 +35,22 @@ const SessionCard = ({ percentage }) => {
     return `${day} ${month}`; // Format as "26 October"
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const courseTrackData = JSON.parse(
+          await getDataFromStorage('courseTrackData')
+        );
+        const percentage = JSON.parse(
+          await getDataFromStorage('weightedProgress')
+        );
+        setPercent(percentage);
+        console.log({ courseTrackData, percent });
+      };
+      fetchData();
+    }, [navigation])
+  );
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {
@@ -42,7 +60,7 @@ const SessionCard = ({ percentage }) => {
       <View style={[styles.viewBox, globalStyles.flexrow]}>
         {/* Background Image */}
         <ImageBackground
-          source={percentage === 100 ? subjectwave3 : subjectwave2}
+          source={percent === 100 ? subjectwave3 : subjectwave2}
           style={styles.imageBackground}
           resizeMode="cover"
         >
@@ -72,7 +90,7 @@ const SessionCard = ({ percentage }) => {
             </View>
 
             <View>
-              {percentage <= 10 ? (
+              {percent <= 10 ? (
                 <FastImage
                   style={styles.img}
                   source={
@@ -81,7 +99,7 @@ const SessionCard = ({ percentage }) => {
                   resizeMode={FastImage.resizeMode.contain}
                   priority={FastImage.priority.high} // Set the priority here
                 />
-              ) : percentage === 100 ? (
+              ) : percent === 100 ? (
                 <View style={styles.img3}>
                   <RocketImageClub />
                 </View>
@@ -95,9 +113,9 @@ const SessionCard = ({ percentage }) => {
               )}
             </View>
 
-            <View style={{ opacity: 0 }}>
+            <View style={{ opacity: 1 }}>
               <ProgressBarCustom
-                progress={percentage}
+                progress={percent || 0}
                 language={language}
                 width={'90%'}
                 color={'#000'}
@@ -105,7 +123,11 @@ const SessionCard = ({ percentage }) => {
               />
 
               <Text style={[globalStyles.text, { color: '#0D599E' }]}>
-                {t('lets_get_started_dive_in')}
+                {percent <= 10
+                  ? t('lets_get_started_dive_in')
+                  : percent === 100
+                    ? t('mission_accomplished')
+                    : t('great_start_keep_going')}
               </Text>
             </View>
           </View>

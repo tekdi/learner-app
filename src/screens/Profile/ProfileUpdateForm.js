@@ -50,7 +50,6 @@ import {
   getProfileDetails,
   login,
   registerUser,
-  reverseGeocode,
   updateUser,
   userExist,
 } from '../../utils/API/AuthService';

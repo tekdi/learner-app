@@ -7,9 +7,12 @@ import { useTranslation } from '../../context/LanguageContext';
 import { EventDetails, targetedSolutions } from '../../utils/API/AuthService';
 import {
   extractLearningResources,
+  getDataFromStorage,
   separatePrerequisiteAndPostrequisite,
+  setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 import ContentCard from '../../screens/Dashboard/ContentCard';
+import { courseTrackingStatus } from '../../utils/API/ApiCalls';
 
 function getFilteredData(data) {
   return data.map((item) => {
@@ -41,7 +44,7 @@ function getFilteredData(data) {
   });
 }
 
-const Accordion = ({ item, postrequisites, title }) => {
+const Accordion = ({ item, postrequisites, title, setTrack }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [trackData, setTrackData] = useState([]);
@@ -57,8 +60,43 @@ const Accordion = ({ item, postrequisites, title }) => {
       // console.log('######', JSON.stringify(result?.tasks));
 
       const filterData = getFilteredData(result?.tasks || []);
-      // console.log(JSON.stringify(filterData));
+      console.log(JSON.stringify(filterData));
       setTasks(filterData);
+      let contentIdList = [];
+      if (filterData) {
+        for (let item of filterData) {
+          // Push IDs from prerequisites
+          item.prerequisites?.forEach((prerequisite) => {
+            contentIdList.push(prerequisite.id);
+          });
+
+          if (postrequisites) {
+            // Push IDs from postrequisites
+            item.postrequisites?.forEach((postrequisite) => {
+              contentIdList.push(postrequisite.id);
+            });
+          }
+        }
+      }
+      console.log({ contentIdList });
+      let userId = await getDataFromStorage('userId');
+      let batchId = await getDataFromStorage('cohortId');
+      let course_track_data = await courseTrackingStatus(
+        userId,
+        batchId,
+        contentIdList
+      );
+      let courseTrackData = [];
+      if (course_track_data?.data) {
+        courseTrackData =
+          course_track_data?.data.find((course) => course.userId === userId)
+            ?.course || [];
+      }
+      setTrackData(courseTrackData);
+      setTrack(courseTrackData);
+      if (!postrequisites) {
+        setDataInStorage('courseTrackData', JSON.stringify(courseTrackData));
+      }
     };
     fetchData();
   }, []);

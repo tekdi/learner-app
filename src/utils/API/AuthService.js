@@ -264,7 +264,10 @@ export const courseListApi = async (params = {}) => {
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
+    // Uncomment and set the Authorization header if needed
+    // 'Authorization': 'Bearer YOUR_API_KEY', // Example for an API key or token
   };
+
   let payload = {
     request: {
       filters: {
@@ -307,14 +310,23 @@ export const courseListApi = async (params = {}) => {
     },
   };
 
-  //get language user
-  //removed below filter for Pilot release
-  /*const result = JSON.parse(await getDataFromStorage('profileData'));
+  // Log the curl command
+  console.log(
+    `curl -X POST '${url}' \
+-H 'Content-Type: application/json' \
+-H 'Accept: application/json' \
+-d '${JSON.stringify(payload)}'`
+  );
+
+  // get language user
+  // removed below filter for Pilot release
+  /*
+  const result = JSON.parse(await getDataFromStorage('profileData'));
   if (result?.getUserDetails?.[0]?.customFields?.[0]?.value) {
     let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
     payload.request.filters['se_mediums'] = language;
-  }*/
-  //console.log('######## payload ', JSON.stringify(payload));
+  }
+  */
 
   try {
     // Make the actual request
@@ -337,7 +349,10 @@ export const courseListApi = async (params = {}) => {
       return result_offline;
     }
   } catch (e) {
-    console.log('no internet available');
+    console.log('no internet available', e);
+    console.log('zzzz', e?.response);
+    console.log('aaaaa', e?.request);
+    console.log('bbbb', e?.message);
     let result_offline = await getApiResponse(user_id, url, 'post', payload);
     return result_offline;
   }
@@ -431,9 +446,17 @@ export const contentListApi = async (params = {}) => {
 export const getCohort = async ({ user_id }) => {
   try {
     const headers = await getHeaders();
-    const result = await get(`${EndUrls.cohort}/${user_id}`, {
+    const url = `${EndUrls.cohort}/${user_id}`;
+
+    // Log the curl command
+    console.log(
+      `curl -X GET '${url}' -H 'Content-Type: application/json'${headers.Authorization ? ` -H 'Authorization: ${headers.Authorization}'` : ''}`
+    );
+
+    const result = await get(url, {
       headers: headers || {},
     });
+
     if (result) {
       return result?.data?.result;
     } else {
@@ -1057,13 +1080,56 @@ export const forgotPassword = async ({ payload }) => {
   }
 };
 
-export const reverseGeocode = async (latitude, longitude) => {
+// export const reverseGeocode = async (latitude, longitude) => {
+//   console.log({ latitude, longitude });
+
+//   try {
+//     const response = await fetch(
+//       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+//     );
+
+//     const data = await response.json();
+//     console.log('Full data response:', data);
+
+//     // Extracting relevant information if available
+//     const address = data.address || {};
+//     const state = address.state || 'State not found';
+//     const district = address.county || address.district || 'District not found';
+
+//     console.log('State:', state);
+//     console.log('District:', district);
+
+//     return { state, district };
+//   } catch (error) {
+//     console.error('Error fetching geocode data:', error);
+//     return { state: null, district: null };
+//   }
+// };
+
+export async function reverseGeocode(latitude, longitude) {
+  console.log({ latitude, longitude });
+
   const response = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=YOUR_API_KEY`
   );
+  console.log({ response });
   const data = await response.json();
-  return data;
-};
+  if (data.results.length > 0) {
+    const addressComponents = data.results[0].address_components;
+    const state = addressComponents.find((comp) =>
+      comp.types.includes('administrative_area_level_1')
+    )?.long_name;
+    const district = addressComponents.find((comp) =>
+      comp.types.includes('administrative_area_level_2')
+    )?.long_name;
+    const block = addressComponents.find((comp) =>
+      comp.types.includes('sublocality')
+    )?.long_name;
+    console.log({ state, district, block });
+    return { state, district, block };
+  }
+  return { state: null, district: null, block: null };
+}
 
 export const eventList = async ({ startDate, endDate }) => {
   try {
@@ -1232,6 +1298,39 @@ export const getAttendance = async ({ todate, fromDate }) => {
 
     // Make the actual request
     const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const LearningMaterial = async ({ todate, fromDate }) => {
+  try {
+    const method = 'get'; // Define the HTTP method
+    const url = `${EndUrls.framework}`; // Define the URL
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+
+    // console.log(
+    //   `curl -X ${method} '${url}' \\\n` +
+    //     `-H 'Content-Type: application/json' \\\n` +
+    //     `-H 'Accept: application/json' \\\n` +
+    //     `-H 'Cookie: ${headers.Cookie}' \\\n` +
+    //     `-H 'Authorization: ${headers.Authorization}' \\\n` +
+    //     `-H 'tenantid: ${headers.tenantid}' \\\n` +
+    //     `-d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await get(url, {
       headers: headers || {},
     });
 

@@ -9,24 +9,17 @@ import {
 import SecondaryHeader from '../../../../../components/Layout/SecondaryHeader';
 import { useTranslation } from '../../../../../context/LanguageContext';
 import globalStyles from '../../../../../utils/Helper/Style';
-import DropdownSelect2 from '../../../../../components/DropdownSelect/DropdownSelect2';
 import CustomTabView from '../../../../../components/CustomTabView/CustomTabView';
 import MaterialCard from './MaterialCard';
 import Assessment from '../../../../Assessment/Assessment';
 import HorizontalLine from '../../../../../components/HorizontalLine/HorizontalLine';
 import SessionRecording from './SessionRecording';
+import LearningMaterial from './LearningMaterial';
 
 const MyClassDashboard = () => {
   const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedIds, setSelectedIds] = useState(null);
-
-  const field = {
-    options: [
-      { label: 'abc', value: '1' },
-      { label: 'xyz', value: '2' },
-    ],
-  };
 
   console.log({ selectedIds });
 
@@ -35,38 +28,7 @@ const MyClassDashboard = () => {
       title: t('learning_materials'),
       content: (
         <>
-          <Text
-            style={[
-              globalStyles.heading2,
-              {
-                // borderWidth: 1,
-                textAlign: 'center',
-                top: 50,
-                height: 400,
-              },
-            ]}
-          >
-            {t('no_data')}
-          </Text>
-          {/* <DropdownSelect2
-            field={field}
-            name={'course_type'}
-            setSelectedIds={setSelectedIds}
-            selectedIds={selectedIds}
-            value={''}
-          />
-          {selectedIds?.value && (
-            <View style={styles.viewbox}>
-              <MaterialCard title="Maths" />
-              <MaterialCard title="Maths" />
-              <MaterialCard title="Maths" />
-              <MaterialCard title="Maths" />
-              <MaterialCard title="Maths" />
-              <MaterialCard title="Maths" />
-              <MaterialCard title="Maths" />
-              <MaterialCard title="Maths" />
-            </View>
-          )} */}
+          <LearningMaterial />
         </>
       ),
     },

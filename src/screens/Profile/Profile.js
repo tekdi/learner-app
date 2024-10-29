@@ -83,6 +83,8 @@ const Profile = (props) => {
       await deleteSavedItem('userId');
       await deleteSavedItem('cohortId');
       await deleteSavedItem('cohortData');
+      await deleteSavedItem('weightedProgress');
+      await deleteSavedItem('courseTrackData');
       logoutEvent();
       // Reset the navigation stack and navigate to LoginSignUpScreen
       navigation.dispatch(

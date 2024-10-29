@@ -7,6 +7,8 @@ const API_URL = Config.API_URL;
 const CONTENT_URL = Config.CONTENT_URL;
 const tracking_assessment = Config.tracking_assessment;
 const TELEMETRY_URL = Config.TELEMETRY_URL;
+const NEXT_PUBLIC_EVENT_BASE_URL = Config.NEXT_PUBLIC_EVENT_BASE_URL;
+const EVENT_DETAILS = Config.EVENT_DETAILS;
 
 const EndUrls = {
   login: API_URL + '/user/v1/auth/login',
@@ -41,6 +43,7 @@ const EndUrls = {
   targetedSolutions: `${EVENT_DETAILS}/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
   EventDetails: `${EVENT_DETAILS}/userProjects/details`,
   attendance: `${API_URL}/user/v1/attendance/list`,
+  framework: `${CONTENT_URL}/api/framework/v1/read/gujaratboardfw`,
 };
 
 export default EndUrls;

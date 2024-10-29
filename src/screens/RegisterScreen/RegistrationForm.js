@@ -51,7 +51,6 @@ import {
   getProfileDetails,
   login,
   registerUser,
-  reverseGeocode,
   userExist,
 } from '../../utils/API/AuthService';
 import { getAccessToken } from '../../utils/API/ApiCalls';
@@ -352,74 +351,74 @@ const RegistrationForm = ({ schema }) => {
     }
   };
 
-  // const programValue = watch('program') || null;
-  // const stateValue = watch('state') || null;
-  // const districtValue = watch('district') || null;
+  const programValue = watch('program') || null;
+  const stateValue = watch('state') || null;
+  const districtValue = watch('district') || null;
 
-  // function addOptionsToField(formObject, fieldName, newOptions) {
-  //   // Find the field in the 'fields' array where the name or label matches the given fieldName
-  //   const field = formObject.fields.find(
-  //     (field) => field.name === fieldName || field.label === fieldName
-  //   );
+  function addOptionsToField(formObject, fieldName, newOptions) {
+    // Find the field in the 'fields' array where the name or label matches the given fieldName
+    const field = formObject.fields.find(
+      (field) => field.name === fieldName || field.label === fieldName
+    );
 
-  //   // If the field is found, add the new options
-  //   if (field) {
-  //     field.options = newOptions;
-  //   }
+    // If the field is found, add the new options
+    if (field) {
+      field.options = newOptions;
+    }
 
-  //   // Return the updated formObject
-  //   return formObject;
-  // }
+    // Return the updated formObject
+    return formObject;
+  }
 
-  // const fetchDistricts = async () => {
-  //   const payload = {
-  //     // limit: 10,
-  //     offset: 0,
-  //     fieldName: 'districts',
-  //     controllingfieldfk: stateValue?.value || stateValue,
-  //   };
-  //   const geoData = JSON.parse(await getDataFromStorage('geoData'));
-  //   const data = await getGeoLocation({ payload });
-  //   const foundDistrict = data?.values?.find(
-  //     (item) => item?.label === geoData?.state_district
-  //   );
+  const fetchDistricts = async () => {
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'districts',
+      controllingfieldfk: stateValue?.value || stateValue,
+    };
+    const geoData = JSON.parse(await getDataFromStorage('geoData'));
+    const data = await getGeoLocation({ payload });
+    const foundDistrict = data?.values?.find(
+      (item) => item?.label === geoData?.state_district
+    );
 
-  //   const district = {
-  //     label: foundDistrict?.label,
-  //     value: foundDistrict?.value,
-  //   };
-  //   if (!districtValue) {
-  //     setValue('district', district);
-  //   }
-  //   const newSchema = addOptionsToField(
-  //     currentSchema,
-  //     'district',
-  //     data?.values
-  //   );
-  //   currentSchema = newSchema;
-  // };
+    const district = {
+      label: foundDistrict?.label,
+      value: foundDistrict?.value,
+    };
+    if (!districtValue) {
+      setValue('district', district);
+    }
+    const newSchema = addOptionsToField(
+      currentSchema,
+      'district',
+      data?.values
+    );
+    currentSchema = newSchema;
+  };
 
-  // const fetchBlock = async () => {
-  //   const payload = {
-  //     // limit: 10,
-  //     offset: 0,
-  //     fieldName: 'blocks',
-  //     controllingfieldfk: districtValue?.value,
-  //   };
-  //   const data = await getGeoLocation({ payload });
-  //   const newSchema = addOptionsToField(currentSchema, 'block', data?.values);
-  //   currentSchema = newSchema;
-  // };
+  const fetchBlock = async () => {
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'blocks',
+      controllingfieldfk: districtValue?.value,
+    };
+    const data = await getGeoLocation({ payload });
+    const newSchema = addOptionsToField(currentSchema, 'block', data?.values);
+    currentSchema = newSchema;
+  };
 
-  // useEffect(() => {
-  //   fetchDistricts();
-  // }, [stateValue]);
+  useEffect(() => {
+    fetchDistricts();
+  }, [stateValue]);
 
-  // useEffect(() => {
-  //   if (districtValue) {
-  //     fetchBlock();
-  //   }
-  // }, [districtValue]);
+  useEffect(() => {
+    if (districtValue) {
+      fetchBlock();
+    }
+  }, [districtValue]);
 
   const renderFields = (fields) => {
     return fields?.map((field) => {
@@ -572,21 +571,24 @@ const RegistrationForm = ({ schema }) => {
       const fullName = `${data.first_name}${data.last_name}${randomThreeDigitNumber}`;
       setValue('username', fullName.toLowerCase());
     }
+    console.log({ currentForm });
 
-    // if (currentForm === 2) {
-    //   const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
-    //   const geoData = JSON.parse(await getDataFromStorage('geoData'));
-    //   const foundState = stateAPIdata.find(
-    //     (item) => item?.label === geoData?.state
-    //   );
+    if (currentForm === 2) {
+      const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
+      const geoData = JSON.parse(await getDataFromStorage('geoData'));
+      const foundState = stateAPIdata.find(
+        (item) => item?.label === geoData?.state
+      );
 
-    //   const state = {
-    //     label: foundState?.label,
-    //     value: foundState?.value,
-    //   };
+      console.log({ stateAPIdata, foundState, geoData, state });
 
-    //   setValue('state', state);
-    // }
+      const state = {
+        label: foundState?.label,
+        value: foundState?.value,
+      };
+
+      setValue('state', state);
+    }
   };
 
   const prevForm = () => {
