@@ -272,8 +272,8 @@ const CourseContentList = ({ route }) => {
           <View style={{ padding: 20, paddingBottom: 10 }}>
             <Text
               allowFontScaling={false}
-              style={[globalStyles.heading, { marginBottom: 10 }]}
-              numberOfLines={1}
+              style={[globalStyles.heading3, { marginBottom: 10 }]}
+              numberOfLines={2}
               ellipsizeMode="tail"
             >
               {coursesContent?.name}
@@ -353,10 +353,10 @@ const CourseContentList = ({ route }) => {
                       trackCompleted >= 100
                         ? 'completed'
                         : trackCompleted > 0
-                        ? 'inprogress'
-                        : trackProgress > 0
-                        ? 'progress'
-                        : 'not_started'
+                          ? 'inprogress'
+                          : trackProgress > 0
+                            ? 'progress'
+                            : 'not_started'
                     }
                     trackCompleted={trackCompleted}
                     viewStyle={{
@@ -377,7 +377,7 @@ const CourseContentList = ({ route }) => {
               flexWrap: 'wrap',
               flexDirection: 'row',
               minHeight: 300,
-              borderWidth: 1,
+              // borderWidth: 1,
             }}
           >
             {coursesContent?.children?.map((item) => {

@@ -30,6 +30,7 @@ import StandAlonePlayer from '../screens/PlayerScreen/StandAlonePlayer/StandAlon
 import EnableLocationScreen from '../screens/Location/EnableLocationScreen';
 import AssessmentStack from './AssessmentStack';
 import DashboardStack from './DashboardStack';
+import SCPUserTabScreen from './SCPUserTabScreen';
 
 const StackScreen = (props) => {
   const Stack = createNativeStackNavigator();
@@ -83,6 +84,12 @@ const StackScreen = (props) => {
       <Stack.Screen
         name="Dashboard"
         component={TabScreen} // Changed to TabScreen for now to show content in dashboard
+        //component={AssessmentStack} // Changed to AssessmentStack for now to show only Assessment
+        options={{ headerShown: false, lazy: true }}
+      />
+      <Stack.Screen
+        name="SCPUserTabScreen"
+        component={SCPUserTabScreen} // Changed to TabScreen for now to show content in dashboard
         //component={AssessmentStack} // Changed to AssessmentStack for now to show only Assessment
         options={{ headerShown: false, lazy: true }}
       />

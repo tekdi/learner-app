@@ -2,8 +2,6 @@ import Config from 'react-native-config';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 
 export const transformPayload = async (data) => {
-  // console.log(data?.program);
-
   const studentForm = JSON.parse(await getDataFromStorage('studentForm'));
   const getFieldIdByName = (name) => {
     // Assuming studentForm is the array that contains all the fields
@@ -29,18 +27,18 @@ export const transformPayload = async (data) => {
       value: data.gender.value,
       fieldId: data.gender.fieldId,
     },
-    // {
-    //   value: [data?.state?.value] || null,
-    //   fieldId: getFieldIdByName('states'),
-    // },
-    // {
-    //   value: [data?.district?.value] || null,
-    //   fieldId: getFieldIdByName('districts'),
-    // },
-    // {
-    //   value: [data?.block?.value] || null,
-    //   fieldId: getFieldIdByName('blocks'),
-    // },
+    {
+      value: [data?.state?.value] || null,
+      fieldId: getFieldIdByName('states'),
+    },
+    {
+      value: [data?.district?.value] || null,
+      fieldId: getFieldIdByName('districts'),
+    },
+    {
+      value: [data?.block?.value] || null,
+      fieldId: getFieldIdByName('blocks'),
+    },
     // Conditionally add interested_content only if it's present
     ...(data?.interested_content?.value
       ? [
@@ -67,7 +65,7 @@ export const transformPayload = async (data) => {
     password: data.password,
     email: data?.email,
     mobile: data?.mobile,
-    tenantCohortRoleMapping, // Conditionally added based on the presence of data.program
+    // tenantCohortRoleMapping, // Conditionally added based on the presence of data.program
     customFields: customFields,
   };
 };

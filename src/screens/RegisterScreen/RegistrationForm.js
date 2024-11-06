@@ -24,6 +24,8 @@ import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
+import lightning from '../../assets/images/png/lightning.png';
+
 // import Geolocation from 'react-native-geolocation-service';
 
 //multi language
@@ -51,7 +53,6 @@ import {
   getProfileDetails,
   login,
   registerUser,
-  reverseGeocode,
   userExist,
 } from '../../utils/API/AuthService';
 import { getAccessToken } from '../../utils/API/ApiCalls';
@@ -222,7 +223,7 @@ const buildYupSchema = (form, currentForm, t) => {
   return yup.object().shape(shape);
 };
 
-const RegistrationForm = ({ schema }) => {
+const RegistrationForm = ({ schema, geoData }) => {
   //multi language setup
   const { t, language } = useTranslation();
   //dynamic schema for json object validation
@@ -232,6 +233,7 @@ const RegistrationForm = ({ schema }) => {
   const [isDisable, setIsDisable] = useState(true);
   const [currentForm, setCurrentForm] = useState(1);
   const [modal, setModal] = useState(false);
+  const [err, setErr] = useState();
   const [networkError, setNetworkError] = useState(false);
 
   const { isConnected } = useInternet();
@@ -270,17 +272,18 @@ const RegistrationForm = ({ schema }) => {
 
   // console.log({ TENANT_ID });
 
-  // const programData = {
-  //   options: [
-  //     {
-  //       tenantId: TENANT_ID,
-  //       name: 'YouthNet',
-  //       domain: 'pratham.shiksha.com',
-  //       description: 'Description',
-  //       images: [],
-  //     },
-  //   ],
-  // };
+  const programData = {
+    options: [
+      {
+        tenantId: '6c8b810a-66c2-4f0d-8c0c-c025415a4414',
+        name: 'Second Chance Program',
+        domain: 'pratham.shiksha.com',
+        description:
+          'Get a second chance to complete your 10th grade education',
+        images: [],
+      },
+    ],
+  };
 
   const RegisterLogin = async (loginData) => {
     const payload = {
@@ -341,85 +344,86 @@ const RegistrationForm = ({ schema }) => {
 
     // console.log({ isConnected, networkError, register });
 
-    if (register?.params?.status === 'failed' || !isConnected) {
+    if (!isConnected) {
       setNetworkError(true);
-      console.log('hi');
-    } else {
-      console.log('hello');
+    } else if (register?.params?.status === 'failed') {
       setModal(true);
+      setErr(register?.params?.err);
+    } else {
       logRegistrationComplete();
       await RegisterLogin(data);
     }
   };
 
-  // const programValue = watch('program') || null;
-  // const stateValue = watch('state') || null;
-  // const districtValue = watch('district') || null;
+  const programValue = watch('program') || null;
+  const stateValue = watch('state') || null;
+  const districtValue = watch('district') || null;
 
-  // function addOptionsToField(formObject, fieldName, newOptions) {
-  //   // Find the field in the 'fields' array where the name or label matches the given fieldName
-  //   const field = formObject.fields.find(
-  //     (field) => field.name === fieldName || field.label === fieldName
-  //   );
+  function addOptionsToField(formObject, fieldName, newOptions) {
+    // Find the field in the 'fields' array where the name or label matches the given fieldName
+    const field = formObject.fields.find(
+      (field) => field.name === fieldName || field.label === fieldName
+    );
 
-  //   // If the field is found, add the new options
-  //   if (field) {
-  //     field.options = newOptions;
-  //   }
+    // If the field is found, add the new options
+    if (field) {
+      field.options = newOptions;
+    }
 
-  //   // Return the updated formObject
-  //   return formObject;
-  // }
+    // Return the updated formObject
+    return formObject;
+  }
 
-  // const fetchDistricts = async () => {
-  //   const payload = {
-  //     // limit: 10,
-  //     offset: 0,
-  //     fieldName: 'districts',
-  //     controllingfieldfk: stateValue?.value || stateValue,
-  //   };
-  //   const geoData = JSON.parse(await getDataFromStorage('geoData'));
-  //   const data = await getGeoLocation({ payload });
-  //   const foundDistrict = data?.values?.find(
-  //     (item) => item?.label === geoData?.state_district
-  //   );
+  const fetchDistricts = async () => {
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'districts',
+      controllingfieldfk: stateValue?.value || stateValue,
+    };
 
-  //   const district = {
-  //     label: foundDistrict?.label,
-  //     value: foundDistrict?.value,
-  //   };
-  //   if (!districtValue) {
-  //     setValue('district', district);
-  //   }
-  //   const newSchema = addOptionsToField(
-  //     currentSchema,
-  //     'district',
-  //     data?.values
-  //   );
-  //   currentSchema = newSchema;
-  // };
+    const data = await getGeoLocation({ payload });
+    const foundDistrict = data?.values?.find(
+      (item) => item?.label === geoData?.district
+    );
 
-  // const fetchBlock = async () => {
-  //   const payload = {
-  //     // limit: 10,
-  //     offset: 0,
-  //     fieldName: 'blocks',
-  //     controllingfieldfk: districtValue?.value,
-  //   };
-  //   const data = await getGeoLocation({ payload });
-  //   const newSchema = addOptionsToField(currentSchema, 'block', data?.values);
-  //   currentSchema = newSchema;
-  // };
+    const district = {
+      label: foundDistrict?.label,
+      value: foundDistrict?.value,
+    };
 
-  // useEffect(() => {
-  //   fetchDistricts();
-  // }, [stateValue]);
+    if (districtValue?.label == undefined) {
+      setValue('district', district);
+    }
+    const newSchema = addOptionsToField(
+      currentSchema,
+      'district',
+      data?.values
+    );
+    currentSchema = newSchema;
+  };
 
-  // useEffect(() => {
-  //   if (districtValue) {
-  //     fetchBlock();
-  //   }
-  // }, [districtValue]);
+  const fetchBlock = async () => {
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'blocks',
+      controllingfieldfk: districtValue?.value,
+    };
+    const data = await getGeoLocation({ payload });
+    const newSchema = addOptionsToField(currentSchema, 'block', data?.values);
+    currentSchema = newSchema;
+  };
+
+  useEffect(() => {
+    fetchDistricts();
+  }, [stateValue]);
+
+  useEffect(() => {
+    if (districtValue) {
+      fetchBlock();
+    }
+  }, [districtValue]);
 
   const renderFields = (fields) => {
     return fields?.map((field) => {
@@ -573,20 +577,20 @@ const RegistrationForm = ({ schema }) => {
       setValue('username', fullName.toLowerCase());
     }
 
-    // if (currentForm === 2) {
-    //   const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
-    //   const geoData = JSON.parse(await getDataFromStorage('geoData'));
-    //   const foundState = stateAPIdata.find(
-    //     (item) => item?.label === geoData?.state
-    //   );
+    if (currentForm === 2) {
+      const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
+      const foundState = stateAPIdata.find(
+        (item) => item?.label === geoData?.state
+      );
 
-    //   const state = {
-    //     label: foundState?.label,
-    //     value: foundState?.value,
-    //   };
+      const state = {
+        label: foundState?.label,
+        value: foundState?.value,
+      };
 
-    //   setValue('state', state);
-    // }
+      setValue('state', state);
+      fetchDistricts();
+    }
   };
 
   const prevForm = () => {
@@ -651,7 +655,7 @@ const RegistrationForm = ({ schema }) => {
         questionIndex={currentForm}
         totalForms={schema?.length}
       />
-      {currentForm === 6 && (
+      {currentForm === 4 && (
         <>
           <Text
             allowFontScaling={false}
@@ -702,23 +706,39 @@ const RegistrationForm = ({ schema }) => {
       {modal && (
         <Modal transparent={true} animationType="slide">
           <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
-            <View style={styles.alertBox}>
-              <FastImage
-                style={styles.image}
-                source={require('../../assets/images/gif/party.gif')}
-                resizeMode={FastImage.resizeMode.contain}
-                priority={FastImage.priority.high} // Set the priority here
-              />
-              <Text
-                allowFontScaling={false}
-                style={[
-                  globalStyles.heading2,
-                  { marginVertical: 10, textAlign: 'center' },
-                ]}
-              >
-                {t('congratulations')}
-              </Text>
-            </View>
+            {err ? (
+              <View style={styles.alertBox}>
+                <Image source={lightning} resizeMode="contain" />
+
+                <Text style={[globalStyles.subHeading, { marginVertical: 10 }]}>
+                  Error: {err}
+                </Text>
+                <PrimaryButton
+                  text={t('continue')}
+                  onPress={() => {
+                    setModal(false);
+                  }}
+                />
+              </View>
+            ) : (
+              <View style={styles.alertBox}>
+                <FastImage
+                  style={styles.image}
+                  source={require('../../assets/images/gif/party.gif')}
+                  resizeMode={FastImage.resizeMode.contain}
+                  priority={FastImage.priority.high} // Set the priority here
+                />
+                <Text
+                  allowFontScaling={false}
+                  style={[
+                    globalStyles.heading2,
+                    { marginVertical: 10, textAlign: 'center' },
+                  ]}
+                >
+                  {t('congratulations')}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
         </Modal>
       )}

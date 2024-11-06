@@ -146,7 +146,7 @@ const UnitList = ({ route }) => {
               <Text
                 allowFontScaling={false}
                 style={[globalStyles.heading, { marginBottom: 10 }]}
-                numberOfLines={1}
+                numberOfLines={2}
                 ellipsizeMode="tail"
               >
                 {headingName}
@@ -155,7 +155,7 @@ const UnitList = ({ route }) => {
             <Text
               allowFontScaling={false}
               style={[globalStyles.heading2, { marginBottom: 10 }]}
-              numberOfLines={1}
+              numberOfLines={2}
               ellipsizeMode="tail"
             >
               {name}

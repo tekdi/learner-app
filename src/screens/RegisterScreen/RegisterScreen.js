@@ -10,12 +10,13 @@ import Loading from '../LoadingScreen/Loading';
 import { registerSchema } from './RegisterSchema';
 import { setDataInStorage } from '../../utils/JsHelper/Helper';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
-// import Geolocation from 'react-native-geolocation-service'; //GeoLocation Comment
+import Geolocation from 'react-native-geolocation-service';
 
 const RegisterScreen = () => {
   const [mainSchema, setMainSchema] = useState([]);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState(false);
+  const [geoData, setgeoData] = useState();
 
   const fetchstates = async () => {
     const payload = {
@@ -30,34 +31,34 @@ const RegisterScreen = () => {
 
   // GetLocation Comment
 
-  // const getLocation = async () => {
-  //   Geolocation.getCurrentPosition(
-  //     async (position) => {
-  //       const data = await reverseGeocode(
-  //         position.coords.latitude,
-  //         position.coords.longitude
-  //       );
-  //       // console.log(data);
+  const getLocation = async () => {
+    console.log('hii');
 
-  //       setDataInStorage('geoData', JSON.stringify(data?.address));
-  //     },
-  //     (error) => {
-  //       console.log('Error: ', error);
-  //     },
-  //     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-  //   );
-  // };
+    Geolocation.getCurrentPosition(
+      async (position) => {
+        const data = await reverseGeocode(
+          position?.coords?.latitude,
+          position?.coords?.longitude
+        );
+        setgeoData(data);
+        setDataInStorage('geoData', JSON.stringify(data));
+      },
+      (error) => {
+        console.log('Error: ', error);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
 
   const fetchData = async () => {
     const data = await getStudentForm();
-    // console.log({ data });
     if (data?.error) {
       setNetworkError(true);
     } else {
-      // const states = await fetchstates();
+      const states = await fetchstates();
       setDataInStorage('studentForm', JSON.stringify(data?.fields));
-      let schema = await registerSchema(data?.fields);
-      // getLocation(); // GetLocation Comment
+      let schema = await registerSchema(data?.fields, states);
+      getLocation(); // GetLocation Comment
       setMainSchema(schema);
     }
 
@@ -72,7 +73,7 @@ const RegisterScreen = () => {
     <Loading />
   ) : (
     <SafeAreaView style={styles.container}>
-      <RegistrationForm schema={mainSchema} />
+      <RegistrationForm schema={mainSchema} geoData={geoData} />
       <NetworkAlert onTryAgain={fetchData} isConnected={!networkError} />
     </SafeAreaView>
   );

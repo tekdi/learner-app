@@ -1,0 +1,246 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import {
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+} from 'react-native';
+import SecondaryHeader from '../../../../components/Layout/SecondaryHeader';
+import wave from '../../../../assets/images/png/wave.png';
+import { useTranslation } from '../../../../context/LanguageContext';
+import { View } from 'react-native';
+import {
+  categorizeEvents,
+  getDataFromStorage,
+} from '../../../../utils/JsHelper/Helper';
+import { default as Octicons } from 'react-native-vector-icons/Octicons';
+import globalStyles from '../../../../utils/Helper/Style';
+import { TouchableOpacity } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import WeeklyCalendar from '../../Calendar/WeeklyCalendar';
+import AttendanceCard from './AttendanceCard';
+import SessionCard from './SessionCard';
+import SubjectCard from './SubjectCard';
+import { eventList } from '../../../../utils/API/AuthService';
+import ActiveLoading from '../../../LoadingScreen/ActiveLoading';
+
+const SCPDashboard = (props) => {
+  const { t } = useTranslation();
+  const navigation = useNavigation();
+  const [userInfo, setUserInfo] = useState();
+  const [date, setDate] = useState();
+  const [eventData, setEventData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  const currentMonthName = monthNames[new Date().getMonth()];
+
+  const getUserInfo = async () => {
+    const result = JSON.parse(await getDataFromStorage('profileData'));
+    setUserInfo(result?.getUserDetails);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getUserInfo();
+    }, [navigation])
+  );
+
+  const fetchData = async () => {
+    setLoading(true);
+
+    // Set start date to yesterday at 18:30:00 UTC
+    const startDate = new Date();
+    startDate.setUTCDate(startDate.getUTCDate() - 1); // Set to yesterday
+    startDate.setUTCHours(18, 30, 0, 0); // Set time to 18:30:00 UTC
+
+    // Set end date to today at 18:29:59 UTC
+    const endDate = new Date();
+    endDate.setUTCHours(18, 29, 59, 999); // Set time to 18:29:59 UTC
+
+    // Fetch the data within the specified date range
+    const data = await eventList({ startDate, endDate });
+    const finalData = await categorizeEvents(data?.events);
+
+    setEventData(finalData);
+    setLoading(false);
+  };
+  const fetchUpcomingData = async () => {
+    setLoading(true);
+
+    // Set start date to yesterday at 18:30:00 UTC
+    const startDate = new Date(date);
+    startDate.setUTCDate(startDate.getUTCDate() - 1); // Set to yesterday
+    startDate.setUTCHours(18, 30, 0, 0); // Set time to 18:30:00 UTC
+
+    // Set end date to today at 18:29:59 UTC
+    const endDate = new Date(date);
+    endDate.setUTCHours(18, 29, 59, 999); // Set time to 18:29:59 UTC
+
+    // Fetch the data within the specified date range
+    const data = await eventList({ startDate, endDate });
+    const finalData = await categorizeEvents(data?.events);
+
+    setEventData(finalData);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (date) {
+      fetchUpcomingData();
+    }
+  }, [date]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <SecondaryHeader logo />
+      <ScrollView style={styles.view2}>
+        <View style={globalStyles.flexrow}>
+          <Image source={wave} resizeMode="contain" />
+          <Text allowFontScaling={false} style={styles.text2}>
+            {t('welcome')}, {userInfo?.[0]?.name} !
+          </Text>
+        </View>
+        <View style={{ marginVertical: 20, alignItems: 'center' }}>
+          <SessionCard percentage={10} />
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('PreviousClassMaterial');
+          }}
+          style={[globalStyles.flexrow, styles.box]}
+        >
+          <View style={{ width: '90%' }}>
+            <Text style={globalStyles.subHeading}>
+              {t('previous_class_materials')} {t('post_requisites')}
+            </Text>
+            <Text
+              style={globalStyles.text}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {t('complete_activities_for_previous_classes')}
+            </Text>
+          </View>
+          <View>
+            <Octicons
+              name="arrow-right"
+              style={{ marginHorizontal: 10 }}
+              color={'#000'}
+              size={30}
+            />
+          </View>
+        </TouchableOpacity>
+        <View style={{ marginVertical: 20, borderRadius: 15 }}>
+          <AttendanceCard attendance={10} />
+        </View>
+        <TouchableOpacity
+          style={[
+            globalStyles.flexrow,
+            { justifyContent: 'space-between', marginTop: 20 },
+          ]}
+          onPress={() => {
+            navigation.navigate('TimeTable');
+          }}
+        >
+          <Text style={globalStyles.subHeading}>{t('my_timetable')}</Text>
+          <View style={globalStyles.flexrow}>
+            <Text style={[globalStyles.subHeading, { color: '#0D599E' }]}>
+              {currentMonthName}
+            </Text>
+
+            <Octicons
+              name="calendar"
+              style={{ marginHorizontal: 10 }}
+              color={'#0D599E'}
+              size={20}
+            />
+          </View>
+        </TouchableOpacity>
+        <View style={{ marginVertical: 20 }}>
+          <WeeklyCalendar setDate={setDate} postdays={true} />
+        </View>
+        {loading ? (
+          <ActiveLoading />
+        ) : (
+          <View
+            style={{
+              padding: 10,
+              backgroundColor: '#fafafa',
+              marginTop: 20,
+              marginBottom: 20,
+            }}
+          >
+            <Text style={globalStyles.heading2}>{t('planned_sessions')}</Text>
+
+            {eventData?.plannedSessions?.length > 0 ? (
+              eventData.plannedSessions.map((item, key) => (
+                <SubjectCard key={key} item={item} />
+              ))
+            ) : (
+              <Text style={globalStyles.text}>
+                {t('no_sessions_scheduled')}
+              </Text>
+            )}
+
+            <Text style={globalStyles.heading2}>{t('extra_sessions')}</Text>
+            {eventData?.extraSessions?.length > 0 ? (
+              eventData.extraSessions.map((item, key) => (
+                <SubjectCard key={key} item={item} />
+              ))
+            ) : (
+              <Text style={globalStyles.text}>
+                {t('no_sessions_scheduled')}
+              </Text>
+            )}
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  view2: {
+    paddingVertical: 25,
+    paddingHorizontal: 10,
+    // borderWidth: 1,
+    height: '80%',
+  },
+  text2: {
+    fontSize: 14,
+    color: 'black',
+    marginLeft: 10,
+    fontWeight: '500',
+  },
+  box: {
+    marginVertical: 10,
+    backgroundColor: '#FFDEA1',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderRadius: 15,
+  },
+});
+
+SCPDashboard.propTypes = {};
+
+export default SCPDashboard;

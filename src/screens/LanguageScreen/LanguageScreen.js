@@ -28,7 +28,11 @@ import {
 import { refreshToken } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { useInternet } from '../../context/NetworkContext';
-import { alterTable, createTable } from '../../utils/JsHelper/SqliteHelper';
+import {
+  alterTable,
+  createTable,
+  getData,
+} from '../../utils/JsHelper/SqliteHelper';
 
 const LanguageScreen = () => {
   const navigation = useNavigation();
@@ -98,17 +102,17 @@ const LanguageScreen = () => {
         newColumns: columns,
       });
       console.log('query_alter_Tracking_Offline', query_alter_Tracking_Offline);
-
+      const cohort_id = await getDataFromStorage('cohortId');
       const token = await getDataFromStorage('Accesstoken');
       if (token) {
-        console.log('isConnected', isConnected);
+        // console.log('isConnected', isConnected);
         if (isConnected) {
           const refresh_token = await getRefreshToken();
-          console.log('refresh_token', refresh_token);
+          // console.log('refresh_token', refresh_token);
           const data = await refreshToken({
             refresh_token: refresh_token,
           });
-          console.log('data', data);
+          // console.log('data', data);
           if (token && data?.access_token) {
             console.log(
               '########################## access token',
@@ -117,16 +121,25 @@ const LanguageScreen = () => {
             await saveAccessToken(data?.access_token);
             await saveRefreshToken(data?.refresh_token);
             console.log('status successful');
-            navigation.replace('Dashboard');
+            if (cohort_id !== '00000000-0000-0000-0000-000000000000') {
+              navigation.navigate('SCPUserTabScreen');
+            } else {
+              navigation.navigate('Dashboard');
+            }
           } else if (token) {
-            navigation.replace('Dashboard');
+            if (cohort_id !== '00000000-0000-0000-0000-000000000000') {
+              navigation.navigate('SCPUserTabScreen');
+            } else {
+              navigation.navigate('Dashboard');
+            }
           } else {
             console.log('error');
             setLoading(false);
           }
         } else {
           console.log('no connected auto login');
-          navigation.replace('Dashboard');
+          // navigation.replace('Dashboard');
+          navigation.replace('SCPUserTabScreen');
         }
       } else {
         console.log('no Accesstoken');
