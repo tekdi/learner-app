@@ -96,7 +96,7 @@ const Courses = () => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('########## in focus course');
+      // console.log('########## in focus course');
       const onBackPress = () => {
         if (routeName === 'Courses') {
           setShowExitModal(true);
@@ -123,7 +123,7 @@ const Courses = () => {
 
     //found course progress
     try {
-      console.log('########## contentListApi');
+      // console.log('########## contentListApi');
       const contentList = data?.content;
       //console.log('########## contentList', contentList);
       let courseList = [];
@@ -149,8 +149,8 @@ const Courses = () => {
             ?.course || [];
       }
       setTrackData(courseTrackData);
-      console.log('########## courseTrackData', courseTrackData);
-      console.log('##########');
+      // console.log('########## courseTrackData', courseTrackData);
+      // console.log('##########');
     } catch (e) {
       console.log('e', e);
     }

@@ -173,8 +173,8 @@ const Contents = () => {
               />
               <View
                 style={{
-                  padding: 20,
-                  backgroundColor: '#F7ECDF',
+                  padding: 10,
+                  // backgroundColor: '#F7ECDF',
                   justifyContent: 'space-between',
                   flexWrap: 'wrap',
                   flexDirection: 'row',

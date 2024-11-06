@@ -10,7 +10,7 @@ import {
   StyleSheet,
   StatusBar,
 } from 'react-native';
-// import Geolocation from 'react-native-geolocation-service'; GeoLocation Comment
+import Geolocation from 'react-native-geolocation-service'; // GeoLocation Comment
 import location from '../../assets/images/png/location.png';
 import { useTranslation } from '../../context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
@@ -22,52 +22,55 @@ const EnableLocationScreen = () => {
 
   //GeoLocation Comment
 
-  // const requestLocationPermission = async () => {
-  //   try {
-  //     if (Platform.OS === 'android') {
-  //       const granted = await PermissionsAndroid.request(
-  //         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-  //         {
-  //           title: 'Location Permission',
-  //           message:
-  //             'This app needs access to your location ' +
-  //             'so we can show your current position.',
-  //           buttonNeutral: 'Ask Me Later',
-  //           buttonPositive: 'OK',
-  //         }
-  //       );
-  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-  //         console.log('Location permission granted');
-  //         navigation.navigate('LanguageScreen');
+  const requestLocationPermission = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission',
+            message:
+              'This app needs access to your location ' +
+              'so we can show your current position.',
+            buttonNeutral: 'Ask Me Later',
+            buttonPositive: 'OK',
+          }
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Location permission granted');
+          navigation.navigate('LanguageScreen');
 
-  //         Geolocation.getCurrentPosition(
-  //           (position) => {
-  //             console.log('Location: ', position);
-  //           },
-  //           (error) => {
-  //             console.log('Error: ', error);
-  //           },
-  //           { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-  //         );
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.warn(err);
-  //   }
-  // };
+          Geolocation.getCurrentPosition(
+            (position) => {
+              console.log('Location: ', position);
+            },
+            (error) => {
+              console.log('Error: ', error);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+          );
+        }
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
 
-  // const disableLocation = () => navigation.navigate('LanguageScreen');
+  const disableLocation = () => navigation.navigate('LanguageScreen');
 
   return (
     <View style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
-      {/* <StatusBar
+      <StatusBar
         barStyle="dark-content"
         translucent={true}
         backgroundColor="transparent"
       />
       <Image style={{ width: '100%' }} source={location} resizeMode="cover" />
       <View style={{ width: '80%', marginTop: 50 }}>
-        <Text allowFontScaling={false} style={[globalStyles.heading2, { textAlign: 'center' }]}>
+        <Text
+          allowFontScaling={false}
+          style={[globalStyles.heading2, { textAlign: 'center' }]}
+        >
           {t(
             'enable_location_to_discover_nearby_skilling_centers_and_more_opportunities_tailored_just_for_you'
           )}
@@ -77,8 +80,10 @@ const EnableLocationScreen = () => {
         <PrimaryButton onPress={requestLocationPermission} text={t('enable')} />
       </View>
       <TouchableOpacity style={styles.button} onPress={disableLocation}>
-        <Text allowFontScaling={false} style={styles.buttonText}>{t('not_now')}</Text>
-      </TouchableOpacity> */}
+        <Text allowFontScaling={false} style={styles.buttonText}>
+          {t('not_now')}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };

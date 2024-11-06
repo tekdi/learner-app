@@ -1,7 +1,8 @@
-import { getDataFromStorage } from '../JsHelper/Helper';
+import Config from 'react-native-config';
+import { createNewObject, getDataFromStorage } from '../JsHelper/Helper';
 import { deleteData, getData, insertData } from '../JsHelper/SqliteHelper';
 import EndUrls from './EndUrls';
-import { get, handleResponseException, post } from './RestClient';
+import { get, handleResponseException, patch, post } from './RestClient';
 
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
@@ -9,6 +10,16 @@ const getHeaders = async () => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
     Authorization: `Bearer ${token}`,
+  };
+};
+const getHeaderswithTenant = async () => {
+  const token = await getDataFromStorage('Accesstoken');
+  return {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: `Bearer ${token}`,
+    tenantid: 'ef99949b-7f3a-4a5f-806a-e67e683e38f3',
+    academicyearid: '851687bb-422e-4a22-b27f-6b66fa304bec',
   };
 };
 
@@ -92,7 +103,7 @@ ${Object.entries(headers || {})
 
     // Log the curl command to the console
     // console.log('Generated curl command:');
-    // console.log(curlCommand);
+    console.log(curlCommand);
 
     // Make the API request
     const result = await get(url, {
@@ -136,12 +147,43 @@ export const registerUser = async (params = {}) => {
       Accept: 'application/json',
     };
     // Log the cURL command
-    // console.log(
-    //   `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(params)}'`
-    // );
+    console.log(
+      `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(params)}'`
+    );
 
     // Make the actual request
     const result = await post(url, params, {
+      headers: headers || {},
+    });
+
+    if (result?.data) {
+      return result?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const updateUser = async ({ payload, user_id }) => {
+  try {
+    const method = 'PATCH'; // Define the HTTP method
+    const url = `${EndUrls.update_profile}/${user_id}`; // Define the URL
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Cookie:
+        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+      Authorization: `Bearer ${token}`,
+    };
+    // Log the cURL command
+    console.log(
+      `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
+    );
+
+    // Make the actual request
+    const result = await patch(url, payload, {
       headers: headers || {},
     });
 
@@ -233,7 +275,10 @@ export const courseListApi = async (params = {}) => {
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
+    // Uncomment and set the Authorization header if needed
+    // 'Authorization': 'Bearer YOUR_API_KEY', // Example for an API key or token
   };
+
   let payload = {
     request: {
       filters: {
@@ -276,14 +321,23 @@ export const courseListApi = async (params = {}) => {
     },
   };
 
-  //get language user
-  //removed below filter for Pilot release
-  /*const result = JSON.parse(await getDataFromStorage('profileData'));
+  // Log the curl command
+  console.log(
+    `curl -X POST '${url}' \
+-H 'Content-Type: application/json' \
+-H 'Accept: application/json' \
+-d '${JSON.stringify(payload)}'`
+  );
+
+  // get language user
+  // removed below filter for Pilot release
+  /*
+  const result = JSON.parse(await getDataFromStorage('profileData'));
   if (result?.getUserDetails?.[0]?.customFields?.[0]?.value) {
     let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
     payload.request.filters['se_mediums'] = language;
-  }*/
-  //console.log('######## payload ', JSON.stringify(payload));
+  }
+  */
 
   try {
     // Make the actual request
@@ -306,7 +360,10 @@ export const courseListApi = async (params = {}) => {
       return result_offline;
     }
   } catch (e) {
-    console.log('no internet available');
+    console.log('no internet available', e);
+    console.log('zzzz', e?.response);
+    console.log('aaaaa', e?.request);
+    console.log('bbbb', e?.message);
     let result_offline = await getApiResponse(user_id, url, 'post', payload);
     return result_offline;
   }
@@ -399,10 +456,18 @@ export const contentListApi = async (params = {}) => {
 
 export const getCohort = async ({ user_id }) => {
   try {
-    const headers = await getHeaders();
-    const result = await get(`${EndUrls.cohort}/${user_id}`, {
+    const headers = await getHeaderswithTenant();
+    const url = `${EndUrls.cohort}/${user_id}`;
+
+    // Log the curl command
+    // console.log(
+    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${headers.Authorization ? ` -H 'Authorization: ${headers.Authorization}'` : ''}`
+    // );
+
+    const result = await get(url, {
       headers: headers || {},
     });
+
     if (result) {
       return result?.data?.result;
     } else {
@@ -1026,10 +1091,234 @@ export const forgotPassword = async ({ payload }) => {
   }
 };
 
-export const reverseGeocode = async (latitude, longitude) => {
+export async function reverseGeocode(latitude, longitude) {
+  const GOOGLE_KEY = Config.GOOGLE_KEY;
+
   const response = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_KEY}`
   );
+
   const data = await response.json();
-  return data;
+  // console.log(JSON.stringify(data));
+  if (data.results.length > 0) {
+    const addressComponents = data.results[0].address_components;
+    const state = addressComponents.find((comp) =>
+      comp.types.includes('administrative_area_level_1')
+    )?.long_name;
+    const district = addressComponents.find((comp) =>
+      comp.types.includes('administrative_area_level_3')
+    )?.long_name;
+    const block = addressComponents.find((comp) =>
+      comp.types.includes('sublocality')
+    )?.long_name;
+    console.log({ state, district, block });
+    return { state, district, block };
+  }
+  return { state: null, district: null, block: null };
+}
+
+export const eventList = async ({ startDate, endDate }) => {
+  try {
+    const url = `${EndUrls.eventList}`; // Define the URL
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    const cohort = JSON.parse(await getDataFromStorage('cohortData'));
+    // console.log({ startDate, endDate, cohort });
+    // console.log(cohort?.cohortData?.[0]?.cohortId);
+
+    const payload = {
+      limit: 0,
+      offset: 0,
+      filters: {
+        date: {
+          after: startDate,
+          before: endDate,
+        },
+        cohortId: cohort?.cohortData?.[0]?.cohortId,
+        status: ['live'],
+      },
+    };
+    // console.log(
+    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const targetedSolutions = async ({ subjectName, type }) => {
+  try {
+    const method = 'POST'; // Define the HTTP method
+    const url = `${EndUrls.targetedSolutions}`; // Define the URL
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Cookie:
+        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+      'x-auth-token': token,
+    };
+    const cohort = JSON.parse(await getDataFromStorage('cohortData'));
+    const requiredLabels = ['GRADE', 'STATES', 'MEDIUM', 'BOARD'];
+    const customFields = cohort?.cohortData?.[0]?.customField;
+    const data = createNewObject(customFields, requiredLabels);
+
+    const payload = {
+      subject: subjectName,
+      state: data?.STATES,
+      medium: data?.MEDIUM,
+      class: data?.GRADE,
+      board: data?.BOARD,
+      type: type,
+    };
+    // const payload = {
+    //   subject: 'Science',
+    //   state: 'Maharashtra',
+    //   medium: 'Marathi',
+    //   class: 'Grade 10',
+    //   board: 'Maharashtra',
+    //   type: 'Main Course',
+    // };
+
+    // console.log(
+    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const EventDetails = async ({ id }) => {
+  try {
+    const method = 'POST'; // Define the HTTP method
+    const url = `${EndUrls.EventDetails}/${id}`; // Define the URL
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Cookie:
+        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+      'x-auth-token': token,
+    };
+
+    const payload = {};
+
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
+    );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const getAttendance = async ({ todate, fromDate }) => {
+  try {
+    const method = 'POST'; // Define the HTTP method
+    const url = `${EndUrls.attendance}`; // Define the URL
+    const token = await getDataFromStorage('Accesstoken');
+    let userId = await getDataFromStorage('userId');
+    let cohortId = await getDataFromStorage('cohortId');
+
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Cookie:
+        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+      Authorization: `Bearer ${token}`,
+      tenantid: `ef99949b-7f3a-4a5f-806a-e67e683e38f3`,
+    };
+
+    const payload = {
+      limit: 300,
+      page: 0,
+      filters: {
+        contextId: cohortId,
+        scope: 'student',
+        toDate: todate,
+        fromDate: fromDate,
+        userId: userId,
+      },
+    };
+
+    // console.log(
+    //   `curl -X ${method} '${url}' \\\n` +
+    //     `-H 'Content-Type: application/json' \\\n` +
+    //     `-H 'Accept: application/json' \\\n` +
+    //     `-H 'Cookie: ${headers.Cookie}' \\\n` +
+    //     `-H 'Authorization: ${headers.Authorization}' \\\n` +
+    //     `-H 'tenantid: ${headers.tenantid}' \\\n` +
+    //     `-d '${JSON.stringify(payload)}'`
+    // );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const LearningMaterialAPI = async () => {
+  try {
+    const method = 'get'; // Define the HTTP method
+    const url = `${EndUrls.framework}`; // Define the URL
+    const headers = await getHeaders();
+
+    // Construct the curl command
+    let curlCommand = `curl -X ${method.toUpperCase()} '${url}' \\\n`;
+    for (const [key, value] of Object.entries(headers || {})) {
+      curlCommand += `-H '${key}: ${value}' \\\n`;
+    }
+    // console.log(curlCommand);
+    // Make the actual request
+    const result = await get(url, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
 };

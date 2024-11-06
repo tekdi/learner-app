@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 import { useTranslation } from '../context/LanguageContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
@@ -9,6 +9,8 @@ import DashboardStack from './DashboardStack';
 import Contents from '../screens/Dashboard/Contents';
 import Profile from '../screens/Profile/Profile';
 import AssessmentStack from './AssessmentStack';
+import Coursesfilled from '../assets/images/png/Coursesfilled.png';
+import Coursesunfilled from '../assets/images/png/Coursesunfilled.png';
 
 const Tab = createBottomTabNavigator();
 
@@ -30,13 +32,21 @@ const TabScreen = () => {
               />
             );
           } else if (route.name === 'DashboardStack') {
-            return (
-              <SimpleIcon
-                name="graduation"
-                color={focused ? '#987100' : 'black'}
-                size={30}
-              />
-            );
+            if (focused) {
+              return (
+                <Image
+                  source={Coursesfilled}
+                  style={{ width: 30, height: 30 }}
+                />
+              );
+            } else {
+              return (
+                <Image
+                  source={Coursesunfilled}
+                  style={{ width: 30, height: 30 }}
+                />
+              );
+            }
           } else if (route.name === 'AssessmentStack') {
             return (
               <SimpleIcon

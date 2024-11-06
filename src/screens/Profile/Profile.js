@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -10,7 +10,11 @@ import {
 import Header from '../../components/Layout/Header';
 import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { CommonActions, useNavigation } from '@react-navigation/native';
+import {
+  CommonActions,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import Label from '../../components/Label/Label';
 import TextField from '../../components/TextField/TextField';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
@@ -47,26 +51,30 @@ const Profile = (props) => {
     return result;
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = JSON.parse(await getDataFromStorage('profileData'));
+  const fetchData = async () => {
+    const result = JSON.parse(await getDataFromStorage('profileData'));
+    console.log('result', result);
 
-      const requiredLabels = [
-        'WHATS_YOUR_GENDER',
-        'CLASS_OR_LAST_PASSED_GRADE',
-        'STATES',
-        'DISTRICTS',
-        'BLOCKS',
-        'AGE',
-        'EMAIL',
-      ];
-      const customFields = result?.getUserDetails?.[0]?.customFields;
-      createNewObject(customFields, requiredLabels);
-      setUserData(result?.getUserDetails?.[0]);
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
+    const requiredLabels = [
+      'WHATS_YOUR_GENDER',
+      'CLASS_OR_LAST_PASSED_GRADE',
+      'STATES',
+      'DISTRICTS',
+      'BLOCKS',
+      'AGE',
+      'EMAIL',
+    ];
+    const customFields = result?.getUserDetails?.[0]?.customFields;
+    createNewObject(customFields, requiredLabels);
+    setUserData(result?.getUserDetails?.[0]);
+    setLoading(false);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [navigation])
+  );
 
   const handleLogout = () => {
     const fetchData = async () => {
@@ -75,6 +83,9 @@ const Profile = (props) => {
       await deleteSavedItem('userId');
       await deleteSavedItem('cohortId');
       await deleteSavedItem('cohortData');
+      await deleteSavedItem('weightedProgress');
+      await deleteSavedItem('courseTrackData');
+      await deleteSavedItem('profileData');
       logoutEvent();
       // Reset the navigation stack and navigate to LoginSignUpScreen
       navigation.dispatch(
@@ -124,6 +135,13 @@ const Profile = (props) => {
             <Text allowFontScaling={false} style={globalStyles.heading}>
               {t('my_profile')}
             </Text>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('ProfileUpdateScreen');
+              }}
+            >
+              <Icon name="edit" size={30} color={'#000'} />
+            </TouchableOpacity>
           </View>
 
           <View>

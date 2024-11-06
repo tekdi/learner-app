@@ -59,14 +59,15 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     if (isConnected) {
       setNetworkstatus(true);
-      setLoading(true);
+      // setLoading(true);
       const payload = {
         username: userName,
         password: password,
       };
       const data = await login(payload);
+      console.log(data?.error);
 
-      if (data?.params?.status !== 'failed') {
+      if (data?.params?.status !== 'failed' && !data?.error) {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
         const user_id = await getUserId();
@@ -82,13 +83,19 @@ const LoginScreen = () => {
         await storeUsername(profileData?.getUserDetails?.[0]?.username);
         await setDataInStorage('userId', user_id);
         const cohort = await getCohort({ user_id });
+
         await setDataInStorage('cohortData', JSON.stringify(cohort));
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
+
         await setDataInStorage(
           'cohortId',
           cohort_id || '00000000-0000-0000-0000-000000000000'
         );
-        navigation.navigate('Dashboard');
+        if (cohort_id) {
+          navigation.navigate('SCPUserTabScreen');
+        } else {
+          navigation.navigate('Dashboard');
+        }
       } else {
         setLoading(false);
         setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));
@@ -109,8 +116,9 @@ const LoginScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = JSON.parse(await getDataFromStorage('usernames')) || [];
-      console.log({ data });
-      setUsernames(data);
+      const filteredSuggestions = data.filter((item) => item != null);
+
+      setUsernames(filteredSuggestions);
     };
     fetchData();
   }, []);
@@ -180,7 +188,7 @@ const LoginScreen = () => {
                 allowFontScaling={false}
                 style={{ color: 'red', top: -10, left: 20 }}
               >
-                {t(errmsg)}
+                {t(errmsg || 'invalid_username_or_password')}
               </Text>
             )}
           </View>

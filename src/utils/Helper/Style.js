@@ -18,6 +18,12 @@ const globalStyles = StyleSheet.create({
     fontWeight: '400',
     fontFamily: 'Poppins-Regular',
   },
+  heading3: {
+    fontSize: 22,
+    color: '#000',
+    fontWeight: '400',
+    fontFamily: 'Poppins-Regular',
+  },
   subHeading: {
     fontSize: 16,
     color: '#000',

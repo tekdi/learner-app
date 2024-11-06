@@ -1,0 +1,45 @@
+import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import MonthlyCalendar from '../screens/Dashboard/Calendar/MonthlyCalendar';
+import SCPDashboard from '../screens/Dashboard/Preference/SCPDashboard/SCPDashboard';
+import SessionView from '../screens/Dashboard/Preference/SCPDashboard/SessionView';
+import PreviousClassMaterial from '../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterial';
+import MyClassDashboard from '../screens/Dashboard/Preference/SCPDashboard/MyClass/MyClassDashboard';
+import Assessment from '../screens/Assessment/Assessment';
+
+const Stack = createNativeStackNavigator();
+
+const SCPUserStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="MyClassDashboard"
+        component={MyClassDashboard}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="Assessment"
+        component={Assessment}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="SessionView"
+        component={SessionView}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="PreviousClassMaterial"
+        component={PreviousClassMaterial}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      {/* <Stack.Screen
+        name="PreviousClassMaterial"
+        component={PreviousClassMaterial}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      /> */}
+    </Stack.Navigator>
+  );
+};
+
+export default SCPUserStack;
