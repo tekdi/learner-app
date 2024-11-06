@@ -54,6 +54,8 @@ export const getSavedToken = async () => {
 export const getUserId = async () => {
   try {
     const data = await getAccessToken();
+    console.log({ data });
+
     return data?.result?.userId;
   } catch (e) {
     console.error('Error retrieving credentials:', e);

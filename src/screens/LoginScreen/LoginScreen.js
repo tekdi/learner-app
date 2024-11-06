@@ -82,7 +82,7 @@ const LoginScreen = () => {
         await storeUsername(profileData?.getUserDetails?.[0]?.username);
         await setDataInStorage('userId', user_id);
         const cohort = await getCohort({ user_id });
-        console.log({ user_id });
+        console.log({ user_id, cohort });
 
         await setDataInStorage('cohortData', JSON.stringify(cohort));
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;

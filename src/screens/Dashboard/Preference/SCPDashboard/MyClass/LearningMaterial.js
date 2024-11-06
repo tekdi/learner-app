@@ -9,6 +9,7 @@ import {
   getOptionsByCategory,
 } from '../../../../../utils/JsHelper/Helper';
 import { LearningMaterialAPI } from '../../../../../utils/API/AuthService';
+import ActiveLoading from '../../../../LoadingScreen/ActiveLoading';
 
 const LearningMaterial = () => {
   const { t } = useTranslation();
@@ -16,19 +17,14 @@ const LearningMaterial = () => {
   const [selectedIds, setSelectedIds] = useState(null);
   const [courseTypes, setCourseTypes] = useState([]);
   const [courseSubjectList, setCourseSubjectList] = useState([]);
-
-  // console.log({ selectedIds });
-  const field = {
-    options: [
-      { label: 'abc', value: '1' },
-      { label: 'xyz', value: '2' },
-    ],
-  };
+  const [loading, setLoading] = useState(true);
+  const [subjects, setSubjects] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const boardData = await LearningMaterialAPI();
-      console.log({ boardData });
+      // console.log({ boardData });
 
       const cohort = JSON.parse(await getDataFromStorage('cohortData'));
       const cohortData = cohort?.cohortData?.[0];
@@ -93,11 +89,26 @@ const LearningMaterial = () => {
 
       setCourseSubjectList(courseSubjectLists);
       setCourseTypes(courseType);
+      setLoading(false);
     };
     fetchData();
   }, []);
 
-  return (
+  useEffect(() => {
+    // Find the selected course and update the subjects
+    const selectedCourse = courseSubjectList.find(
+      (item) => item.courseTypeName === selectedIds?.label
+    );
+
+    setSubjects(selectedCourse ? selectedCourse.subjects : []);
+  }, [selectedIds]);
+
+  console.log('DDDD', subjects);
+  console.log('courseSubjectLists', JSON.stringify(courseSubjectList));
+
+  return loading ? (
+    <ActiveLoading />
+  ) : (
     <SafeAreaView>
       <DropdownSelect2
         field={courseTypes}
@@ -107,18 +118,13 @@ const LearningMaterial = () => {
         value={''}
       />
 
-      {/* {selectedIds?.value === && (
+      {selectedIds?.value && subjects && (
         <View style={styles.viewbox}>
-          <MaterialCard title="Maths" />
-          <MaterialCard title="Maths" />
-          <MaterialCard title="Maths" />
-          <MaterialCard title="Maths" />
-          <MaterialCard title="Maths" />
-          <MaterialCard title="Maths" />
-          <MaterialCard title="Maths" />
-          <MaterialCard title="Maths" />
+          {subjects.map((item, key) => {
+            return <MaterialCard key={key} title={item} />;
+          })}
         </View>
-      )} */}
+      )}
     </SafeAreaView>
   );
 };

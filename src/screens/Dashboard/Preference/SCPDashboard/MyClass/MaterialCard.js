@@ -14,14 +14,14 @@ const MaterialCard = ({ title }) => {
       onPress={() => navigation.navigate('MaterialCardView')}
     >
       <View style={globalStyles.flexrow}>
-        <CircularProgressBarCustom
-          size={30}
-          strokeWidth={5}
-          progress={40 / 100}
-          color="green"
-          backgroundColor="#e6e6e6"
-          textStyle={{ fontSize: 8, color: 'black' }}
-        />
+        {/* <CircularProgressBarCustom
+            size={30}
+            strokeWidth={5}
+            progress={40 / 100}
+            color="green"
+            backgroundColor="#e6e6e6"
+            textStyle={{ fontSize: 8, color: 'black' }}
+          /> */}
         <Text
           style={[globalStyles.subHeading, { marginLeft: 20, width: '70%' }]}
           numberOfLines={1}

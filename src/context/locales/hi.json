@@ -236,5 +236,6 @@
   "no_data": "कोई डेटा नहीं",
   "pre_requisites": "(पूर्व-आवश्यकताएँ)",
   "pre_requisites_2": "पूर्व-आवश्यकताएँ",
-  "post_requisites_2": "पोस्ट-आवश्यकताएँ"
+  "post_requisites_2": "पोस्ट-आवश्यकताएँ",
+  "course_type": "पाठ्यक्रम प्रकार"
 }

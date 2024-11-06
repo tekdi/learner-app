@@ -239,5 +239,6 @@
   "no_data": "No Data",
   "pre_requisites": "(Pre-requisites)",
   "pre_requisites_2": "Pre-requisites",
-  "post_requisites_2": "Post-requisites"
+  "post_requisites_2": "Post-requisites",
+  "course_type": "Course Type"
 }

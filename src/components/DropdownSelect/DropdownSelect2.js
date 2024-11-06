@@ -66,9 +66,9 @@ const DropdownSelect = ({
       {isDropdownOpen && (
         <View style={styles.dropdownOptions}>
           <ScrollView nestedScrollEnabled>
-            {field?.map((item) => (
+            {field?.map((item, key) => (
               <TouchableOpacity
-                key={item.value}
+                key={key}
                 onPress={() => handleSelect(item)}
                 style={styles.dropdownOption}
               >
