@@ -86,7 +86,6 @@ const LoginScreen = () => {
 
         await setDataInStorage('cohortData', JSON.stringify(cohort));
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-        console.log({ cohort_id });
 
         await setDataInStorage(
           'cohortId',
@@ -117,8 +116,9 @@ const LoginScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = JSON.parse(await getDataFromStorage('usernames')) || [];
-      // console.log({ data });
-      setUsernames(data);
+      const filteredSuggestions = data.filter((item) => item != null);
+
+      setUsernames(filteredSuggestions);
     };
     fetchData();
   }, []);

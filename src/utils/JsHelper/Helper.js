@@ -341,3 +341,21 @@ export const formatDateTimeRange = (startDateTime) => {
   // Combine everything into the final output string
   return ` ${formattedStartTime} `;
 };
+
+export const getOptionsByCategory = (frameworks, categoryCode) => {
+  // Find the category by code
+  console.log({ frameworks });
+
+  const category = frameworks.categories.find(
+    (category) => category.code === categoryCode
+  );
+
+  // Return the mapped terms
+  return category
+    ? category.terms.map((term) => ({
+        name: term.name,
+        code: term.code,
+        associations: term.associations,
+      }))
+    : [];
+};

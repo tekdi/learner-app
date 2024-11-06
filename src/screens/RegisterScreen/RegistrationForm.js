@@ -24,6 +24,8 @@ import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
+import lightning from '../../assets/images/png/lightning.png';
+
 // import Geolocation from 'react-native-geolocation-service';
 
 //multi language
@@ -221,7 +223,7 @@ const buildYupSchema = (form, currentForm, t) => {
   return yup.object().shape(shape);
 };
 
-const RegistrationForm = ({ schema }) => {
+const RegistrationForm = ({ schema, geoData }) => {
   //multi language setup
   const { t, language } = useTranslation();
   //dynamic schema for json object validation
@@ -231,6 +233,7 @@ const RegistrationForm = ({ schema }) => {
   const [isDisable, setIsDisable] = useState(true);
   const [currentForm, setCurrentForm] = useState(1);
   const [modal, setModal] = useState(false);
+  const [err, setErr] = useState();
   const [networkError, setNetworkError] = useState(false);
 
   const { isConnected } = useInternet();
@@ -269,17 +272,18 @@ const RegistrationForm = ({ schema }) => {
 
   // console.log({ TENANT_ID });
 
-  // const programData = {
-  //   options: [
-  //     {
-  //       tenantId: TENANT_ID,
-  //       name: 'YouthNet',
-  //       domain: 'pratham.shiksha.com',
-  //       description: 'Description',
-  //       images: [],
-  //     },
-  //   ],
-  // };
+  const programData = {
+    options: [
+      {
+        tenantId: '6c8b810a-66c2-4f0d-8c0c-c025415a4414',
+        name: 'Second Chance Program',
+        domain: 'pratham.shiksha.com',
+        description:
+          'Get a second chance to complete your 10th grade education',
+        images: [],
+      },
+    ],
+  };
 
   const RegisterLogin = async (loginData) => {
     const payload = {
@@ -340,12 +344,12 @@ const RegistrationForm = ({ schema }) => {
 
     // console.log({ isConnected, networkError, register });
 
-    if (register?.params?.status === 'failed' || !isConnected) {
+    if (!isConnected) {
       setNetworkError(true);
-      console.log('hi');
-    } else {
-      console.log('hello');
+    } else if (register?.params?.status === 'failed') {
       setModal(true);
+      setErr(register?.params?.err);
+    } else {
       logRegistrationComplete();
       await RegisterLogin(data);
     }
@@ -377,17 +381,18 @@ const RegistrationForm = ({ schema }) => {
       fieldName: 'districts',
       controllingfieldfk: stateValue?.value || stateValue,
     };
-    const geoData = JSON.parse(await getDataFromStorage('geoData'));
+
     const data = await getGeoLocation({ payload });
     const foundDistrict = data?.values?.find(
-      (item) => item?.label === geoData?.state_district
+      (item) => item?.label === geoData?.district
     );
 
     const district = {
       label: foundDistrict?.label,
       value: foundDistrict?.value,
     };
-    if (!districtValue) {
+
+    if (districtValue?.label == undefined) {
       setValue('district', district);
     }
     const newSchema = addOptionsToField(
@@ -571,16 +576,12 @@ const RegistrationForm = ({ schema }) => {
       const fullName = `${data.first_name}${data.last_name}${randomThreeDigitNumber}`;
       setValue('username', fullName.toLowerCase());
     }
-    console.log({ currentForm });
 
     if (currentForm === 2) {
       const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
-      const geoData = JSON.parse(await getDataFromStorage('geoData'));
       const foundState = stateAPIdata.find(
         (item) => item?.label === geoData?.state
       );
-
-      console.log({ stateAPIdata, foundState, geoData, state });
 
       const state = {
         label: foundState?.label,
@@ -588,6 +589,7 @@ const RegistrationForm = ({ schema }) => {
       };
 
       setValue('state', state);
+      fetchDistricts();
     }
   };
 
@@ -653,7 +655,7 @@ const RegistrationForm = ({ schema }) => {
         questionIndex={currentForm}
         totalForms={schema?.length}
       />
-      {currentForm === 6 && (
+      {currentForm === 4 && (
         <>
           <Text
             allowFontScaling={false}
@@ -704,23 +706,39 @@ const RegistrationForm = ({ schema }) => {
       {modal && (
         <Modal transparent={true} animationType="slide">
           <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
-            <View style={styles.alertBox}>
-              <FastImage
-                style={styles.image}
-                source={require('../../assets/images/gif/party.gif')}
-                resizeMode={FastImage.resizeMode.contain}
-                priority={FastImage.priority.high} // Set the priority here
-              />
-              <Text
-                allowFontScaling={false}
-                style={[
-                  globalStyles.heading2,
-                  { marginVertical: 10, textAlign: 'center' },
-                ]}
-              >
-                {t('congratulations')}
-              </Text>
-            </View>
+            {err ? (
+              <View style={styles.alertBox}>
+                <Image source={lightning} resizeMode="contain" />
+
+                <Text style={[globalStyles.subHeading, { marginVertical: 10 }]}>
+                  Error: {err}
+                </Text>
+                <PrimaryButton
+                  text={t('continue')}
+                  onPress={() => {
+                    setModal(false);
+                  }}
+                />
+              </View>
+            ) : (
+              <View style={styles.alertBox}>
+                <FastImage
+                  style={styles.image}
+                  source={require('../../assets/images/gif/party.gif')}
+                  resizeMode={FastImage.resizeMode.contain}
+                  priority={FastImage.priority.high} // Set the priority here
+                />
+                <Text
+                  allowFontScaling={false}
+                  style={[
+                    globalStyles.heading2,
+                    { marginVertical: 10, textAlign: 'center' },
+                  ]}
+                >
+                  {t('congratulations')}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
         </Modal>
       )}

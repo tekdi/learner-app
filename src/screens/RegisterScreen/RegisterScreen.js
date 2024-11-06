@@ -16,6 +16,7 @@ const RegisterScreen = () => {
   const [mainSchema, setMainSchema] = useState([]);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState(false);
+  const [geoData, setgeoData] = useState();
 
   const fetchstates = async () => {
     const payload = {
@@ -35,15 +36,12 @@ const RegisterScreen = () => {
 
     Geolocation.getCurrentPosition(
       async (position) => {
-        console.log({ position });
-
         const data = await reverseGeocode(
           position?.coords?.latitude,
           position?.coords?.longitude
         );
-        console.log(data);
-
-        // setDataInStorage('geoData', JSON.stringify(data?.address));
+        setgeoData(data);
+        setDataInStorage('geoData', JSON.stringify(data));
       },
       (error) => {
         console.log('Error: ', error);
@@ -54,7 +52,6 @@ const RegisterScreen = () => {
 
   const fetchData = async () => {
     const data = await getStudentForm();
-    // console.log({ data });
     if (data?.error) {
       setNetworkError(true);
     } else {
@@ -76,7 +73,7 @@ const RegisterScreen = () => {
     <Loading />
   ) : (
     <SafeAreaView style={styles.container}>
-      <RegistrationForm schema={mainSchema} />
+      <RegistrationForm schema={mainSchema} geoData={geoData} />
       <NetworkAlert onTryAgain={fetchData} isConnected={!networkError} />
     </SafeAreaView>
   );

@@ -48,7 +48,7 @@ const SyncCard = ({ doneSync }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('internet changed ', isConnected);
+      // console.log('internet changed ', isConnected);
       await performDataSync();
     };
     fetchData();
@@ -59,7 +59,7 @@ const SyncCard = ({ doneSync }) => {
       console.log('Screen is focused');
 
       const fetchData = async () => {
-        console.log('internet changed ', isConnected);
+        // console.log('internet changed ', isConnected);
         await performDataSync();
       };
       fetchData();
@@ -122,12 +122,10 @@ const SyncCard = ({ doneSync }) => {
         //get sync pending
         const user_id = await getDataFromStorage('userId');
         let result_sync_offline = await getSyncAsessmentOffline(user_id);
-        let result_sync_offline_telemetry = await getSyncTelemetryOffline(
-          user_id
-        );
-        let result_sync_offline_tracking = await getSyncTrackingOffline(
-          user_id
-        );
+        let result_sync_offline_telemetry =
+          await getSyncTelemetryOffline(user_id);
+        let result_sync_offline_tracking =
+          await getSyncTrackingOffline(user_id);
         // console.log('result_sync_offline', result_sync_offline);
         // console.log(
         //   'result_sync_offline_telemetry',
@@ -206,9 +204,8 @@ const SyncCard = ({ doneSync }) => {
                   telemetry_result?.telemetry_object
                 );
 
-                let create_telemetry = await telemetryTracking(
-                  telemetry_object
-                );
+                let create_telemetry =
+                  await telemetryTracking(telemetry_object);
                 if (
                   create_telemetry &&
                   create_telemetry?.response?.responseCode == 'SUCCESS'
@@ -304,7 +301,7 @@ const SyncCard = ({ doneSync }) => {
           setIsSyncPending(false);
           setIsProgress(false);
         }
-        console.log('Data synced successfully.');
+        // console.log('Data synced successfully.');
       } catch (error) {
         console.error('Data sync failed:', error);
       }

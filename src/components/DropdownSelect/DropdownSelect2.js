@@ -32,7 +32,7 @@ const DropdownSelect = ({
   }, []);
 
   const toggleDropdown = () => {
-    if (field.options && field.options.length > 0) {
+    if (field && field.length > 0) {
       setIsDropdownOpen(!isDropdownOpen);
     }
   };
@@ -41,8 +41,8 @@ const DropdownSelect = ({
     // setSelectedValue({ name: item?.label, value: item?.value });
     setSelectedIds((prevSelectedIds) => ({
       ...prevSelectedIds,
-      label: item?.label,
-      value: item?.value,
+      label: item,
+      value: item,
     }));
 
     setIsDropdownOpen(false);
@@ -66,14 +66,14 @@ const DropdownSelect = ({
       {isDropdownOpen && (
         <View style={styles.dropdownOptions}>
           <ScrollView nestedScrollEnabled>
-            {field.options?.map((item) => (
+            {field?.map((item) => (
               <TouchableOpacity
                 key={item.value}
                 onPress={() => handleSelect(item)}
                 style={styles.dropdownOption}
               >
                 <Text allowFontScaling={false} style={styles.optionText}>
-                  {item?.label}
+                  {item}
                 </Text>
               </TouchableOpacity>
             ))}

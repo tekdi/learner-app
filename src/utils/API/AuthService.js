@@ -1,3 +1,4 @@
+import Config from 'react-native-config';
 import { createNewObject, getDataFromStorage } from '../JsHelper/Helper';
 import { deleteData, getData, insertData } from '../JsHelper/SqliteHelper';
 import EndUrls from './EndUrls';
@@ -9,6 +10,16 @@ const getHeaders = async () => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
     Authorization: `Bearer ${token}`,
+  };
+};
+const getHeaderswithTenant = async () => {
+  const token = await getDataFromStorage('Accesstoken');
+  return {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: `Bearer ${token}`,
+    tenantid: 'ef99949b-7f3a-4a5f-806a-e67e683e38f3',
+    academicyearid: '851687bb-422e-4a22-b27f-6b66fa304bec',
   };
 };
 
@@ -92,7 +103,7 @@ ${Object.entries(headers || {})
 
     // Log the curl command to the console
     // console.log('Generated curl command:');
-    // console.log(curlCommand);
+    console.log(curlCommand);
 
     // Make the API request
     const result = await get(url, {
@@ -136,9 +147,9 @@ export const registerUser = async (params = {}) => {
       Accept: 'application/json',
     };
     // Log the cURL command
-    // console.log(
-    //   `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(params)}'`
-    // );
+    console.log(
+      `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(params)}'`
+    );
 
     // Make the actual request
     const result = await post(url, params, {
@@ -167,9 +178,9 @@ export const updateUser = async ({ payload, user_id }) => {
       Authorization: `Bearer ${token}`,
     };
     // Log the cURL command
-    // console.log(
-    //   `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await patch(url, payload, {
@@ -445,13 +456,13 @@ export const contentListApi = async (params = {}) => {
 
 export const getCohort = async ({ user_id }) => {
   try {
-    const headers = await getHeaders();
+    const headers = await getHeaderswithTenant();
     const url = `${EndUrls.cohort}/${user_id}`;
 
     // Log the curl command
-    console.log(
-      `curl -X GET '${url}' -H 'Content-Type: application/json'${headers.Authorization ? ` -H 'Authorization: ${headers.Authorization}'` : ''}`
-    );
+    // console.log(
+    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${headers.Authorization ? ` -H 'Authorization: ${headers.Authorization}'` : ''}`
+    // );
 
     const result = await get(url, {
       headers: headers || {},
@@ -1080,47 +1091,22 @@ export const forgotPassword = async ({ payload }) => {
   }
 };
 
-// export const reverseGeocode = async (latitude, longitude) => {
-//   console.log({ latitude, longitude });
-
-//   try {
-//     const response = await fetch(
-//       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-//     );
-
-//     const data = await response.json();
-//     console.log('Full data response:', data);
-
-//     // Extracting relevant information if available
-//     const address = data.address || {};
-//     const state = address.state || 'State not found';
-//     const district = address.county || address.district || 'District not found';
-
-//     console.log('State:', state);
-//     console.log('District:', district);
-
-//     return { state, district };
-//   } catch (error) {
-//     console.error('Error fetching geocode data:', error);
-//     return { state: null, district: null };
-//   }
-// };
-
 export async function reverseGeocode(latitude, longitude) {
-  console.log({ latitude, longitude });
+  const GOOGLE_KEY = Config.GOOGLE_KEY;
 
   const response = await fetch(
-    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=YOUR_API_KEY`
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_KEY}`
   );
-  console.log({ response });
+
   const data = await response.json();
+  // console.log(JSON.stringify(data));
   if (data.results.length > 0) {
     const addressComponents = data.results[0].address_components;
     const state = addressComponents.find((comp) =>
       comp.types.includes('administrative_area_level_1')
     )?.long_name;
     const district = addressComponents.find((comp) =>
-      comp.types.includes('administrative_area_level_2')
+      comp.types.includes('administrative_area_level_3')
     )?.long_name;
     const block = addressComponents.find((comp) =>
       comp.types.includes('sublocality')
@@ -1310,32 +1296,25 @@ export const getAttendance = async ({ todate, fromDate }) => {
     return handleResponseException(e);
   }
 };
-export const LearningMaterial = async ({ todate, fromDate }) => {
+export const LearningMaterialAPI = async () => {
   try {
     const method = 'get'; // Define the HTTP method
     const url = `${EndUrls.framework}`; // Define the URL
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    };
+    const headers = await getHeaders();
 
-    // console.log(
-    //   `curl -X ${method} '${url}' \\\n` +
-    //     `-H 'Content-Type: application/json' \\\n` +
-    //     `-H 'Accept: application/json' \\\n` +
-    //     `-H 'Cookie: ${headers.Cookie}' \\\n` +
-    //     `-H 'Authorization: ${headers.Authorization}' \\\n` +
-    //     `-H 'tenantid: ${headers.tenantid}' \\\n` +
-    //     `-d '${JSON.stringify(payload)}'`
-    // );
-
+    // Construct the curl command
+    let curlCommand = `curl -X ${method.toUpperCase()} '${url}' \\\n`;
+    for (const [key, value] of Object.entries(headers || {})) {
+      curlCommand += `-H '${key}: ${value}' \\\n`;
+    }
+    // console.log(curlCommand);
     // Make the actual request
     const result = await get(url, {
       headers: headers || {},
     });
 
     if (result) {
-      return result?.data?.data;
+      return result?.data;
     } else {
       return {};
     }

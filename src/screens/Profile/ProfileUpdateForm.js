@@ -295,7 +295,6 @@ const ProfileUpdateForm = ({ schema }) => {
 
     // await saveToken(token);
     const register = await updateUser({ payload, user_id });
-    console.log({ register });
 
     if (register?.params?.status === 'failed') {
       console.log('hi');
@@ -305,6 +304,9 @@ const ProfileUpdateForm = ({ schema }) => {
       const profileData = await getProfileDetails({
         userId: user_id,
       });
+
+      console.log(JSON.stringify(profileData));
+
       await setDataInStorage('profileData', JSON.stringify(profileData));
       navigation.navigate('MyProfile');
     }

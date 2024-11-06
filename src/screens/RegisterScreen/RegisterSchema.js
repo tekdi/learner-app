@@ -108,23 +108,23 @@ export const registerSchema = async (data, states) => {
       //   ],
       // },
 
-      // {
-      //   formNumber: 4,
-      //   question: 'which_program_do_you_want_to_enroll_to',
-      //   fields: [
-      //     {
-      //       type: 'radio',
-      //       label: 'program',
-      //       name: 'program',
-      //       // coreField: data?.[4]?.coreField,
-      //       // fieldId: data?.[4]?.fieldId,
-      //       // options: data?.[4]?.options,
-      //       validation: {
-      //         required: true,
-      //       },
-      //     },
-      //   ],
-      // },
+      {
+        formNumber: 3,
+        question: 'which_program_do_you_want_to_enroll_to',
+        fields: [
+          {
+            type: 'radio',
+            label: 'program',
+            name: 'program',
+            // coreField: data?.[4]?.coreField,
+            // fieldId: data?.[4]?.fieldId,
+            // options: data?.[4]?.options,
+            validation: {
+              required: true,
+            },
+          },
+        ],
+      },
       // {
       //   formNumber: 3,
       //   question: 'q5_interested_in',
@@ -144,7 +144,7 @@ export const registerSchema = async (data, states) => {
       //   ],
       // },
       {
-        formNumber: 3,
+        formNumber: 4,
         question: 'where_are_you_located',
         fields: [
           {
@@ -192,7 +192,7 @@ export const registerSchema = async (data, states) => {
         ],
       },
       {
-        formNumber: 4,
+        formNumber: 5,
         question: 'q6_login_cred',
         fields: [
           {
@@ -257,7 +257,7 @@ export const registerSchema = async (data, states) => {
       //   ],
       // },
       {
-        formNumber: 5,
+        formNumber: 6,
         question: null,
         fields: [
           {
