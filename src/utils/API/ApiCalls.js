@@ -3,6 +3,19 @@ import axios from 'axios';
 import uuid from 'react-native-uuid';
 import { getApiResponse, storeApiResponse } from './AuthService';
 import { getDataFromStorage } from '../JsHelper/Helper';
+//for react native config env : dev uat prod
+import Config from 'react-native-config';
+
+const getHeaders = async () => {
+  const token = await getDataFromStorage('Accesstoken');
+  let tenantId = Config.TENANT_ID;
+  return {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: `Bearer ${token}`,
+    tenantId: `${tenantId}`,
+  };
+};
 
 export const getAccessToken = async () => {
   const url = EndUrls.login;
@@ -172,7 +185,6 @@ export const assessmentTracking = async (
   maxScore,
   seconds,
   userId,
-  batchId,
   lastAttemptedOn,
   courseId,
   unitId
@@ -203,11 +215,12 @@ export const assessmentTracking = async (
   try {
     const url = EndUrls.AssessmentCreate;
 
+    const headers = await getHeaders();
+
     let data = JSON.stringify({
       userId: userId,
       courseId: courseId,
       unitId: unitId,
-      batchId: batchId,
       contentId: identifierWithoutImg,
       attemptId: attemptId,
       assessmentSummary: scoreDetailsString,
@@ -223,11 +236,7 @@ export const assessmentTracking = async (
       method: 'post',
       maxBodyLength: Infinity,
       url: url,
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie:
-          'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
-      },
+      headers: headers || {},
       data: data,
     };
 
@@ -302,7 +311,6 @@ export const telemetryTracking = async (telemetryObject) => {
 export const contentTracking = async (
   userId,
   courseId,
-  batchId,
   contentId,
   contentType,
   contentMime,
@@ -316,7 +324,6 @@ export const contentTracking = async (
     let data = JSON.stringify({
       userId: userId,
       courseId: courseId,
-      batchId: batchId,
       contentId: contentId,
       contentType: contentType,
       contentMime: contentMime,
@@ -330,13 +337,13 @@ export const contentTracking = async (
 
     let api_response = null;
 
+    const headers = await getHeaders();
+
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
       url: url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: headers || {},
       data: data,
     };
 
@@ -360,17 +367,17 @@ export const contentTracking = async (
 export const contentTrackingStatus = async (
   userId,
   contentId,
-  batchId,
   courseId,
   unitId
 ) => {
   try {
     const url = EndUrls.ContentTrackingStatus;
 
+    const headers = await getHeaders();
+
     let data = JSON.stringify({
       userId: [userId],
       contentId: contentId,
-      batchId: batchId,
       courseId: courseId,
       unitId: unitId,
     });
@@ -381,9 +388,7 @@ export const contentTrackingStatus = async (
       method: 'post',
       maxBodyLength: Infinity,
       url: url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: headers || {},
       data: data,
     };
 
@@ -408,25 +413,24 @@ export const contentTrackingStatus = async (
 };
 
 //status of course
-export const courseTrackingStatus = async (userId, batchId, courseId) => {
+export const courseTrackingStatus = async (userId, courseId) => {
   try {
     const url = EndUrls.CourseTrackingStatus;
 
     let data = JSON.stringify({
       userId: [userId],
-      batchId: batchId,
       courseId: courseId,
     });
 
     let api_response = null;
 
+    const headers = await getHeaders();
+
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
       url: url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: headers || {},
       data: data,
     };
 

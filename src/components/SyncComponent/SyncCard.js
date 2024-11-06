@@ -159,7 +159,6 @@ const SyncCard = ({ doneSync }) => {
                   payload?.maxScore,
                   payload?.seconds,
                   payload?.userId,
-                  payload?.batchId,
                   payload?.lastAttemptedOn,
                   payload?.courseId,
                   payload?.unitId
@@ -173,7 +172,6 @@ const SyncCard = ({ doneSync }) => {
                   //delete from storage
                   await deleteAsessmentOffline(
                     assessment_result?.user_id,
-                    assessment_result?.batch_id,
                     assessment_result?.content_id
                   );
                 } else {
@@ -247,7 +245,6 @@ const SyncCard = ({ doneSync }) => {
                 let create_tracking = await contentTracking(
                   cntent_tracking?.user_id,
                   cntent_tracking?.course_id,
-                  cntent_tracking?.batch_id,
                   cntent_tracking?.content_id,
                   cntent_tracking?.content_type,
                   cntent_tracking?.content_mime,

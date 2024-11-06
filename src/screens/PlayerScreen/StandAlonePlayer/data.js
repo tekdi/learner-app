@@ -51,7 +51,7 @@ export const qumlPlayerConfig = {
     sideMenu: {
       showShare: false,
       showDownload: false,
-      showExit: false,
+      showExit: true,
       showPrint: false,
       showReplay: false,
     },
@@ -62,42 +62,6 @@ export const questionsData = {
   questions_data: {},
 };
 
-//old object has issue with html player
-/*export const contentPlayerConfig = {
-  context: {
-    uid: '',
-    userData: { firstName: '', lastName: '' },
-  },
-  config: {
-    showEndPage: false,
-    endPage: [{ template: 'assessment', contentType: ['SelfAssess'] }],
-    showStartPage: true,
-    host: '',
-    overlay: { showUser: false },
-    splash: {
-      text: '',
-      icon: '',
-      bgImage: 'assets/icons/splacebackground_1.png',
-      webLink: '',
-    },
-    apislug: '/action',
-    repos: ['/sunbird-plugins/renderer'],
-    plugins: [
-      { id: 'org.sunbird.iframeEvent', ver: 1, type: 'plugin' },
-      { id: 'org.sunbird.player.endpage', ver: 1.1, type: 'plugin' },
-    ],
-    sideMenu: {
-      showShare: false,
-      showDownload: false,
-      showExit: false,
-      showPrint: false,
-      showReplay: true,
-    },
-  },
-  metadata: {},
-  data: {},
-};*/
-
 //new object
 export const contentPlayerConfig = {
   context: {},
@@ -106,7 +70,7 @@ export const contentPlayerConfig = {
     sideMenu: {
       showShare: false,
       showDownload: false,
-      showExit: false,
+      showExit: true,
       showPrint: false,
       showReplay: true,
     },
@@ -156,7 +120,7 @@ export const pdfPlayerConfig = {
     sideMenu: {
       showShare: false,
       showDownload: false,
-      showExit: false,
+      showExit: true,
       showPrint: false,
       showReplay: true,
     },
@@ -195,7 +159,7 @@ export const videoPlayerConfig = {
     sideMenu: {
       showShare: false,
       showDownload: false,
-      showExit: false,
+      showExit: true,
       showPrint: false,
       showReplay: true,
     },
@@ -234,7 +198,7 @@ export const epubPlayerConfig = {
     sideMenu: {
       showShare: false,
       showDownload: false,
-      showExit: false,
+      showExit: true,
       showPrint: false,
       showReplay: true,
     },

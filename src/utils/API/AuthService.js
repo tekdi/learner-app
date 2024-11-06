@@ -2,13 +2,17 @@ import { getDataFromStorage } from '../JsHelper/Helper';
 import { deleteData, getData, insertData } from '../JsHelper/SqliteHelper';
 import EndUrls from './EndUrls';
 import { get, handleResponseException, post } from './RestClient';
+//for react native config env : dev uat prod
+import Config from 'react-native-config';
 
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
+  let tenantId = Config.TENANT_ID;
   return {
     'Content-Type': 'application/json',
     Accept: 'application/json',
     Authorization: `Bearer ${token}`,
+    tenantId: `${tenantId}`,
   };
 };
 
@@ -477,10 +481,7 @@ export const assessmentListApi = async (params = {}) => {
 export const trackAssessment = async (params = {}) => {
   try {
     const url = `${EndUrls.trackAssessment}`; // Define the URL
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    };
+    const headers = await getHeaders();
     const payload = {
       filters: {
         userId: params?.user_id,
@@ -544,17 +545,14 @@ export const getProfileDetails = async (params = {}) => {
 export const getAssessmentStatus = async (params = {}) => {
   try {
     const url = `${EndUrls.AssessmentStatus}`; // Define the URL
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    };
+    
+    const headers = await getHeaders();
 
     const payload = {
       userId: [params?.user_id],
       courseId: params?.uniqueAssessmentsId,
       unitId: params?.uniqueAssessmentsId,
       contentId: params?.uniqueAssessmentsId,
-      batchId: params?.cohort_id,
     };
 
     // console.log(
@@ -578,15 +576,12 @@ export const getAssessmentStatus = async (params = {}) => {
 export const getAssessmentAnswerKey = async (params = {}) => {
   try {
     const url = `${EndUrls.AssessmentSearch}`; // Define the URL
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    };
+
+    const headers = await getHeaders();
 
     const payload = {
       userId: params?.user_id,
       contentId: params?.contentId,
-      batchId: params?.cohort_id,
       courseId: params?.contentId,
       unitId: params?.contentId,
     };
@@ -684,22 +679,16 @@ export const getApiResponse = async (user_id, api_url, api_type, payload) => {
 };
 
 //store assessment offline
-export const storeAsessmentOffline = async (
-  user_id,
-  batch_id,
-  content_id,
-  payload
-) => {
+export const storeAsessmentOffline = async (user_id, content_id, payload) => {
   try {
     //delete if exist to overwrite
     const data_delete = {
       user_id: user_id,
-      batch_id: batch_id,
       content_id: content_id,
     };
     console.log('data_delete', data_delete);
     await deleteData({
-      tableName: 'Asessment_Offline',
+      tableName: 'Asessment_Offline_2',
       where: data_delete,
     })
       .then((msg) => console.log('msg', msg))
@@ -707,12 +696,11 @@ export const storeAsessmentOffline = async (
     //store or overwrite
     const data_insert = {
       user_id: user_id,
-      batch_id: batch_id,
       content_id: content_id,
       payload: JSON.stringify(payload),
     };
     await insertData({
-      tableName: 'Asessment_Offline',
+      tableName: 'Asessment_Offline_2',
       data: data_insert,
     })
       .then((msg) => console.log('msg', msg))
@@ -721,16 +709,15 @@ export const storeAsessmentOffline = async (
     console.log(e);
   }
 };
-export const deleteAsessmentOffline = async (user_id, batch_id, content_id) => {
+export const deleteAsessmentOffline = async (user_id, content_id) => {
   try {
     //delete if exist to overwrite
     const data_delete = {
       user_id: user_id,
-      batch_id: batch_id,
       content_id: content_id,
     };
     await deleteData({
-      tableName: 'Asessment_Offline',
+      tableName: 'Asessment_Offline_2',
       where: data_delete,
     })
       .then((msg) => console.log('msg', msg))
@@ -739,17 +726,16 @@ export const deleteAsessmentOffline = async (user_id, batch_id, content_id) => {
     console.log(e);
   }
 };
-export const getAsessmentOffline = async (user_id, batch_id, content_id) => {
+export const getAsessmentOffline = async (user_id, content_id) => {
   try {
     //get result
     const data_get = {
       user_id: user_id,
-      batch_id: batch_id,
       content_id: content_id,
     };
     let result_data = null;
     await getData({
-      tableName: 'Asessment_Offline',
+      tableName: 'Asessment_Offline_2',
       where: data_get,
     })
       .then((rows) => {
@@ -776,7 +762,7 @@ export const getSyncAsessmentOffline = async (user_id) => {
     };
     let result_data = null;
     await getData({
-      tableName: 'Asessment_Offline',
+      tableName: 'Asessment_Offline_2',
       where: data_get,
     })
       .then((rows) => {
@@ -864,7 +850,6 @@ export const deleteTelemetryOffline = async (id) => {
 export const storeTrackingOffline = async (
   user_id,
   course_id,
-  batch_id,
   content_id,
   content_type,
   content_mime,
@@ -877,7 +862,6 @@ export const storeTrackingOffline = async (
     const data_insert = {
       user_id: user_id,
       course_id: course_id,
-      batch_id: batch_id,
       content_id: content_id,
       content_type: content_type,
       content_mime: content_mime,
@@ -886,7 +870,7 @@ export const storeTrackingOffline = async (
       unit_id: unit_id,
     };
     await insertData({
-      tableName: 'Tracking_Offline',
+      tableName: 'Tracking_Offline_2',
       data: data_insert,
     })
       .then((msg) => console.log('msg', msg))
@@ -903,7 +887,7 @@ export const getSyncTrackingOffline = async (user_id) => {
     };
     let result_data = null;
     await getData({
-      tableName: 'Tracking_Offline',
+      tableName: 'Tracking_Offline_2',
       where: data_get,
     })
       .then((rows) => {
@@ -931,7 +915,7 @@ export const deleteTrackingOffline = async (id) => {
     };
     //console.log('data_delete', data_delete);
     await deleteData({
-      tableName: 'Tracking_Offline',
+      tableName: 'Tracking_Offline_2',
       where: data_delete,
     })
       .then((msg) => console.log('msg', msg))
@@ -940,21 +924,16 @@ export const deleteTrackingOffline = async (id) => {
     console.log(e);
   }
 };
-export const getSyncTrackingOfflineCourse = async (
-  user_id,
-  batch_id,
-  course_id
-) => {
+export const getSyncTrackingOfflineCourse = async (user_id, course_id) => {
   try {
     //get result
     const data_get = {
       user_id: user_id,
-      batch_id: batch_id,
       course_id: course_id,
     };
     let result_data = null;
     await getData({
-      tableName: 'Tracking_Offline',
+      tableName: 'Tracking_Offline_2',
       where: data_get,
     })
       .then((rows) => {

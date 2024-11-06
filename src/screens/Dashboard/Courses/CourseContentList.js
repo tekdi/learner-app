@@ -127,10 +127,8 @@ const CourseContentList = ({ route }) => {
       //console.log('########## courseList', courseList);
       //get course track data
       let userId = await getDataFromStorage('userId');
-      let batchId = await getDataFromStorage('cohortId');
       let course_track_data = await courseTrackingStatus(
         userId,
-        batchId,
         courseList
       );
       //console.log('########## course_track_data', course_track_data?.data);
@@ -156,10 +154,8 @@ const CourseContentList = ({ route }) => {
         for (let i = 0; i < trackData.length; i++) {
           if (trackData[i]?.courseId == course_id) {
             let userId = await getDataFromStorage('userId');
-            let batchId = await getDataFromStorage('cohortId');
             let offlineTrack = await getSyncTrackingOfflineCourse(
               userId,
-              batchId,
               trackData[i].courseId
             );
             let offline_in_progress = [];

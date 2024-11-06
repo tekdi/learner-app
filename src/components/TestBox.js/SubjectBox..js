@@ -58,11 +58,9 @@ const SubjectBox = ({ name, disabled, data }) => {
       }
       //get sync pending
       const user_id = await getDataFromStorage('userId');
-      const batch_id = await getDataFromStorage('cohortId');
       const content_id = data?.IL_UNIQUE_ID;
       const result_sync_offline = await getAsessmentOffline(
         user_id,
-        batch_id,
         content_id
       );
       console.log('############ result_sync_offline', result_sync_offline);

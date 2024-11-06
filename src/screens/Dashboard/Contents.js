@@ -96,10 +96,8 @@ const Contents = () => {
       console.log('########## contentIdList', contentIdList);
       //get course track data
       let userId = await getDataFromStorage('userId');
-      let batchId = await getDataFromStorage('cohortId');
       let course_track_data = await courseTrackingStatus(
         userId,
-        batchId,
         contentIdList
       );
       //console.log('########## course_track_data', course_track_data?.data);
