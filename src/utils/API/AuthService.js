@@ -16,7 +16,7 @@ const getHeaders = async () => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
     Authorization: `Bearer ${token}`,
-    tenantId: `${tenantId}`,
+    // tenantId: `${tenantId}`,
   };
 };
 const getHeaderswithTenant = async () => {
@@ -688,7 +688,7 @@ export const getProfileDetails = async (params = {}) => {
 export const getAssessmentStatus = async (params = {}) => {
   try {
     const url = `${EndUrls.AssessmentStatus}`; // Define the URL
-    
+
     const headers = await getHeaders();
 
     const payload = {
