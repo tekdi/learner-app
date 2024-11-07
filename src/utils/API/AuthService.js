@@ -1,4 +1,3 @@
-import Config from 'react-native-config';
 import { createNewObject, getDataFromStorage } from '../JsHelper/Helper';
 import { deleteData, getData, insertData } from '../JsHelper/SqliteHelper';
 import EndUrls from './EndUrls';
