@@ -490,6 +490,34 @@ export const getCohort = async ({ user_id, tenantid }) => {
     return handleResponseException(e);
   }
 };
+
+export const getProgramDetails = async () => {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    const url = `${EndUrls.programDetails}`;
+
+    // Log the curl command
+    // console.log(
+    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${headers.Authorization ? ` -H 'Authorization: ${headers.Authorization}'` : ''}`
+    // );
+
+    const result = await get(url, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+
 export const setAcademicYear = async ({ tenantid }) => {
   try {
     const token = await getDataFromStorage('Accesstoken');
@@ -639,9 +667,9 @@ export const getProfileDetails = async (params = {}) => {
       offset: 0,
     };
 
-    // console.log(
-    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {

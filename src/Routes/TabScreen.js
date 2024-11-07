@@ -11,6 +11,7 @@ import Profile from '../screens/Profile/Profile';
 import AssessmentStack from './AssessmentStack';
 import Coursesfilled from '../assets/images/png/Coursesfilled.png';
 import Coursesunfilled from '../assets/images/png/Coursesunfilled.png';
+import ProfileStack from './ProfileStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -82,14 +83,14 @@ const TabScreen = () => {
         component={Contents}
         options={{ tabBarLabel: t('content') }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="AssessmentStack"
         component={AssessmentStack}
         options={{ tabBarLabel: t('assessment') }}
-      />
+      /> */}
       <Tab.Screen
         name="Profile"
-        component={Profile}
+        component={ProfileStack}
         options={{ tabBarLabel: t('profile') }}
       />
     </Tab.Navigator>

@@ -32,8 +32,6 @@ const RegisterScreen = () => {
   // GetLocation Comment
 
   const getLocation = async () => {
-    console.log('hii');
-
     Geolocation.getCurrentPosition(
       async (position) => {
         const data = await reverseGeocode(

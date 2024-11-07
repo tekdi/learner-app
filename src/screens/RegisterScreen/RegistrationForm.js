@@ -51,6 +51,7 @@ import {
   getCohort,
   getGeoLocation,
   getProfileDetails,
+  getProgramDetails,
   login,
   registerUser,
   userExist,
@@ -235,6 +236,7 @@ const RegistrationForm = ({ schema, geoData }) => {
   const [modal, setModal] = useState(false);
   const [err, setErr] = useState();
   const [networkError, setNetworkError] = useState(false);
+  const [programData, setProgramData] = useState([]);
 
   const { isConnected } = useInternet();
 
@@ -272,18 +274,18 @@ const RegistrationForm = ({ schema, geoData }) => {
 
   // console.log({ TENANT_ID });
 
-  const programData = {
-    options: [
-      {
-        tenantId: '6c8b810a-66c2-4f0d-8c0c-c025415a4414',
-        name: 'Second Chance Program',
-        domain: 'pratham.shiksha.com',
-        description:
-          'Get a second chance to complete your 10th grade education',
-        images: [],
-      },
-    ],
-  };
+  // const programData = {
+  //   options: [
+  //     {
+  //       tenantId: '6c8b810a-66c2-4f0d-8c0c-c025415a4414',
+  //       name: 'Second Chance Program',
+  //       domain: 'pratham.shiksha.com',
+  //       description:
+  //         'Get a second chance to complete your 10th grade education',
+  //       images: [],
+  //     },
+  //   ],
+  // };
 
   const RegisterLogin = async (loginData) => {
     const payload = {
@@ -610,6 +612,12 @@ const RegistrationForm = ({ schema, geoData }) => {
     }
   };
 
+  const getProgramData = async () => {
+    const data = await getProgramDetails();
+    console.log({ data });
+    setProgramData(data);
+  };
+
   useEffect(() => {
     const logRegistrationInProgress = async () => {
       const obj = {
@@ -619,7 +627,7 @@ const RegistrationForm = ({ schema, geoData }) => {
       };
       await logEventFunction(obj);
     };
-
+    getProgramData();
     logRegistrationInProgress();
   }, []);
 
