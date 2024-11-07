@@ -42,7 +42,7 @@ export const registerSchema = async (data, states) => {
             fieldId: data?.[2]?.fieldId,
             validation: {
               required: true,
-              pattern: /^[0-9]{10}$/, // Only numbers,
+              pattern: /^[6-9]\d{9}$/, // Only numbers,
               minLength: 10,
               maxLength: 10,
             },

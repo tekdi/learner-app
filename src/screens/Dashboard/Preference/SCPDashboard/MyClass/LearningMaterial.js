@@ -103,8 +103,8 @@ const LearningMaterial = () => {
     setSubjects(selectedCourse ? selectedCourse.subjects : []);
   }, [selectedIds]);
 
-  console.log('DDDD', subjects);
-  console.log('courseSubjectLists', JSON.stringify(courseSubjectList));
+  // console.log('DDDD', subjects);
+  // console.log('courseSubjectLists', JSON.stringify(courseSubjectList));
 
   return loading ? (
     <ActiveLoading />
@@ -121,7 +121,9 @@ const LearningMaterial = () => {
       {selectedIds?.value && subjects && (
         <View style={styles.viewbox}>
           {subjects.map((item, key) => {
-            return <MaterialCard key={key} title={item} />;
+            return (
+              <MaterialCard key={key} selectedIds={selectedIds} title={item} />
+            );
           })}
         </View>
       )}

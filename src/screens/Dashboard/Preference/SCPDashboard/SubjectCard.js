@@ -119,8 +119,6 @@ const SubjectCard = ({ item }) => {
                   });
                 }}
               >
-                {console.log(item?.erMetaData?.topic)}
-
                 <View style={globalStyles.flexrow}>
                   <Icon name="book-open" size={20} color="#0D599E" />
 
