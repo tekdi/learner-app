@@ -61,10 +61,8 @@ const CourseCard = ({
         for (let i = 0; i < TrackData.length; i++) {
           if (TrackData[i]?.courseId == item?.identifier) {
             let userId = await getDataFromStorage('userId');
-            let batchId = await getDataFromStorage('cohortId');
             let offlineTrack = await getSyncTrackingOfflineCourse(
               userId,
-              batchId,
               TrackData[i].courseId
             );
             let offline_in_progress = [];

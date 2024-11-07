@@ -251,9 +251,9 @@ const StandAlonePlayer = ({ route }) => {
       if (data_obj) {
         //add user id in actor
         data_obj.actor.id = userId;
-        // console.log('####################');
-        // console.log('data_obj', JSON.stringify(data_obj));
-        // console.log('####################');
+        console.log('####################');
+        console.log('data_obj', JSON.stringify(data_obj));
+        console.log('####################');
         //setTelemetryObject((telemetryObject) => [...telemetryObject, data_obj]);
         telemetryObject.push(data_obj);
         //console.log('telemetryObject', telemetryObject);
@@ -291,6 +291,15 @@ const StandAlonePlayer = ({ route }) => {
         await storeData('contentEidSTART', contentEidSTART, 'json');
         await storeData('contentEidINTERACT', contentEidINTERACT, 'json');
         await storeData('contentEidEND', contentEidEND, 'json');
+
+        //check if exit button pressed
+        if (
+          data_obj?.eid == 'INTERACT' &&
+          data_obj?.edata?.id == 'close_menu'
+        ) {
+          await fetchExitData();
+          navigation.goBack();
+        }
       }
       //for assessment
       if (
@@ -311,7 +320,6 @@ const StandAlonePlayer = ({ route }) => {
           // console.log('maxScore', maxScore);
           // console.log('seconds', seconds);
           // let userId = 'fb6b2e58-0f14-4d4f-90e4-bae092e7a951';
-          let batchId = await getDataFromStorage('cohortId');
           let lastAttemptedOn = new Date().toISOString();
 
           let create_assessment = await assessmentTracking(
@@ -320,7 +328,6 @@ const StandAlonePlayer = ({ route }) => {
             maxScore,
             seconds,
             userId,
-            batchId,
             lastAttemptedOn,
             courseId,
             unitId
@@ -342,18 +349,12 @@ const StandAlonePlayer = ({ route }) => {
               maxScore,
               seconds,
               userId,
-              batchId,
               lastAttemptedOn,
               courseId,
               unitId,
             };
             //store result in offline mode
-            await storeAsessmentOffline(
-              userId,
-              batchId,
-              identifierWithoutImg,
-              payload
-            );
+            await storeAsessmentOffline(userId, identifierWithoutImg, payload);
             console.log(
               '############# create_assessment offline',
               create_assessment
@@ -892,6 +893,14 @@ const StandAlonePlayer = ({ route }) => {
     setLoading(false);
   };
 
+  // New zoom-disabling script
+  const disableZoomJS = `
+  const meta = document.createElement('meta');
+  meta.name = 'viewport';
+  meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+  document.head.appendChild(meta);
+  `;
+
   //call content url
   let injectedJS =
     content_mime_type == 'application/vnd.sunbird.questionset'
@@ -908,7 +917,7 @@ const StandAlonePlayer = ({ route }) => {
               }
             )}));
             window.setData();
-        })();`
+        })(); ${disableZoomJS} true;`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
         content_mime_type == 'application/vnd.ekstep.html-archive' ||
         content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
@@ -920,19 +929,19 @@ const StandAlonePlayer = ({ route }) => {
           }
         )}));
         window.setData();
-        })();`
+        })(); ${disableZoomJS} true;`
       : content_mime_type == 'application/pdf'
       ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
-        })();`
+        })(); ${disableZoomJS} true;`
       : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
       ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
-        })();`
+        })(); ${disableZoomJS} true;`
       : content_mime_type == 'application/epub'
       ? `(function() {
         window.setData('${JSON.stringify(epubPlayerConfig)}');
-        })();`
+        })(); ${disableZoomJS} true;`
       : ``;
 
   //event when player closed
@@ -1040,7 +1049,6 @@ const StandAlonePlayer = ({ route }) => {
     let userId = await getDataFromStorage('userId');
     let courseId = await getData('courseId', '');
     let unitId = await getData('unitId', '');
-    let batchId = await getDataFromStorage('cohortId');
     let contentId = await getData('contentId', '');
     let contentType = await getData('contentType', '');
     let contentMime = await getData('contentMimeType', '');
@@ -1051,7 +1059,6 @@ const StandAlonePlayer = ({ route }) => {
         let create_tracking = await contentTracking(
           userId,
           courseId,
-          batchId,
           contentId,
           contentType,
           contentMime,
@@ -1068,7 +1075,6 @@ const StandAlonePlayer = ({ route }) => {
           await storeTrackingOffline(
             userId,
             courseId,
-            batchId,
             contentId,
             contentType,
             contentMime,
