@@ -56,17 +56,19 @@ const LanguageScreen = () => {
       ];
       const query_APIResponses = await createTable({ tableName, columns });
       console.log('query_APIResponses', query_APIResponses);
-      //asessment_offline
-      tableName = 'Asessment_Offline';
+      //asessment_offline_2
+      tableName = 'Asessment_Offline_2';
       columns = [
         'id INTEGER PRIMARY KEY AUTOINCREMENT',
         'user_id TEXT',
-        'batch_id TEXT',
         'content_id TEXT',
         'payload TEXT',
       ];
-      const query_Asessment_Offline = await createTable({ tableName, columns });
-      console.log('query_Asessment_Offline', query_Asessment_Offline);
+      const query_Asessment_Offline_2 = await createTable({
+        tableName,
+        columns,
+      });
+      console.log('query_Asessment_Offline_2', query_Asessment_Offline_2);
       //telemetry_offline
       tableName = 'Telemetry_Offline';
       columns = [
@@ -76,13 +78,12 @@ const LanguageScreen = () => {
       ];
       const query_Telemetry_Offline = await createTable({ tableName, columns });
       console.log('query_Telemetry_Offline', query_Telemetry_Offline);
-      //tracking_offline
-      tableName = 'Tracking_Offline';
+      //Tracking_Offline_2
+      tableName = 'Tracking_Offline_2';
       columns = [
         'id INTEGER PRIMARY KEY AUTOINCREMENT',
         'user_id TEXT',
         'course_id TEXT',
-        'batch_id TEXT',
         'content_id TEXT',
         'content_type TEXT',
         'content_mime TEXT',
@@ -93,8 +94,8 @@ const LanguageScreen = () => {
       console.log('query_Tracking_Offline', query_Tracking_Offline);
 
       //alter table for new columns add
-      //add unit_id in Tracking_Offline
-      tableName = 'Tracking_Offline';
+      //add unit_id in Tracking_Offline_2
+      tableName = 'Tracking_Offline_2';
       columns = ['unit_id TEXT'];
       const query_alter_Tracking_Offline = await alterTable({
         tableName,
@@ -113,6 +114,10 @@ const LanguageScreen = () => {
           });
           // console.log('data', data);
           if (token && data?.access_token) {
+            console.log(
+              '########################## access token',
+              JSON.stringify(data)
+            );
             await saveAccessToken(data?.access_token);
             await saveRefreshToken(data?.refresh_token);
             console.log('status successful');
