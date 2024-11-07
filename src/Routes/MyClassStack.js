@@ -6,6 +6,8 @@ import SCPDashboard from '../screens/Dashboard/Preference/SCPDashboard/SCPDashbo
 import SessionView from '../screens/Dashboard/Preference/SCPDashboard/SessionView';
 import PreviousClassMaterial from '../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterial';
 import MyClassDashboard from '../screens/Dashboard/Preference/SCPDashboard/MyClass/MyClassDashboard';
+import MaterialCardView from '../screens/Dashboard/Preference/SCPDashboard/MyClass/MaterialCardView';
+import LearningResources from '../screens/Dashboard/Preference/SCPDashboard/MyClass/LearningResources';
 import Assessment from '../screens/Assessment/Assessment';
 
 const Stack = createNativeStackNavigator();
@@ -24,13 +26,13 @@ const SCPUserStack = () => {
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
       <Stack.Screen
-        name="SessionView"
-        component={SessionView}
+        name="MaterialCardView"
+        component={MaterialCardView}
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
       <Stack.Screen
-        name="PreviousClassMaterial"
-        component={PreviousClassMaterial}
+        name="LearningResources"
+        component={LearningResources}
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
       {/* <Stack.Screen

@@ -60,7 +60,7 @@ const Accordion = ({ item, postrequisites, title, setTrack }) => {
       // console.log('######', JSON.stringify(result?.tasks));
 
       const filterData = getFilteredData(result?.tasks || []);
-      console.log(JSON.stringify(filterData));
+      // console.log(JSON.stringify(filterData));
       setTasks(filterData);
       let contentIdList = [];
       if (filterData) {
@@ -95,7 +95,10 @@ const Accordion = ({ item, postrequisites, title, setTrack }) => {
       setTrackData(courseTrackData);
       setTrack(courseTrackData);
       if (!postrequisites) {
-        setDataInStorage('courseTrackData', JSON.stringify(courseTrackData));
+        setDataInStorage(
+          'courseTrackData',
+          JSON.stringify(courseTrackData || {})
+        );
       }
     };
     fetchData();

@@ -1,4 +1,8 @@
-import { createNewObject, getDataFromStorage } from '../JsHelper/Helper';
+import {
+  createNewObject,
+  getDataFromStorage,
+  getTentantId,
+} from '../JsHelper/Helper';
 import { deleteData, getData, insertData } from '../JsHelper/SqliteHelper';
 import EndUrls from './EndUrls';
 import { get, handleResponseException, post } from './RestClient';
@@ -17,12 +21,14 @@ const getHeaders = async () => {
 };
 const getHeaderswithTenant = async () => {
   const token = await getDataFromStorage('Accesstoken');
+  const tenantid = await getTentantId();
+  const academicYearId = await getAcademicYearId();
   return {
     'Content-Type': 'application/json',
     Accept: 'application/json',
     Authorization: `Bearer ${token}`,
-    tenantid: 'ef99949b-7f3a-4a5f-806a-e67e683e38f3',
-    academicyearid: '851687bb-422e-4a22-b27f-6b66fa304bec',
+    tenantid: tenantid,
+    academicyearid: academicYearId,
   };
 };
 
@@ -34,11 +40,11 @@ export const login = async (params = {}) => {
         Accept: 'application/json',
       },
     });
-    // console.log(`curl -X POST '${EndUrls.login}' \
-    // -H 'Content-Type: application/json' \
-    // -H 'Accept: application/json' \
-    // -d '${params}'
-    // `);
+    console.log(`curl -X POST '${EndUrls.login}' \
+    -H 'Content-Type: application/json' \
+    -H 'Accept: application/json' \
+    -d '${params}'
+    `);
     if (result?.data) {
       return result?.data?.result;
     } else {
@@ -457,9 +463,16 @@ export const contentListApi = async (params = {}) => {
   }
 };
 
-export const getCohort = async ({ user_id }) => {
+export const getCohort = async ({ user_id, tenantid }) => {
   try {
-    const headers = await getHeaderswithTenant();
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      tenantid: tenantid,
+      academicyearid: '851687bb-422e-4a22-b27f-6b66fa304bec',
+    };
     const url = `${EndUrls.cohort}/${user_id}`;
 
     // Log the curl command
@@ -468,6 +481,44 @@ export const getCohort = async ({ user_id }) => {
     // );
 
     const result = await get(url, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const setAcademicYear = async ({ tenantid }) => {
+  try {
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      tenantid: tenantid,
+    };
+    const url = `${EndUrls.academicyears}`;
+    const payload = {
+      isActive: true,
+    };
+
+    // Log the curl command
+
+    console.log(
+      `curl -X POST '${url}' \\\n` +
+        `-H 'Content-Type: application/json' \\\n` +
+        `-H 'Accept: application/json' \\\n` +
+        `-H 'Authorization: ${headers.Authorization}' \\\n` +
+        `-H 'tenantid: ${headers.tenantid}' \\\n` +
+        `-d '${JSON.stringify(payload)}'`
+    );
+
+    const result = await post(url, payload, {
       headers: headers || {},
     });
 
@@ -1161,18 +1212,10 @@ export const targetedSolutions = async ({ subjectName, type }) => {
       board: data?.BOARD,
       type: type,
     };
-    // const payload = {
-    //   subject: 'Science',
-    //   state: 'Maharashtra',
-    //   medium: 'Marathi',
-    //   class: 'Grade 10',
-    //   board: 'Maharashtra',
-    //   type: 'Main Course',
-    // };
 
-    // console.log(
-    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1198,7 +1241,8 @@ export const EventDetails = async ({ id }) => {
       Accept: 'application/json',
       Cookie:
         'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
-      'x-auth-token': token,
+      'x-auth-token':
+        'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJha0d1WG1zVTVxMXhOczZxUkVTWWZkTkRyUWRiZ2ZGekRFMEswRkFDNUVzIn0.eyJleHAiOjE3MzEwNDk1NTQsImlhdCI6MTczMDk2MzE1NCwianRpIjoiNTkyZGJkODEtZDM4YS00NGI0LWEwNTYtOWI0NzEyYWY0NWViIiwiaXNzIjoiaHR0cHM6Ly9rZXljbG9hay5wcmF0aGFtZGlnaXRhbC5vcmcvYXV0aC9yZWFsbXMvcHJhdGhhbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJmNjQzNDUxZS1mMzgwLTQyZjMtYjg4ZS00YmIxYjM4NjUzM2EiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJwcmF0aGFtIiwic2Vzc2lvbl9zdGF0ZSI6IjkwYjljMDBkLTFmOWQtNGIxZS1hM2RhLWEyNjY3MjE0YzM0YSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXByYXRoYW0iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI5MGI5YzAwZC0xZjlkLTRiMWUtYTNkYS1hMjY2NzIxNGMzNGEiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJWaXZlayBUTCIsInByZWZlcnJlZF91c2VybmFtZSI6InRsc2NtaDI0MTExNDEiLCJnaXZlbl9uYW1lIjoiVml2ZWsiLCJmYW1pbHlfbmFtZSI6IlRMIn0.NrM5j2OEOrVRWTPteVhxgFHTfPVIcWngHXXuuqbfmpwgd835ugqDPtzO1X1COnNdDnarKWgdA0-jw9CPX-7jX5CibdWHFN883qPR1CP7JEKQonStpAO6YDCcZLX8wjhtQwu5IKEV5SX6NkK5ObMDnyOGM_iZvcnw8GLu5NqwSdaHlFmIfyht3S6nF9tCV864dweLMzyxC4VpX7STvZI6bbGfKE9liFspaj1qeKrVxej8Q3yoJMzqiyZXLVf7kb1TWcc2p90yB5eBVnM3x7l1gSrQp1WHLQ7FBW7C7lyRXcS7x1UORo6CxwdwJQs2IPgiXgfupInpvh7MXc8en30u9g',
     };
 
     const payload = {};
@@ -1228,6 +1272,7 @@ export const getAttendance = async ({ todate, fromDate }) => {
     const token = await getDataFromStorage('Accesstoken');
     let userId = await getDataFromStorage('userId');
     let cohortId = await getDataFromStorage('cohortId');
+    const tenantid = await getTentantId();
 
     const headers = {
       'Content-Type': 'application/json',
@@ -1235,7 +1280,7 @@ export const getAttendance = async ({ todate, fromDate }) => {
       Cookie:
         'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
       Authorization: `Bearer ${token}`,
-      tenantid: `ef99949b-7f3a-4a5f-806a-e67e683e38f3`,
+      tenantid: tenantid,
     };
 
     const payload = {
@@ -1285,7 +1330,7 @@ export const LearningMaterialAPI = async () => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
-    // console.log(curlCommand);
+    console.log(curlCommand);
     // Make the actual request
     const result = await get(url, {
       headers: headers || {},
