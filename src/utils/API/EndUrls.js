@@ -27,6 +27,7 @@ const EndUrls = {
   contentList: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName%2Cemail&framework=gujaratboardfw`,
   contentList_testing: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
   cohort: API_URL + `/user/v1/cohort/mycohorts`,
+  academicyears: API_URL + `/user/v1/academicyears/list`,
   contentSearch: `${CONTENT_URL}/api/content/v1/search`,
   trackAssessment: `${tracking_assessment}/v1/tracking/assessment/list`,
   AssessmentCreate: `${tracking_assessment}/v1/tracking/assessment/create`,

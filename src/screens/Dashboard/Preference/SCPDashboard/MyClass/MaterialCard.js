@@ -5,13 +5,18 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const MaterialCard = ({ title }) => {
+const MaterialCard = ({ title, selectedIds }) => {
   const navigation = useNavigation();
 
   return (
     <TouchableOpacity
       style={[globalStyles.flexrow, styles.view]}
-      onPress={() => navigation.navigate('MaterialCardView')}
+      onPress={() =>
+        navigation.navigate('MaterialCardView', {
+          subjectName: title,
+          type: selectedIds?.value,
+        })
+      }
     >
       <View style={globalStyles.flexrow}>
         {/* <CircularProgressBarCustom

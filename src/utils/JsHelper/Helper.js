@@ -54,9 +54,31 @@ export const getSavedToken = async () => {
 export const getUserId = async () => {
   try {
     const data = await getAccessToken();
-    console.log({ data });
-
     return data?.result?.userId;
+  } catch (e) {
+    console.error('Error retrieving credentials:', e);
+  }
+};
+export const getuserDetails = async () => {
+  try {
+    const data = await getAccessToken();
+    return data?.result;
+  } catch (e) {
+    console.error('Error retrieving credentials:', e);
+  }
+};
+export const getTentantId = async () => {
+  try {
+    const data = JSON.parse(await getDataFromStorage('tenantData'));
+    return data?.[0]?.tenantId;
+  } catch (e) {
+    console.error('Error retrieving credentials:', e);
+  }
+};
+export const getAcademicYearId = async () => {
+  try {
+    const data = JSON.parse(await getDataFromStorage('academicYearId'));
+    return data;
   } catch (e) {
     console.error('Error retrieving credentials:', e);
   }
@@ -182,8 +204,6 @@ export const logEventFunction = async ({ eventName, method, screenName }) => {
 
 export const storeUsername = async (username) => {
   try {
-    console.log({ username });
-
     // Fetch existing usernames
     const storedUsernames = await AsyncStorage.getItem('usernames');
     let usernamesArray = storedUsernames ? JSON.parse(storedUsernames) : [];

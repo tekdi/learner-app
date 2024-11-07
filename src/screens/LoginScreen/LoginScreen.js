@@ -17,9 +17,12 @@ import {
   getCohort,
   getProfileDetails,
   login,
+  setAcademicYear,
 } from '../../utils/API/AuthService';
 import {
+  getAcademicYearId,
   getDataFromStorage,
+  getuserDetails,
   getUserId,
   saveAccessToken,
   saveRefreshToken,
@@ -65,15 +68,18 @@ const LoginScreen = () => {
         password: password,
       };
       const data = await login(payload);
-      console.log(data?.error);
 
       if (data?.params?.status !== 'failed' && !data?.error) {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
-        const user_id = await getUserId();
+        const userDetails = await getuserDetails();
+        const user_id = userDetails?.userId;
+        const tenantData = userDetails?.tenantData;
+        const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         const profileData = await getProfileDetails({
           userId: user_id,
         });
+        await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
 
         await setDataInStorage('profileData', JSON.stringify(profileData));
         await setDataInStorage(
@@ -82,10 +88,15 @@ const LoginScreen = () => {
         );
         await storeUsername(profileData?.getUserDetails?.[0]?.username);
         await setDataInStorage('userId', user_id);
-        const cohort = await getCohort({ user_id });
-
+        const cohort = await getCohort({ user_id, tenantid });
+        const academicyear = await setAcademicYear({ tenantid });
+        await setDataInStorage(
+          'academicYearId',
+          JSON.stringify(academicyear?.[0]?.id)
+        );
         await setDataInStorage('cohortData', JSON.stringify(cohort));
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
+        const datanew = await getAcademicYearId();
 
         await setDataInStorage(
           'cohortId',
