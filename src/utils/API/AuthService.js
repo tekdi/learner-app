@@ -16,9 +16,10 @@ const getHeaders = async () => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
     Authorization: `Bearer ${token}`,
-    // tenantId: `${tenantId}`,
+    tenantId: `${tenantId}`,
   };
 };
+
 const getHeaderswithTenant = async () => {
   const token = await getDataFromStorage('Accesstoken');
   const tenantid = await getTentantId();
