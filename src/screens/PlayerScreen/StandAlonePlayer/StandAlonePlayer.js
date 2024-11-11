@@ -250,7 +250,7 @@ const StandAlonePlayer = ({ route }) => {
       let data_obj = jsonObj.data;
       let data_event = jsonObj?.event;
       //check telemetry
-      if (data_obj && data_event != "playerevent") {
+      if (data_obj && data_event != 'playerevent') {
         //add user id in actor
         try {
           data_obj.actor.id = userId;
@@ -299,13 +299,13 @@ const StandAlonePlayer = ({ route }) => {
         await storeData('contentEidEND', contentEidEND, 'json');
       }
       //check playerevent
-      if (data_obj && data_event == "playerevent") {
+      if (data_obj && data_event == 'playerevent') {
         console.log('####################');
         console.log('data_obj playerevent', JSON.stringify(data_obj));
         console.log('####################');
         //check if exit button pressed
         if (data_obj?.eid == 'HEARTBEAT' && data_obj?.edata?.type == 'EXIT') {
-          await fetchExitData();
+          fetchExitData();
           navigation.goBack();
         }
       }
