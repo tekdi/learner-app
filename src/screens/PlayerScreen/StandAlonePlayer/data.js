@@ -47,6 +47,7 @@ export const qumlPlayerConfig = {
   },
   metadata: {},
   config: {
+    showEndPage: true,
     traceId: '',
     sideMenu: {
       showShare: false,
@@ -100,7 +101,7 @@ export const pdfPlayerConfig = {
     userData: { firstName: '', lastName: '' },
   },
   config: {
-    showEndPage: false,
+    showEndPage: true,
     endPage: [{ template: 'assessment', contentType: ['SelfAssess'] }],
     showStartPage: true,
     host: '',
@@ -155,6 +156,7 @@ export const videoPlayerConfig = {
     },
   },
   config: {
+    showEndPage: true,
     traceId: '',
     sideMenu: {
       showShare: false,
@@ -194,6 +196,7 @@ export const epubPlayerConfig = {
     },
   },
   config: {
+    showEndPage: true,
     traceId: '',
     sideMenu: {
       showShare: false,

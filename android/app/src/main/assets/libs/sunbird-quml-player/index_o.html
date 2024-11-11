@@ -107,6 +107,13 @@
           qumlPlayerElement.setAttribute('player-config', JSON.stringify(playerConfig));
           qumlPlayerElement.addEventListener('playerEvent', (event) => {
             console.log("On playerEvent", event);
+            try {
+              const data = event?.detail;
+                  let result_submit={data:data, event:"playerevent"};
+                  window.ReactNativeWebView.postMessage(JSON.stringify(result_submit));
+                } catch (error) {
+                  console.error("Error submitting assessment:", error);
+                }
           });
 
           qumlPlayerElement.addEventListener('telemetryEvent', (event) => {
