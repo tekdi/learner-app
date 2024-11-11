@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
     color: '#0D599E', // Black text color
     fontSize: 16,
     fontWeight: '600',
+    marginTop: -30,
   },
 });
 
