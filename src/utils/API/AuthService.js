@@ -16,7 +16,7 @@ const getHeaders = async () => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
     Authorization: `Bearer ${token}`,
-    // tenantId: `${tenantId}`,
+    tenantId: `${tenantId}`,
   };
 };
 const getHeaderswithTenant = async () => {
@@ -101,7 +101,10 @@ export const getAccessToken = async () => {
 
 export const getStudentForm = async () => {
   try {
-    const headers = await getHeaders();
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
     const url = `${EndUrls.get_form}`;
 
     // Generate the curl command

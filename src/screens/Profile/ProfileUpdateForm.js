@@ -295,6 +295,7 @@ const ProfileUpdateForm = ({ schema }) => {
 
     // await saveToken(token);
     const register = await updateUser({ payload, user_id });
+    console.log({ register });
 
     if (register?.params?.status === 'failed') {
       console.log('hi');
