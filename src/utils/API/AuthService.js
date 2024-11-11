@@ -1358,7 +1358,7 @@ export const LearningMaterialAPI = async () => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
-    console.log(curlCommand);
+    // console.log(curlCommand);
     // Make the actual request
     const result = await get(url, {
       headers: headers || {},

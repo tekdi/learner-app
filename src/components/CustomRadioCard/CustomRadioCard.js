@@ -43,14 +43,23 @@ const CustomRadioCard = ({
 
   const handlePress = (index) => {
     const selectedValue = field[index]?.tenantId || 'none';
+    const selectedName = field[index]?.name;
+    const role = field[index]?.role?.find(
+      (item) => item?.name == 'Learner' || item?.name === 'Student'
+    );
+
     setSelectedIndex(selectedValue);
     setSelectedIds((prevSelectedIds) => ({
       ...prevSelectedIds,
       [name]: { value: selectedValue, fieldId: field?.fieldId },
     }));
-    console.log({ selectedValue });
+    console.log({ selectedName });
 
-    onChange(selectedValue);
+    onChange({
+      tenantId: selectedValue,
+      roleId: role?.roleId,
+      name: selectedName,
+    });
   };
 
   return (

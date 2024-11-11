@@ -92,7 +92,7 @@ const LoginScreen = () => {
         const academicyear = await setAcademicYear({ tenantid });
         await setDataInStorage(
           'academicYearId',
-          JSON.stringify(academicyear?.[0]?.id)
+          JSON.stringify(academicyear?.[0]?.id || '')
         );
         await setDataInStorage('cohortData', JSON.stringify(cohort));
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
@@ -257,7 +257,7 @@ const LoginScreen = () => {
           </View>
           <Pressable
             onPress={() => {
-              navigation.navigate('RegisterScreen');
+              navigation.navigate('RegisterStart');
             }}
             style={{ alignItems: 'center', padding: 20 }}
           >

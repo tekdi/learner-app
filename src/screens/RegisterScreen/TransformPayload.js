@@ -50,14 +50,12 @@ export const transformPayload = async (data) => {
       : []),
   ];
 
-  const tenantCohortRoleMapping = data?.program
-    ? [
-        {
-          tenantId: data.program,
-          // roleId: ROLE_ID,
-        },
-      ]
-    : [];
+  const tenantCohortRoleMapping = [
+    {
+      tenantId: data?.program?.tenantId,
+      roleId: data?.program?.roleId,
+    },
+  ];
 
   return {
     name: `${data.first_name} ${data.last_name}`,

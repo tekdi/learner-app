@@ -44,7 +44,7 @@ const MyClassDashboard = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <SecondaryHeader />
+      <SecondaryHeader logo />
       <View style={{ padding: 20 }}>
         <Text style={globalStyles.heading}>{t('my_class')}</Text>
 

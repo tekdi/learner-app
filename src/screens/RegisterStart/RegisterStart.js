@@ -1,6 +1,13 @@
-import { View, TouchableOpacity, Image, StyleSheet, Text } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Text,
+  PermissionsAndroid,
+} from 'react-native';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
@@ -8,15 +15,17 @@ import FastImage from '@changwoolab/react-native-fast-image';
 import { logEventFunction } from '../../utils/JsHelper/Helper';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../context/NetworkContext';
+import DeviceInfo from 'react-native-device-info';
 
 const RegisterStart = () => {
   // Multi-language setup
   const { t } = useTranslation();
   const { isConnected } = useInternet();
-  const nav = useNavigation();
+  const navigation = useNavigation();
+  const [locationStatus, setLocationStatus] = useState(null);
 
   const navigate = () => {
-    nav.goBack();
+    navigation.navigate('LoginSignUpScreen');
   };
 
   const handleClick = async () => {
@@ -27,7 +36,37 @@ const RegisterStart = () => {
         screenName: 'Registration',
       };
       await logEventFunction(obj);
-      nav.navigate('RegisterScreen');
+      // nav.navigate('EnableLocationScreen');
+      checkLocationPermissionAndGPS();
+    }
+  };
+
+  const checkLocationPermissionAndGPS = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        // Check if location permission is granted
+        const permissionGranted = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+        );
+        console.log({ permissionGranted });
+
+        if (permissionGranted) {
+          // Check if GPS is enabled
+          const gpsEnabled = await DeviceInfo.isLocationEnabled();
+          console.log({ gpsEnabled });
+
+          if (gpsEnabled) {
+            navigation.replace('RegisterScreen'); // Navigate to LanguageScreen if GPS and permission are granted
+          } else {
+            navigation.replace('EnableLocationScreen'); // Navigate to EnableLocationScreen if GPS is not enabled
+          }
+        } else {
+          navigation.replace('EnableLocationScreen'); // Navigate to EnableLocationScreen if permission is not granted
+        }
+      }
+    } catch (error) {
+      console.warn(error);
+      navigation.replace('EnableLocationScreen'); // Navigate to EnableLocationScreen if there's an error
     }
   };
 

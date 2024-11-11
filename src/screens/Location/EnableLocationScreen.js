@@ -15,6 +15,8 @@ import location from '../../assets/images/png/location.png';
 import { useTranslation } from '../../context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
+import { reverseGeocode } from '../../utils/API/AuthService';
+import { setDataInStorage } from '../../utils/JsHelper/Helper';
 
 const EnableLocationScreen = () => {
   const navigation = useNavigation();
@@ -38,17 +40,7 @@ const EnableLocationScreen = () => {
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           console.log('Location permission granted');
-          navigation.navigate('LanguageScreen');
-
-          Geolocation.getCurrentPosition(
-            (position) => {
-              console.log('Location: ', position);
-            },
-            (error) => {
-              console.log('Error: ', error);
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-          );
+          getLocation();
         }
       }
     } catch (err) {
@@ -56,7 +48,25 @@ const EnableLocationScreen = () => {
     }
   };
 
-  const disableLocation = () => navigation.navigate('LanguageScreen');
+  const getLocation = async () => {
+    Geolocation.getCurrentPosition(
+      async (position) => {
+        const data = await reverseGeocode(
+          position?.coords?.latitude,
+          position?.coords?.longitude
+        );
+        await setDataInStorage('geoData', JSON.stringify(data));
+        disableLocation();
+      },
+      (error) => {
+        console.log('Error: ', error);
+        disableLocation();
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
+
+  const disableLocation = () => navigation.navigate('RegisterScreen');
 
   return (
     <View style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>

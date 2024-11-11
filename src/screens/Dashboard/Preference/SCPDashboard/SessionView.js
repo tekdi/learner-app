@@ -185,6 +185,7 @@ const SessionView = () => {
 const styles = StyleSheet.create({
   card: {
     padding: 20,
+    backgroundColor: 'white',
   },
   leftContainer: {
     flexDirection: 'row',

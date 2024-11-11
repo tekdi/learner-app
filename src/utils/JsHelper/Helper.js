@@ -366,7 +366,7 @@ export const formatDateTimeRange = (startDateTime) => {
 
 export const getOptionsByCategory = (frameworks, categoryCode) => {
   // Find the category by code
-  console.log({ frameworks });
+  // console.log({ frameworks });
 
   const category = frameworks.categories.find(
     (category) => category.code === categoryCode

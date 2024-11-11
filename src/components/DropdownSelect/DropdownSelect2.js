@@ -59,7 +59,7 @@ const DropdownSelect = ({
       </View>
       <TouchableOpacity onPress={toggleDropdown} style={styles.dropdownButton}>
         <Text allowFontScaling={false} style={[globalStyles.text]}>
-          {selectedIds?.label}
+          {selectedIds?.label || 'select'}
         </Text>
         <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
       </TouchableOpacity>

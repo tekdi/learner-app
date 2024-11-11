@@ -12,6 +12,7 @@ import SubjectBox from '../../components/TestBox.js/SubjectBox.';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import globalStyles from '../../utils/Helper/Style';
 import { useFocusEffect } from '@react-navigation/native';
+import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 
 const instructions = [
   {
@@ -113,7 +114,7 @@ const TestView = ({ route }) => {
     <ActiveLoading />
   ) : (
     <SafeAreaView style={{ flex: 1 }}>
-      <Header />
+      <SecondaryHeader logo />
       <ScrollView style={{ flex: 1 }}>
         <AssessmentHeader
           testText={title}
