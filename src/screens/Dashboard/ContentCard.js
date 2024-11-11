@@ -73,7 +73,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 
   const fetchDataTrack = async () => {
     try {
-      console.log('########### TrackData', TrackData);
+      //console.log('########### TrackData', TrackData);
       if (TrackData && (item?.identifier || item?.id)) {
         console.log('hi');
 
@@ -160,7 +160,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
               status = 'completed';
             }
             setTrackStatus(status);
-            console.log('########### trackStatus', status);
+            //console.log('########### trackStatus', status);
           }
         }
       }

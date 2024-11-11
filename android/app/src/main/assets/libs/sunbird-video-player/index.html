@@ -42,6 +42,13 @@
         videoElement.setAttribute('player-config', playerConfig);
         videoElement.addEventListener('playerEvent', (event) => {
           console.log("On playerEvent", event);
+          try {
+            const data = event?.detail;
+                let result_submit={data:data, event:"playerevent"};
+                window.ReactNativeWebView.postMessage(JSON.stringify(result_submit));
+              } catch (error) {
+                console.error("Error submitting assessment:", error);
+              }
         });
 
         videoElement.addEventListener('telemetryEvent', (event) => {

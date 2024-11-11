@@ -248,11 +248,17 @@ const StandAlonePlayer = ({ route }) => {
       const data = event.nativeEvent.data;
       let jsonObj = JSON.parse(data);
       let data_obj = jsonObj.data;
-      if (data_obj) {
+      let data_event = jsonObj?.event;
+      //check telemetry
+      if (data_obj && data_event != "playerevent") {
         //add user id in actor
-        data_obj.actor.id = userId;
+        try {
+          data_obj.actor.id = userId;
+        } catch (e) {
+          console.log('error', e);
+        }
         console.log('####################');
-        console.log('data_obj', JSON.stringify(data_obj));
+        console.log('data_obj telemetry', JSON.stringify(data_obj));
         console.log('####################');
         //setTelemetryObject((telemetryObject) => [...telemetryObject, data_obj]);
         telemetryObject.push(data_obj);
@@ -291,12 +297,14 @@ const StandAlonePlayer = ({ route }) => {
         await storeData('contentEidSTART', contentEidSTART, 'json');
         await storeData('contentEidINTERACT', contentEidINTERACT, 'json');
         await storeData('contentEidEND', contentEidEND, 'json');
-
+      }
+      //check playerevent
+      if (data_obj && data_event == "playerevent") {
+        console.log('####################');
+        console.log('data_obj playerevent', JSON.stringify(data_obj));
+        console.log('####################');
         //check if exit button pressed
-        if (
-          data_obj?.eid == 'INTERACT' &&
-          data_obj?.edata?.id == 'close_menu'
-        ) {
+        if (data_obj?.eid == 'HEARTBEAT' && data_obj?.edata?.type == 'EXIT') {
           await fetchExitData();
           navigation.goBack();
         }

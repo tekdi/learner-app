@@ -288,8 +288,8 @@ export const telemetryTracking = async (telemetryObject) => {
       },
       data: data,
     };
-    // console.log('config', config);
-    // console.log('data', data);
+     console.log('config', config);
+     //console.log('data', data);
 
     await axios
       .request(config)
