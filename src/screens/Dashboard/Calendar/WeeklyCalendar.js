@@ -112,7 +112,7 @@ const WeeklyCalendar = ({ setDate, postdays }) => {
 
 const styles = StyleSheet.create({
   box: {
-    padding: 20,
+    padding: 16,
     paddingVertical: 25,
     margin: 5,
     alignItems: 'center',

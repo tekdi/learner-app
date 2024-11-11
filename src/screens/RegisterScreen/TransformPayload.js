@@ -50,14 +50,12 @@ export const transformPayload = async (data) => {
       : []),
   ];
 
-  const tenantCohortRoleMapping = data?.program
-    ? [
-        {
-          tenantId: data.program,
-          roleId: ROLE_ID,
-        },
-      ]
-    : [];
+  const tenantCohortRoleMapping = [
+    {
+      tenantId: data?.program?.tenantId,
+      roleId: data?.program?.roleId,
+    },
+  ];
 
   return {
     name: `${data.first_name} ${data.last_name}`,
@@ -65,7 +63,7 @@ export const transformPayload = async (data) => {
     password: data.password,
     email: data?.email,
     mobile: data?.mobile,
-    // tenantCohortRoleMapping, // Conditionally added based on the presence of data.program
+    tenantCohortRoleMapping, // Conditionally added based on the presence of data.program
     customFields: customFields,
   };
 };

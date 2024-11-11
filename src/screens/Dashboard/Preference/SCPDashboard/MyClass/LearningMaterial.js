@@ -28,6 +28,7 @@ const LearningMaterial = () => {
 
       const cohort = JSON.parse(await getDataFromStorage('cohortData'));
       const cohortData = cohort?.cohortData?.[0];
+
       const frameworks = boardData?.result?.framework;
       const state = cohortData.customField.find(
         (item) => item.label === 'STATES'
@@ -46,13 +47,21 @@ const LearningMaterial = () => {
       const matchState = getStates.find((item) => item.name === state?.value);
 
       const getBoards = getOptionsByCategory(frameworks, 'board');
-      const matchBoard = getBoards.find((item) => item.name === board?.value);
+      const matchBoard = getBoards.find(
+        (item) => item.name === (board?.value || 'Maharashtra')
+      );
 
       const getMedium = getOptionsByCategory(frameworks, 'medium');
-      const matchMedium = getMedium.find((item) => item.name === medium?.value);
+      const matchMedium = getMedium.find(
+        (item) => item.name === (medium?.value || 'Marathi')
+      );
 
       const getGrades = getOptionsByCategory(frameworks, 'gradeLevel');
-      const matchGrade = getGrades.find((item) => item.name === grade?.value);
+      const matchGrade = getGrades.find(
+        (item) => item.name === (grade?.value || 'Grade 10')
+      );
+
+      console.log({ matchGrade });
 
       const getCourseTypes = getOptionsByCategory(frameworks, 'courseType');
       const courseType = getCourseTypes?.map((type) => type.name);
@@ -79,6 +88,8 @@ const LearningMaterial = () => {
         const subjectAssociations = commonAssociations?.filter((assoc) =>
           getSubjects.some((item) => assoc.code === item?.code)
         );
+
+        console.log(JSON.stringify(cohortData));
 
         return {
           courseTypeName: courseType?.name,

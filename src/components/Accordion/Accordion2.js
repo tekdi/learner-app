@@ -14,7 +14,14 @@ const Accordion2 = ({ title, children, index }) => {
   const navigation = useNavigation();
 
   return (
-    <View style={{ backgroundColor: '#F3EDF7', padding: 10, borderRadius: 10 }}>
+    <View
+      style={{
+        backgroundColor: '#F3EDF7',
+        padding: 10,
+        marginVertical: 5,
+        borderRadius: 10,
+      }}
+    >
       <TouchableOpacity
         style={[
           globalStyles.flexrow,
