@@ -8,7 +8,10 @@ import {
 } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { registerSchema } from './RegisterSchema';
-import { setDataInStorage } from '../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  setDataInStorage,
+} from '../../utils/JsHelper/Helper';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import Geolocation from 'react-native-geolocation-service';
 
@@ -32,22 +35,22 @@ const RegisterScreen = () => {
   // GetLocation Comment
 
   const getLocation = async () => {
-    console.log('hii');
+    const data = JSON.parse(await getDataFromStorage('geoData'));
+    setgeoData(data);
 
-    Geolocation.getCurrentPosition(
-      async (position) => {
-        const data = await reverseGeocode(
-          position?.coords?.latitude,
-          position?.coords?.longitude
-        );
-        setgeoData(data);
-        setDataInStorage('geoData', JSON.stringify(data));
-      },
-      (error) => {
-        console.log('Error: ', error);
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-    );
+    // Geolocation.getCurrentPosition(
+    //   async (position) => {
+    //     const data = await reverseGeocode(
+    //       position?.coords?.latitude,
+    //       position?.coords?.longitude
+    //     );
+    //     getDataInStorage('geoData', JSON.stringify(data));
+    //   },
+    //   (error) => {
+    //     console.log('Error: ', error);
+    //   },
+    //   { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    // );
   };
 
   const fetchData = async () => {

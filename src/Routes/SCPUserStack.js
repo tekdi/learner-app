@@ -9,6 +9,10 @@ import FullAttendance from '../screens/Dashboard/Calendar/FullAttendance';
 import TimeTable from '../screens/Dashboard/Calendar/TimeTable';
 import PreviousClassMaterialFullView from '../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterialFullView';
 import SubjectDetails from '../screens/Dashboard/Preference/SCPDashboard/SubjectDetails';
+import Assessment from '../screens/Assessment/Assessment';
+import TestView from '../screens/Assessment/TestView';
+import AnswerKeyView from '../screens/Assessment/AnswerKeyView';
+import TestDetailView from '../screens/Assessment/TestDetailView';
 
 const Stack = createNativeStackNavigator();
 

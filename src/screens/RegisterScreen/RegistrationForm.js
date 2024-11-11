@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Image,
@@ -22,7 +22,7 @@ import HeaderComponent from '../../components/CustomHeaderComponent/customheader
 import CustomCards from '../../components/CustomCard/CustomCard';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import lightning from '../../assets/images/png/lightning.png';
 
@@ -51,6 +51,7 @@ import {
   getCohort,
   getGeoLocation,
   getProfileDetails,
+  getProgramDetails,
   login,
   registerUser,
   userExist,
@@ -138,7 +139,6 @@ const buildYupSchema = (form, currentForm, t) => {
               : yup.string().required(`${t(field.name)} ${t('is_required')}`)
           );
           break;
-        case 'radio':
         case 'select':
           validator = yup.lazy((value) =>
             typeof value === 'object'
@@ -149,6 +149,14 @@ const buildYupSchema = (form, currentForm, t) => {
                 })
               : yup.string().required(`${t(field.name)} ${t('is_required')}`)
           );
+          break;
+        case 'radio':
+          validator = yup.object(); // Change from yup.number() to yup.string()
+          if (field.validation.required) {
+            validator = validator.required(
+              `${t(field.name)} ${t('is_required')}`
+            );
+          }
           break;
         case 'number':
           validator = yup.string(); // Change from yup.number() to yup.string()
@@ -235,6 +243,7 @@ const RegistrationForm = ({ schema, geoData }) => {
   const [modal, setModal] = useState(false);
   const [err, setErr] = useState();
   const [networkError, setNetworkError] = useState(false);
+  const [programData, setProgramData] = useState([]);
 
   const { isConnected } = useInternet();
 
@@ -272,18 +281,18 @@ const RegistrationForm = ({ schema, geoData }) => {
 
   // console.log({ TENANT_ID });
 
-  const programData = {
-    options: [
-      {
-        tenantId: '6c8b810a-66c2-4f0d-8c0c-c025415a4414',
-        name: 'Second Chance Program',
-        domain: 'pratham.shiksha.com',
-        description:
-          'Get a second chance to complete your 10th grade education',
-        images: [],
-      },
-    ],
-  };
+  // const programData = {
+  //   options: [
+  //     {
+  //       tenantId: '6c8b810a-66c2-4f0d-8c0c-c025415a4414',
+  //       name: 'Second Chance Program',
+  //       domain: 'pratham.shiksha.com',
+  //       description:
+  //         'Get a second chance to complete your 10th grade education',
+  //       images: [],
+  //     },
+  //   ],
+  // };
 
   const RegisterLogin = async (loginData) => {
     const payload = {
@@ -561,11 +570,12 @@ const RegistrationForm = ({ schema, geoData }) => {
 
   const nextForm = async (data) => {
     let nextFormNumber = currentForm + 1;
+    // console.log({ programValue });
 
     // Skip a specific form, e.g., form number 4
-    // if (currentForm === 4 && programValue == TENANT_ID) {
-    //   nextFormNumber = 6; // Skip form number 4 and move to form 5
-    // }
+    if (currentForm === 3 && programValue?.name === 'Public') {
+      nextFormNumber = 5; // Skip form number 4 and move to form 5
+    }
 
     if (currentForm < schema?.length) {
       setCurrentForm(nextFormNumber);
@@ -596,18 +606,125 @@ const RegistrationForm = ({ schema, geoData }) => {
   const prevForm = () => {
     let prevFormNumber = currentForm - 1;
 
-    // if (currentForm === 6 && programValue === TENANT_ID) {
-    //   prevFormNumber = 4; // Skip form number 4 and move to form 5
-    // }
+    if (currentForm === 5 && programValue?.name === 'Public') {
+      prevFormNumber = 3; // Skip form number 4 and move to form 5
+    }
 
     if (currentForm > 1) {
       setCurrentForm(prevFormNumber);
       setIsDisable(true);
       return true; // Indicates that the back action has been handled
     } else {
-      navigation.goBack();
+      navigation.navigate('RegisterStart');
       return false; // Indicates that the back action should continue (exit)
     }
+  };
+
+  const getProgramData = async () => {
+    const data = await getProgramDetails();
+    setProgramData([
+      {
+        tenantId: 'ef99949b-7f3a-4a5f-806a-e67e683e38f3',
+        name: 'pratham SCP',
+        domain: 'pratham.shiksha.com',
+        createdAt: '2024-04-11T07:28:14.558Z',
+        updatedAt: '2024-05-08T06:55:08.795Z',
+        params: null,
+        role: [
+          {
+            roleId: '3bde0028-6900-4900-9d05-eeb608843718',
+            name: 'Teacher',
+            code: 'teacher',
+          },
+          {
+            roleId: '9dd9328f-1bc7-444f-96e3-c5e1daa3514a',
+            name: 'Team Leader',
+            code: 'team_leader',
+          },
+          {
+            roleId: 'ee482faf-8a41-45fe-9656-5533dd6a787c',
+            name: 'Admin',
+            code: 'admin',
+          },
+          {
+            roleId: '493c04e2-a9db-47f2-b304-503da358d5f4',
+            name: 'Student',
+            code: 'student',
+          },
+          {
+            roleId: 'd72a1347-30cb-4d64-b5de-11825777f3a1',
+            name: 'Assessment Admin',
+            code: 'super_admin',
+          },
+        ],
+      },
+      {
+        tenantId: '3efe90e5-e62c-4030-a0a5-6cecd64f77f6',
+        name: 'xyz1',
+        domain: 'abch.com',
+        createdAt: '2024-09-23T14:40:55.759Z',
+        updatedAt: '2024-09-23T14:42:10.103Z',
+        params: {
+          options: [
+            {
+              label: 'ENGLISH',
+              value: 'english',
+            },
+            {
+              label: 'HINDI',
+              value: 'hindi',
+            },
+            {
+              label: 'MARATHI',
+              value: 'marathi',
+            },
+            {
+              label: 'BENGALI',
+              value: 'bengali',
+            },
+            {
+              label: 'TELUGU',
+              value: 'telugu',
+            },
+            {
+              label: 'KANNADA',
+              value: 'kannada',
+            },
+            {
+              label: 'GUJARATI',
+              value: 'gujarati',
+            },
+            {
+              label: 'URDU',
+              value: 'urdu',
+            },
+          ],
+        },
+      },
+      {
+        tenantId: '6c8b810a-66c2-4f0d-8c0c-c025415a4414',
+        name: 'Pratham YouthNet',
+        domain: 'pratham.youthnet.com',
+        createdAt: '2024-09-25T11:41:02.852Z',
+        updatedAt: '2024-09-25T11:41:02.852Z',
+        params: null,
+      },
+      {
+        tenantId: '10a9f829-3652-47d0-b17b-68c4428f9f89',
+        name: 'Public',
+        domain: 'public.com',
+        createdAt: '2024-11-06T06:49:58.960Z',
+        updatedAt: '2024-11-06T06:49:58.960Z',
+        params: null,
+        role: [
+          {
+            roleId: '0029909a-674b-460e-9ba9-c479d273bd68',
+            name: 'Learner',
+            code: 'learner',
+          },
+        ],
+      },
+    ]);
   };
 
   useEffect(() => {
@@ -619,7 +736,7 @@ const RegistrationForm = ({ schema, geoData }) => {
       };
       await logEventFunction(obj);
     };
-
+    getProgramData();
     logRegistrationInProgress();
   }, []);
 

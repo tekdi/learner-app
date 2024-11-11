@@ -30,7 +30,7 @@ const MaterialCardView = ({ route }) => {
   return (
     <SafeAreaView>
       <SecondaryHeader />
-      <ScrollView style={{ borderWidth: 1, maxHeight: '85%' }}>
+      <ScrollView style={{ maxHeight: '85%' }}>
         {details?.map((item, i) => {
           return (
             <Accordion2

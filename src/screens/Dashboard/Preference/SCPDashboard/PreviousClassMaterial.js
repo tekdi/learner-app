@@ -182,6 +182,7 @@ const PreviousClassMaterial = () => {
 const styles = StyleSheet.create({
   card: {
     padding: 10,
+    backgroundColor: 'white',
   },
   leftContainer: {
     flexDirection: 'row',

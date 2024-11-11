@@ -23,6 +23,7 @@ import {
   capitalizeName,
   deleteSavedItem,
   getDataFromStorage,
+  getTentantId,
   logEventFunction,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
@@ -67,6 +68,9 @@ const Profile = (props) => {
     const customFields = result?.getUserDetails?.[0]?.customFields;
     createNewObject(customFields, requiredLabels);
     setUserData(result?.getUserDetails?.[0]);
+    const tenantData = await getTentantId();
+    console.log({ tenantData });
+
     setLoading(false);
   };
 
@@ -86,6 +90,8 @@ const Profile = (props) => {
       await deleteSavedItem('weightedProgress');
       await deleteSavedItem('courseTrackData');
       await deleteSavedItem('profileData');
+      await deleteSavedItem('tenantData');
+      await deleteSavedItem('academicYearId');
       logoutEvent();
       // Reset the navigation stack and navigate to LoginSignUpScreen
       navigation.dispatch(

@@ -29,6 +29,11 @@ const MonthlyCalendar = ({
     setSelectedDate(correctedDate);
     setEventDate(correctedDate);
   };
+  const useCalendarState = () => {
+    return { date, onSelect: handleDateSelection };
+  };
+
+  const boundingCalendarState = useCalendarState();
 
   const renderDay = (day) => {
     const currentDate = new Date(day.date);
@@ -84,6 +89,10 @@ const MonthlyCalendar = ({
         onSelect={handleDateSelection}
         style={styles.calendar}
         renderDay={renderDay}
+        min={new Date(2000, 0, 1)} // Set minimum date to Jan 1, 2000
+        max={new Date(2030, 11, 31)} // Set maximum date to Dec 31, 2030
+        boundingMonth={false}
+        {...boundingCalendarState}
       />
     </View>
   );

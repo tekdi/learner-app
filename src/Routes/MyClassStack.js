@@ -9,6 +9,10 @@ import MyClassDashboard from '../screens/Dashboard/Preference/SCPDashboard/MyCla
 import MaterialCardView from '../screens/Dashboard/Preference/SCPDashboard/MyClass/MaterialCardView';
 import LearningResources from '../screens/Dashboard/Preference/SCPDashboard/MyClass/LearningResources';
 import Assessment from '../screens/Assessment/Assessment';
+import AssessmentStack from './AssessmentStack';
+import TestView from '../screens/Assessment/TestView';
+import AnswerKeyView from '../screens/Assessment/AnswerKeyView';
+import TestDetailView from '../screens/Assessment/TestDetailView';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,11 +24,14 @@ const SCPUserStack = () => {
         component={MyClassDashboard}
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Assessment"
         component={Assessment}
         options={{ lazy: true }} // Lazily load LoadingScreen
-      />
+      /> */}
+      <Stack.Screen name="TestView" component={TestView} />
+      <Stack.Screen name="AnswerKeyView" component={AnswerKeyView} />
+      <Stack.Screen name="TestDetailView" component={TestDetailView} />
       <Stack.Screen
         name="MaterialCardView"
         component={MaterialCardView}

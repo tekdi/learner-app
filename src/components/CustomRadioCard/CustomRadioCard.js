@@ -32,7 +32,7 @@ const CustomRadioCard = ({
 
   useEffect(() => {
     if (value) {
-      const selectedOptionIndex = field.options.findIndex(
+      const selectedOptionIndex = field.findIndex(
         (option) => option.tenantId === value.tenantId
       );
       if (selectedOptionIndex >= 0) {
@@ -42,13 +42,24 @@ const CustomRadioCard = ({
   }, [value, field]);
 
   const handlePress = (index) => {
-    const selectedValue = field?.options[index]?.tenantId || 'none';
+    const selectedValue = field[index]?.tenantId || 'none';
+    const selectedName = field[index]?.name;
+    const role = field[index]?.role?.find(
+      (item) => item?.name == 'Learner' || item?.name === 'Student'
+    );
+
     setSelectedIndex(selectedValue);
     setSelectedIds((prevSelectedIds) => ({
       ...prevSelectedIds,
       [name]: { value: selectedValue, fieldId: field?.fieldId },
     }));
-    onChange(selectedValue);
+    console.log({ selectedName });
+
+    onChange({
+      tenantId: selectedValue,
+      roleId: role?.roleId,
+      name: selectedName,
+    });
   };
 
   return (
@@ -62,7 +73,7 @@ const CustomRadioCard = ({
             width: '100%',
           }}
         >
-          {field?.options?.map((option, index) => (
+          {field?.map((option, index) => (
             <TouchableOpacity
               key={index}
               style={styles.card}
@@ -86,7 +97,7 @@ const CustomRadioCard = ({
             </TouchableOpacity>
           ))}
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.card}
             onPress={() => handlePress(field?.options?.length + 1)}
           >
@@ -116,7 +127,7 @@ const CustomRadioCard = ({
             >
               {t('optional_content_des')}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         {errors[name] && (
           <Text allowFontScaling={false} style={styles.error}>
