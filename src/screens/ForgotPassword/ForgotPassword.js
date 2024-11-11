@@ -39,6 +39,7 @@ const ForgotPassword = () => {
   const forgotPasswordAPi = async () => {
     const payload = {
       username: value,
+      redirectUrl: `pratham://learnerapp`,
     };
     const data = await forgotPassword({ payload });
     if (data?.params?.err !== undefined) {
