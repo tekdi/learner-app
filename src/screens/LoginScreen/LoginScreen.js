@@ -90,13 +90,13 @@ const LoginScreen = () => {
         await setDataInStorage('userId', user_id);
         const cohort = await getCohort({ user_id, tenantid });
         const academicyear = await setAcademicYear({ tenantid });
+
         await setDataInStorage(
           'academicYearId',
           JSON.stringify(academicyear?.[0]?.id || '')
         );
         await setDataInStorage('cohortData', JSON.stringify(cohort));
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-        const datanew = await getAcademicYearId();
 
         await setDataInStorage(
           'cohortId',

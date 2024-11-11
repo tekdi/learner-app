@@ -5,7 +5,7 @@ import {
 } from '../JsHelper/Helper';
 import { deleteData, getData, insertData } from '../JsHelper/SqliteHelper';
 import EndUrls from './EndUrls';
-import { get, handleResponseException, post } from './RestClient';
+import { get, handleResponseException, patch, post } from './RestClient';
 //for react native config env : dev uat prod
 import Config from 'react-native-config';
 
@@ -102,7 +102,10 @@ export const getAccessToken = async () => {
 
 export const getStudentForm = async () => {
   try {
-    const headers = await getHeaders();
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
     const url = `${EndUrls.get_form}`;
 
     // Generate the curl command
@@ -113,7 +116,7 @@ ${Object.entries(headers || {})
 
     // Log the curl command to the console
     // console.log('Generated curl command:');
-    console.log(curlCommand);
+    // console.log(curlCommand);
 
     // Make the API request
     const result = await get(url, {
@@ -188,9 +191,9 @@ export const updateUser = async ({ payload, user_id }) => {
       Authorization: `Bearer ${token}`,
     };
     // Log the cURL command
-    console.log(
-      `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
+    // );
 
     // Make the actual request
     const result = await patch(url, payload, {
@@ -1130,9 +1133,9 @@ export const forgotPassword = async ({ payload }) => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
-    // console.log(
-    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {
