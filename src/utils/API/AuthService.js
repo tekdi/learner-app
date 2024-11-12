@@ -1291,10 +1291,10 @@ export const EventDetails = async ({ id }) => {
     return handleResponseException(e);
   }
 };
-export const SolutionEvent = async ({ id }) => {
+export const SolutionEvent = async ({ solutionId }) => {
   try {
     const method = 'POST'; // Define the HTTP method
-    const url = `${EndUrls.SolutionEvent}/${id}`; // Define the URL
+    const url = `${EndUrls.SolutionEvent}/${solutionId}`; // Define the URL
     const token = await getDataFromStorage('Accesstoken');
     const headers = {
       'Content-Type': 'application/json',

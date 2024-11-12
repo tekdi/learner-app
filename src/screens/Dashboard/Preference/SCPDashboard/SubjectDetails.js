@@ -11,7 +11,7 @@ const SubjectDetails = ({ route }) => {
   const { topic, subTopic, courseType, item } = route.params;
   const navigation = useNavigation();
 
-  console.log({ topic, subTopic, courseType });
+  console.log({ item });
 
   return (
     <>

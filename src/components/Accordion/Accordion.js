@@ -4,7 +4,12 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import globalStyles from '../../utils/Helper/Style';
 import { useTranslation } from '../../context/LanguageContext';
-import { EventDetails, targetedSolutions } from '../../utils/API/AuthService';
+import {
+  EventDetails,
+  SolutionEvent,
+  SolutionEventDetails,
+  targetedSolutions,
+} from '../../utils/API/AuthService';
 import {
   extractLearningResources,
   getDataFromStorage,
@@ -50,17 +55,29 @@ const Accordion = ({ item, postrequisites, title, setTrack }) => {
   const [trackData, setTrackData] = useState([]);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const subjectName = item?.metadata?.subject || '';
-      const type = item?.metadata?.courseType || '';
-      const data = await targetedSolutions({ subjectName, type });
-      const id = data?.data?.[0]?._id;
-      const result = await EventDetails({ id });
-      // console.log('######', JSON.stringify(result?.tasks));
+  const callProgramIfempty = async ({ solutionId, id }) => {
+    const data = await SolutionEvent({ solutionId });
+    const templateId = data?.externalId;
+    const result = await SolutionEventDetails({ templateId, solutionId });
+    // if (!id) {
+    //   fetchData();
+    // }
+  };
 
+  const fetchData = async () => {
+    let result;
+    const subjectName = item?.metadata?.subject || '';
+    const type = item?.metadata?.courseType || '';
+    const data = await targetedSolutions({ subjectName, type });
+
+    const id = data?.data?.[0]?._id;
+    const solutionId = data?.data?.[0]?.solutionId;
+
+    if (data?.data?.[0]?._id == '') {
+      callProgramIfempty({ solutionId, id });
+    } else {
+      result = await EventDetails({ id });
       const filterData = getFilteredData(result?.tasks || []);
-      // console.log(JSON.stringify(filterData));
       setTasks(filterData);
       let contentIdList = [];
       if (filterData) {
@@ -92,15 +109,18 @@ const Accordion = ({ item, postrequisites, title, setTrack }) => {
           course_track_data?.data.find((course) => course.userId === userId)
             ?.course || [];
       }
-      setTrackData(courseTrackData);
-      setTrack(courseTrackData);
+      setTrackData(courseTrackData || []);
+      setTrack(courseTrackData || []);
       if (!postrequisites) {
         setDataInStorage(
           'courseTrackData',
           JSON.stringify(courseTrackData || {})
         );
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -160,6 +180,7 @@ const Accordion = ({ item, postrequisites, title, setTrack }) => {
                 }}
               >
                 <Text style={globalStyles.subHeading}>Topic: {task?.name}</Text>
+
                 {!postrequisites ? (
                   <View
                     style={{
@@ -169,14 +190,16 @@ const Accordion = ({ item, postrequisites, title, setTrack }) => {
                   >
                     {task?.prerequisites?.map((data, index) => {
                       return (
-                        <ContentCard
-                          key={index}
-                          item={data}
-                          index={index}
-                          course_id={data?.id}
-                          unit_id={data?.id}
-                          TrackData={trackData}
-                        />
+                        <>
+                          <ContentCard
+                            key={index}
+                            item={data}
+                            index={index}
+                            course_id={data?.id}
+                            unit_id={data?.id}
+                            TrackData={trackData}
+                          />
+                        </>
                       );
                     })}
                   </View>
@@ -233,6 +256,7 @@ const styles = StyleSheet.create({
   accordionDetails: {
     fontSize: 14,
     color: '#7C766F',
+    paddingBottom: 50,
   },
 });
 
