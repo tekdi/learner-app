@@ -44,6 +44,8 @@ const EndUrls = {
   eventList: `${NEXT_PUBLIC_EVENT_BASE_URL}/list`,
   targetedSolutions: `${EVENT_DETAILS}/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
   EventDetails: `${EVENT_DETAILS}/userProjects/details`,
+  SolutionEvent: `${EVENT_DETAILS}/solutions/details`,
+
   attendance: `${API_URL}/user/v1/attendance/list`,
   framework: `${CONTENT_URL}/api/framework/v1/read/gujaratboardfw`,
 };

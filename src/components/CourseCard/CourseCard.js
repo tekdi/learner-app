@@ -216,6 +216,7 @@ const CourseCard = ({
           ellipsizeMode="tail"
         >
           {item?.description}
+          {console.log(JSON.stringify(item), 'sdfsdfsd')}
         </Text>
       </View>
     </Pressable>

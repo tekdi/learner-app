@@ -62,6 +62,7 @@ export const getUserId = async () => {
 export const getuserDetails = async () => {
   try {
     const data = await getAccessToken();
+
     return data?.result;
   } catch (e) {
     console.error('Error retrieving credentials:', e);
@@ -287,40 +288,48 @@ const monthAbbrToIndex = {
   Dec: 11,
 };
 export const translateDigits = (number, lang) => {
-  return number
-    .toString()
-    .split('')
-    .map((digit) => regionalDigits[lang][parseInt(digit, 10)] || digit)
-    .join('');
+  try {
+    return number
+      .toString()
+      .split('')
+      .map((digit) => regionalDigits[lang][parseInt(digit, 10)] || digit)
+      .join('');
+  } catch (error) {
+    return null;
+  }
 };
 export const translateDate = (dateStr, lang) => {
   // Split the date string into components
-  const [day, monthAbbr, year] = dateStr.split(' ');
-  console.log('###### dateStr', dateStr);
-  console.log('###### day', day);
-  console.log('###### monthAbbr', monthAbbr);
-  console.log('###### year', year);
-  // Translate the day
-  const translatedDay = translateDigits(day, lang).toString();
+  try {
+    const [day, monthAbbr, year] = dateStr.split(' ');
+    console.log('###### dateStr', dateStr);
+    console.log('###### day', day);
+    console.log('###### monthAbbr', monthAbbr);
+    console.log('###### year', year);
+    // Translate the day
+    const translatedDay = translateDigits(day, lang).toString();
 
-  const translatedYear = translateDigits(year, lang).toString();
+    const translatedYear = translateDigits(year, lang).toString();
 
-  console.log('###### translatedDay', translatedDay);
-  console.log('###### translatedYear', translatedYear);
-  // Translate the month
-  const monthIndex = monthAbbrToIndex[monthAbbr];
+    console.log('###### translatedDay', translatedDay);
+    console.log('###### translatedYear', translatedYear);
+    // Translate the month
+    const monthIndex = monthAbbrToIndex[monthAbbr];
 
-  console.log('###### monthIndex', monthIndex);
-  const translatedMonth = monthNames[lang][monthIndex];
-  const translatedDate = `${translatedDay} ${translatedMonth} ${translatedYear}`;
-  /*const translatedDate = {
+    console.log('###### monthIndex', monthIndex);
+    const translatedMonth = monthNames[lang][monthIndex];
+    const translatedDate = `${translatedDay} ${translatedMonth} ${translatedYear}`;
+    /*const translatedDate = {
     translatedDay: translatedDay,
     translatedMonth: translatedMonth,
     translatedYear: translatedYear,
   };*/
-  console.log('###### translatedDate', JSON.stringify(translatedDate));
-  // Combine translated components
-  return translatedDate;
+    console.log('###### translatedDate', JSON.stringify(translatedDate));
+    // Combine translated components
+    return translatedDate;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const createNewObject = (customFields, labels) => {

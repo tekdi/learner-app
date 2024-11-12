@@ -5,8 +5,9 @@ import globalStyles from '../../../../../utils/Helper/Style';
 import { useTranslation } from '../../../../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
+import ContentCard from '../../../ContentCard';
 
-const ContentAccordion = ({ title, children }) => {
+const ContentAccordion = ({ title, resourceData }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -34,10 +35,45 @@ const ContentAccordion = ({ title, children }) => {
 
       {isAccordionOpen && (
         <View style={styles.accordionContent}>
-          {children ? (
-            <></>
-          ) : (
-            <Text style={globalStyles.text}>{t('no_topics')}</Text>
+          {title === 'pre_requisites_2' && (
+            <>
+              {resourceData?.prerequisites.length > 0 ? (
+                resourceData?.prerequisites?.map((data, index) => {
+                  return (
+                    <ContentCard
+                      key={index}
+                      item={data}
+                      index={index}
+                      course_id={data?.id}
+                      unit_id={data?.id}
+                      // TrackData={trackData}
+                    />
+                  );
+                })
+              ) : (
+                <Text style={globalStyles.text}>{t('no_topics')}</Text>
+              )}
+            </>
+          )}
+          {title === 'post_requisites_2' && (
+            <>
+              {resourceData?.postrequisites.length > 0 ? (
+                resourceData?.postrequisites?.map((data, index) => {
+                  return (
+                    <ContentCard
+                      key={index}
+                      item={data}
+                      index={index}
+                      course_id={data?.id}
+                      unit_id={data?.id}
+                      // TrackData={trackData}
+                    />
+                  );
+                })
+              ) : (
+                <Text style={globalStyles.text}>{t('no_topics')}</Text>
+              )}
+            </>
           )}
         </View>
       )}
@@ -57,9 +93,9 @@ const styles = StyleSheet.create({
 
   accordionContent: {
     paddingVertical: 10,
-    // borderBottomWidth: 1,
     borderTopWidth: 1,
     borderColor: '#D0C5B4',
+    padding: 10,
   },
   accordionDetails: {
     fontSize: 14,
