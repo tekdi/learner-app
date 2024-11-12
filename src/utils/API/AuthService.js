@@ -11,7 +11,7 @@ import Config from 'react-native-config';
 
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
-  let tenantId = Config.TENANT_ID;
+  let tenantId = await getTentantId();
   return {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -19,17 +19,12 @@ const getHeaders = async () => {
     tenantId: `${tenantId}`,
   };
 };
-
-const getHeaderswithTenant = async () => {
+const getHeaderswithoutTenant = async () => {
   const token = await getDataFromStorage('Accesstoken');
-  const tenantid = await getTentantId();
-  const academicYearId = await getAcademicYearId();
   return {
     'Content-Type': 'application/json',
     Accept: 'application/json',
     Authorization: `Bearer ${token}`,
-    tenantid: tenantid,
-    academicyearid: academicYearId,
   };
 };
 
@@ -86,7 +81,7 @@ export const refreshToken = async (params = {}) => {
 
 export const getAccessToken = async () => {
   try {
-    const headers = await getHeaders();
+    const headers = await getHeaderswithoutTenant();
     const result = await get(`${EndUrls.get_current_token}`, {
       headers: headers || {},
     });
@@ -161,7 +156,9 @@ export const registerUser = async (params = {}) => {
     };
     // Log the cURL command
     console.log(
-      `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(params)}'`
+      `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${
+        headers.Authorization
+      }' -d '${JSON.stringify(params)}'`
     );
 
     // Make the actual request
@@ -507,9 +504,13 @@ export const getProgramDetails = async () => {
     const url = `${EndUrls.programDetails}`;
 
     // Log the curl command
-    // console.log(
-    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${headers.Authorization ? ` -H 'Authorization: ${headers.Authorization}'` : ''}`
-    // );
+    console.log(
+      `curl -X GET '${url}' -H 'Content-Type: application/json'${
+        headers.Authorization
+          ? ` -H 'Authorization: ${headers.Authorization}'`
+          : ''
+      }`
+    );
 
     const result = await get(url, {
       headers: headers || {},
@@ -661,7 +662,7 @@ export const trackAssessment = async (params = {}) => {
 export const getProfileDetails = async (params = {}) => {
   try {
     const url = `${EndUrls.profileDetails}`; // Define the URL
-    const headers = await getHeaders();
+    const headers = await getHeaderswithoutTenant();
     const payload = {
       limit: 0,
       filters: {
@@ -671,9 +672,9 @@ export const getProfileDetails = async (params = {}) => {
       offset: 0,
     };
 
-    console.log(
-      `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
+    // );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1134,7 +1135,9 @@ export const forgotPassword = async ({ payload }) => {
       Accept: 'application/json',
     };
     console.log(
-      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
+      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
+        payload
+      )}'`
     );
 
     // Make the actual request
@@ -1246,7 +1249,9 @@ export const targetedSolutions = async ({ subjectName, type }) => {
     };
 
     console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
     );
 
     // Make the actual request
@@ -1273,14 +1278,15 @@ export const EventDetails = async ({ id }) => {
       Accept: 'application/json',
       Cookie:
         'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
-      'x-auth-token':
-        'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJha0d1WG1zVTVxMXhOczZxUkVTWWZkTkRyUWRiZ2ZGekRFMEswRkFDNUVzIn0.eyJleHAiOjE3MzEwNDk1NTQsImlhdCI6MTczMDk2MzE1NCwianRpIjoiNTkyZGJkODEtZDM4YS00NGI0LWEwNTYtOWI0NzEyYWY0NWViIiwiaXNzIjoiaHR0cHM6Ly9rZXljbG9hay5wcmF0aGFtZGlnaXRhbC5vcmcvYXV0aC9yZWFsbXMvcHJhdGhhbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJmNjQzNDUxZS1mMzgwLTQyZjMtYjg4ZS00YmIxYjM4NjUzM2EiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJwcmF0aGFtIiwic2Vzc2lvbl9zdGF0ZSI6IjkwYjljMDBkLTFmOWQtNGIxZS1hM2RhLWEyNjY3MjE0YzM0YSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXByYXRoYW0iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6ImVtYWlsIHByb2ZpbGUiLCJzaWQiOiI5MGI5YzAwZC0xZjlkLTRiMWUtYTNkYS1hMjY2NzIxNGMzNGEiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJWaXZlayBUTCIsInByZWZlcnJlZF91c2VybmFtZSI6InRsc2NtaDI0MTExNDEiLCJnaXZlbl9uYW1lIjoiVml2ZWsiLCJmYW1pbHlfbmFtZSI6IlRMIn0.NrM5j2OEOrVRWTPteVhxgFHTfPVIcWngHXXuuqbfmpwgd835ugqDPtzO1X1COnNdDnarKWgdA0-jw9CPX-7jX5CibdWHFN883qPR1CP7JEKQonStpAO6YDCcZLX8wjhtQwu5IKEV5SX6NkK5ObMDnyOGM_iZvcnw8GLu5NqwSdaHlFmIfyht3S6nF9tCV864dweLMzyxC4VpX7STvZI6bbGfKE9liFspaj1qeKrVxej8Q3yoJMzqiyZXLVf7kb1TWcc2p90yB5eBVnM3x7l1gSrQp1WHLQ7FBW7C7lyRXcS7x1UORo6CxwdwJQs2IPgiXgfupInpvh7MXc8en30u9g',
+      'x-auth-token': token,
     };
 
     const payload = {};
 
     console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
     );
 
     // Make the actual request
@@ -1297,6 +1303,77 @@ export const EventDetails = async ({ id }) => {
     return handleResponseException(e);
   }
 };
+export const SolutionEvent = async ({ id }) => {
+  try {
+    const method = 'POST'; // Define the HTTP method
+    const url = `${EndUrls.SolutionEvent}/${id}`; // Define the URL
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Cookie:
+        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+      'x-auth-token': token,
+    };
+
+    const payload = { role: 'Teacher' };
+
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
+    );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const SolutionEventDetails = async ({ id }) => {
+  try {
+    const method = 'POST'; // Define the HTTP method
+    const url = `${EndUrls.SolutionEvent}?templateId=${templateId}&solutionId=${id}`; // Define the URL
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Cookie:
+        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+      'x-auth-token': token,
+    };
+
+    const payload = { role: 'Teacher' };
+
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
+    );
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+
 export const getAttendance = async ({ todate, fromDate }) => {
   try {
     const method = 'POST'; // Define the HTTP method
