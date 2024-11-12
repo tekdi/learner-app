@@ -11,7 +11,7 @@ import Config from 'react-native-config';
 
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
-  let tenantId = Config.TENANT_ID;
+  let tenantId = await getTentantId();
   return {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -156,7 +156,9 @@ export const registerUser = async (params = {}) => {
     };
     // Log the cURL command
     console.log(
-      `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(params)}'`
+      `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${
+        headers.Authorization
+      }' -d '${JSON.stringify(params)}'`
     );
 
     // Make the actual request
@@ -503,7 +505,11 @@ export const getProgramDetails = async () => {
 
     // Log the curl command
     console.log(
-      `curl -X GET '${url}' -H 'Content-Type: application/json'${headers.Authorization ? ` -H 'Authorization: ${headers.Authorization}'` : ''}`
+      `curl -X GET '${url}' -H 'Content-Type: application/json'${
+        headers.Authorization
+          ? ` -H 'Authorization: ${headers.Authorization}'`
+          : ''
+      }`
     );
 
     const result = await get(url, {
@@ -1129,7 +1135,9 @@ export const forgotPassword = async ({ payload }) => {
       Accept: 'application/json',
     };
     console.log(
-      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
+      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
+        payload
+      )}'`
     );
 
     // Make the actual request
@@ -1241,7 +1249,9 @@ export const targetedSolutions = async ({ subjectName, type }) => {
     };
 
     console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
     );
 
     // Make the actual request
@@ -1274,7 +1284,9 @@ export const EventDetails = async ({ id }) => {
     const payload = {};
 
     console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
     );
 
     // Make the actual request
@@ -1307,7 +1319,9 @@ export const SolutionEvent = async ({ solutionId }) => {
     const payload = { role: 'Teacher' };
 
     console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
     );
 
     // Make the actual request
@@ -1340,7 +1354,9 @@ export const SolutionEventDetails = async ({ id }) => {
     const payload = { role: 'Teacher' };
 
     console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${headers['x-auth-token']}' -d '${JSON.stringify(payload)}'`
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
     );
 
     // Make the actual request

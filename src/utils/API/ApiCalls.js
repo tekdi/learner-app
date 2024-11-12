@@ -2,13 +2,13 @@ import EndUrls from './EndUrls';
 import axios from 'axios';
 import uuid from 'react-native-uuid';
 import { getApiResponse, storeApiResponse } from './AuthService';
-import { getDataFromStorage } from '../JsHelper/Helper';
+import { getDataFromStorage, getTentantId } from '../JsHelper/Helper';
 //for react native config env : dev uat prod
 import Config from 'react-native-config';
 
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
-  let tenantId = Config.TENANT_ID;
+  let tenantId = await getTentantId();
   return {
     'Content-Type': 'application/json',
     Accept: 'application/json',

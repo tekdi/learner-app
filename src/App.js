@@ -14,6 +14,15 @@ import { BackHandler, Text, View } from 'react-native';
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
 import { logEventFunction } from './utils/JsHelper/Helper';
 
+const linking = {
+  prefixes: ['pratham://'],
+  config: {
+    screens: {
+      LoadingScreen: 'LoadingScreen',
+    },
+  },
+};
+
 async function checkAndRequestStoragePermission() {
   if (Platform.OS === 'android' && Platform.Version >= 33) {
     const permissions = [
@@ -103,7 +112,7 @@ const App = () => {
         {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
       work */}
         <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
-          <NavigationContainer>
+          <NavigationContainer linking={linking}>
             <Suspense
               fallback={<Text allowFontScaling={false}>Loading Screen...</Text>}
             >
