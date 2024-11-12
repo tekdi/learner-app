@@ -279,7 +279,7 @@ export const courseListApi_testing = async (params = {}) => {
   }
 };
 
-export const courseListApi = async (params = {}) => {
+export const courseListApi = async ({ payload }) => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList}`; // Define the URL
   const headers = {
@@ -289,47 +289,47 @@ export const courseListApi = async (params = {}) => {
     // 'Authorization': 'Bearer YOUR_API_KEY', // Example for an API key or token
   };
 
-  let payload = {
-    request: {
-      filters: {
-        se_boards: [
-          'Odisha',
-          'Uttar Pradesh',
-          'Madhya Pradesh',
-          'NIOS',
-          'Rajasthan',
-        ],
-        primaryCategory: ['Course'],
-        visibility: ['Default', 'Parent'],
-      },
-      limit: 100,
-      sort_by: {
-        lastPublishedOn: 'desc',
-      },
-      fields: [
-        'name',
-        'appIcon',
-        'description',
-        'posterImage',
-        'mimeType',
-        'identifier',
-        'resourceType',
-        'primaryCategory',
-        'contentType',
-        'trackable',
-        'children',
-        'leafNodes',
-      ],
-      facets: [
-        'se_boards',
-        'se_gradeLevels',
-        'se_subjects',
-        'se_mediums',
-        'primaryCategory',
-      ],
-      offset: 0,
-    },
-  };
+  // let payload = {
+  //   request: {
+  //     filters: {
+  //       se_boards: [
+  //         'Odisha',
+  //         'Uttar Pradesh',
+  //         'Madhya Pradesh',
+  //         'NIOS',
+  //         'Rajasthan',
+  //       ],
+  //       primaryCategory: ['Course'],
+  //       visibility: ['Default', 'Parent'],
+  //     },
+  //     limit: 100,
+  //     sort_by: {
+  //       lastPublishedOn: 'desc',
+  //     },
+  //     fields: [
+  //       'name',
+  //       'appIcon',
+  //       'description',
+  //       'posterImage',
+  //       'mimeType',
+  //       'identifier',
+  //       'resourceType',
+  //       'primaryCategory',
+  //       'contentType',
+  //       'trackable',
+  //       'children',
+  //       'leafNodes',
+  //     ],
+  //     facets: [
+  //       'se_boards',
+  //       'se_gradeLevels',
+  //       'se_subjects',
+  //       'se_mediums',
+  //       'primaryCategory',
+  //     ],
+  //     offset: 0,
+  //   },
+  // };
 
   // Log the curl command
   console.log(

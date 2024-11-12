@@ -31,6 +31,7 @@ import SyncCard from '../../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
 import {
   getDataFromStorage,
+  getTentantId,
   logEventFunction,
 } from '../../../utils/JsHelper/Helper';
 import { courseTrackingStatus } from '../../../utils/API/ApiCalls';
@@ -117,8 +118,125 @@ const Courses = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const data = await courseListApi();
-
+    let data;
+    const tenantId = await getTentantId();
+    console.log({ tenantId });
+    // id = '10a9f829-3652-47d0-b17b-68c4428f9f89';
+    id = '6c8b810a-66c2-4f0d-8c0c-c025415a4414';
+    if (tenantId === id) {
+      console.log('hiii');
+      const payload = {
+        request: {
+          filters: {
+            se_boards: ['nios'],
+            se_gradeLevels: ['program'],
+            se_subjects: ['literacy'],
+            primaryCategory: [
+              'Collection',
+              'Resource',
+              'Content Playlist',
+              'Course',
+              'Course Assessment',
+              'Digital Textbook',
+              'eTextbook',
+              'Explanation Content',
+              'Learning Resource',
+              'Lesson Plan Unit',
+              'Practice Question Set',
+              'Teacher Resource',
+              'Textbook Unit',
+              'LessonPlan',
+              'FocusSpot',
+              'Learning Outcome Definition',
+              'Curiosity Questions',
+              'MarkingSchemeRubric',
+              'ExplanationResource',
+              'ExperientialResource',
+              'Practice Resource',
+              'TVLesson',
+              'Course Unit',
+              'Program',
+              'Project',
+              'improvementProject',
+            ],
+            visibility: ['Default', 'Parent'],
+          },
+          limit: 100,
+          sort_by: {
+            lastPublishedOn: 'desc',
+          },
+          fields: [
+            'name',
+            'appIcon',
+            'mimeType',
+            'gradeLevel',
+            'identifier',
+            'medium',
+            'pkgVersion',
+            'board',
+            'subject',
+            'resourceType',
+            'primaryCategory',
+            'contentType',
+            'channel',
+            'organisation',
+            'trackable',
+          ],
+          facets: [
+            'se_boards',
+            'se_gradeLevels',
+            'se_subjects',
+            'se_mediums',
+            'primaryCategory',
+          ],
+          offset: 0,
+        },
+      };
+      data = await courseListApi({ payload });
+    } else {
+      const payload = {
+        request: {
+          filters: {
+            se_boards: [
+              'Odisha',
+              'Uttar Pradesh',
+              'Madhya Pradesh',
+              'NIOS',
+              'Rajasthan',
+            ],
+            primaryCategory: ['Course'],
+            visibility: ['Default', 'Parent'],
+          },
+          limit: 100,
+          sort_by: {
+            lastPublishedOn: 'desc',
+          },
+          fields: [
+            'name',
+            'appIcon',
+            'description',
+            'posterImage',
+            'mimeType',
+            'identifier',
+            'resourceType',
+            'primaryCategory',
+            'contentType',
+            'trackable',
+            'children',
+            'leafNodes',
+          ],
+          facets: [
+            'se_boards',
+            'se_gradeLevels',
+            'se_subjects',
+            'se_mediums',
+            'primaryCategory',
+          ],
+          offset: 0,
+        },
+      };
+      data = await courseListApi({ payload });
+    }
     //const data = await courseListApi_testing();
 
     //found course progress
@@ -135,10 +253,7 @@ const Courses = () => {
       //console.log('########## courseList', courseList);
       //get course track data
       let userId = await getDataFromStorage('userId');
-      let course_track_data = await courseTrackingStatus(
-        userId,
-        courseList
-      );
+      let course_track_data = await courseTrackingStatus(userId, courseList);
       //console.log('########## course_track_data', course_track_data?.data);
       let courseTrackData = [];
       if (course_track_data?.data) {
