@@ -3,15 +3,14 @@ import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 
 export const transformPayload = async (data) => {
   const studentForm = JSON.parse(await getDataFromStorage('studentForm'));
+
   const getFieldIdByName = (name) => {
-    // Assuming studentForm is the array that contains all the fields
     const field = studentForm.find(
       (item) => item.name.toLowerCase() === name.toLowerCase()
     );
-
-    // If the field is found, return its fieldId, otherwise return null
     return field ? field.fieldId : null;
   };
+
   const ROLE_ID = Config.ROLE_ID;
 
   const customFields = [
@@ -27,18 +26,23 @@ export const transformPayload = async (data) => {
       value: data.gender.value,
       fieldId: data.gender.fieldId,
     },
-    {
-      value: [data?.state?.value] || null,
-      fieldId: getFieldIdByName('states'),
-    },
-    {
-      value: [data?.district?.value] || null,
-      fieldId: getFieldIdByName('districts'),
-    },
-    {
-      value: [data?.block?.value] || null,
-      fieldId: getFieldIdByName('blocks'),
-    },
+    // Add state, district, and block only if block value is present
+    ...(data?.block?.value
+      ? [
+          {
+            value: [data?.state?.value] || null,
+            fieldId: getFieldIdByName('states'),
+          },
+          {
+            value: [data?.district?.value] || null,
+            fieldId: getFieldIdByName('districts'),
+          },
+          {
+            value: [data?.block?.value] || '',
+            fieldId: getFieldIdByName('blocks'),
+          },
+        ]
+      : []),
     // Conditionally add interested_content only if it's present
     ...(data?.interested_content?.value
       ? [
@@ -63,7 +67,7 @@ export const transformPayload = async (data) => {
     password: data.password,
     email: data?.email,
     mobile: data?.mobile,
-    tenantCohortRoleMapping, // Conditionally added based on the presence of data.program
-    customFields: customFields,
+    tenantCohortRoleMapping,
+    customFields,
   };
 };
