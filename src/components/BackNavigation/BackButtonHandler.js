@@ -12,7 +12,13 @@ import { useTranslation } from '../../context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
 import PropTypes from 'prop-types';
 
-const BackButtonHandler = ({ exitRoute, onCancel, onExit, logout }) => {
+const BackButtonHandler = ({
+  exitRoute,
+  onCancel,
+  onExit,
+  logout,
+  content_delete,
+}) => {
   const { t } = useTranslation();
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -38,8 +44,15 @@ const BackButtonHandler = ({ exitRoute, onCancel, onExit, logout }) => {
             >
               {logout
                 ? t('are_you_sure_you_want_to_logout_the_app')
-                : t('are_you_sure_you_want_to_exit_the_app')}
+                : content_delete
+                  ? t('content_delete')
+                  : t('are_you_sure_you_want_to_exit_the_app')}
             </Text>
+            {content_delete && (
+              <Text style={[globalStyles.subHeading, { textAlign: 'center' }]}>
+                {t('content_delete_desp')}
+              </Text>
+            )}
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={onCancel}>

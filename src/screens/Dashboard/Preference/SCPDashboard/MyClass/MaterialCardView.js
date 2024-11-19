@@ -11,17 +11,23 @@ import { SafeAreaView, ScrollView, Text } from 'react-native';
 import SecondaryHeader from '../../../../../components/Layout/SecondaryHeader';
 import globalStyles from '../../../../../utils/Helper/Style';
 import { useTranslation } from '../../../../../context/LanguageContext';
+import ActiveLoading from '../../../../LoadingScreen/ActiveLoading';
 
 const MaterialCardView = ({ route }) => {
   const { subjectName, type } = route.params;
   const [details, setDetails] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
 
-  const callProgramIfempty = async ({ solutionId }) => {
+  const callProgramIfempty = async ({ solutionId, id }) => {
     const data = await SolutionEvent({ solutionId });
     const templateId = data?.externalId;
     const result = await SolutionEventDetails({ templateId, solutionId });
-    fetchData();
+    if (!id) {
+      fetchData();
+    } else {
+      console.log('error_API_Success');
+    }
   };
 
   const fetchData = async () => {
@@ -29,11 +35,12 @@ const MaterialCardView = ({ route }) => {
     const id = data?.data?.[0]?._id;
     const solutionId = data?.data?.[0]?.solutionId;
     if (data?.data?.[0]?._id == '') {
-      callProgramIfempty({ solutionId });
+      callProgramIfempty({ solutionId, id });
     } else {
-      console.log('reachedElse');
+      // console.log('reachedElse');
       const result = await EventDetails({ id });
       setDetails(result?.tasks || []);
+      setLoading(false);
     }
   };
 
@@ -41,27 +48,31 @@ const MaterialCardView = ({ route }) => {
     fetchData();
   }, []);
 
-  console.log('sdasds', details);
+  // console.log('sdasds', details);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader />
-      <ScrollView style={{ maxHeight: '85%', padding: 20 }}>
-        {details.length > 0 ? (
-          details?.map((item, i) => {
-            return (
-              <Accordion2
-                key={i}
-                index={i}
-                title={item?.name}
-                children={item?.children}
-              />
-            );
-          })
-        ) : (
-          <Text style={globalStyles.heading}>{t('no_topics')}</Text>
-        )}
-      </ScrollView>
+      {loading ? (
+        <ActiveLoading />
+      ) : (
+        <ScrollView style={{ maxHeight: '85%', padding: 20 }}>
+          {details.length > 0 ? (
+            details?.map((item, i) => {
+              return (
+                <Accordion2
+                  key={i}
+                  index={i}
+                  title={item?.name}
+                  children={item?.children}
+                />
+              );
+            })
+          ) : (
+            <Text style={globalStyles.heading}>{t('no_topics')}</Text>
+          )}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };

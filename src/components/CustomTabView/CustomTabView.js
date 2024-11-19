@@ -63,13 +63,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    height: 70,
+    height: 50,
+    marginTop: 20,
   },
   tabText: {
     fontSize: 14,
     color: '#000',
     fontFamily: 'Poppins-Regular',
     textAlign: 'center',
+    fontWeight: 600,
   },
   tabContentContainer: {
     // padding: 10,

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import globalStyles from '../../utils/Helper/Style';
 import { useTranslation } from '../../context/LanguageContext';
@@ -19,37 +25,42 @@ import {
 import ContentCard from '../../screens/Dashboard/ContentCard';
 import { courseTrackingStatus } from '../../utils/API/ApiCalls';
 
-function getFilteredData(data) {
-  return data.map((item) => {
-    const prerequisites = [];
-    const postrequisites = [];
+function getFilteredData(data, topic) {
+  return data
+    .map((item) => {
+      const prerequisites = [];
+      const postrequisites = [];
 
-    // Loop through the children array and filter learning resources by type
-    item?.children?.forEach((child) => {
-      const learningResources = child?.learningResources || [];
+      if (item?.name === topic) {
+        item?.children?.forEach((child) => {
+          const learningResources = child?.learningResources || [];
 
-      prerequisites.push(
-        ...learningResources
-          .filter((resource) => resource.type === 'prerequisite')
-          .map((resource) => resource)
-      );
+          prerequisites.push(
+            ...learningResources
+              .filter((resource) => resource.type === 'prerequisite')
+              .map((resource) => resource)
+          );
 
-      postrequisites.push(
-        ...learningResources
-          .filter((resource) => resource.type === 'postrequisite')
-          .map((resource) => resource)
-      );
-    });
+          postrequisites.push(
+            ...learningResources
+              .filter((resource) => resource.type === 'postrequisite')
+              .map((resource) => resource)
+          );
+        });
 
-    return {
-      name: item.name,
-      prerequisites: prerequisites,
-      postrequisites: postrequisites,
-    };
-  });
+        return {
+          name: item.name,
+          prerequisites: prerequisites,
+          postrequisites: postrequisites,
+        };
+      }
+      // Return null if the item name doesn't match the topic
+      return null;
+    })
+    .filter((result) => result !== null); // Filter out null values
 }
 
-const Accordion = ({ item, postrequisites, title, setTrack }) => {
+const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [trackData, setTrackData] = useState([]);
@@ -58,10 +69,15 @@ const Accordion = ({ item, postrequisites, title, setTrack }) => {
   const callProgramIfempty = async ({ solutionId, id }) => {
     const data = await SolutionEvent({ solutionId });
     const templateId = data?.externalId;
+
     const result = await SolutionEventDetails({ templateId, solutionId });
-    // if (!id) {
-    //   fetchData();
-    // }
+    console.log({ id });
+
+    if (!id) {
+      fetchData();
+    } else {
+      console.log('error_API_Success');
+    }
   };
 
   const fetchData = async () => {
@@ -77,38 +93,36 @@ const Accordion = ({ item, postrequisites, title, setTrack }) => {
       callProgramIfempty({ solutionId, id });
     } else {
       result = await EventDetails({ id });
-      const filterData = getFilteredData(result?.tasks || []);
+      const filterData = getFilteredData(result?.tasks || [], topic);
       setTasks(filterData);
       let contentIdList = [];
+
       if (filterData) {
         for (let item of filterData) {
           // Push IDs from prerequisites
-          item.prerequisites?.forEach((prerequisite) => {
+          item?.prerequisites?.forEach((prerequisite) => {
             contentIdList.push(prerequisite.id);
           });
 
           if (postrequisites) {
             // Push IDs from postrequisites
-            item.postrequisites?.forEach((postrequisite) => {
-              contentIdList.push(postrequisite.id);
+            item?.postrequisites?.forEach((postrequisite) => {
+              contentIdList?.push(postrequisite.id);
             });
           }
         }
       }
-      console.log({ contentIdList });
       let userId = await getDataFromStorage('userId');
-      let batchId = await getDataFromStorage('cohortId');
-      let course_track_data = await courseTrackingStatus(
-        userId,
-        batchId,
-        contentIdList
-      );
+      let course_track_data = await courseTrackingStatus(userId, contentIdList);
+
       let courseTrackData = [];
       if (course_track_data?.data) {
         courseTrackData =
-          course_track_data?.data.find((course) => course.userId === userId)
+          course_track_data?.data?.find((course) => course.userId === userId)
             ?.course || [];
       }
+      console.log('sssss', JSON.stringify(course_track_data));
+
       setTrackData(courseTrackData || []);
       setTrack(courseTrackData || []);
       if (!postrequisites) {
@@ -170,27 +184,27 @@ const Accordion = ({ item, postrequisites, title, setTrack }) => {
 
       {isAccordionOpen && (
         <View style={styles.accordionDetails}>
-          {tasks.length > 0 ? (
-            tasks.map((task, index) => (
-              <View
-                key={index}
-                style={{
-                  paddingVertical: 10,
-                  width: '100%',
-                }}
-              >
-                <Text style={globalStyles.subHeading}>Topic: {task?.name}</Text>
-
-                {!postrequisites ? (
-                  <View
-                    style={{
-                      justifyContent: 'space-between',
-                      flexDirection: 'row',
-                    }}
-                  >
-                    {task?.prerequisites?.map((data, index) => {
-                      return (
-                        <>
+          <ScrollView style={{ height: '80%' }}>
+            {tasks.length > 0 ? (
+              tasks.map((task, index) => (
+                <View
+                  key={index}
+                  style={{
+                    width: '100%',
+                  }}
+                >
+                  {!postrequisites ? (
+                    <View
+                      style={{
+                        padding: 10,
+                        // backgroundColor: '#F7ECDF',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        flexDirection: 'row',
+                      }}
+                    >
+                      {task?.prerequisites?.map((data, index) => {
+                        return (
                           <ContentCard
                             key={index}
                             item={data}
@@ -199,38 +213,41 @@ const Accordion = ({ item, postrequisites, title, setTrack }) => {
                             unit_id={data?.id}
                             TrackData={trackData}
                           />
-                        </>
-                      );
-                    })}
-                  </View>
-                ) : (
-                  <View
-                    style={{
-                      justifyContent: 'space-between',
-                      flexDirection: 'row',
-                    }}
-                  >
-                    {task?.postrequisites?.map((data, index) => {
-                      return (
-                        <ContentCard
-                          key={index}
-                          item={data}
-                          index={index}
-                          course_id={data?.id}
-                          unit_id={data?.id}
-                          TrackData={trackData}
-                        />
-                      );
-                    })}
-                  </View>
-                )}
-              </View>
-            ))
-          ) : (
-            <Text style={[globalStyles.text, { marginLeft: 10 }]}>
-              {t('no_topics')}
-            </Text>
-          )}
+                        );
+                      })}
+                    </View>
+                  ) : (
+                    <View
+                      style={{
+                        // backgroundColor: '#F7ECDF',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        flexDirection: 'row',
+                        paddingBottom: 50,
+                      }}
+                    >
+                      {task?.postrequisites?.map((data, index) => {
+                        return (
+                          <ContentCard
+                            key={index}
+                            item={data}
+                            index={index}
+                            course_id={data?.id}
+                            unit_id={data?.id}
+                            TrackData={trackData}
+                          />
+                        );
+                      })}
+                    </View>
+                  )}
+                </View>
+              ))
+            ) : (
+              <Text style={[globalStyles.text, { marginLeft: 10 }]}>
+                {t('no_topics')}
+              </Text>
+            )}
+          </ScrollView>
         </View>
       )}
     </View>
@@ -256,7 +273,6 @@ const styles = StyleSheet.create({
   accordionDetails: {
     fontSize: 14,
     color: '#7C766F',
-    paddingBottom: 50,
   },
 });
 

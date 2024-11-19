@@ -121,16 +121,13 @@ const CourseContentList = ({ route }) => {
   const fetchDataTrack = async () => {
     //found course progress
     try {
-      console.log('########## contentListApi');
+      // console.log('########## contentListApi');
       //console.log('########## contentList', contentList);
       let courseList = [course_id];
       //console.log('########## courseList', courseList);
       //get course track data
       let userId = await getDataFromStorage('userId');
-      let course_track_data = await courseTrackingStatus(
-        userId,
-        courseList
-      );
+      let course_track_data = await courseTrackingStatus(userId, courseList);
       //console.log('########## course_track_data', course_track_data?.data);
       let courseTrackData = [];
       if (course_track_data?.data) {
@@ -139,8 +136,8 @@ const CourseContentList = ({ route }) => {
             ?.course || [];
       }
       setTrackData(courseTrackData);
-      console.log('########## courseTrackData', courseTrackData);
-      console.log('##########');
+      // console.log('########## courseTrackData', courseTrackData);
+      // console.log('##########');
       setLoading(false); // Ensure to stop loading when data fetch completes
     } catch (e) {
       console.log('e', e);
@@ -210,14 +207,14 @@ const CourseContentList = ({ route }) => {
               const formattedDate =
                 moment(temp_startedOn).format('DD MMM YYYY');
               setStartedOn(formattedDate);
-              console.log('########### formattedDate', formattedDate);
+              // console.log('########### formattedDate', formattedDate);
             } else if (lastAccessOn !== '') {
               //get offlien time
               let temp_startedOn = lastAccessOn;
               const formattedDate =
                 moment(temp_startedOn).format('DD MMM YYYY');
               setStartedOn(formattedDate);
-              console.log('########### formattedDate', formattedDate);
+              // console.log('########### formattedDate', formattedDate);
             }
 
             //merge offlien and online
@@ -247,7 +244,7 @@ const CourseContentList = ({ route }) => {
             // console.log('########### completed', completed);
             // console.log('########### leafNodes', totalContent);
             // console.log('########### content_list_node', content_list_node);
-            console.log('########### percentageCompleted', percentageCompleted);
+            // console.log('########### percentageCompleted', percentageCompleted);
             setTrackCompleted(percentageCompleted);
 
             //get unique in progress content list
@@ -281,9 +278,9 @@ const CourseContentList = ({ route }) => {
             <FastImage
               style={styles.image}
               source={
-                coursesContent?.posterImage
+                coursesContent?.appIcon
                   ? {
-                      uri: coursesContent?.posterImage,
+                      uri: coursesContent?.appIcon,
                       priority: FastImage.priority.high,
                     }
                   : require('../../../assets/images/png/poster.png')

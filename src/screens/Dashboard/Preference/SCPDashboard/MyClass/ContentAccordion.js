@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import globalStyles from '../../../../../utils/Helper/Style';
@@ -6,11 +6,52 @@ import { useTranslation } from '../../../../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import ContentCard from '../../../ContentCard';
+import { getDataFromStorage } from '../../../../../utils/JsHelper/Helper';
+import { courseTrackingStatus } from '../../../../../utils/API/ApiCalls';
 
 const ContentAccordion = ({ title, resourceData }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
+  const [trackData, setTrackData] = useState();
   const { t } = useTranslation();
   const navigation = useNavigation();
+
+  console.log({ resourceData });
+
+  useEffect(() => {
+    const trackingData = async () => {
+      let contentIdList = [];
+
+      if (resourceData) {
+        // Push IDs from prerequisites
+        resourceData?.prerequisites?.forEach((prerequisite) => {
+          contentIdList.push(prerequisite.id);
+        });
+
+        // Push IDs from postrequisites
+        resourceData?.postrequisites?.forEach((postrequisite) => {
+          contentIdList?.push(postrequisite.id);
+        });
+
+        let userId = await getDataFromStorage('userId');
+        let course_track_data = await courseTrackingStatus(
+          userId,
+          contentIdList
+        );
+
+        let courseTrackData = [];
+        if (course_track_data?.data) {
+          courseTrackData =
+            course_track_data?.data?.find((course) => course.userId === userId)
+              ?.course || [];
+        }
+        console.log('sssss', JSON.stringify(course_track_data));
+
+        setTrackData(courseTrackData || []);
+      }
+    };
+    trackingData();
+  }, [resourceData]);
+
   return (
     <>
       <TouchableOpacity
@@ -46,7 +87,7 @@ const ContentAccordion = ({ title, resourceData }) => {
                       index={index}
                       course_id={data?.id}
                       unit_id={data?.id}
-                      // TrackData={trackData}
+                      TrackData={trackData}
                     />
                   );
                 })
@@ -66,7 +107,7 @@ const ContentAccordion = ({ title, resourceData }) => {
                       index={index}
                       course_id={data?.id}
                       unit_id={data?.id}
-                      // TrackData={trackData}
+                      TrackData={trackData}
                     />
                   );
                 })

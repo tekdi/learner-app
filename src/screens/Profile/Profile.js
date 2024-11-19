@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -10,6 +11,7 @@ import {
 import Header from '../../components/Layout/Header';
 import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Octicons from 'react-native-vector-icons/Octicons';
 import {
   CommonActions,
   useFocusEffect,
@@ -19,8 +21,10 @@ import Label from '../../components/Label/Label';
 import TextField from '../../components/TextField/TextField';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 import {
+  calculateStorageSize,
   capitalizeFirstLetter,
   capitalizeName,
+  clearDoKeys,
   deleteSavedItem,
   getDataFromStorage,
   getTentantId,
@@ -29,6 +33,7 @@ import {
 import globalStyles from '../../utils/Helper/Style';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
+import cloud_done from '../../assets/images/png/cloud_done.png';
 
 const Profile = (props) => {
   const { t } = useTranslation();
@@ -37,6 +42,8 @@ const Profile = (props) => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const [showExitModal, setShowExitModal] = useState(false);
+  const [showContentModal, setShowContentModal] = useState(false);
+  const [storageData, setStorageData] = useState();
 
   const createNewObject = (customFields, labels) => {
     const result = {};
@@ -54,7 +61,7 @@ const Profile = (props) => {
 
   const fetchData = async () => {
     const result = JSON.parse(await getDataFromStorage('profileData'));
-    console.log('result', result);
+    // console.log('result', result);
 
     const requiredLabels = [
       'WHATS_YOUR_GENDER',
@@ -69,14 +76,21 @@ const Profile = (props) => {
     createNewObject(customFields, requiredLabels);
     setUserData(result?.getUserDetails?.[0]);
     const tenantData = await getTentantId();
-    console.log({ tenantData });
+    // console.log({ tenantData });
 
     setLoading(false);
+  };
+
+  const StorageSize = async () => {
+    const data = await calculateStorageSize();
+    console.log('size', data);
+    setStorageData(data);
   };
 
   useFocusEffect(
     useCallback(() => {
       fetchData();
+      StorageSize();
     }, [navigation])
   );
 
@@ -116,6 +130,13 @@ const Profile = (props) => {
 
   const handleCancel = () => {
     setShowExitModal(false); // Close the modal
+    setShowContentModal(false); // Close the modal
+  };
+  const handleContentDelete = async () => {
+    await clearDoKeys();
+    StorageSize();
+
+    setShowContentModal(false); // Close the modal
   };
 
   useEffect(() => {
@@ -147,6 +168,52 @@ const Profile = (props) => {
               }}
             >
               <Icon name="edit" size={30} color={'#000'} />
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.viewBox, { backgroundColor: '#F7ECDF' }]}>
+            <View style={[globalStyles.flexrow, { justifyContent: 'center' }]}>
+              <Image
+                style={styles.img}
+                source={cloud_done}
+                resizeMode="contain"
+              />
+
+              <Text
+                allowFontScaling={false}
+                numberOfLines={2}
+                ellipsizeMode="tail"
+                style={[globalStyles.heading2, { width: 250 }]}
+              >
+                {t('you_have')} {storageData} {t('of_offline_content')}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setShowContentModal(true);
+              }}
+            >
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 20,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Text
+                  allowFontScaling={false}
+                  style={[globalStyles.heading2, { padding: 10 }]}
+                >
+                  {t('clear_all_offline_content')}
+                </Text>
+                <Octicons
+                  name="arrow-right"
+                  color="black"
+                  size={20}
+                  style={styles.icon}
+                />
+              </View>
             </TouchableOpacity>
           </View>
 
@@ -229,6 +296,14 @@ const Profile = (props) => {
           onExit={handleLogout}
         />
       )}
+      {showContentModal && (
+        <BackButtonHandler
+          content_delete
+          exitRoute={true} // You can pass any props needed by the modal here
+          onCancel={handleCancel}
+          onExit={handleContentDelete}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -252,6 +327,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     padding: 20,
     borderColor: '#D0C5B4',
+  },
+  img: {
+    width: 30,
+    height: 30,
+    marginRight: 10,
   },
 });
 

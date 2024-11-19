@@ -717,7 +717,7 @@ const RegistrationForm = ({ schema, geoData }) => {
         {currentForm === 1 && (
           <Text
             allowFontScaling={false}
-            style={[globalStyles.text, { marginLeft: 20, marginTop: -10 }]}
+            style={[globalStyles.text, { marginLeft: 20, marginTop: -20 }]}
           >
             {t('phone_des')}
           </Text>

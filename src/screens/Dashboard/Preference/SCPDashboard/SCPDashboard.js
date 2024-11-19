@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
+  BackHandler,
   Image,
   SafeAreaView,
   ScrollView,
@@ -12,19 +13,25 @@ import wave from '../../../../assets/images/png/wave.png';
 import { useTranslation } from '../../../../context/LanguageContext';
 import { View } from 'react-native';
 import {
+  capitalizeName,
   categorizeEvents,
   getDataFromStorage,
 } from '../../../../utils/JsHelper/Helper';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import globalStyles from '../../../../utils/Helper/Style';
 import { TouchableOpacity } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useNavigationState,
+} from '@react-navigation/native';
 import WeeklyCalendar from '../../Calendar/WeeklyCalendar';
 import AttendanceCard from './AttendanceCard';
 import SessionCard from './SessionCard';
 import SubjectCard from './SubjectCard';
 import { eventList } from '../../../../utils/API/AuthService';
 import ActiveLoading from '../../../LoadingScreen/ActiveLoading';
+import BackButtonHandler from '../../../../components/BackNavigation/BackButtonHandler';
 
 const SCPDashboard = (props) => {
   const { t } = useTranslation();
@@ -49,6 +56,7 @@ const SCPDashboard = (props) => {
   ];
 
   const currentMonthName = monthNames[new Date().getMonth()];
+  const [showExitModal, setShowExitModal] = useState(false);
 
   const getUserInfo = async () => {
     const result = JSON.parse(await getDataFromStorage('profileData'));
@@ -60,6 +68,11 @@ const SCPDashboard = (props) => {
       getUserInfo();
     }, [navigation])
   );
+
+  const routeName = useNavigationState((state) => {
+    const route = state.routes[state.index];
+    return route.name;
+  });
 
   const fetchData = async () => {
     setLoading(true);
@@ -110,6 +123,36 @@ const SCPDashboard = (props) => {
     fetchData();
   }, []);
 
+  const handleCancel = () => {
+    setShowExitModal(false); // Close the modal
+  };
+
+  const handleExitApp = () => {
+    setShowExitModal(false);
+    BackHandler.exitApp(); // Exit the app
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      // console.log('########## in focus course');
+      const onBackPress = () => {
+        if (routeName === 'Home') {
+          setShowExitModal(true);
+          return true; // Prevent default back behavior
+        }
+        return false; // Allow default back behavior
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      fetchData();
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    }, []) // Make sure to include the dependencies
+  );
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
@@ -117,7 +160,7 @@ const SCPDashboard = (props) => {
         <View style={globalStyles.flexrow}>
           <Image source={wave} resizeMode="contain" />
           <Text allowFontScaling={false} style={styles.text2}>
-            {t('welcome')}, {userInfo?.[0]?.name} !
+            {t('welcome')}, {capitalizeName(userInfo?.[0]?.name)}!
           </Text>
         </View>
         <View style={{ marginVertical: 20, alignItems: 'center' }}>
@@ -127,7 +170,7 @@ const SCPDashboard = (props) => {
           onPress={() => {
             navigation.navigate('PreviousClassMaterial');
           }}
-          style={[globalStyles.flexrow, styles.box]}
+          style={[styles.box]}
         >
           <View style={{ width: '90%' }}>
             <Text style={globalStyles.subHeading}>
@@ -135,7 +178,7 @@ const SCPDashboard = (props) => {
             </Text>
             <Text
               style={globalStyles.text}
-              numberOfLines={1}
+              numberOfLines={2}
               ellipsizeMode="tail"
             >
               {t('complete_activities_for_previous_classes')}
@@ -146,7 +189,7 @@ const SCPDashboard = (props) => {
               name="arrow-right"
               style={{ marginHorizontal: 10 }}
               color={'#000'}
-              size={30}
+              size={20}
             />
           </View>
         </TouchableOpacity>
@@ -215,6 +258,13 @@ const SCPDashboard = (props) => {
           </View>
         )}
       </ScrollView>
+      {showExitModal && (
+        <BackButtonHandler
+          exitRoute={true} // You can pass any props needed by the modal here
+          onCancel={handleCancel}
+          onExit={handleExitApp}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -238,6 +288,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderRadius: 15,
+    flexDirection: 'row',
   },
 });
 

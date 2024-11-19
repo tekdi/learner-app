@@ -56,7 +56,7 @@ const Contents = () => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('########## in focus course');
+      // console.log('########## in focus course');
       setLoading(true);
       //bug fix for not realtime tracking
       //fetchData();
@@ -84,7 +84,7 @@ const Contents = () => {
     const data = await contentListApi();
     //found content progress
     try {
-      console.log('########## contentListApi');
+      // console.log('########## contentListApi');
       const contentList = data?.content;
       // console.log('########## contentList', contentList);
       let contentIdList = [];
@@ -93,13 +93,11 @@ const Contents = () => {
           contentIdList.push(contentList[i]?.identifier);
         }
       }
-      console.log('########## contentIdList', contentIdList);
+      // console.log('########## contentIdList', contentIdList);
+      // console.log('########## contentList', contentList);
       //get course track data
       let userId = await getDataFromStorage('userId');
-      let course_track_data = await courseTrackingStatus(
-        userId,
-        contentIdList
-      );
+      let course_track_data = await courseTrackingStatus(userId, contentIdList);
       //console.log('########## course_track_data', course_track_data?.data);
       let courseTrackData = [];
       if (course_track_data?.data) {
@@ -107,9 +105,10 @@ const Contents = () => {
           course_track_data?.data.find((course) => course.userId === userId)
             ?.course || [];
       }
+
       setTrackData(courseTrackData);
-      console.log('########## courseTrackData', courseTrackData);
-      console.log('##########');
+      // console.log('########## courseTrackData', courseTrackData);
+      // console.log('##########');
     } catch (e) {
       console.log('e', e);
     }
@@ -117,18 +116,6 @@ const Contents = () => {
     setUserInfo(result?.getUserDetails);
     setData(data?.content);
     setLoading(false);
-  };
-
-  const renderContentCard = ({ item, index }) => {
-    return (
-      <ContentCard
-        item={item}
-        index={index}
-        course_id={item?.identifier}
-        unit_id={item?.identifier}
-        TrackData={trackData}
-      />
-    );
   };
 
   useEffect(() => {
