@@ -298,9 +298,7 @@ const ProfileUpdateForm = ({ schema }) => {
     console.log({ register });
 
     if (register?.params?.status === 'failed') {
-      console.log('hi');
     } else {
-      console.log('hello');
       logRegistrationComplete();
       const profileData = await getProfileDetails({
         userId: user_id,

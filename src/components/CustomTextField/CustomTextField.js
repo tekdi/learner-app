@@ -32,7 +32,10 @@ const CustomTextField = ({
             ]}
             onBlur={onBlur}
             value={value}
-            onChangeText={onChange}
+            onChangeText={(text) => {
+              const sanitizedText = text.replace(/\s/g, ''); // Remove all spaces
+              onChange(sanitizedText);
+            }}
             secureTextEntry={secureTextEntry}
             autoCapitalize={autoCapitalize} // Disable auto-capitalization
             keyboardType={keyboardType} // Opens numeric keyboard by default

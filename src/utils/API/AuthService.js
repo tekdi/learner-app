@@ -377,7 +377,7 @@ export const courseListApi = async ({ payload }) => {
   }
 };
 
-export const contentListApi = async (params = {}) => {
+export const contentListApi = async ({ searchText }) => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList}`; // Define the URL
   const headers = {
@@ -401,6 +401,7 @@ export const contentListApi = async (params = {}) => {
       sort_by: {
         lastPublishedOn: 'desc',
       },
+      ...(searchText && { query: searchText }), // Add query conditionally
       fields: [
         'name',
         'appIcon',
