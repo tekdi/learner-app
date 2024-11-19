@@ -46,6 +46,7 @@ const Courses = () => {
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [youthnet, setYouthnet] = useState(false);
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -120,11 +121,9 @@ const Courses = () => {
     setLoading(true);
     let data;
     const tenantId = await getTentantId();
-    console.log({ tenantId });
     // id = '10a9f829-3652-47d0-b17b-68c4428f9f89';
     id = '6c8b810a-66c2-4f0d-8c0c-c025415a4414';
     if (tenantId === id) {
-      console.log('hiii');
       const payload = {
         request: {
           filters: {
@@ -170,6 +169,8 @@ const Courses = () => {
             'appIcon',
             'mimeType',
             'gradeLevel',
+            'description',
+            'posterImage',
             'identifier',
             'medium',
             'pkgVersion',
@@ -193,6 +194,7 @@ const Courses = () => {
         },
       };
       data = await courseListApi({ payload });
+      setYouthnet(true);
     } else {
       const payload = {
         request: {
@@ -290,7 +292,7 @@ const Courses = () => {
                 backgroundColor="transparent"
               />
               <Text allowFontScaling={false} style={styles.text}>
-                {t('courses')}
+                {youthnet ? t('l1_courses') : t('courses')}
               </Text>
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />

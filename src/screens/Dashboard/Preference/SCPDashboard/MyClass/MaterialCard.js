@@ -50,9 +50,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: 10,
     borderWidth: 1,
-    padding: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
     borderRadius: 10,
     borderColor: '#B1AAA2',
+    backgroundColor: 'white',
   },
 });
 

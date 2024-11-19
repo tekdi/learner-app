@@ -16,7 +16,7 @@ const Accordion2 = ({ title, children, index }) => {
   return (
     <View
       style={{
-        backgroundColor: '#F3EDF7',
+        backgroundColor: '#F7ECDF',
         padding: 10,
         marginVertical: 5,
         borderRadius: 10,
@@ -37,7 +37,7 @@ const Accordion2 = ({ title, children, index }) => {
         </Text>
         <Icon
           name={isAccordionOpen ? 'angle-up' : 'angle-down'}
-          color="#0D599E"
+          color="#1F1B13"
           size={20}
         />
       </TouchableOpacity>
@@ -45,9 +45,10 @@ const Accordion2 = ({ title, children, index }) => {
       {isAccordionOpen && (
         <View style={styles.accordionContent}>
           {children ? (
-            children?.map((item) => {
+            children?.map((item, index) => {
               return (
                 <TouchableOpacity
+                  key={index}
                   onPress={() => {
                     navigation.navigate('LearningResources', {
                       resources: item?.learningResources,

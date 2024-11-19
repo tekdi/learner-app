@@ -21,16 +21,12 @@ const MyClassDashboard = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedIds, setSelectedIds] = useState(null);
 
-  console.log({ selectedIds });
+  // console.log({ selectedIds });
 
   const tabs = [
     {
       title: t('learning_materials'),
-      content: (
-        <>
-          <LearningMaterial />
-        </>
-      ),
+      content: <LearningMaterial />,
     },
     // {
     //   title: t('session_recordings'),
@@ -45,8 +41,10 @@ const MyClassDashboard = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
-      <View style={{ padding: 20 }}>
-        <Text style={globalStyles.heading}>{t('my_class')}</Text>
+      <View style={{ padding: 0 }}>
+        <Text style={[globalStyles.heading, { paddingLeft: 20 }]}>
+          {t('my_class')}
+        </Text>
 
         <CustomTabView
           tabs={tabs}

@@ -27,8 +27,6 @@ const LearningResources = ({ route }) => {
     setResourceData(data);
   }, []);
 
-  console.log(JSON.stringify(resourceData));
-
   return (
     <>
       <SecondaryHeader />

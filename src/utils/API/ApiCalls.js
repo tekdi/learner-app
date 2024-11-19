@@ -87,7 +87,7 @@ export const readContent = async (content_do_id) => {
 
 //hierarchy content
 export const hierarchyContent = async (content_do_id) => {
-  console.log({ content_do_id });
+  // console.log({ content_do_id });
   const url = EndUrls.hierarchy_content + content_do_id;
 
   let api_response = null;
@@ -258,7 +258,7 @@ export const assessmentTracking = async (
         console.log('error', error);
         api_response = { response: null, data: data };
       });
-    console.log('############ create assessments ', api_response);
+    // console.log('############ create assessments ', api_response);
     return api_response;
   } catch (error) {
     throw new Error(
@@ -297,7 +297,7 @@ export const telemetryTracking = async (telemetryObject) => {
       },
       data: data,
     };
-    console.log('config', config);
+    // console.log('config', config);
     //console.log('data', data);
 
     await axios
@@ -341,8 +341,8 @@ export const contentTracking = async (
       unitId: unitId,
     });
 
-    console.log('data', data);
-    console.log('url', url);
+    // console.log('data', data);
+    // console.log('url', url);
 
     let api_response = null;
 
@@ -364,6 +364,14 @@ export const contentTracking = async (
       .catch((error) => {
         console.log('error', error);
       });
+    // Construct the curl command for logging
+    // const curlCommand = `curl -X POST "${url}" \\\n${Object.entries(
+    //   headers || {}
+    // )
+    //   .map(([key, value]) => `-H "${key}: ${value}"`)
+    //   .join(' \\\n')} \\\n-d '${data}'`;
+
+    // // console.log('Curl Command:', curlCommand);
     return api_response;
   } catch (error) {
     throw new Error(

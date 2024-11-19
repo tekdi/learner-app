@@ -7,12 +7,14 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Dimensions,
 } from 'react-native';
 import { Radio, RadioGroup } from '@ui-kitten/components';
 import { useTranslation } from '../../context/LanguageContext';
 import { useController } from 'react-hook-form';
 import program from '../../assets/images/png/program.png';
 import globalStyles from '../../utils/Helper/Style';
+import { SwiperFlatList } from 'react-native-swiper-flatlist';
 
 const CustomRadioCard = ({
   field,
@@ -62,6 +64,18 @@ const CustomRadioCard = ({
     });
   };
 
+  const images = [
+    { id: '1', src: program },
+    { id: '2', src: program },
+    { id: '3', src: program },
+  ];
+
+  const renderItem = ({ item }) => (
+    <View style={styles.itemContainer}>
+      <Image style={styles.img} source={item?.src} resizeMode="contain" />
+    </View>
+  );
+
   return (
     <RadioGroup selectedIndex={selectedIndex} onChange={handlePress}>
       <ScrollView>
@@ -90,7 +104,18 @@ const CustomRadioCard = ({
                   </Text>
                 </Radio>
               </View>
-              <Image style={styles.img} source={program} resizeMode="contain" />
+              {/* <Image style={styles.img} source={program} resizeMode="contain" /> */}
+              <View style={styles.carocontainer}>
+                <SwiperFlatList
+                  autoplay
+                  autoplayDelay={2}
+                  autoplayLoop
+                  index={2}
+                  showPagination
+                  data={images}
+                  renderItem={renderItem}
+                />
+              </View>
               <Text allowFontScaling={false} style={globalStyles.subHeading}>
                 {option.description}
               </Text>
@@ -139,6 +164,8 @@ const CustomRadioCard = ({
   );
 };
 
+const { width } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
@@ -170,7 +197,18 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   img: {
-    width: '98%',
+    // width: '100%',
+    height: '100%',
+  },
+  itemContainer: {
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  carocontainer: {
+    // flex: 1,
+    backgroundColor: 'white',
+    height: 200,
+    // borderWidth: 5,
   },
 });
 

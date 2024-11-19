@@ -59,7 +59,7 @@ const CustomCards = ({
               allowFontScaling={false}
               style={{
                 color: 'black',
-                fontSize: 20,
+                fontSize: 18,
                 fontFamily: 'Poppins-Regular',
                 width: '100%',
                 marginBottom: 20,
@@ -69,49 +69,51 @@ const CustomCards = ({
               {t('gender')}
             </Text>
           )}
-          {field.options.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handlePress(name, option.value)}
-              style={[
-                styles.card,
-                selectedIds[name]?.value === option.value &&
-                  styles.selectedCard,
-              ]}
-            >
-              {option.label !== 'OTHER' && (
-                <Image
-                  source={
-                    option.label == 'FEMALE'
-                      ? female
-                      : option.label == 'MALE'
-                        ? male
-                        : option.label == 'TRANSGENDER' && transgender
-                  }
-                />
-              )}
-              <Text
-                allowFontScaling={false}
+          <View style={styles.cardWrapper}>
+            {field.options.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handlePress(name, option.value)}
                 style={[
-                  {
-                    color: 'black',
-                    fontSize: 16,
-                    fontFamily: 'Poppins-Regular',
-                    // textAlign: 'center',
-                    width: '60%',
-                    marginLeft: 5,
-                  },
-                  selectedIds[name]?.value === option.value && {
-                    fontFamily: 'Poppins-Medium',
-                  },
+                  styles.card,
+                  selectedIds[name]?.value === option.value &&
+                    styles.selectedCard,
                 ]}
-                numberOfLines={1}
-                ellipsizeMode="tail"
               >
-                {t(option.label.toLowerCase())}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                {option.label !== 'OTHER' && (
+                  <Image
+                    source={
+                      option.label == 'FEMALE'
+                        ? female
+                        : option.label == 'MALE'
+                          ? male
+                          : option.label == 'TRANSGENDER' && transgender
+                    }
+                  />
+                )}
+                <Text
+                  allowFontScaling={false}
+                  style={[
+                    {
+                      color: 'black',
+                      fontSize: 15,
+                      fontFamily: 'Poppins-Regular',
+                      textAlign: 'center',
+                      width: '70%',
+                      marginLeft: 2,
+                    },
+                    selectedIds[name]?.value === option.value && {
+                      fontFamily: 'Poppins-Medium',
+                    },
+                  ]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {t(option.label.toLowerCase())}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
         {errors[name] && (
           <Text allowFontScaling={false} style={styles.error}>
@@ -138,20 +140,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     width: '100%',
+    // borderWidth: 1,
   },
   card: {
     backgroundColor: 'white',
     margin: 10,
-    padding: 7,
+    // padding: 7,
     borderRadius: 10,
     height: 60,
-    width: '40%',
+    width: '43%',
     borderWidth: 1,
     borderColor: '#D0C5B4',
-    // justifyContent: 'center',
-    paddingLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cardWrapper: {
+    // borderWidth: 1,
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
   },
   selectedCard: {
     backgroundColor: '#FEEDA1',

@@ -59,7 +59,7 @@ const Contents = () => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('########## in focus course');
+      // console.log('########## in focus course');
       setLoading(true);
       //bug fix for not realtime tracking
       //fetchData();
@@ -102,7 +102,8 @@ const Contents = () => {
           contentIdList.push(contentList[i]?.identifier);
         }
       }
-      console.log('########## contentIdList', contentIdList);
+      // console.log('########## contentIdList', contentIdList);
+      // console.log('########## contentList', contentList);
       //get course track data
       let userId = await getDataFromStorage('userId');
       let course_track_data = await courseTrackingStatus(userId, contentIdList);
@@ -113,6 +114,7 @@ const Contents = () => {
           course_track_data?.data.find((course) => course.userId === userId)
             ?.course || [];
       }
+
       setTrackData(courseTrackData);
       console.log('########## courseTrackData', courseTrackData);
       console.log('##########');
@@ -123,18 +125,6 @@ const Contents = () => {
     } catch (e) {
       console.log('e', e);
     }
-  };
-
-  const renderContentCard = ({ item, index }) => {
-    return (
-      <ContentCard
-        item={item}
-        index={index}
-        course_id={item?.identifier}
-        unit_id={item?.identifier}
-        TrackData={trackData}
-      />
-    );
   };
 
   useEffect(() => {

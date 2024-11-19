@@ -45,7 +45,7 @@ const SessionCard = ({ percentage }) => {
           await getDataFromStorage('weightedProgress')
         );
         setPercent(percentage);
-        console.log({ courseTrackData, percent });
+        // console.log({ courseTrackData, percent });
       };
       fetchData();
     }, [navigation])
@@ -68,8 +68,11 @@ const SessionCard = ({ percentage }) => {
           <View style={styles.viewSub2}>
             <View
               style={[
-                globalStyles.flexrow,
-                { justifyContent: 'space-between', marginBottom: 10 }, // Added marginBottom for spacing
+                {
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginBottom: 10,
+                }, // Added marginBottom for spacing
               ]}
             >
               <View>
@@ -122,7 +125,7 @@ const SessionCard = ({ percentage }) => {
                 horizontal
               />
 
-              <Text style={[globalStyles.text, { color: '#0D599E' }]}>
+              <Text style={[globalStyles.text, { color: '#1A8825' }]}>
                 {percent <= 10
                   ? t('lets_get_started_dive_in')
                   : percent === 100

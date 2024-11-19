@@ -183,7 +183,7 @@
   "optional_content": "Explore open content on life skills and school subjects",
   "optional_content_des": "Get access open content & courses to enhance your knowledge on various topics. You can enroll into a program at any time later.",
   "where_are_you_located": "Where are you located?",
-  "location_des": "This will help us to show you the nearest skilling centers to your location",
+  "location_des": "This will help us identify the nearest skilling centers to your location",
   "location_des2": "! Make sure to cross check the state, district, block, village",
   "numbers": "numbers",
   "course_modules": "Course Modules",
@@ -240,5 +240,11 @@
   "pre_requisites": "(Pre-requisites)",
   "pre_requisites_2": "Pre-requisites",
   "post_requisites_2": "Post-requisites",
-  "course_type": "Course Type"
+  "course_type": "Course Type",
+  "l1_courses": "L1 Courses",
+  "you_have": "You have",
+  "of_offline_content": "of offline content",
+  "clear_all_offline_content": "Clear all Offline Content",
+  "content_delete_desp": "All saved content for offline access will be removed and will no longer be available without an internet connection",
+  "content_delete": "Are you sure you want to remove all offline content?"
 }

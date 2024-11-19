@@ -61,8 +61,6 @@ const LearningMaterial = () => {
         (item) => item.name === (grade?.value || 'Grade 10')
       );
 
-      console.log({ matchGrade });
-
       const getCourseTypes = getOptionsByCategory(frameworks, 'courseType');
       const courseType = getCourseTypes?.map((type) => type.name);
       const courseTypesAssociations = getCourseTypes?.map((type) => {
@@ -88,8 +86,6 @@ const LearningMaterial = () => {
         const subjectAssociations = commonAssociations?.filter((assoc) =>
           getSubjects.some((item) => assoc.code === item?.code)
         );
-
-        console.log(JSON.stringify(cohortData));
 
         return {
           courseTypeName: courseType?.name,
