@@ -237,7 +237,9 @@ const Courses = () => {
       };
       data = await courseListApi({ payload });
     }
-    //const data = await courseListApi_testing();
+
+    //testing 
+    data = await courseListApi_testing();
 
     //found course progress
     try {

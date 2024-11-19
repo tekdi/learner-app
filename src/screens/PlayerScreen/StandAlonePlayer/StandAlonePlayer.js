@@ -107,7 +107,7 @@ const StandAlonePlayer = ({ route }) => {
   //   application/epub
 
   //   #sunbird-video-player
-  //   video/Webm
+  //   video/webm
   //   video/mp4
 
   //   #sunbird-quml-player
@@ -640,6 +640,7 @@ const StandAlonePlayer = ({ route }) => {
         content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
         content_mime_type == 'application/pdf' ||
         content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
         content_mime_type == 'application/epub' ||
         content_mime_type == 'application/vnd.sunbird.questionset'
       ) {
@@ -803,10 +804,17 @@ const StandAlonePlayer = ({ route }) => {
       set_is_valid_file(false);
     } else {
       let contentObj = content_response?.result?.questionSet;
+      //fix for response with questionset
+      if (!contentObj) {
+        contentObj = content_response?.result?.questionset;
+      }
       let filePath = '';
       if (contentObj?.mimeType == 'application/vnd.sunbird.questionset') {
         filePath = `${content_file}`;
       }
+      console.log('######## ', contentObj?.mimeType);
+      console.log('######## filePath', filePath);
+      console.log('######## ');
       if (filePath != '') {
         //create file and store object in local
         try {
@@ -1020,8 +1028,11 @@ const StandAlonePlayer = ({ route }) => {
     if (storedContentEidEND.length > 0) {
       detailsObject.push(storedContentEidEND[0]);
     } else {
-      //for only html content games push end event manually after close app
-      if (content_mime_type == 'application/vnd.ekstep.html-archive') {
+      //for only html and h5p content games push end event manually after close app
+      if (
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      ) {
         detailsObject.push({
           eid: 'END',
           edata: {

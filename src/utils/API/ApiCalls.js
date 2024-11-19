@@ -70,10 +70,16 @@ export const readContent = async (content_do_id) => {
   await axios
     .request(config)
     .then((response) => {
+      console.log('############');
+      console.log('############ read content', response);
+      console.log('############');
       api_response = response.data;
     })
     .catch((error) => {
-      console.log(error);
+      console.log('############');
+      console.log('############ config', config);
+      console.log('############ read content error', error);
+      console.log('############');
     });
 
   return api_response;
@@ -102,7 +108,10 @@ export const hierarchyContent = async (content_do_id) => {
       api_response = response.data;
     })
     .catch((error) => {
-      console.log(error);
+      console.log('############');
+      console.log('############ config', config);
+      console.log('############ read content error', error);
+      console.log('############');
     });
 
   return api_response;
@@ -288,8 +297,8 @@ export const telemetryTracking = async (telemetryObject) => {
       },
       data: data,
     };
-     console.log('config', config);
-     //console.log('data', data);
+    console.log('config', config);
+    //console.log('data', data);
 
     await axios
       .request(config)

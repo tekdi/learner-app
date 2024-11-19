@@ -18,18 +18,10 @@ const EndUrls = {
   refresh_token: API_URL + '/user/v1/auth/refresh',
   get_form: API_URL + '/user/v1/form/read?context=USERS&contextType=STUDENT',
 
-  hierarchy_content: `${CONTENT_URL}/learner/questionset/v1/hierarchy/`, //pass do id at end
-  course_details: `${CONTENT_URL}/api/course/v1/hierarchy/`, //pass do id at end
-  quml_question_list: `${CONTENT_URL}/api/question/v1/list`,
-  read_content: `${CONTENT_URL}/api/content/v1/read/`, //pass do id at end
-
   userExist: API_URL + `/user/v1/check`,
   programDetails: API_URL + `/user/v1/tenant/read`,
-  contentList: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName%2Cemail&framework=gujaratboardfw`,
-  contentList_testing: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
   cohort: API_URL + `/user/v1/cohort/mycohorts`,
   academicyears: API_URL + `/user/v1/academicyears/list`,
-  contentSearch: `${CONTENT_URL}/api/content/v1/search`,
   trackAssessment: `${tracking_assessment}/v1/tracking/assessment/list`,
   AssessmentCreate: `${tracking_assessment}/v1/tracking/assessment/create`,
   AssessmentStatus: `${tracking_assessment}/v1/tracking/assessment/search/status`,
@@ -47,7 +39,26 @@ const EndUrls = {
   SolutionEvent: `${EVENT_DETAILS}/solutions/details`,
 
   attendance: `${API_URL}/user/v1/attendance/list`,
-  framework: `${CONTENT_URL}/api/framework/v1/read/gujaratboardfw`,
+
+  //CMS sunbird saas
+  // hierarchy_content: `${CONTENT_URL}/learner/questionset/v1/hierarchy/`, //pass do id at end
+  // course_details: `${CONTENT_URL}/api/course/v1/hierarchy/`, //pass do id at end
+  // quml_question_list: `${CONTENT_URL}/api/question/v1/list`,
+  // read_content: `${CONTENT_URL}/api/content/v1/read/`, //pass do id at end
+  // contentList: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName%2Cemail&framework=gujaratboardfw`,
+  // contentList_testing: `${CONTENT_URL}/api/content/v1/search?orgdetails=orgName,email&framework=pragatifw`,
+  // contentSearch: `${CONTENT_URL}/api/content/v1/search`,
+  // framework: `${CONTENT_URL}/api/framework/v1/read/gujaratboardfw`,
+
+  //CMS pratham CMS
+  hierarchy_content: `${CONTENT_URL}/action/questionset/v2/hierarchy/`, //pass do id at end
+  course_details: `${CONTENT_URL}/api/course/v1/hierarchy/`, //pass do id at end
+  quml_question_list: `${CONTENT_URL}/api/question/v2/list`,
+  read_content: `${CONTENT_URL}/api/content/v1/read/`, //pass do id at end
+  contentList: `${CONTENT_URL}/action/composite/v3/search?orgdetails=orgName,email&framework=test_k12_framework`,
+  contentList_testing: `${CONTENT_URL}/action/composite/v3/search?orgdetails=orgName,email&framework=test_k12_framework`,
+  contentSearch: `${CONTENT_URL}/action/composite/v3/search`,
+  framework: `${CONTENT_URL}/api/framework/v1/read/test_k12_framework`,
 };
 
 export default EndUrls;

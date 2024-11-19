@@ -19,7 +19,10 @@ import {
 import { useTranslation } from '../../context/LanguageContext';
 import ContentCard from './ContentCard';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
-import { contentListApi } from '../../utils/API/AuthService';
+import {
+  contentListApi,
+  contentListApi_Pratham,
+} from '../../utils/API/AuthService';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 import {
@@ -81,12 +84,18 @@ const Contents = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const data = await contentListApi();
+    //sunbird saas
+    //const data = await contentListApi();
+    //pratham
+    const data = await contentListApi_Pratham();
     //found content progress
     try {
       console.log('########## contentListApi');
-      const contentList = data?.content;
-      // console.log('########## contentList', contentList);
+      const contentList = [
+        ...(data?.content || []),
+        ...(data?.QuestionSet || []),
+      ];
+      console.log('########## contentList', contentList);
       let contentIdList = [];
       if (contentList) {
         for (let i = 0; i < contentList.length; i++) {
@@ -96,10 +105,7 @@ const Contents = () => {
       console.log('########## contentIdList', contentIdList);
       //get course track data
       let userId = await getDataFromStorage('userId');
-      let course_track_data = await courseTrackingStatus(
-        userId,
-        contentIdList
-      );
+      let course_track_data = await courseTrackingStatus(userId, contentIdList);
       //console.log('########## course_track_data', course_track_data?.data);
       let courseTrackData = [];
       if (course_track_data?.data) {
@@ -110,13 +116,13 @@ const Contents = () => {
       setTrackData(courseTrackData);
       console.log('########## courseTrackData', courseTrackData);
       console.log('##########');
+      const result = JSON.parse(await getDataFromStorage('profileData'));
+      setUserInfo(result?.getUserDetails);
+      setData(contentList);
+      setLoading(false);
     } catch (e) {
       console.log('e', e);
     }
-    const result = JSON.parse(await getDataFromStorage('profileData'));
-    setUserInfo(result?.getUserDetails);
-    setData(data?.content);
-    setLoading(false);
   };
 
   const renderContentCard = ({ item, index }) => {
