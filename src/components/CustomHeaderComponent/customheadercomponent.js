@@ -48,9 +48,10 @@ HeaderComponent.propTypes = {
 
 const styles = StyleSheet.create({
   image: {
-    marginHorizontal: 20,
+    marginRight: 20,
     height: 60,
     width: 60,
+    // borderWidth: 1,
   },
   container: {
     backgroundColor: 'white',

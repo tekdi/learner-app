@@ -153,7 +153,7 @@ const SessionView = () => {
               color={'#000'}
               horizontal
             />
-            <Text style={[globalStyles.text, { color: '#0D599E' }]}>
+            <Text style={[globalStyles.text, { color: '#1A8825' }]}>
               {percentage <= 10
                 ? t('lets_get_started_dive_in')
                 : percentage === 100

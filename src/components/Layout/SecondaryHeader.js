@@ -57,7 +57,7 @@ const SecondaryHeader = ({ logo }) => {
             <Icon
               name="arrow-left"
               style={{ marginHorizontal: 10 }}
-              color={'#0D599E'}
+              color={'#1F1B13'}
               size={30}
             />
           </TouchableOpacity>

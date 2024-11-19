@@ -34,7 +34,9 @@ const WeeklyCalendar = ({ setDate, postdays }) => {
       return {
         id: i,
         date: currentDate.getDate(),
-        day: ['S', 'M', 'T', 'W', 'T', 'F', 'S'][currentDate.getDay()],
+        day: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][
+          currentDate.getDay()
+        ],
         exactDate: currentDate,
       };
     });

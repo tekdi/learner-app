@@ -20,7 +20,7 @@ Label.propTypes = {
 const styles = StyleSheet.create({
   text: {
     color: '#969088',
-    fontSize: 18,
+    fontSize: 14,
     fontFamily: 'Poppins-Regular',
   },
 });

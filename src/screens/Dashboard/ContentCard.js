@@ -21,9 +21,9 @@ import { getSyncTrackingOfflineCourse } from '../../utils/API/AuthService';
 const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const navigation = useNavigation();
   // console.log('########## ContentCard');
-  console.log('course_id', course_id);
-  console.log('unit_id', unit_id);
-  // console.log('##########', TrackData);
+  // console.log('course_id', course_id);
+  // console.log('unit_id', unit_id);
+  console.log('##########', TrackData);
 
   const backgroundImages = [
     require('../../assets/images/CardBackground/abstract_01.png'),
@@ -75,8 +75,6 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
     try {
       //console.log('########### TrackData', TrackData);
       if (TrackData && (item?.identifier || item?.id)) {
-        console.log('hi');
-
         for (let i = 0; i < TrackData.length; i++) {
           if (TrackData[i]?.courseId == course_id) {
             let userId = await getDataFromStorage('userId');
@@ -180,7 +178,14 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         {/* Background image covering entire card */}
         <FastImage
           style={styles.cardBackgroundImage}
-          source={backgroundImage}
+          source={
+            item?.appIcon
+              ? {
+                  uri: item?.appIcon,
+                  priority: FastImage.priority.high,
+                }
+              : backgroundImage
+          }
           resizeMode={FastImage.resizeMode.cover}
           priority={FastImage.priority.high}
         />

@@ -103,7 +103,7 @@ const AttendanceCard = ({ attendance }) => {
             <Text style={[globalStyles.heading2, { fontWeight: 800 }]}>
               {presentPercentage}%
             </Text>
-            <Text style={[globalStyles.subHeading, { color: '#635E57' }]}>
+            <Text style={[globalStyles.text, { color: '#635E57' }]}>
               {t('overall_attendance')}
             </Text>
             <Text style={[globalStyles.text, { color: '#1A8825' }]}>

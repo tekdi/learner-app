@@ -36,11 +36,11 @@ export const login = async (params = {}) => {
         Accept: 'application/json',
       },
     });
-    console.log(`curl -X POST '${EndUrls.login}' \
-    -H 'Content-Type: application/json' \
-    -H 'Accept: application/json' \
-    -d '${params}'
-    `);
+    // console.log(`curl -X POST '${EndUrls.login}' \
+    // -H 'Content-Type: application/json' \
+    // -H 'Accept: application/json' \
+    // -d '${params}'
+    // `);
     if (result?.data) {
       return result?.data?.result;
     } else {
@@ -155,11 +155,11 @@ export const registerUser = async (params = {}) => {
       Accept: 'application/json',
     };
     // Log the cURL command
-    console.log(
-      `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${
-        headers.Authorization
-      }' -d '${JSON.stringify(params)}'`
-    );
+    // console.log(
+    //   `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${
+    //     headers.Authorization
+    //   }' -d '${JSON.stringify(params)}'`
+    // );
 
     // Make the actual request
     const result = await post(url, params, {
@@ -332,12 +332,12 @@ export const courseListApi = async ({ payload }) => {
   // };
 
   // Log the curl command
-  console.log(
-    `curl -X POST '${url}' \
--H 'Content-Type: application/json' \
--H 'Accept: application/json' \
--d '${JSON.stringify(payload)}'`
-  );
+  //   console.log(
+  //     `curl -X POST '${url}' \
+  // -H 'Content-Type: application/json' \
+  // -H 'Accept: application/json' \
+  // -d '${JSON.stringify(payload)}'`
+  //   );
 
   // get language user
   // removed below filter for Pilot release
@@ -371,9 +371,7 @@ export const courseListApi = async ({ payload }) => {
     }
   } catch (e) {
     console.log('no internet available', e);
-    console.log('zzzz', e?.response);
-    console.log('aaaaa', e?.request);
-    console.log('bbbb', e?.message);
+
     let result_offline = await getApiResponse(user_id, url, 'post', payload);
     return result_offline;
   }
@@ -504,13 +502,13 @@ export const getProgramDetails = async () => {
     const url = `${EndUrls.programDetails}`;
 
     // Log the curl command
-    console.log(
-      `curl -X GET '${url}' -H 'Content-Type: application/json'${
-        headers.Authorization
-          ? ` -H 'Authorization: ${headers.Authorization}'`
-          : ''
-      }`
-    );
+    // console.log(
+    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${
+    //     headers.Authorization
+    //       ? ` -H 'Authorization: ${headers.Authorization}'`
+    //       : ''
+    //   }`
+    // );
 
     const result = await get(url, {
       headers: headers || {},
@@ -542,14 +540,14 @@ export const setAcademicYear = async ({ tenantid }) => {
 
     // Log the curl command
 
-    console.log(
-      `curl -X POST '${url}' \\\n` +
-        `-H 'Content-Type: application/json' \\\n` +
-        `-H 'Accept: application/json' \\\n` +
-        `-H 'Authorization: ${headers.Authorization}' \\\n` +
-        `-H 'tenantid: ${headers.tenantid}' \\\n` +
-        `-d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X POST '${url}' \\\n` +
+    //     `-H 'Content-Type: application/json' \\\n` +
+    //     `-H 'Accept: application/json' \\\n` +
+    //     `-H 'Authorization: ${headers.Authorization}' \\\n` +
+    //     `-H 'tenantid: ${headers.tenantid}' \\\n` +
+    //     `-d '${JSON.stringify(payload)}'`
+    // );
 
     const result = await post(url, payload, {
       headers: headers || {},
@@ -769,7 +767,7 @@ export const storeApiResponse = async (
       api_type: api_type,
       payload: JSON.stringify(payload),
     };
-    console.log('data_delete', data_delete);
+    // console.log('data_delete', data_delete);
     await deleteData({
       tableName: 'APIResponses',
       where: data_delete,
@@ -834,7 +832,7 @@ export const storeAsessmentOffline = async (user_id, content_id, payload) => {
       user_id: user_id,
       content_id: content_id,
     };
-    console.log('data_delete', data_delete);
+    // console.log('data_delete', data_delete);
     await deleteData({
       tableName: 'Asessment_Offline_2',
       where: data_delete,
@@ -1134,11 +1132,11 @@ export const forgotPassword = async ({ payload }) => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
-    console.log(
-      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
-        payload
-      )}'`
-    );
+    // console.log(
+    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
+    //     payload
+    //   )}'`
+    // );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1175,7 +1173,7 @@ export async function reverseGeocode(latitude, longitude) {
     const block = addressComponents.find((comp) =>
       comp.types.includes('sublocality')
     )?.long_name;
-    console.log({ state, district, block });
+    // console.log({ state, district, block });
     return { state, district, block };
   }
   return { state: null, district: null, block: null };
@@ -1248,11 +1246,11 @@ export const targetedSolutions = async ({ subjectName, type }) => {
       type: type,
     };
 
-    console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-        headers['x-auth-token']
-      }' -d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+    //     headers['x-auth-token']
+    //   }' -d '${JSON.stringify(payload)}'`
+    // );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1283,11 +1281,11 @@ export const EventDetails = async ({ id }) => {
 
     const payload = {};
 
-    console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-        headers['x-auth-token']
-      }' -d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+    //     headers['x-auth-token']
+    //   }' -d '${JSON.stringify(payload)}'`
+    // );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1318,11 +1316,11 @@ export const SolutionEvent = async ({ solutionId }) => {
 
     const payload = { role: 'Teacher' };
 
-    console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-        headers['x-auth-token']
-      }' -d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+    //     headers['x-auth-token']
+    //   }' -d '${JSON.stringify(payload)}'`
+    // );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1338,10 +1336,10 @@ export const SolutionEvent = async ({ solutionId }) => {
     return handleResponseException(e);
   }
 };
-export const SolutionEventDetails = async ({ id }) => {
+export const SolutionEventDetails = async ({ templateId, solutionId }) => {
   try {
     const method = 'POST'; // Define the HTTP method
-    const url = `${EndUrls.SolutionEvent}?templateId=${templateId}&solutionId=${id}`; // Define the URL
+    const url = `${EndUrls.SolutionEvent}?templateId=${templateId}&solutionId=${solutionId}`; // Define the URL
     const token = await getDataFromStorage('Accesstoken');
     const headers = {
       'Content-Type': 'application/json',
@@ -1353,11 +1351,11 @@ export const SolutionEventDetails = async ({ id }) => {
 
     const payload = { role: 'Teacher' };
 
-    console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-        headers['x-auth-token']
-      }' -d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+    //     headers['x-auth-token']
+    //   }' -d '${JSON.stringify(payload)}'`
+    // );
 
     // Make the actual request
     const result = await post(url, payload, {

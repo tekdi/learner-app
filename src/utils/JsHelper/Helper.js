@@ -188,9 +188,9 @@ export const capitalizeFirstLetter = (str) => {
 
 export const capitalizeName = (name) => {
   return name
-    .split(' ') // Split the name by spaces into an array of words
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
-    .join(' '); // Join the words back into a single string
+    ?.split(' ') // Split the name by spaces into an array of words
+    ?.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
+    ?.join(' '); // Join the words back into a single string
 };
 
 export const logEventFunction = async ({ eventName, method, screenName }) => {
@@ -392,4 +392,49 @@ export const getOptionsByCategory = (frameworks, categoryCode) => {
         associations: term.associations,
       }))
     : [];
+};
+
+export const calculateStorageSize = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+
+    // Filter keys that start with "do_"
+    const doKeys = keys.filter((key) => key.startsWith('do_'));
+    const doItems = await AsyncStorage.multiGet(doKeys);
+
+    // Calculate the total byte size of "do_" items
+    let totalBytes = 0;
+    doItems.forEach(([key, value]) => {
+      totalBytes += key.length + (value ? value.length : 0);
+    });
+
+    // Convert bytes to KB or MB for display
+    const sizeInKB = totalBytes / 1024;
+    const sizeInMB = sizeInKB / 1024;
+    return sizeInMB >= 1
+      ? `${sizeInMB.toFixed(2)} MB`
+      : `${sizeInKB.toFixed(2)} KB`;
+  } catch (error) {
+    console.error('Error calculating do_ storage size:', error);
+  }
+};
+
+export const clearDoKeys = async () => {
+  try {
+    // Retrieve all keys
+    const keys = await AsyncStorage.getAllKeys();
+
+    // Filter keys that start with "do_"
+    const doKeys = keys.filter((key) => key.startsWith('do_'));
+
+    if (doKeys.length > 0) {
+      // Remove all "do_" keys
+      await AsyncStorage.multiRemove(doKeys);
+      // console.log(`Cleared ${doKeys.length} keys starting with "do_"`);
+    } else {
+      console.log('No keys starting with "do_" found to clear.');
+    }
+  } catch (error) {
+    console.error('Error clearing do_ keys from storage:', error);
+  }
 };
