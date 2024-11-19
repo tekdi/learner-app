@@ -25,6 +25,7 @@ import {
   listQuestion,
   telemetryTracking,
   contentTracking,
+  questionsetRead,
 } from '../../../utils/API/ApiCalls';
 import {
   qumlPlayerConfig,
@@ -149,22 +150,22 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.sunbird.questionset'
         ? (contentType = 'quml')
         : content_mime_type == 'application/vnd.ekstep.ecml-archive'
-          ? (contentType = 'ecml')
-          : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-            ? (contentType = 'h5p')
-            : content_mime_type == 'application/vnd.ekstep.html-archive'
-              ? (contentType = 'html')
-              : content_mime_type == 'video/x-youtube'
-                ? (contentType = 'youtube')
-                : content_mime_type == 'application/pdf'
-                  ? (contentType = 'pdf')
-                  : content_mime_type == 'application/epub'
-                    ? (contentType = 'epub')
-                    : content_mime_type == 'video/mp4'
-                      ? (contentType = 'mp4')
-                      : content_mime_type == 'video/webm'
-                        ? (contentType = 'webm')
-                        : '';
+        ? (contentType = 'ecml')
+        : content_mime_type == 'application/vnd.ekstep.h5p-archive'
+        ? (contentType = 'h5p')
+        : content_mime_type == 'application/vnd.ekstep.html-archive'
+        ? (contentType = 'html')
+        : content_mime_type == 'video/x-youtube'
+        ? (contentType = 'youtube')
+        : content_mime_type == 'application/pdf'
+        ? (contentType = 'pdf')
+        : content_mime_type == 'application/epub'
+        ? (contentType = 'epub')
+        : content_mime_type == 'video/mp4'
+        ? (contentType = 'mp4')
+        : content_mime_type == 'video/webm'
+        ? (contentType = 'webm')
+        : '';
       await storeData('contentId', content_do_id, '');
       await storeData('contentType', contentType, '');
       await storeData('contentMimeType', content_mime_type, '');
@@ -187,29 +188,28 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
-        ? 'sunbird-pdf-player'
-        : content_mime_type == 'application/vnd.sunbird.questionset'
-          ? 'sunbird-quml-player'
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? 'sunbird-video-player'
-            : content_mime_type == 'application/epub'
-              ? 'sunbird-epub-player'
-              : ''
+      ? 'sunbird-pdf-player'
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? 'sunbird-quml-player'
+      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
+      ? 'sunbird-video-player'
+      : content_mime_type == 'application/epub'
+      ? 'sunbird-epub-player'
+      : ''
   );
   const [lib_file] = useState(
     content_mime_type == 'application/vnd.sunbird.questionset'
-      ? 'index_o.html'
+      ? 'index.html'
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/pdf' ||
-          content_mime_type == 'video/mp4' ||
-          content_mime_type == 'video/webm' ||
-          content_mime_type == 'video/x-youtube' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'application/epub'
-        ? 'index.html'
-        : ''
+        content_mime_type == 'application/pdf' ||
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'video/x-youtube' ||
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'application/epub'
+      ? 'index.html'
+      : ''
   );
 
   const [loading, setLoading] = useState(true);
@@ -220,10 +220,10 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
       ? `${content_file}`
       : content_mime_type == 'application/vnd.ekstep.html-archive'
-        ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
-        : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-          ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
-          : `${content_file}/${content_do_id}.json`;
+      ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
+      : content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
+      : `${content_file}/${content_do_id}.json`;
   // console.log('rnfs DocumentDirectoryPath', RNFS.DocumentDirectoryPath);
   // console.log('rnfs ExternalDirectoryPath', RNFS.ExternalDirectoryPath);
   const [is_valid_file, set_is_valid_file] = useState(null);
@@ -302,9 +302,9 @@ const StandAlonePlayer = ({ route }) => {
       }
       //check playerevent
       if (data_obj && data_event == 'playerevent') {
-        console.log('####################');
-        console.log('data_obj playerevent', JSON.stringify(data_obj));
-        console.log('####################');
+        // console.log('####################');
+        // console.log('data_obj playerevent', JSON.stringify(data_obj));
+        // console.log('####################');
         //check if exit button pressed
         if (data_obj?.eid == 'HEARTBEAT' && data_obj?.edata?.type == 'EXIT') {
           fetchExitData();
@@ -316,7 +316,7 @@ const StandAlonePlayer = ({ route }) => {
         jsonObj?.scoreDetails &&
         content_mime_type == 'application/vnd.sunbird.questionset'
       ) {
-        setLoading(true);
+        //setLoading(true);
         set_loading_text('Sending Result...');
         try {
           const data = event.nativeEvent.data;
@@ -342,7 +342,7 @@ const StandAlonePlayer = ({ route }) => {
             courseId,
             unitId
           );
-          //console.log('############# create_assessment', create_assessment);
+          console.log('############# create_assessment', create_assessment);
           if (
             create_assessment &&
             create_assessment?.response?.responseCode == 201
@@ -380,7 +380,7 @@ const StandAlonePlayer = ({ route }) => {
             }
           }
           set_loading_text('');
-          setLoading(false);
+          //setLoading(false);
         } catch (e) {
           console.log('error', e);
         }
@@ -398,6 +398,8 @@ const StandAlonePlayer = ({ route }) => {
     setLoading(true);
     set_loading_text('Reading Content...');
     let contentObj = await getData(content_do_id, 'json');
+    //console.log('################# contentObj set', contentObj);
+
     if (contentObj == null) {
       set_is_download(true);
       await downloadContentQuML();
@@ -413,7 +415,10 @@ const StandAlonePlayer = ({ route }) => {
           if (content) {
             try {
               let file_content = JSON.parse(content);
-              //console.log('file_content', JSON.stringify(file_content));
+              console.log(
+                '############## file_content',
+                JSON.stringify(file_content)
+              );
               //console.log('file_content', file_content);
               questionsData.questions_data = file_content;
               qumlPlayerConfig.metadata = contentObj;
@@ -423,7 +428,7 @@ const StandAlonePlayer = ({ route }) => {
                 firstName: userName,
                 lastName: '',
               };
-              //console.log('qumlPlayerConfig set', qumlPlayerConfig);
+              //console.log('################# qumlPlayerConfig', JSON.stringify(qumlPlayerConfig));
               set_is_valid_file(true);
             } catch (e) {
               console.log(e);
@@ -621,17 +626,17 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
       ? fetchDataEcml()
       : content_mime_type == 'video/x-youtube' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive'
-        ? fetchDataHtmlH5pYoutube()
-        : content_mime_type == 'application/pdf' ||
-            content_mime_type == 'video/mp4' ||
-            content_mime_type == 'video/webm' ||
-            content_mime_type == 'application/epub'
-          ? fetchDataPdfVideoEpub()
-          : content_mime_type == 'application/vnd.sunbird.questionset'
-            ? fetchDataQuml()
-            : '';
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      ? fetchDataHtmlH5pYoutube()
+      : content_mime_type == 'application/pdf' ||
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'application/epub'
+      ? fetchDataPdfVideoEpub()
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? fetchDataQuml()
+      : '';
   }, []);
   useEffect(() => {
     const fetchData = async () => {
@@ -753,11 +758,11 @@ const StandAlonePlayer = ({ route }) => {
                     'application/vnd.ekstep.ecml-archive'
                       ? fetchDataEcml()
                       : contentObj?.mimeType ==
-                            'application/vnd.ekstep.html-archive' ||
-                          contentObj?.mimeType ==
-                            'application/vnd.ekstep.h5p-archive'
-                        ? await fetchDataHtmlH5pYoutube()
-                        : '';
+                          'application/vnd.ekstep.html-archive' ||
+                        contentObj?.mimeType ==
+                          'application/vnd.ekstep.h5p-archive'
+                      ? await fetchDataHtmlH5pYoutube()
+                      : '';
                   } catch (error) {
                     console.error(`Error extracting zip file: ${error}`);
                   }
@@ -810,13 +815,28 @@ const StandAlonePlayer = ({ route }) => {
       if (!contentObj) {
         contentObj = content_response?.result?.questionset;
       }
+      //console.log('######## contentObj', contentObj);
       let filePath = '';
       if (contentObj?.mimeType == 'application/vnd.sunbird.questionset') {
+        //find outcomeDeclaration
+        let questionsetRead_response = await questionsetRead(content_do_id);
+
+        // console.log(
+        //   '######## questionsetRead_response',
+        //   questionsetRead_response
+        // );
+        if (
+          questionsetRead_response != null &&
+          questionsetRead_response?.result?.questionset
+        ) {
+          contentObj.outcomeDeclaration =
+            questionsetRead_response?.result?.questionset?.outcomeDeclaration;
+        }
         filePath = `${content_file}`;
       }
-      console.log('######## ', contentObj?.mimeType);
-      console.log('######## filePath', filePath);
-      console.log('######## ');
+      //console.log('######## ', contentObj);
+      //console.log('######## filePath', filePath);
+      //console.log('######## ');
       if (filePath != '') {
         //create file and store object in local
         try {
@@ -926,7 +946,10 @@ const StandAlonePlayer = ({ route }) => {
             localStorage.setItem('qumlPlayerObject', JSON.stringify(${JSON.stringify(
               {
                 qumlPlayerConfig: qumlPlayerConfig,
-                questionListUrl: '/list/questions',
+                //for online
+                questionListUrl: questionListUrl,
+                //for offline
+                //questionListUrl: '/list/questions',
               }
             )}));
             localStorage.setItem('questions_data', JSON.stringify(${JSON.stringify(
@@ -937,10 +960,10 @@ const StandAlonePlayer = ({ route }) => {
             window.setData();
         })(); ${disableZoomJS} true;`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'video/x-youtube'
-        ? `(function() {
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'video/x-youtube'
+      ? `(function() {
         localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
           {
             contentPlayerConfig: contentPlayerConfig,
@@ -948,20 +971,19 @@ const StandAlonePlayer = ({ route }) => {
         )}));
         window.setData();
         })(); ${disableZoomJS} true;`
-        : content_mime_type == 'application/pdf'
-          ? `(function() {
+      : content_mime_type == 'application/pdf'
+      ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
         })(); ${disableZoomJS} true;`
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? `(function() {
+      : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
+      ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
         })(); ${disableZoomJS} true;`
-            : content_mime_type == 'application/epub'
-              ? `(function() {
+      : content_mime_type == 'application/epub'
+      ? `(function() {
         window.setData('${JSON.stringify(epubPlayerConfig)}');
         })(); ${disableZoomJS} true;`
-              : ``;
+      : ``;
 
   //event when player closed
   useFocusEffect(

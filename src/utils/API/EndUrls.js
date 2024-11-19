@@ -9,6 +9,7 @@ const tracking_assessment = Config.tracking_assessment;
 const TELEMETRY_URL = Config.TELEMETRY_URL;
 const NEXT_PUBLIC_EVENT_BASE_URL = Config.NEXT_PUBLIC_EVENT_BASE_URL;
 const EVENT_DETAILS = Config.EVENT_DETAILS;
+const FRAMEWORK_ID = Config.FRAMEWORK_ID;
 
 const EndUrls = {
   login: API_URL + '/user/v1/auth/login',
@@ -55,10 +56,11 @@ const EndUrls = {
   course_details: `${CONTENT_URL}/api/course/v1/hierarchy/`, //pass do id at end
   quml_question_list: `${CONTENT_URL}/api/question/v2/list`,
   read_content: `${CONTENT_URL}/api/content/v1/read/`, //pass do id at end
-  contentList: `${CONTENT_URL}/action/composite/v3/search?orgdetails=orgName,email&framework=test_k12_framework`,
-  contentList_testing: `${CONTENT_URL}/action/composite/v3/search?orgdetails=orgName,email&framework=test_k12_framework`,
+  contentList: `${CONTENT_URL}/action/composite/v3/search?orgdetails=orgName,email&framework=${FRAMEWORK_ID}`,
+  contentList_testing: `${CONTENT_URL}/action/composite/v3/search?orgdetails=orgName,email&framework=${FRAMEWORK_ID}`,
   contentSearch: `${CONTENT_URL}/action/composite/v3/search`,
-  framework: `${CONTENT_URL}/api/framework/v1/read/test_k12_framework`,
+  framework: `${CONTENT_URL}/api/framework/v1/read/${FRAMEWORK_ID}`,
+  question_set_read: `${CONTENT_URL}/action/questionset/v2/read/`, //pass do id at end ?fields=instructions,outcomeDeclaration
 };
 
 export default EndUrls;
