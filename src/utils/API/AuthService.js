@@ -12,6 +12,7 @@ import Config from 'react-native-config';
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
   let tenantId = await getTentantId();
+
   return {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -354,7 +355,7 @@ export const courseListApi = async ({ payload }) => {
   }
 };
 
-export const contentListApi = async (params = {}) => {
+export const contentListApi = async ({ searchText }) => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList}`; // Define the URL
   const headers = {
@@ -378,6 +379,7 @@ export const contentListApi = async (params = {}) => {
       sort_by: {
         lastPublishedOn: 'desc',
       },
+      ...(searchText && { query: searchText }), // Add query conditionally
       fields: [
         'name',
         'appIcon',
@@ -439,7 +441,7 @@ export const contentListApi = async (params = {}) => {
   }
 };
 
-export const contentListApi_Pratham = async (params = {}) => {
+export const contentListApi_Pratham = async ({ searchText }) => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList}`; // Define the URL
   const headers = {
@@ -457,6 +459,7 @@ export const contentListApi_Pratham = async (params = {}) => {
       sort_by: {
         lastPublishedOn: 'desc',
       },
+      ...(searchText && { query: searchText }), // Add query conditionally
       fields: [
         'name',
         'appIcon',
@@ -517,7 +520,7 @@ export const contentListApi_Pratham = async (params = {}) => {
   }
 };
 
-export const getCohort = async ({ user_id, tenantid }) => {
+export const getCohort = async ({ user_id, tenantid, academicYearId }) => {
   try {
     const token = await getDataFromStorage('Accesstoken');
     const headers = {
@@ -525,14 +528,15 @@ export const getCohort = async ({ user_id, tenantid }) => {
       Accept: 'application/json',
       Authorization: `Bearer ${token}`,
       tenantid: tenantid,
-      academicyearid: '851687bb-422e-4a22-b27f-6b66fa304bec',
+      academicyearid: academicYearId,
     };
     const url = `${EndUrls.cohort}/${user_id}`;
 
     // Log the curl command
-    // console.log(
-    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${headers.Authorization ? ` -H 'Authorization: ${headers.Authorization}'` : ''}`
-    // );
+    console.log(
+      `curl -X GET '${url}' -H 'Content-Type: application/json'${headers.Authorization ? ` -H 'Authorization: ${headers.Authorization}'` : ''}
+      -H 'tenantid: ${headers.tenantid}'`
+    );
 
     const result = await get(url, {
       headers: headers || {},
@@ -595,14 +599,14 @@ export const setAcademicYear = async ({ tenantid }) => {
 
     // Log the curl command
 
-    // console.log(
-    //   `curl -X POST '${url}' \\\n` +
-    //     `-H 'Content-Type: application/json' \\\n` +
-    //     `-H 'Accept: application/json' \\\n` +
-    //     `-H 'Authorization: ${headers.Authorization}' \\\n` +
-    //     `-H 'tenantid: ${headers.tenantid}' \\\n` +
-    //     `-d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X POST '${url}' \\\n` +
+        `-H 'Content-Type: application/json' \\\n` +
+        `-H 'Accept: application/json' \\\n` +
+        `-H 'Authorization: ${headers.Authorization}' \\\n` +
+        `-H 'tenantid: ${headers.tenantid}' \\\n` +
+        `-d '${JSON.stringify(payload)}'`
+    );
 
     const result = await post(url, payload, {
       headers: headers || {},
@@ -714,8 +718,10 @@ export const trackAssessment = async (params = {}) => {
 };
 export const getProfileDetails = async (params = {}) => {
   try {
+    console.log('CALLED');
+
     const url = `${EndUrls.profileDetails}`; // Define the URL
-    const headers = await getHeaderswithoutTenant();
+    const headers = await getHeaders();
     const payload = {
       limit: 0,
       filters: {
@@ -724,10 +730,6 @@ export const getProfileDetails = async (params = {}) => {
       sort: ['createdAt', 'asc'],
       offset: 0,
     };
-
-    // console.log(
-    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
-    // );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -756,9 +758,13 @@ export const getAssessmentStatus = async (params = {}) => {
       contentId: params?.uniqueAssessmentsId,
     };
 
-    // console.log(
-    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
-    // );
+    const curlCommand = `curl -X POST '${url}' \\ 
+    ${Object.entries(headers || {})
+      .map(([key, value]) => `  -H '${key}: ${value}' \\`)
+      .join('\n')} 
+      -d '${JSON.stringify(payload)}'`;
+
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1162,9 +1168,9 @@ export const getGeoLocation = async ({ payload }) => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
-    // console.log(
-    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {
