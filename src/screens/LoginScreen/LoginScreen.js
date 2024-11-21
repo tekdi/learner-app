@@ -78,28 +78,28 @@ const LoginScreen = () => {
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
+        await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
+        await setDataInStorage('userId', user_id);
+
+        const academicyear = await setAcademicYear({ tenantid });
+        console.log({ tenantData, user_id, tenantid });
+        const academicYearId = academicyear?.[0]?.id;
+        await setDataInStorage('academicYearId', academicYearId || '');
+        const cohort = await getCohort({ user_id, tenantid, academicYearId });
+
+        await setDataInStorage('cohortData', JSON.stringify(cohort));
+        const cohort_id = cohort?.cohortData?.[0]?.cohortId;
+        console.log({ cohort_id });
+
         const profileData = await getProfileDetails({
           userId: user_id,
         });
-        await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
-
         await setDataInStorage('profileData', JSON.stringify(profileData));
         await setDataInStorage(
           'Username',
           profileData?.getUserDetails?.[0]?.username
         );
         await storeUsername(profileData?.getUserDetails?.[0]?.username);
-        await setDataInStorage('userId', user_id);
-        const cohort = await getCohort({ user_id, tenantid });
-        const academicyear = await setAcademicYear({ tenantid });
-
-        await setDataInStorage(
-          'academicYearId',
-          JSON.stringify(academicyear?.[0]?.id || '')
-        );
-        await setDataInStorage('cohortData', JSON.stringify(cohort));
-        const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-        console.log({ cohort_id });
 
         await setDataInStorage(
           'cohortId',
