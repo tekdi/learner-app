@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet } from 'react-native';
 import { useTranslation } from '../context/LanguageContext';
@@ -12,11 +12,25 @@ import AssessmentStack from './AssessmentStack';
 import Coursesfilled from '../assets/images/png/Coursesfilled.png';
 import Coursesunfilled from '../assets/images/png/Coursesunfilled.png';
 import ProfileStack from './ProfileStack';
+import { getTentantId } from '../utils/JsHelper/Helper';
 
 const Tab = createBottomTabNavigator();
 
 const TabScreen = () => {
   const { t } = useTranslation();
+  const [contentShow, setContentShow] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const tenantId = await getTentantId();
+      id = '6c8b810a-66c2-4f0d-8c0c-c025415a4414';
+      if (tenantId === id) {
+        setContentShow(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <Tab.Navigator
@@ -78,11 +92,14 @@ const TabScreen = () => {
         component={DashboardStack}
         options={{ tabBarLabel: t('courses') }}
       />
-      <Tab.Screen
-        name="content"
-        component={Contents}
-        options={{ tabBarLabel: t('content') }}
-      />
+      {contentShow && (
+        <Tab.Screen
+          name="content"
+          component={Contents}
+          options={{ tabBarLabel: t('content') }}
+        />
+      )}
+
       {/* <Tab.Screen
         name="AssessmentStack"
         component={AssessmentStack}

@@ -23,12 +23,15 @@ import { contentListApi } from '../../utils/API/AuthService';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 import {
+  capitalizeName,
   getDataFromStorage,
   logEventFunction,
 } from '../../utils/JsHelper/Helper';
 import wave from '../../assets/images/png/wave.png';
 import { courseTrackingStatus } from '../../utils/API/ApiCalls';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
+import CustomSearchBox from '../../components/CustomSearchBox/CustomSearchBox';
+import globalStyles from '../../utils/Helper/Style';
 
 const Contents = () => {
   const navigation = useNavigation();
@@ -39,6 +42,7 @@ const Contents = () => {
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [searchText, setSearchText] = useState('');
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -81,7 +85,7 @@ const Contents = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const data = await contentListApi();
+    const data = await contentListApi({ searchText });
     //found content progress
     try {
       // console.log('########## contentListApi');
@@ -118,6 +122,16 @@ const Contents = () => {
     setLoading(false);
   };
 
+  const handleSearch = async () => {
+    setLoading(true);
+    let result = await contentListApi({ searchText });
+    setData(result?.content || []);
+    if (data.length < 0) {
+      setSearchText('');
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     const backAction = () => {
       navigation.goBack(); // Navigate back to the previous screen
@@ -144,15 +158,21 @@ const Contents = () => {
             <ActiveLoading />
           ) : (
             <SafeAreaView>
-              <Text allowFontScaling={false} style={styles.text}>
-                {t('Learning_Content')}
-              </Text>
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
                 <Text allowFontScaling={false} style={styles.text2}>
-                  {t('welcome')}, {userInfo?.[0]?.name}!
+                  {t('welcome')}, {capitalizeName(userInfo?.[0]?.name)}!
                 </Text>
               </View>
+              <Text allowFontScaling={false} style={styles.text}>
+                {t('Learning_Content')}
+              </Text>
+              <CustomSearchBox
+                setSearchText={setSearchText}
+                searchText={searchText}
+                handleSearch={handleSearch}
+                placeholder={'Search Content'}
+              />
               <SyncCard
               //doneSync={fetchData}
               />
@@ -165,18 +185,24 @@ const Contents = () => {
                   flexDirection: 'row',
                 }}
               >
-                {data?.map((item, index) => {
-                  return (
-                    <ContentCard
-                      key={index}
-                      item={item}
-                      index={index}
-                      course_id={item?.identifier}
-                      unit_id={item?.identifier}
-                      TrackData={trackData}
-                    />
-                  );
-                })}
+                {data?.length > 0 ? (
+                  data?.map((item, index) => {
+                    return (
+                      <ContentCard
+                        key={index}
+                        item={item}
+                        index={index}
+                        course_id={item?.identifier}
+                        unit_id={item?.identifier}
+                        TrackData={trackData}
+                      />
+                    );
+                  })
+                ) : (
+                  <Text style={globalStyles.heading2}>
+                    {t('no_data_found')}
+                  </Text>
+                )}
                 {/* <FlatList
                   data={data}
                   renderItem={renderContentCard}

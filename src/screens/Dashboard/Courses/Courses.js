@@ -8,6 +8,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -30,12 +31,15 @@ import {
 import SyncCard from '../../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
 import {
+  capitalizeName,
   getDataFromStorage,
   getTentantId,
   logEventFunction,
 } from '../../../utils/JsHelper/Helper';
 import { courseTrackingStatus } from '../../../utils/API/ApiCalls';
 import ActiveLoading from '../../LoadingScreen/ActiveLoading';
+import CustomSearchBox from '../../../components/CustomSearchBox/CustomSearchBox';
+import globalStyles from '../../../utils/Helper/Style';
 
 const Courses = () => {
   const navigation = useNavigation();
@@ -47,6 +51,7 @@ const Courses = () => {
   const [loading, setLoading] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
   const [youthnet, setYouthnet] = useState(false);
+  const [searchText, setSearchText] = useState('');
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -118,6 +123,7 @@ const Courses = () => {
   );
 
   const fetchData = async () => {
+    setSearchText('');
     setLoading(true);
     let data;
     const tenantId = await getTentantId();
@@ -271,7 +277,140 @@ const Courses = () => {
     }
     const result = JSON.parse(await getDataFromStorage('profileData'));
     setUserInfo(result?.getUserDetails);
-    setData(data?.content);
+    setData(data?.content || []);
+    setLoading(false);
+  };
+
+  const handleSearch = async () => {
+    setLoading(true);
+    let result;
+    const tenantId = await getTentantId();
+    // id = '10a9f829-3652-47d0-b17b-68c4428f9f89';
+    id = '6c8b810a-66c2-4f0d-8c0c-c025415a4414';
+    if (tenantId === id) {
+      const payload = {
+        request: {
+          filters: {
+            se_boards: ['nios'],
+            se_gradeLevels: ['program'],
+            se_subjects: ['literacy'],
+            primaryCategory: [
+              'Collection',
+              'Resource',
+              'Content Playlist',
+              'Course',
+              'Course Assessment',
+              'Digital Textbook',
+              'eTextbook',
+              'Explanation Content',
+              'Learning Resource',
+              'Lesson Plan Unit',
+              'Practice Question Set',
+              'Teacher Resource',
+              'Textbook Unit',
+              'LessonPlan',
+              'FocusSpot',
+              'Learning Outcome Definition',
+              'Curiosity Questions',
+              'MarkingSchemeRubric',
+              'ExplanationResource',
+              'ExperientialResource',
+              'Practice Resource',
+              'TVLesson',
+              'Course Unit',
+              'Program',
+              'Project',
+              'improvementProject',
+            ],
+            visibility: ['Default', 'Parent'],
+          },
+          limit: 100,
+          sort_by: {
+            lastPublishedOn: 'desc',
+          },
+          query: searchText,
+          fields: [
+            'name',
+            'appIcon',
+            'mimeType',
+            'gradeLevel',
+            'description',
+            'posterImage',
+            'identifier',
+            'medium',
+            'pkgVersion',
+            'board',
+            'subject',
+            'resourceType',
+            'primaryCategory',
+            'contentType',
+            'channel',
+            'organisation',
+            'trackable',
+          ],
+          facets: [
+            'se_boards',
+            'se_gradeLevels',
+            'se_subjects',
+            'se_mediums',
+            'primaryCategory',
+          ],
+          offset: 0,
+        },
+      };
+      result = await courseListApi({ payload });
+      setYouthnet(true);
+    } else {
+      const payload = {
+        request: {
+          filters: {
+            se_boards: [
+              'Odisha',
+              'Uttar Pradesh',
+              'Madhya Pradesh',
+              'NIOS',
+              'Rajasthan',
+            ],
+            primaryCategory: ['Course'],
+            visibility: ['Default', 'Parent'],
+          },
+          limit: 100,
+          sort_by: {
+            lastPublishedOn: 'desc',
+          },
+          query: searchText,
+          fields: [
+            'name',
+            'appIcon',
+            'description',
+            'posterImage',
+            'mimeType',
+            'identifier',
+            'resourceType',
+            'primaryCategory',
+            'contentType',
+            'trackable',
+            'children',
+            'leafNodes',
+          ],
+          facets: [
+            'se_boards',
+            'se_gradeLevels',
+            'se_subjects',
+            'se_mediums',
+            'primaryCategory',
+          ],
+          offset: 0,
+        },
+      };
+      result = await courseListApi({ payload });
+    }
+    console.log('result?.content', result?.content);
+
+    setData(result?.content || []);
+    if (data.length < 0) {
+      setSearchText('');
+    }
     setLoading(false);
   };
 
@@ -289,32 +428,43 @@ const Courses = () => {
                 translucent={true}
                 backgroundColor="transparent"
               />
-              <Text allowFontScaling={false} style={styles.text}>
-                {youthnet ? t('l1_courses') : t('courses')}
-              </Text>
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
                 <Text allowFontScaling={false} style={styles.text2}>
-                  {t('welcome')}, {userInfo?.[0]?.name} !
+                  {t('welcome')}, {capitalizeName(userInfo?.[0]?.name)} !
                 </Text>
               </View>
+              <Text allowFontScaling={false} style={styles.text}>
+                {youthnet ? t('l1_courses') : t('courses')}
+              </Text>
+
+              <CustomSearchBox
+                setSearchText={setSearchText}
+                searchText={searchText}
+                handleSearch={handleSearch}
+                placeholder={'Search Courses'}
+              />
+
               <SyncCard
               //doneSync={fetchData}
               />
-
-              <CoursesBox
-                // title={'Continue_Learning'}
-                // description={'Food_Production'}
-                style={{ titlecolor: '#06A816' }}
-                viewAllLink={() =>
-                  navigation.navigate('ViewAll', {
-                    title: 'Continue_Learning',
-                    data: data,
-                  })
-                }
-                ContentData={data}
-                TrackData={trackData}
-              />
+              {data.length > 0 ? (
+                <CoursesBox
+                  // title={'Continue_Learning'}
+                  // description={'Food_Production'}
+                  style={{ titlecolor: '#06A816' }}
+                  viewAllLink={() =>
+                    navigation.navigate('ViewAll', {
+                      title: 'Continue_Learning',
+                      data: data,
+                    })
+                  }
+                  ContentData={data}
+                  TrackData={trackData}
+                />
+              ) : (
+                <Text style={globalStyles.heading2}>{t('no_data_found')}</Text>
+              )}
             </SafeAreaView>
           )}
           {showExitModal && (
