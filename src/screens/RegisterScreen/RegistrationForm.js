@@ -35,6 +35,7 @@ import InterestedCardsComponent from '../../components/InterestedComponents/Inte
 import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
 import {
   getDataFromStorage,
+  getDeviceId,
   getuserDetails,
   getUserId,
   logEventFunction,
@@ -54,6 +55,7 @@ import {
   getProfileDetails,
   getProgramDetails,
   login,
+  notificationSubscribe,
   registerUser,
   setAcademicYear,
   userExist,
@@ -342,6 +344,8 @@ const RegistrationForm = ({ schema, geoData }) => {
       screenName: 'Registration',
     };
     await logEventFunction(obj);
+    const deviceId = await getDeviceId();
+    await notificationSubscribe({ deviceId, user_id });
     navigation.navigate('Dashboard');
   };
 
