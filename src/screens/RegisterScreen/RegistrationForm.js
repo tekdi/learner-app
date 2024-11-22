@@ -309,20 +309,11 @@ const RegistrationForm = ({ schema, geoData }) => {
     await saveAccessToken(data?.access_token || '');
     const user_id = await getUserId();
     const userDetails = await getuserDetails();
-    const profileData = await getProfileDetails({
-      userId: user_id,
-    });
+
     const tenantData = userDetails?.tenantData;
     const tenantid = userDetails?.tenantData?.[0]?.tenantId;
     await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
 
-    await setDataInStorage('profileData', JSON.stringify(profileData));
-    await setDataInStorage(
-      'Username',
-      profileData?.getUserDetails?.[0]?.username
-    );
-
-    await storeUsername(profileData?.getUserDetails?.[0]?.username);
     await setDataInStorage('userId', user_id);
     const cohort = await getCohort({ user_id, tenantid });
     const academicyear = await setAcademicYear({ tenantid });
@@ -337,6 +328,21 @@ const RegistrationForm = ({ schema, geoData }) => {
       'cohortId',
       cohort_id || '00000000-0000-0000-0000-000000000000'
     );
+    const profileData = await getProfileDetails({
+      userId: user_id,
+    });
+    await setDataInStorage('profileData', JSON.stringify(profileData));
+    await setDataInStorage(
+      'Username',
+      profileData?.getUserDetails?.[0]?.username
+    );
+
+    await storeUsername(profileData?.getUserDetails?.[0]?.username);
+    if (cohort_id) {
+      navigation.navigate('SCPUserTabScreen');
+    } else {
+      navigation.navigate('Dashboard');
+    }
     setModal(false);
     const obj = {
       eventName: 'logged_in',
@@ -346,7 +352,6 @@ const RegistrationForm = ({ schema, geoData }) => {
     await logEventFunction(obj);
     const deviceId = await getDeviceId();
     await notificationSubscribe({ deviceId, user_id });
-    navigation.navigate('Dashboard');
   };
 
   const logRegistrationComplete = async () => {
@@ -633,7 +638,6 @@ const RegistrationForm = ({ schema, geoData }) => {
       setIsDisable(true);
       return true; // Indicates that the back action has been handled
     } else {
-      navigation.navigate('RegisterStart');
       return false; // Indicates that the back action should continue (exit)
     }
   };

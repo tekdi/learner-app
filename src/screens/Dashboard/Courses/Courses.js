@@ -59,6 +59,14 @@ const Courses = () => {
   });
 
   useEffect(() => {
+    const fetch = async () => {
+      const cohort_id = await getDataFromStorage('cohortId');
+      console.log({ cohort_id });
+    };
+    fetch();
+  }, []);
+
+  useEffect(() => {
     const logEvent = async () => {
       const obj = {
         eventName: 'course_page_view',

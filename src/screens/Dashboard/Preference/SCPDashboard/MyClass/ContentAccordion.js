@@ -15,7 +15,7 @@ const ContentAccordion = ({ title, resourceData }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  console.log({ resourceData });
+  console.log('resourceData', JSON.stringify(resourceData));
 
   useEffect(() => {
     const trackingData = async () => {

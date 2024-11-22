@@ -71,7 +71,7 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
     const templateId = data?.externalId;
 
     const result = await SolutionEventDetails({ templateId, solutionId });
-    console.log({ id });
+    console.log({ id, solutionId, templateId });
 
     if (!id) {
       fetchData();
@@ -89,12 +89,14 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
     const id = data?.data?.[0]?._id;
     const solutionId = data?.data?.[0]?.solutionId;
 
-    if (data?.data?.[0]?._id == '') {
+    if (id == '') {
       callProgramIfempty({ solutionId, id });
     } else {
       result = await EventDetails({ id });
       const filterData = getFilteredData(result?.tasks || [], topic);
       setTasks(filterData);
+      console.log(JSON.stringify(filterData));
+
       let contentIdList = [];
 
       if (filterData) {

@@ -178,14 +178,16 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         {/* Background image covering entire card */}
         <FastImage
           style={styles.cardBackgroundImage}
-          source={
-            item?.appIcon
-              ? {
-                  uri: item?.appIcon,
-                  priority: FastImage.priority.high,
-                }
-              : backgroundImage
-          }
+          source={backgroundImage}
+          resizeMode={FastImage.resizeMode.cover}
+          priority={FastImage.priority.high}
+        />
+        <FastImage
+          style={styles.AppIcon}
+          source={{
+            uri: item?.appIcon,
+            priority: FastImage.priority.high,
+          }}
           resizeMode={FastImage.resizeMode.cover}
           priority={FastImage.priority.high}
         />
@@ -201,14 +203,14 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
             {mimeType === 'x-youtube'
               ? `YouTube`
               : mimeType === 'vnd.ekstep.html-archive'
-              ? `Web`
-              : mimeType == 'vnd.ekstep.h5p-archive'
-              ? `H5P`
-              : mimeType == 'vnd.ekstep.h5p-archive'
-              ? `ECML`
-              : mimeType == 'vnd.sunbird.questionset'
-              ? `QUML`
-              : capitalizeFirstLetter(mimeType)}
+                ? `Web`
+                : mimeType == 'vnd.ekstep.h5p-archive'
+                  ? `H5P`
+                  : mimeType == 'vnd.ekstep.h5p-archive'
+                    ? `ECML`
+                    : mimeType == 'vnd.sunbird.questionset'
+                      ? `QUML`
+                      : capitalizeFirstLetter(mimeType)}
           </Text>
         </View>
         <View style={styles.view}>
@@ -258,6 +260,14 @@ const styles = StyleSheet.create({
   cardBackgroundImage: {
     ...StyleSheet.absoluteFillObject, // Make the background image cover the entire card
     borderRadius: 20,
+  },
+  AppIcon: {
+    borderRadius: 50,
+    width: 50,
+    height: 50,
+    position: 'absolute',
+    right: 10,
+    top: 10,
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay for text visibility

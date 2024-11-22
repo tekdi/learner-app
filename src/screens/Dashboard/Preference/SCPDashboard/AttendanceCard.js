@@ -28,7 +28,7 @@ const AttendanceCard = ({ attendance }) => {
     last30Days.setDate(last30Days.getDate() - 30);
 
     // Filter data for the last 30 days
-    const filteredData = attendanceData.filter((item) => {
+    const filteredData = attendanceData?.filter((item) => {
       const attendanceDate = new Date(item.attendanceDate);
       return attendanceDate >= last30Days;
     });

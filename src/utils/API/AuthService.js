@@ -1271,10 +1271,7 @@ export async function reverseGeocode(latitude, longitude) {
 export const eventList = async ({ startDate, endDate }) => {
   try {
     const url = `${EndUrls.eventList}`; // Define the URL
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    };
+    const headers = await getHeaders();
     const cohort = JSON.parse(await getDataFromStorage('cohortData'));
     // console.log({ startDate, endDate, cohort });
     // console.log(cohort?.cohortData?.[0]?.cohortId);
@@ -1291,9 +1288,15 @@ export const eventList = async ({ startDate, endDate }) => {
         status: ['live'],
       },
     };
-    // console.log(
-    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
-    // );
+    const curlCommand = `
+    curl -X POST '${url}' \\
+    -H 'Content-Type: application/json' \\
+    -H 'Accept: application/json' \\
+    -H 'Authorization:  ${headers.Authorization}' \\
+    -H 'tenantId: ${headers.tenantId}' \\
+    -d '${JSON.stringify(payload)}'
+        `;
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1335,11 +1338,11 @@ export const targetedSolutions = async ({ subjectName, type }) => {
       type: type,
     };
 
-    // console.log(
-    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-    //     headers['x-auth-token']
-    //   }' -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1428,7 +1431,7 @@ export const SolutionEvent = async ({ solutionId }) => {
 export const SolutionEventDetails = async ({ templateId, solutionId }) => {
   try {
     const method = 'POST'; // Define the HTTP method
-    const url = `${EndUrls.SolutionEvent}?templateId=${templateId}&solutionId=${solutionId}`; // Define the URL
+    const url = `${EndUrls.EventDetails}?templateId=${templateId}&solutionId=${solutionId}`; // Define the URL
     const token = await getDataFromStorage('Accesstoken');
     const headers = {
       'Content-Type': 'application/json',
@@ -1440,11 +1443,11 @@ export const SolutionEventDetails = async ({ templateId, solutionId }) => {
 
     const payload = { role: 'Teacher' };
 
-    // console.log(
-    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-    //     headers['x-auth-token']
-    //   }' -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1470,14 +1473,7 @@ export const getAttendance = async ({ todate, fromDate }) => {
     let cohortId = await getDataFromStorage('cohortId');
     const tenantid = await getTentantId();
 
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Cookie:
-        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
-      Authorization: `Bearer ${token}`,
-      tenantid: tenantid,
-    };
+    const headers = await getHeaders();
 
     const payload = {
       limit: 300,
@@ -1491,15 +1487,15 @@ export const getAttendance = async ({ todate, fromDate }) => {
       },
     };
 
-    // console.log(
-    //   `curl -X ${method} '${url}' \\\n` +
-    //     `-H 'Content-Type: application/json' \\\n` +
-    //     `-H 'Accept: application/json' \\\n` +
-    //     `-H 'Cookie: ${headers.Cookie}' \\\n` +
-    //     `-H 'Authorization: ${headers.Authorization}' \\\n` +
-    //     `-H 'tenantid: ${headers.tenantid}' \\\n` +
-    //     `-d '${JSON.stringify(payload)}'`
-    // );
+    const curlCommand = `
+    curl -X POST '${url}' \\
+    -H 'Content-Type: application/json' \\
+    -H 'Accept: application/json' \\
+    -H 'Authorization:  ${headers.Authorization}' \\
+    -H 'tenantId: ${headers.tenantId}' \\
+    -d '${JSON.stringify(payload)}'
+        `;
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
