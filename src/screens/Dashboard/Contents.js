@@ -19,7 +19,10 @@ import {
 import { useTranslation } from '../../context/LanguageContext';
 import ContentCard from './ContentCard';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
-import { contentListApi } from '../../utils/API/AuthService';
+import {
+  contentListApi,
+  contentListApi_Pratham,
+} from '../../utils/API/AuthService';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 import {
@@ -86,12 +89,19 @@ const Contents = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const data = await contentListApi({ searchText });
+    //sunbird saas
+    //const data = await contentListApi();
+    //pratham
+    const data = await contentListApi_Pratham({ searchText });
+    //const data = await contentListApi({ searchText });
     //found content progress
     try {
-      // console.log('########## contentListApi');
-      const contentList = data?.content;
-      // console.log('########## contentList', contentList);
+      console.log('########## contentListApi');
+      const contentList = [
+        ...(data?.content || []),
+        ...(data?.QuestionSet || []),
+      ];
+      console.log('########## contentList', contentList);
       let contentIdList = [];
       if (contentList) {
         for (let i = 0; i < contentList.length; i++) {
@@ -112,20 +122,20 @@ const Contents = () => {
       }
 
       setTrackData(courseTrackData);
-      // console.log('########## courseTrackData', courseTrackData);
-      // console.log('##########');
+      console.log('########## courseTrackData', courseTrackData);
+      console.log('##########');
+      const result = JSON.parse(await getDataFromStorage('profileData'));
+      setUserInfo(result?.getUserDetails);
+      setData(contentList);
+      setLoading(false);
     } catch (e) {
       console.log('e', e);
     }
-    const result = JSON.parse(await getDataFromStorage('profileData'));
-    setUserInfo(result?.getUserDetails);
-    setData(data?.content);
-    setLoading(false);
   };
 
   const handleSearch = async () => {
     setLoading(true);
-    let result = await contentListApi({ searchText });
+    let result = await contentListApi_Pratham({ searchText });
     setData(result?.content || []);
     if (data.length < 0) {
       setSearchText('');

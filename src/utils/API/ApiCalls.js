@@ -70,10 +70,16 @@ export const readContent = async (content_do_id) => {
   await axios
     .request(config)
     .then((response) => {
+      console.log('############');
+      console.log('############ read content', response);
+      console.log('############');
       api_response = response.data;
     })
     .catch((error) => {
-      console.log(error);
+      console.log('############');
+      console.log('############ config', config);
+      console.log('############ read content error', error);
+      console.log('############');
     });
 
   return api_response;
@@ -102,11 +108,50 @@ export const hierarchyContent = async (content_do_id) => {
       api_response = response.data;
     })
     .catch((error) => {
-      console.log(error);
+      console.log('############');
+      console.log('############ config', config);
+      console.log('############ read content error', error);
+      console.log('############');
     });
 
   return api_response;
 };
+
+//outcomeDeclaration questionset
+export const questionsetRead = async (content_do_id) => {
+  // console.log({ content_do_id });
+  const url =
+    EndUrls.question_set_read +
+    content_do_id +
+    `?fields=instructions,outcomeDeclaration`;
+
+  let api_response = null;
+
+  let config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: url,
+    headers: {
+      accept: '*/*',
+      'Content-Type': 'application/json',
+    },
+  };
+
+  await axios
+    .request(config)
+    .then((response) => {
+      api_response = response.data;
+    })
+    .catch((error) => {
+      console.log('############');
+      console.log('############ config', config);
+      console.log('############ read content error', error);
+      console.log('############');
+    });
+
+  return api_response;
+};
+
 export const courseDetails = async (content_do_id) => {
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
   const url = `${EndUrls.course_details}${content_do_id}`;
@@ -331,9 +376,9 @@ export const contentTracking = async (
       detailsObject: detailsObject,
       unitId: unitId,
     });
-
-    // console.log('data', data);
-    // console.log('url', url);
+    console.log('############*****');
+    //console.log('############ data', data);
+    //console.log('############ url', url);
 
     let api_response = null;
 
@@ -346,6 +391,7 @@ export const contentTracking = async (
       headers: headers || {},
       data: data,
     };
+    //console.log('############ config', config);
 
     await axios
       .request(config)
