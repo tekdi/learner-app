@@ -181,17 +181,17 @@ export const updateUser = async ({ payload, user_id }) => {
     const method = 'PATCH'; // Define the HTTP method
     const url = `${EndUrls.update_profile}/${user_id}`; // Define the URL
     const token = await getDataFromStorage('Accesstoken');
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Cookie:
-        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
-      Authorization: `Bearer ${token}`,
-    };
-    // Log the cURL command
-    // console.log(
-    //   `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${headers.Authorization}' -d '${JSON.stringify(payload)}'`
-    // );
+    const headers = await getHeaders();
+
+    //     const curlCommand = `
+    // curl -X PATCH '${url}' \\
+    // -H 'Content-Type: application/json' \\
+    // -H 'Accept: application/json' \\
+    // -H 'Authorization:  ${headers.Authorization}' \\
+    // -H 'tenantId: ${headers.tenantId}' \\
+    // -d '${JSON.stringify(payload)}'
+    //     `;
+    //     console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await patch(url, payload, {
