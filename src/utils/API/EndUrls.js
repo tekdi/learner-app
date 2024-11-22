@@ -38,8 +38,8 @@ const EndUrls = {
   targetedSolutions: `${EVENT_DETAILS}/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
   EventDetails: `${EVENT_DETAILS}/userProjects/details`,
   SolutionEvent: `${EVENT_DETAILS}/solutions/details`,
-
   attendance: `${API_URL}/api/v1/attendance/list`,
+  notificationSubscribe: `${API_URL}/user/v1/update`,
 
   //CMS sunbird saas
   // hierarchy_content: `${CONTENT_URL}/learner/questionset/v1/hierarchy/`, //pass do id at end
@@ -61,6 +61,7 @@ const EndUrls = {
   contentSearch: `${CONTENT_URL}/action/composite/v3/search`,
   framework: `${CONTENT_URL}/api/framework/v1/read/${FRAMEWORK_ID}`,
   question_set_read: `${CONTENT_URL}/action/questionset/v2/read/`, //pass do id at end ?fields=instructions,outcomeDeclaration
+
 };
 
 export default EndUrls;

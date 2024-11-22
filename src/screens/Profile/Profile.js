@@ -22,9 +22,11 @@ import TextField from '../../components/TextField/TextField';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 import {
   calculateStorageSize,
+  calculateTotalStorageSize,
   capitalizeFirstLetter,
   capitalizeName,
   clearDoKeys,
+  deleteFilesInDirectory,
   deleteSavedItem,
   getDataFromStorage,
   getTentantId,
@@ -82,7 +84,7 @@ const Profile = (props) => {
   };
 
   const StorageSize = async () => {
-    const data = await calculateStorageSize();
+    const data = await calculateTotalStorageSize();
     console.log('size', data);
     setStorageData(data);
   };
@@ -134,8 +136,8 @@ const Profile = (props) => {
   };
   const handleContentDelete = async () => {
     await clearDoKeys();
+    await deleteFilesInDirectory();
     StorageSize();
-
     setShowContentModal(false); // Close the modal
   };
 
@@ -170,53 +172,57 @@ const Profile = (props) => {
               <Icon name="edit" size={30} color={'#000'} />
             </TouchableOpacity>
           </View>
-          <View style={[styles.viewBox, { backgroundColor: '#F7ECDF' }]}>
-            <View style={[globalStyles.flexrow, { justifyContent: 'center' }]}>
-              <Image
-                style={styles.img}
-                source={cloud_done}
-                resizeMode="contain"
-              />
-
-              <Text
-                allowFontScaling={false}
-                numberOfLines={2}
-                ellipsizeMode="tail"
-                style={[globalStyles.heading2, { width: 250 }]}
-              >
-                {t('you_have')} {storageData} {t('of_offline_content')}
-              </Text>
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                setShowContentModal(true);
-              }}
-            >
+          {storageData !== '0.00 KB' && (
+            <View style={[styles.viewBox, { backgroundColor: '#F7ECDF' }]}>
               <View
-                style={{
-                  borderWidth: 1,
-                  borderRadius: 20,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
+                style={[globalStyles.flexrow, { justifyContent: 'center' }]}
               >
+                <Image
+                  style={styles.img}
+                  source={cloud_done}
+                  resizeMode="contain"
+                />
+
                 <Text
                   allowFontScaling={false}
-                  style={[globalStyles.heading2, { padding: 10 }]}
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                  style={[globalStyles.heading2, { width: 250 }]}
                 >
-                  {t('clear_all_offline_content')}
+                  {t('you_have')} {storageData} {t('of_offline_content')}
                 </Text>
-                <Octicons
-                  name="arrow-right"
-                  color="black"
-                  size={20}
-                  style={styles.icon}
-                />
               </View>
-            </TouchableOpacity>
-          </View>
 
+              <TouchableOpacity
+                onPress={() => {
+                  setShowContentModal(true);
+                }}
+              >
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderRadius: 20,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text
+                    allowFontScaling={false}
+                    style={[globalStyles.heading2, { padding: 10 }]}
+                  >
+                    {t('clear_all_offline_content')}
+                  </Text>
+                  <Octicons
+                    name="arrow-right"
+                    color="black"
+                    size={20}
+                    style={styles.icon}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+          )}
           <View>
             <View style={styles.viewBox}>
               <View>
