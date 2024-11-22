@@ -72443,7 +72443,7 @@
             n.config.webLink +
             '" target="_blank"><div id="splashScreen" class="splashScreen"> <img src="' +
             n.config.icon +
-            '" class="splash-icon " style="width:100%;height:100%" onerror="this.style.display=\'none\'" /> <span>' +
+            '" class="splash-icon " style="width:60px;height:60px" onerror="this.style.display=\'none\'" /> <span>' +
             n.config.text +
             "</span> </div></a>"
           );
