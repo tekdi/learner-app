@@ -13,6 +13,8 @@ import StackScreen from './Routes/StackScreen';
 import { BackHandler, Text, View } from 'react-native';
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
 import { logEventFunction } from './utils/JsHelper/Helper';
+import messaging from '@react-native-firebase/messaging';
+import PushNotification from 'react-native-push-notification';
 
 const linking = {
   prefixes: ['pratham://'],
@@ -22,6 +24,10 @@ const linking = {
     },
   },
 };
+
+async function requestUserPermission() {
+  PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+}
 
 async function checkAndRequestStoragePermission() {
   if (Platform.OS === 'android' && Platform.Version >= 33) {
@@ -91,6 +97,7 @@ const App = () => {
 
   useEffect(() => {
     changeNavigationBarColor('white', { barStyle: 'light-content' });
+    requestUserPermission();
     // hideNavigationBar();
   }, []);
 
@@ -104,6 +111,55 @@ const App = () => {
       await logEventFunction(obj);
     };
     logEvent();
+  }, []);
+
+  // Create channel (required for Android O and above)
+  PushNotification.createChannel(
+    {
+      channelId: 'default-channel-id', // Unique ID for your channel
+      channelName: 'Default Channel', // Name displayed to the user
+    },
+    (created) => console.log(`Channel created: ${created}`) // Callback
+  );
+
+  const getToken = async () => {
+    const token = await messaging().getToken();
+    console.log({ token });
+  };
+
+  // Configure notifications
+  PushNotification.configure({
+    onNotification: function (notification) {
+      console.log('NOTIFICATION:', notification);
+      // Process the notification when it is received
+    },
+    requestPermissions: Platform.OS === 'ios',
+  });
+
+  useEffect(() => {
+    getToken();
+    PushNotification.configure({
+      onNotification: function (notification) {
+        console.log('Notification received:', notification);
+      },
+      requestPermissions: true,
+    });
+  }, []);
+
+  // Handle foreground messages
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      console.log('Foreground message received:', remoteMessage);
+
+      // Show notification in system tray
+      PushNotification.localNotification({
+        channelId: 'default-channel-id', // Ensure this matches your created channel
+        title: remoteMessage.notification.title,
+        message: remoteMessage.notification.body,
+      });
+    });
+
+    return unsubscribe; // Cleanup listener on unmount
   }, []);
 
   return (

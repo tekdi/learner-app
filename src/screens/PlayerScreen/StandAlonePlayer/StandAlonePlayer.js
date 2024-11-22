@@ -1017,47 +1017,60 @@ const StandAlonePlayer = ({ route }) => {
     console.log('storedContentEidSTART', storedContentEidSTART);
 
     let detailsObject = [];
-    if (storedContentEidSTART.length > 0) {
-      detailsObject.push(storedContentEidSTART[0]);
-    }
-    if (storedContentEidINTERACT.length > 0) {
-      detailsObject.push(storedContentEidINTERACT[0]);
-    }
-    if (storedContentEidEND.length > 0) {
-      detailsObject.push(storedContentEidEND[0]);
-    } else {
-      //for only html content games push end event manually after close app
-      if (content_mime_type == 'application/vnd.ekstep.html-archive') {
-        detailsObject.push({
-          eid: 'END',
-          edata: {
-            duration: 0,
-            mode: 'play',
-            pageid: 'sunbird-player-Endpage',
-            summary: [
-              {
-                progress: 100,
-              },
-              {
-                totallength: '',
-              },
-              {
-                visitedlength: '',
-              },
-              {
-                visitedcontentend: '',
-              },
-              {
-                totalseekedlength: '',
-              },
-              {
-                endpageseen: false,
-              },
-            ],
-            type: 'content',
-          },
-        });
+    try {
+      if (storedContentEidSTART.length > 0) {
+        detailsObject.push(storedContentEidSTART[0]);
       }
+    } catch (error) {
+      console.log('error', error);
+    }
+    try {
+      if (storedContentEidINTERACT.length > 0) {
+        detailsObject.push(storedContentEidINTERACT[0]);
+      }
+    } catch (error) {
+      console.log('error2', error);
+    }
+
+    try {
+      if (storedContentEidEND.length > 0) {
+        detailsObject.push(storedContentEidEND[0]);
+      } else {
+        //for only html content games push end event manually after close app
+        if (content_mime_type == 'application/vnd.ekstep.html-archive') {
+          detailsObject.push({
+            eid: 'END',
+            edata: {
+              duration: 0,
+              mode: 'play',
+              pageid: 'sunbird-player-Endpage',
+              summary: [
+                {
+                  progress: 100,
+                },
+                {
+                  totallength: '',
+                },
+                {
+                  visitedlength: '',
+                },
+                {
+                  visitedcontentend: '',
+                },
+                {
+                  totalseekedlength: '',
+                },
+                {
+                  endpageseen: false,
+                },
+              ],
+              type: 'content',
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.log('error', error);
     }
 
     let userId = await getDataFromStorage('userId');

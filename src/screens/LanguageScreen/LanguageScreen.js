@@ -33,6 +33,7 @@ import {
   createTable,
   getData,
 } from '../../utils/JsHelper/SqliteHelper';
+import messaging from '@react-native-firebase/messaging';
 
 const LanguageScreen = () => {
   const navigation = useNavigation();
