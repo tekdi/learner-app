@@ -20,10 +20,10 @@ import { getSyncTrackingOfflineCourse } from '../../utils/API/AuthService';
 
 const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const navigation = useNavigation();
-  // console.log('########## ContentCard');
+  // console.log('########## ContentCard', item?.identifier);
   // console.log('course_id', course_id);
   // console.log('unit_id', unit_id);
-  //console.log('##########', TrackData);
+  // console.log('##########', TrackData);
 
   const backgroundImages = [
     require('../../assets/images/CardBackground/abstract_01.png'),

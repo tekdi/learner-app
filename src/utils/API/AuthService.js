@@ -708,6 +708,43 @@ export const assessmentListApi = async (params = {}) => {
     return result_offline;
   }
 };
+export const getDoits = async ({ payload }) => {
+  const user_id = await getDataFromStorage('userId');
+  const url = `${EndUrls.contentSearch}`; // Define the URL
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+
+  // Construct curl command
+  const curlCommand = `curl -X POST '${url}' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '${JSON.stringify(payload)}'`;
+  // console.log('Curl Command:', curlCommand);
+
+  try {
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+    if (result) {
+      //store result
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
+      return result?.data?.result;
+    } else {
+      let result_offline = await getApiResponse(user_id, url, 'post', payload);
+      return result_offline;
+    }
+  } catch (e) {
+    console.log('No internet available');
+    let result_offline = await getApiResponse(user_id, url, 'post', payload);
+    return result_offline;
+  }
+};
 
 export const trackAssessment = async (params = {}) => {
   try {
@@ -1296,7 +1333,7 @@ export const eventList = async ({ startDate, endDate }) => {
     -H 'tenantId: ${headers.tenantId}' \\
     -d '${JSON.stringify(payload)}'
         `;
-    console.log('cURL Command:', curlCommand);
+    // console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1495,7 +1532,7 @@ export const getAttendance = async ({ todate, fromDate }) => {
     -H 'tenantId: ${headers.tenantId}' \\
     -d '${JSON.stringify(payload)}'
         `;
-    console.log('cURL Command:', curlCommand);
+    // console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1559,7 +1596,7 @@ curl -X PATCH '${url}' \\
 -H 'tenantId: ${headers.tenantId}' \\
 -d '${JSON.stringify(payload)}'
     `;
-    console.log('cURL Command:', curlCommand);
+    // console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await patch(url, payload, {
