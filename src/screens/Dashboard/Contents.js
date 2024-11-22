@@ -182,7 +182,7 @@ const Contents = () => {
                 setSearchText={setSearchText}
                 searchText={searchText}
                 handleSearch={handleSearch}
-                placeholder={'Search Content'}
+                placeholder={t('Search Content')}
               />
               <SyncCard
               //doneSync={fetchData}

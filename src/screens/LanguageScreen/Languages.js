@@ -32,4 +32,8 @@ export const languages = [
   //   title: 'gujarati',
   //   value: 'gu',
   // },
+  {
+    title: 'urdu',
+    value: 'ur',
+  },
 ];

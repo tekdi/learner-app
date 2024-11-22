@@ -9,6 +9,7 @@ import {
   Alert,
   StatusBar,
   SafeAreaView,
+  I18nManager,
 } from 'react-native';
 import { PermissionsAndroid } from 'react-native';
 import React, { useRef, useEffect, useState, useCallback } from 'react';
@@ -60,7 +61,37 @@ import MimeAlertModal from '../../../components/MimeAletModal/MimeAlertModal';
 const desktopUserAgent =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
 
+//multi language
+import { useTranslation } from '../../../context/LanguageContext';
+
 const StandAlonePlayer = ({ route }) => {
+  //multi language setup
+  const { t, language } = useTranslation();
+
+  //for rtl
+  const isRTL = I18nManager.isRTL;
+
+  console.log('############### isRTL', isRTL);
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      //paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Removes top padding for Android
+    },
+    webview: {
+      flex: 1,
+    },
+    middle_screen: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    },
+  });
+
   console.log('route', route);
   //get courseId and unitId in standalone player
   const navigation = useNavigation();
@@ -1262,6 +1293,14 @@ const StandAlonePlayer = ({ route }) => {
               console.warn('WebView error: ', nativeEvent);
             }}
             onNavigationStateChange={handleNavigationStateChange}
+            /*
+            //for rtl
+            style={[
+              styles.webview,
+              isRTL && { transform: [{ scaleX: -1 }] }, // Apply transform for RTL only
+            ]}
+            contentStyle={{ direction: isRTL ? 'rtl' : 'ltr' }} // Sets text direction inside WebView
+            */
           />
         )}
         <TestResultModal
@@ -1275,25 +1314,5 @@ const StandAlonePlayer = ({ route }) => {
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    //paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Removes top padding for Android
-  },
-  webview: {
-    flex: 1,
-  },
-  middle_screen: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-});
 
 export default StandAlonePlayer;

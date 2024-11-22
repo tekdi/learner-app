@@ -247,8 +247,8 @@ const Courses = () => {
       data = await courseListApi({ payload });
     }*/
 
-    //testing 
-    data = await courseListApi_testing({searchText});
+    //testing
+    data = await courseListApi_testing({ searchText });
 
     //found course progress
     try {
@@ -447,7 +447,7 @@ const Courses = () => {
                 setSearchText={setSearchText}
                 searchText={searchText}
                 handleSearch={handleSearch}
-                placeholder={'Search Courses'}
+                placeholder={t('Search Courses')}
               />
 
               <SyncCard

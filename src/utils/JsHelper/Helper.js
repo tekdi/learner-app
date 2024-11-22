@@ -139,6 +139,7 @@ export const translateLanguage = (code) => {
     te: 'telugu',
     ka: 'kannada',
     gu: 'gujarati',
+    ur: 'urdu',
   };
 
   return languageMap[code] || 'Unknown Language';
@@ -229,6 +230,7 @@ const regionalDigits = {
   en: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
   hi: ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'], // Hindi
   ma: ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'], // Marathi
+  ur: ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'], // Urdu
 };
 const monthNames = {
   en: [
@@ -272,6 +274,20 @@ const monthNames = {
     'ऑक्टोबर',
     'नोव्हेंबर',
     'डिसेंबर',
+  ],
+  ur: [
+    'جنوری',
+    'فروری',
+    'مارچ',
+    'اپریل',
+    'مئی',
+    'جون',
+    'جولائی',
+    'اگست',
+    'ستمبر',
+    'اکتوبر',
+    'نومبر',
+    'دسمبر',
   ],
 };
 // Create a mapping for month abbreviations to indices
