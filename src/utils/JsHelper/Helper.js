@@ -2,6 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BackHandler, PermissionsAndroid } from 'react-native';
 import { getAccessToken } from '../API/AuthService';
 import analytics from '@react-native-firebase/analytics';
+import RNFS from 'react-native-fs';
+import messaging from '@react-native-firebase/messaging';
 
 // Get Saved Data from AsyncStorage
 
@@ -394,7 +396,33 @@ export const getOptionsByCategory = (frameworks, categoryCode) => {
     : [];
 };
 
-export const calculateStorageSize = async () => {
+// Function to calculate the total size of RNFS Document Directory
+async function getDocumentDirectorySize(directoryPath) {
+  try {
+    const files = await RNFS.readDir(directoryPath); // Get list of files in the directory
+    let totalSize = 0;
+
+    // Loop through each file and accumulate its size
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.isDirectory()) {
+        // If it's a directory, recursively calculate its size
+        totalSize += await getDocumentDirectorySize(file.path);
+      } else {
+        // If it's a file, add its size
+        totalSize += file.size;
+      }
+    }
+
+    return totalSize;
+  } catch (error) {
+    console.error('Error calculating Document Directory size:', error);
+    return 0;
+  }
+}
+
+// Function to calculate the size of AsyncStorage for "do_" keys
+export const calculateAsyncStorageSize = async () => {
   try {
     const keys = await AsyncStorage.getAllKeys();
 
@@ -408,14 +436,48 @@ export const calculateStorageSize = async () => {
       totalBytes += key.length + (value ? value.length : 0);
     });
 
-    // Convert bytes to KB or MB for display
-    const sizeInKB = totalBytes / 1024;
-    const sizeInMB = sizeInKB / 1024;
-    return sizeInMB >= 1
-      ? `${sizeInMB.toFixed(2)} MB`
-      : `${sizeInKB.toFixed(2)} KB`;
+    // Return the total size in bytes
+    return totalBytes;
   } catch (error) {
     console.error('Error calculating do_ storage size:', error);
+    return 0; // Return 0 if there's an error
+  }
+};
+
+// Combined function to calculate both AsyncStorage and Document Directory sizes
+export const calculateTotalStorageSize = async () => {
+  try {
+    // Calculate AsyncStorage size in bytes
+    const asyncStorageSizeBytes = await calculateAsyncStorageSize();
+
+    // Calculate RNFS Document Directory size in bytes
+    const documentDirectorySizeBytes = await getDocumentDirectorySize(
+      RNFS.DocumentDirectoryPath
+    );
+    console.log({ asyncStorageSizeBytes, documentDirectorySizeBytes });
+
+    // Sum both sizes in bytes
+    const totalSizeInBytes = asyncStorageSizeBytes + documentDirectorySizeBytes;
+
+    // Convert total size to KB, MB, or GB for display
+    const sizeInKB = totalSizeInBytes / 1024;
+    const sizeInMB = sizeInKB / 1024;
+    const sizeInGB = sizeInMB / 1024;
+
+    // Format the result to show GB, MB, or KB
+    let totalSizeFormatted = '';
+    if (sizeInGB >= 1) {
+      totalSizeFormatted = `${sizeInGB.toFixed(2)} GB`;
+    } else if (sizeInMB >= 1) {
+      totalSizeFormatted = `${sizeInMB.toFixed(2)} MB`;
+    } else {
+      totalSizeFormatted = `${sizeInKB.toFixed(2)} KB`;
+    }
+
+    return totalSizeFormatted;
+  } catch (error) {
+    console.error('Error calculating total storage size:', error);
+    return 'Error';
   }
 };
 
@@ -423,6 +485,7 @@ export const clearDoKeys = async () => {
   try {
     // Retrieve all keys
     const keys = await AsyncStorage.getAllKeys();
+    console.log({ keys });
 
     // Filter keys that start with "do_"
     const doKeys = keys.filter((key) => key.startsWith('do_'));
@@ -437,4 +500,32 @@ export const clearDoKeys = async () => {
   } catch (error) {
     console.error('Error clearing do_ keys from storage:', error);
   }
+};
+
+export const deleteFilesInDirectory = async () => {
+  try {
+    const directoryPath = RNFS.DocumentDirectoryPath;
+
+    // Check if the directory exists
+    const exists = await RNFS.exists(directoryPath);
+    if (exists) {
+      // Delete the entire directory and its contents
+      await RNFS.unlink(directoryPath);
+      console.log('Document directory and its contents have been deleted.');
+    }
+
+    // Recreate the directory after deletion
+    await RNFS.mkdir(directoryPath);
+    console.log('Document directory has been recreated.');
+
+    return true; // Return true to indicate success
+  } catch (error) {
+    console.error('Error clearing the document directory:', error);
+    return false; // Return false in case of an error
+  }
+};
+
+export const getDeviceId = async () => {
+  const token = await messaging().getToken();
+  return token;
 };

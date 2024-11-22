@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "338058217461",
-    "project_id": "pratham-learner-app",
-    "storage_bucket": "pratham-learner-app.appspot.com"
+    "project_number": "839139131975",
+    "project_id": "backend-e99c8",
+    "storage_bucket": "backend-e99c8.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:338058217461:android:325f182d6131ebc60e02bc",
+        "mobilesdk_app_id": "1:839139131975:android:7a8ef53cbb3662f310e762",
         "android_client_info": {
           "package_name": "com.pratham.learning"
         }
@@ -15,7 +15,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDqmmsHvYp87X-jRUbOw5P5F8Ciw10lty0"
+          "current_key": "AIzaSyBhbuUGRTJsXa3CVCg9YIVBxEntDsO7UCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:839139131975:android:9ba56ea9723dac8910e762",
+        "android_client_info": {
+          "package_name": "com.test1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhbuUGRTJsXa3CVCg9YIVBxEntDsO7UCk"
         }
       ],
       "services": {

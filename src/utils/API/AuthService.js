@@ -1457,3 +1457,42 @@ export const LearningMaterialAPI = async () => {
     return handleResponseException(e);
   }
 };
+
+export const notificationSubscribe = async ({ deviceId, user_id }) => {
+  try {
+    console.log('api_called');
+
+    const url = `${EndUrls.notificationSubscribe}/${user_id}`; // Define the URL
+    const headers = await getHeaders(); // Ensure headers are awaited
+    const payload = {
+      userData: {
+        deviceId: deviceId,
+      },
+    };
+
+    // Construct cURL command
+    const curlCommand = `
+curl -X PATCH '${url}' \\
+-H 'Content-Type: application/json' \\
+-H 'Accept: application/json' \\
+-H 'Authorization:  ${headers.Authorization}' \\
+-H 'tenantId: ${headers.tenantId}' \\
+-d '${JSON.stringify(payload)}'
+    `;
+    console.log('cURL Command:', curlCommand);
+
+    // Make the actual request
+    const result = await patch(url, payload, {
+      headers: headers || {},
+    });
+    console.log({ result });
+
+    if (result?.data) {
+      return result?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};

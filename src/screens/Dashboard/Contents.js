@@ -60,8 +60,9 @@ const Contents = () => {
 
   useFocusEffect(
     useCallback(() => {
+      setSearchText('');
       // console.log('########## in focus course');
-      setLoading(true);
+      // setLoading(true);
       //bug fix for not realtime tracking
       //fetchData();
       setTimeout(() => {
