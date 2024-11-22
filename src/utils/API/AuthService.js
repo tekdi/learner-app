@@ -208,7 +208,7 @@ export const updateUser = async ({ payload, user_id }) => {
   }
 };
 
-export const courseListApi_testing = async (params = {}) => {
+export const courseListApi_testing = async ({ searchText }) => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList_testing}`; // Define the URL
   const headers = {
@@ -225,6 +225,28 @@ export const courseListApi_testing = async (params = {}) => {
       sort_by: {
         lastPublishedOn: 'desc',
       },
+      ...(searchText && { query: searchText }), // Add query conditionally
+      fields: [
+        'name',
+        'appIcon',
+        'description',
+        'posterImage',
+        'mimeType',
+        'identifier',
+        'resourceType',
+        'primaryCategory',
+        'contentType',
+        'trackable',
+        'children',
+        'leafNodes',
+      ],
+      facets: [
+        'se_boards',
+        'se_gradeLevels',
+        'se_subjects',
+        'se_mediums',
+        'primaryCategory',
+      ],
       offset: 0,
     },
   };
@@ -492,7 +514,7 @@ export const contentListApi_Pratham = async ({ searchText }) => {
     let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
     payload.request.filters['se_mediums'] = language;
   }*/
-  //console.log('######## payload ', JSON.stringify(payload));
+  console.log('######## payload ', JSON.stringify(payload));
 
   try {
     // Make the actual request
@@ -534,7 +556,11 @@ export const getCohort = async ({ user_id, tenantid, academicYearId }) => {
 
     // Log the curl command
     console.log(
-      `curl -X GET '${url}' -H 'Content-Type: application/json'${headers.Authorization ? ` -H 'Authorization: ${headers.Authorization}'` : ''}
+      `curl -X GET '${url}' -H 'Content-Type: application/json'${
+        headers.Authorization
+          ? ` -H 'Authorization: ${headers.Authorization}'`
+          : ''
+      }
       -H 'tenantid: ${headers.tenantid}'`
     );
 
@@ -1169,7 +1195,9 @@ export const getGeoLocation = async ({ payload }) => {
       Accept: 'application/json',
     };
     console.log(
-      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
+      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
+        payload
+      )}'`
     );
 
     // Make the actual request

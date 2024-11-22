@@ -438,3 +438,7 @@ export const clearDoKeys = async () => {
     console.error('Error clearing do_ keys from storage:', error);
   }
 };
+
+export const findObjectByIdentifier = (array, identifier) => {
+  return array.find((item) => item.identifier === identifier);
+};

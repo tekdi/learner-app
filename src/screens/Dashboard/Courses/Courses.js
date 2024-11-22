@@ -128,7 +128,7 @@ const Courses = () => {
     let data;
     const tenantId = await getTentantId();
     // id = '10a9f829-3652-47d0-b17b-68c4428f9f89';
-    id = '6c8b810a-66c2-4f0d-8c0c-c025415a4414';
+    /*id = '6c8b810a-66c2-4f0d-8c0c-c025415a4414';
     if (tenantId === id) {
       const payload = {
         request: {
@@ -244,10 +244,10 @@ const Courses = () => {
         },
       };
       data = await courseListApi({ payload });
-    }
+    }*/
 
     //testing 
-    data = await courseListApi_testing();
+    data = await courseListApi_testing({searchText});
 
     //found course progress
     try {
@@ -288,7 +288,7 @@ const Courses = () => {
     let result;
     const tenantId = await getTentantId();
     // id = '10a9f829-3652-47d0-b17b-68c4428f9f89';
-    id = '6c8b810a-66c2-4f0d-8c0c-c025415a4414';
+    /*id = '6c8b810a-66c2-4f0d-8c0c-c025415a4414';
     if (tenantId === id) {
       const payload = {
         request: {
@@ -406,7 +406,9 @@ const Courses = () => {
         },
       };
       result = await courseListApi({ payload });
-    }
+    }*/
+
+    result = await courseListApi_testing({ searchText });
     console.log('result?.content', result?.content);
 
     setData(result?.content || []);

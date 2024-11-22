@@ -134,7 +134,7 @@ const Contents = () => {
 
   const handleSearch = async () => {
     setLoading(true);
-    let result = await contentListApi({ searchText });
+    let result = await contentListApi_Pratham({ searchText });
     setData(result?.content || []);
     if (data.length < 0) {
       setSearchText('');

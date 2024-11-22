@@ -5,7 +5,7 @@ import Config from 'react-native-config';
 
 const API_URL = Config.API_URL;
 const CONTENT_URL = Config.CONTENT_URL;
-const tracking_assessment = Config.tracking_assessment;
+const TRACKING_MICROSERVICE = Config.TRACKING_MICROSERVICE;
 const TELEMETRY_URL = Config.TELEMETRY_URL;
 const NEXT_PUBLIC_EVENT_BASE_URL = Config.NEXT_PUBLIC_EVENT_BASE_URL;
 const EVENT_DETAILS = Config.EVENT_DETAILS;
@@ -23,23 +23,23 @@ const EndUrls = {
   programDetails: API_URL + `/user/v1/tenant/read`,
   cohort: API_URL + `/user/v1/cohort/mycohorts`,
   academicyears: API_URL + `/user/v1/academicyears/list`,
-  trackAssessment: `${tracking_assessment}/v1/tracking/assessment/list`,
-  AssessmentCreate: `${tracking_assessment}/v1/tracking/assessment/create`,
-  AssessmentStatus: `${tracking_assessment}/v1/tracking/assessment/search/status`,
-  AssessmentSearch: `${tracking_assessment}/v1/tracking/assessment/search`,
+  trackAssessment: `${TRACKING_MICROSERVICE}/v1/tracking/assessment/list`,
+  AssessmentCreate: `${TRACKING_MICROSERVICE}/v1/tracking/assessment/create`,
+  AssessmentStatus: `${TRACKING_MICROSERVICE}/v1/tracking/assessment/search/status`,
+  AssessmentSearch: `${TRACKING_MICROSERVICE}/v1/tracking/assessment/search`,
   profileDetails: `${API_URL}/user/v1/list`,
   telemetryTracking: TELEMETRY_URL,
-  ContentCreate: `${tracking_assessment}/v1/tracking/content/create`,
-  ContentTrackingStatus: `${tracking_assessment}/v1/tracking/content/search/status`,
-  CourseTrackingStatus: `${tracking_assessment}/v1/tracking/content/course/status`,
+  ContentCreate: `${TRACKING_MICROSERVICE}/v1/tracking/content/create`,
+  ContentTrackingStatus: `${TRACKING_MICROSERVICE}/v1/tracking/content/search/status`,
+  CourseTrackingStatus: `${TRACKING_MICROSERVICE}/v1/tracking/content/course/status`,
   geolocation: `${API_URL}/user/v1/fields/options/read`,
   forgotPassword: `${API_URL}/user/v1/password-reset-link`,
-  eventList: `${NEXT_PUBLIC_EVENT_BASE_URL}/list`,
+  eventList: `${NEXT_PUBLIC_EVENT_BASE_URL}/event-service/event/v1/list`,
   targetedSolutions: `${EVENT_DETAILS}/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
   EventDetails: `${EVENT_DETAILS}/userProjects/details`,
   SolutionEvent: `${EVENT_DETAILS}/solutions/details`,
 
-  attendance: `${API_URL}/user/v1/attendance/list`,
+  attendance: `${API_URL}/api/v1/attendance/list`,
 
   //CMS sunbird saas
   // hierarchy_content: `${CONTENT_URL}/learner/questionset/v1/hierarchy/`, //pass do id at end

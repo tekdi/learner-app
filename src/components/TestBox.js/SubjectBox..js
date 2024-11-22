@@ -18,6 +18,7 @@ import SecondaryButton from '../SecondaryButton/SecondaryButton';
 import {
   capitalizeFirstLetter,
   convertSecondsToMinutes,
+  findObjectByIdentifier,
   getDataFromStorage,
 } from '../../utils/JsHelper/Helper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -27,7 +28,7 @@ import download from '../../assets/images/png/download.png';
 import download_inprogress from '../../assets/images/png/download_inprogress.png';
 import download_complete from '../../assets/images/png/download_complete.png';
 import { getData, storeData } from '../../utils/Helper/JSHelper';
-import { hierarchyContent, listQuestion } from '../../utils/API/ApiCalls';
+import { hierarchyContent, listQuestion, questionsetRead } from '../../utils/API/ApiCalls';
 import RNFS from 'react-native-fs';
 import Config from 'react-native-config';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
@@ -100,8 +101,27 @@ const SubjectBox = ({ name, disabled, data }) => {
       setDownloadIcon(download);
     } else {
       let contentObj = content_response?.result?.questionSet;
+      //fix for response with questionset
+      if (!contentObj) {
+        contentObj = content_response?.result?.questionset;
+      }
+      //console.log('######## contentObj', contentObj);
       let filePath = '';
       if (contentObj?.mimeType == 'application/vnd.sunbird.questionset') {
+        //find outcomeDeclaration
+        let questionsetRead_response = await questionsetRead(content_do_id);
+
+        // console.log(
+        //   '######## questionsetRead_response',
+        //   questionsetRead_response
+        // );
+        if (
+          questionsetRead_response != null &&
+          questionsetRead_response?.result?.questionset
+        ) {
+          contentObj.outcomeDeclaration =
+            questionsetRead_response?.result?.questionset?.outcomeDeclaration;
+        }
         filePath = `${content_file}`;
       }
       if (filePath != '') {
@@ -155,6 +175,35 @@ const SubjectBox = ({ name, disabled, data }) => {
             //console.log('questions', questions.length);
             //console.log('identifiers', identifiers.length);
             if (questions.length == identifiers.length) {
+              //add questions in contentObj for offline use
+              let temp_contentObj = contentObj;
+              if (contentObj?.children) {
+                for (let i = 0; i < contentObj.children.length; i++) {
+                  if (contentObj.children[i]?.children) {
+                    for (
+                      let j = 0;
+                      j < contentObj.children[i]?.children.length;
+                      j++
+                    ) {
+                      let temp_obj = contentObj.children[i]?.children[j];
+                      if (temp_obj?.identifier) {
+                        // Example usage
+                        const identifierToFind = temp_obj.identifier;
+                        const result_question = findObjectByIdentifier(
+                          questions,
+                          identifierToFind
+                        );
+                        //replace with question
+                        temp_contentObj.children[i].children[j] =
+                          result_question;
+                      }
+                    }
+                  }
+                }
+              }
+              contentObj = temp_contentObj;
+              //end add questions in contentObj for offline use
+
               let question_result = {
                 questions: questions,
                 count: questions.length,

@@ -73,7 +73,10 @@ const LoginScreen = () => {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
         const userDetails = await getuserDetails();
-        console.log({ userDetails });
+        console.log(
+          '################### userDetails',
+          JSON.stringify({ userDetails })
+        );
 
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
@@ -86,7 +89,7 @@ const LoginScreen = () => {
         const academicYearId = academicyear?.[0]?.id;
         await setDataInStorage('academicYearId', academicYearId || '');
         const cohort = await getCohort({ user_id, tenantid, academicYearId });
-
+        console.log('################### cohort', JSON.stringify({ cohort }));
         await setDataInStorage('cohortData', JSON.stringify(cohort));
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
         console.log({ cohort_id });

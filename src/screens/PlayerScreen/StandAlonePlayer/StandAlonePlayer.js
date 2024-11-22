@@ -42,6 +42,7 @@ import Config from 'react-native-config';
 
 import Orientation from 'react-native-orientation-locker';
 import {
+  findObjectByIdentifier,
   getDataFromStorage,
   getUserId,
   logEventFunction,
@@ -316,7 +317,7 @@ const StandAlonePlayer = ({ route }) => {
         jsonObj?.scoreDetails &&
         content_mime_type == 'application/vnd.sunbird.questionset'
       ) {
-        //setLoading(true);
+        setLoading(true);
         set_loading_text('Sending Result...');
         try {
           const data = event.nativeEvent.data;
@@ -380,7 +381,7 @@ const StandAlonePlayer = ({ route }) => {
             }
           }
           set_loading_text('');
-          //setLoading(false);
+          setLoading(false);
         } catch (e) {
           console.log('error', e);
         }
@@ -891,6 +892,35 @@ const StandAlonePlayer = ({ route }) => {
             console.log('questions', questions.length);
             console.log('identifiers', identifiers.length);
             if (questions.length == identifiers.length) {
+              //add questions in contentObj for offline use
+              let temp_contentObj = contentObj;
+              if (contentObj?.children) {
+                for (let i = 0; i < contentObj.children.length; i++) {
+                  if (contentObj.children[i]?.children) {
+                    for (
+                      let j = 0;
+                      j < contentObj.children[i]?.children.length;
+                      j++
+                    ) {
+                      let temp_obj = contentObj.children[i]?.children[j];
+                      if (temp_obj?.identifier) {
+                        // Example usage
+                        const identifierToFind = temp_obj.identifier;
+                        const result_question = findObjectByIdentifier(
+                          questions,
+                          identifierToFind
+                        );
+                        //replace with question
+                        temp_contentObj.children[i].children[j] =
+                          result_question;
+                      }
+                    }
+                  }
+                }
+              }
+              contentObj = temp_contentObj;
+              //end add questions in contentObj for offline use
+
               let question_result = {
                 questions: questions,
                 count: questions.length,
@@ -947,9 +977,9 @@ const StandAlonePlayer = ({ route }) => {
               {
                 qumlPlayerConfig: qumlPlayerConfig,
                 //for online
-                questionListUrl: questionListUrl,
+                //questionListUrl: questionListUrl,
                 //for offline
-                //questionListUrl: '/list/questions',
+                questionListUrl: '/list/questions',
               }
             )}));
             localStorage.setItem('questions_data', JSON.stringify(${JSON.stringify(
@@ -1227,7 +1257,8 @@ const StandAlonePlayer = ({ route }) => {
         <TestResultModal
           modal={modal}
           title={title}
-          isFromCourse={courseId == content_do_id ? true : false}
+          //isFromCourse={courseId == content_do_id ? true : false}
+          isFromCourse={false}
         />
         {alertModal && <MimeAlertModal textTitle={errorDetail} />}
       </SafeAreaView>
