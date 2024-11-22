@@ -72,6 +72,7 @@ const Courses = () => {
 
   useFocusEffect(
     useCallback(() => {
+      setSearchText('');
       const onBackPress = () => {
         if (routeName === 'Courses') {
           setShowExitModal(true);

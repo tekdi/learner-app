@@ -3,6 +3,7 @@ import { BackHandler, PermissionsAndroid } from 'react-native';
 import { getAccessToken } from '../API/AuthService';
 import analytics from '@react-native-firebase/analytics';
 import RNFS from 'react-native-fs';
+import messaging from '@react-native-firebase/messaging';
 
 // Get Saved Data from AsyncStorage
 
@@ -522,4 +523,9 @@ export const deleteFilesInDirectory = async () => {
     console.error('Error clearing the document directory:', error);
     return false; // Return false in case of an error
   }
+};
+
+export const getDeviceId = async () => {
+  const token = await messaging().getToken();
+  return token;
 };

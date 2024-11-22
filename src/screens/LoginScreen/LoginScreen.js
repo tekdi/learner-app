@@ -17,11 +17,13 @@ import {
   getCohort,
   getProfileDetails,
   login,
+  notificationSubscribe,
   setAcademicYear,
 } from '../../utils/API/AuthService';
 import {
   getAcademicYearId,
   getDataFromStorage,
+  getDeviceId,
   getuserDetails,
   getUserId,
   saveAccessToken,
@@ -73,8 +75,6 @@ const LoginScreen = () => {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
         const userDetails = await getuserDetails();
-        console.log({ userDetails });
-
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
@@ -110,6 +110,8 @@ const LoginScreen = () => {
         } else {
           navigation.navigate('Dashboard');
         }
+        const deviceId = await getDeviceId();
+        await notificationSubscribe({ deviceId, user_id });
       } else {
         setLoading(false);
         setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));

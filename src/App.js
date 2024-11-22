@@ -12,7 +12,7 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/StackScreen';
 import { BackHandler, Text, View } from 'react-native';
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
-import { logEventFunction } from './utils/JsHelper/Helper';
+import { getDeviceId, logEventFunction } from './utils/JsHelper/Helper';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 
@@ -122,11 +122,6 @@ const App = () => {
     (created) => console.log(`Channel created: ${created}`) // Callback
   );
 
-  const getToken = async () => {
-    const token = await messaging().getToken();
-    console.log({ token });
-  };
-
   // Configure notifications
   PushNotification.configure({
     onNotification: function (notification) {
@@ -137,13 +132,16 @@ const App = () => {
   });
 
   useEffect(() => {
-    getToken();
-    PushNotification.configure({
-      onNotification: function (notification) {
-        console.log('Notification received:', notification);
-      },
-      requestPermissions: true,
-    });
+    const fetchData = async () => {
+      const deviceId = await getDeviceId();
+      PushNotification.configure({
+        onNotification: function (notification) {
+          console.log('Notification received:', notification);
+        },
+        requestPermissions: true,
+      });
+    };
+    fetchData();
   }, []);
 
   // Handle foreground messages

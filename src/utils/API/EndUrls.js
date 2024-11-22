@@ -45,9 +45,9 @@ const EndUrls = {
   targetedSolutions: `${EVENT_DETAILS}/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
   EventDetails: `${EVENT_DETAILS}/userProjects/details`,
   SolutionEvent: `${EVENT_DETAILS}/solutions/details`,
-
   attendance: `${API_URL}/user/v1/attendance/list`,
   framework: `${CONTENT_URL}/api/framework/v1/read/gujaratboardfw`,
+  notificationSubscribe: `${API_URL}/user/v1/update`,
 };
 
 export default EndUrls;
