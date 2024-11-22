@@ -59,6 +59,14 @@ const Courses = () => {
   });
 
   useEffect(() => {
+    const fetch = async () => {
+      const cohort_id = await getDataFromStorage('cohortId');
+      console.log({ cohort_id });
+    };
+    fetch();
+  }, []);
+
+  useEffect(() => {
     const logEvent = async () => {
       const obj = {
         eventName: 'course_page_view',
@@ -247,8 +255,8 @@ const Courses = () => {
       data = await courseListApi({ payload });
     }*/
 
-    //testing 
-    data = await courseListApi_testing({searchText});
+    //testing
+    data = await courseListApi_testing({ searchText });
 
     //found course progress
     try {
@@ -413,9 +421,11 @@ const Courses = () => {
     console.log('result?.content', result?.content);
 
     setData(result?.content || []);
-    if (data.length < 0) {
-      setSearchText('');
-    }
+    console.log(result?.content?.length, 'ddddd');
+
+    // if (result?.content?.length == undefined) {
+    //   setSearchText('');
+    // }
     setLoading(false);
   };
 

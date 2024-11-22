@@ -40,8 +40,8 @@ const MaterialCardView = ({ route }) => {
       // console.log('reachedElse');
       const result = await EventDetails({ id });
       setDetails(result?.tasks || []);
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   useEffect(() => {

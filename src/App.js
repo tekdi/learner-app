@@ -12,9 +12,14 @@ import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/StackScreen';
 import { BackHandler, Text, View } from 'react-native';
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
-import { getDeviceId, logEventFunction } from './utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  getDeviceId,
+  logEventFunction,
+} from './utils/JsHelper/Helper';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
+import { notificationSubscribe } from './utils/API/AuthService';
 
 const linking = {
   prefixes: ['pratham://'],
@@ -25,8 +30,29 @@ const linking = {
   },
 };
 
+const fetchData = async () => {
+  const user_id = await getDataFromStorage('userId');
+  const deviceId = await getDeviceId();
+  if (user_id) {
+    await notificationSubscribe({ deviceId, user_id });
+  }
+};
+
 async function requestUserPermission() {
-  PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+    );
+
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('Permission granted');
+      await fetchData();
+    } else {
+      console.log('Permission denied');
+    }
+  } catch (error) {
+    console.error('Error requesting permission:', error);
+  }
 }
 
 async function checkAndRequestStoragePermission() {
@@ -133,7 +159,6 @@ const App = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const deviceId = await getDeviceId();
       PushNotification.configure({
         onNotification: function (notification) {
           console.log('Notification received:', notification);
