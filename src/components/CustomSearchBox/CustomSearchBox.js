@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import debounce from 'lodash.debounce';
 
 const CustomSearchBox = ({
   setSearchText,
@@ -9,6 +10,18 @@ const CustomSearchBox = ({
   handleSearch,
   placeholder,
 }) => {
+  const debouncedSearch = useCallback(
+    debounce((query) => {
+      handleSearch(query);
+    }, 500), // Adjust debounce time in milliseconds as needed
+    []
+  );
+
+  const onChangeText = (text) => {
+    setSearchText(text);
+    debouncedSearch(text);
+  };
+
   return (
     <View style={styles.searchContainer}>
       <TextInput
@@ -16,11 +29,11 @@ const CustomSearchBox = ({
         placeholder={placeholder}
         placeholderTextColor="black"
         value={searchText}
-        onChangeText={setSearchText}
+        onChangeText={onChangeText}
       />
-      <TouchableOpacity onPress={handleSearch} style={styles.searchButton}>
+      <View style={styles.searchButton}>
         <Ionicons name="search" size={24} color="#4D4639" />
-      </TouchableOpacity>
+      </View>
     </View>
   );
 };

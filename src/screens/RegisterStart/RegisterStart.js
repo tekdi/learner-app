@@ -25,7 +25,7 @@ const RegisterStart = () => {
   const [locationStatus, setLocationStatus] = useState(null);
 
   const navigate = () => {
-    navigation.navigate('LoginSignUpScreen');
+    navigation.goBack();
   };
 
   const handleClick = async () => {
