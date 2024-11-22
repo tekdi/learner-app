@@ -23,7 +23,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   // console.log('########## ContentCard');
   // console.log('course_id', course_id);
   // console.log('unit_id', unit_id);
-  console.log('##########', TrackData);
+  //console.log('##########', TrackData);
 
   const backgroundImages = [
     require('../../assets/images/CardBackground/abstract_01.png'),
@@ -201,8 +201,14 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
             {mimeType === 'x-youtube'
               ? `YouTube`
               : mimeType === 'vnd.ekstep.html-archive'
-                ? `Web`
-                : capitalizeFirstLetter(mimeType)}
+              ? `Web`
+              : mimeType == 'vnd.ekstep.h5p-archive'
+              ? `H5P`
+              : mimeType == 'vnd.ekstep.h5p-archive'
+              ? `ECML`
+              : mimeType == 'vnd.sunbird.questionset'
+              ? `QUML`
+              : capitalizeFirstLetter(mimeType)}
           </Text>
         </View>
         <View style={styles.view}>

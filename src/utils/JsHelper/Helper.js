@@ -502,6 +502,10 @@ export const clearDoKeys = async () => {
   }
 };
 
+export const findObjectByIdentifier = (array, identifier) => {
+  return array.find((item) => item.identifier === identifier);
+};
+
 export const deleteFilesInDirectory = async () => {
   try {
     const directoryPath = RNFS.DocumentDirectoryPath;

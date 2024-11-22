@@ -17,6 +17,7 @@ import { getData, removeData, storeData } from '../../utils/Helper/JSHelper';
 import {
   hierarchyContent,
   listQuestion,
+  questionsetRead,
   readContent,
 } from '../../utils/API/ApiCalls';
 import RNFS from 'react-native-fs';
@@ -31,6 +32,7 @@ import HorizontalLine from '../HorizontalLine/HorizontalLine';
 import { Icon, TopNavigation } from '@ui-kitten/components';
 import Svg, { Circle, Text as SvgText } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
+import { findObjectByIdentifier } from '../../utils/JsHelper/Helper';
 
 const DownloadCard = ({ contentId, contentMimeType, name }) => {
   const navigation = useNavigation();
@@ -159,20 +161,16 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
   // Handle the back button press while downloading
   const handleBackPress = () => {
     if (isDownloading) {
-      Alert.alert(
-        t('cancel_download'),
-        t('go_back_cancel_download'),
-        [
-          { text: t('no'), style: 'cancel' },
-          {
-            text: t('yes'),
-            onPress: () => {
-              cancelDownload();
-              navigation.goBack();
-            },
+      Alert.alert(t('cancel_download'), t('go_back_cancel_download'), [
+        { text: t('no'), style: 'cancel' },
+        {
+          text: t('yes'),
+          onPress: () => {
+            cancelDownload();
+            navigation.goBack();
           },
-        ]
-      );
+        },
+      ]);
       return true; // Prevent default back action
     }
     return false; // Allow back action
@@ -328,8 +326,26 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
       setDownloadIcon(download);
     } else {
       let contentObj = content_response?.result?.questionSet;
+      //fix for response with questionset
+      if (!contentObj) {
+        contentObj = content_response?.result?.questionset;
+      }
       let filePath = '';
       if (contentObj?.mimeType == 'application/vnd.sunbird.questionset') {
+        //find outcomeDeclaration
+        let questionsetRead_response = await questionsetRead(content_do_id);
+
+        // console.log(
+        //   '######## questionsetRead_response',
+        //   questionsetRead_response
+        // );
+        if (
+          questionsetRead_response != null &&
+          questionsetRead_response?.result?.questionset
+        ) {
+          contentObj.outcomeDeclaration =
+            questionsetRead_response?.result?.questionset?.outcomeDeclaration;
+        }
         filePath = `${content_file}`;
       }
       if (filePath != '') {
@@ -383,6 +399,35 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
             //console.log('questions', questions.length);
             //console.log('identifiers', identifiers.length);
             if (questions.length == identifiers.length) {
+              //add questions in contentObj for offline use
+              let temp_contentObj = contentObj;
+              if (contentObj?.children) {
+                for (let i = 0; i < contentObj.children.length; i++) {
+                  if (contentObj.children[i]?.children) {
+                    for (
+                      let j = 0;
+                      j < contentObj.children[i]?.children.length;
+                      j++
+                    ) {
+                      let temp_obj = contentObj.children[i]?.children[j];
+                      if (temp_obj?.identifier) {
+                        // Example usage
+                        const identifierToFind = temp_obj.identifier;
+                        const result_question = findObjectByIdentifier(
+                          questions,
+                          identifierToFind
+                        );
+                        //replace with question
+                        temp_contentObj.children[i].children[j] =
+                          result_question;
+                      }
+                    }
+                  }
+                }
+              }
+              contentObj = temp_contentObj;
+              //end add questions in contentObj for offline use
+
               let question_result = {
                 questions: questions,
                 count: questions.length,

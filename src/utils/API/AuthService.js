@@ -208,7 +208,7 @@ export const updateUser = async ({ payload, user_id }) => {
   }
 };
 
-export const courseListApi_testing = async (params = {}) => {
+export const courseListApi_testing = async ({ searchText }) => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList_testing}`; // Define the URL
   const headers = {
@@ -218,16 +218,14 @@ export const courseListApi_testing = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        se_boards: ['west bengal board of secondary education'],
-        se_mediums: ['english'],
-        se_gradeLevels: ['class 10', 'class 09', 'class 08'],
+        status: ['Live'],
         primaryCategory: ['Course'],
-        visibility: ['Default', 'Parent'],
       },
       limit: 100,
       sort_by: {
         lastPublishedOn: 'desc',
       },
+      ...(searchText && { query: searchText }), // Add query conditionally
       fields: [
         'name',
         'appIcon',
@@ -258,6 +256,7 @@ export const courseListApi_testing = async (params = {}) => {
     const result = await post(url, payload, {
       headers: headers || {},
     });
+    console.loh = ('####### result ', JSON.stringify(result));
 
     if (result) {
       // store result
@@ -464,6 +463,85 @@ export const contentListApi = async ({ searchText }) => {
   }
 };
 
+export const contentListApi_Pratham = async ({ searchText }) => {
+  const user_id = await getDataFromStorage('userId');
+  const url = `${EndUrls.contentList}`; // Define the URL
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  let payload = {
+    request: {
+      filters: {
+        board: ['CBSE'],
+        primaryCategory: ['Learning Resource', 'Practice Question Set'],
+        visibility: ['Default', 'Parent'],
+      },
+      limit: 100,
+      sort_by: {
+        lastPublishedOn: 'desc',
+      },
+      ...(searchText && { query: searchText }), // Add query conditionally
+      fields: [
+        'name',
+        'appIcon',
+        'description',
+        'posterImage',
+        'mimeType',
+        'identifier',
+        'resourceType',
+        'primaryCategory',
+        'contentType',
+        'trackable',
+        'children',
+        'leafNodes',
+      ],
+      facets: [
+        'se_boards',
+        'se_gradeLevels',
+        'se_subjects',
+        'se_mediums',
+        'primaryCategory',
+      ],
+      offset: 0,
+    },
+  };
+
+  //get language user
+  //removed below filter for Pilot release
+  /*const result = JSON.parse(await getDataFromStorage('profileData'));
+  if (result?.getUserDetails?.[0]?.customFields?.[0]?.value) {
+    let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
+    payload.request.filters['se_mediums'] = language;
+  }*/
+  console.log('######## payload ', JSON.stringify(payload));
+
+  try {
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+    if (result) {
+      // store result
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
+      return result?.data?.result;
+    } else {
+      let result_offline = await getApiResponse(user_id, url, 'post', payload);
+      return result_offline;
+    }
+  } catch (e) {
+    console.log('no internet available', e);
+    let result_offline = await getApiResponse(user_id, url, 'post', payload);
+    return result_offline;
+  }
+};
+
 export const getCohort = async ({ user_id, tenantid, academicYearId }) => {
   try {
     const token = await getDataFromStorage('Accesstoken');
@@ -478,7 +556,11 @@ export const getCohort = async ({ user_id, tenantid, academicYearId }) => {
 
     // Log the curl command
     console.log(
-      `curl -X GET '${url}' -H 'Content-Type: application/json'${headers.Authorization ? ` -H 'Authorization: ${headers.Authorization}'` : ''}
+      `curl -X GET '${url}' -H 'Content-Type: application/json'${
+        headers.Authorization
+          ? ` -H 'Authorization: ${headers.Authorization}'`
+          : ''
+      }
       -H 'tenantid: ${headers.tenantid}'`
     );
 
@@ -1113,7 +1195,9 @@ export const getGeoLocation = async ({ payload }) => {
       Accept: 'application/json',
     };
     console.log(
-      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(payload)}'`
+      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
+        payload
+      )}'`
     );
 
     // Make the actual request
