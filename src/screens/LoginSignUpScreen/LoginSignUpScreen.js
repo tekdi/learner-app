@@ -8,6 +8,8 @@ import { useTranslation } from '../../context/LanguageContext';
 
 import Logo from '../../assets/images/png/logo.png';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const LoginSignUpScreen = () => {
   //multi language setup
   const { t } = useTranslation();
@@ -30,9 +32,7 @@ const LoginSignUpScreen = () => {
       {/* Icon png here */}
       <View style={styles.container_image}>
         <Image style={styles.image} source={Logo} resizeMode="contain" />
-        <Text allowFontScaling={false} style={styles.title}>
-          {t('let_log_in')}
-        </Text>
+        <GlobalText style={styles.title}>{t('let_log_in')}</GlobalText>
       </View>
       <View style={styles.buttonContainer}>
         <PrimaryButton

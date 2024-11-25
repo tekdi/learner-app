@@ -13,6 +13,8 @@ import globalStyles from '../../../../../utils/Helper/Style';
 import { useTranslation } from '../../../../../context/LanguageContext';
 import ActiveLoading from '../../../../LoadingScreen/ActiveLoading';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const MaterialCardView = ({ route }) => {
   const { subjectName, type } = route.params;
   const [details, setDetails] = useState([]);
@@ -69,7 +71,9 @@ const MaterialCardView = ({ route }) => {
               );
             })
           ) : (
-            <Text style={globalStyles.heading}>{t('no_topics')}</Text>
+            <GlobalText style={globalStyles.heading}>
+              {t('no_topics')}
+            </GlobalText>
           )}
         </ScrollView>
       )}

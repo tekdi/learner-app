@@ -15,6 +15,8 @@ import DeviceInfo from 'react-native-device-info'; // Import DeviceInfo
 //for react native config env : dev uat prod
 import Config from 'react-native-config';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const Loading = (style) => {
   // Get the version and build number
   const version = DeviceInfo.getVersion(); // e.g., "1.0.1"
@@ -33,10 +35,10 @@ const Loading = (style) => {
           <Spinner size="large" style={styles.spinner} />
         </View>
         <View style={styles.footer}>
-          <Text allowFontScaling={false} style={styles.versionText}>
+          <GlobalText style={styles.versionText}>
             Version {version} (Build {buildNumber}){' '}
             {Config.ENV != 'PROD' ? Config.ENV : ''}
-          </Text>
+          </GlobalText>
         </View>
       </View>
     </SafeAreaView>

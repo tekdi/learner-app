@@ -3,6 +3,8 @@ import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const CustomCardLanguage = ({
   title,
   style,
@@ -18,8 +20,7 @@ const CustomCardLanguage = ({
       onPress={() => clickEvent(value)}
     >
       <View style={active ? [styles.cardActive, style] : [styles.card, style]}>
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={[
             styles.title,
             {
@@ -29,7 +30,7 @@ const CustomCardLanguage = ({
           ]}
         >
           {t(title)}
-        </Text>
+        </GlobalText>
       </View>
     </TouchableOpacity>
   );

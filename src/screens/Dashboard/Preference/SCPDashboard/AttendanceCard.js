@@ -17,6 +17,8 @@ import FastImage from '@changwoolab/react-native-fast-image';
 import { getAttendance } from '../../../../utils/API/AuthService';
 import { setDataInStorage } from '../../../../utils/JsHelper/Helper';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const AttendanceCard = ({ attendance }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -90,40 +92,42 @@ const AttendanceCard = ({ attendance }) => {
                 presentPercentage <= 35
                   ? require('../../../../assets/images/gif/turtle.gif')
                   : presentPercentage <= 65
-                    ? require('../../../../assets/images/gif/rabbit.gif')
-                    : presentPercentage <= 99
-                      ? require('../../../../assets/images/gif/horse.gif')
-                      : require('../../../../assets/images/gif/happy.gif')
+                  ? require('../../../../assets/images/gif/rabbit.gif')
+                  : presentPercentage <= 99
+                  ? require('../../../../assets/images/gif/horse.gif')
+                  : require('../../../../assets/images/gif/happy.gif')
               }
               resizeMode={FastImage.resizeMode.contain}
               priority={FastImage.priority.high} // Set the priority here
             />
           </View>
           <View style={{ width: '80%', marginLeft: 25 }}>
-            <Text style={[globalStyles.heading2, { fontWeight: 800 }]}>
+            <GlobalText style={[globalStyles.heading2, { fontWeight: 800 }]}>
               {presentPercentage}%
-            </Text>
-            <Text style={[globalStyles.text, { color: '#635E57' }]}>
+            </GlobalText>
+            <GlobalText style={[globalStyles.text, { color: '#635E57' }]}>
               {t('overall_attendance')}
-            </Text>
-            <Text style={[globalStyles.text, { color: '#1A8825' }]}>
+            </GlobalText>
+            <GlobalText style={[globalStyles.text, { color: '#1A8825' }]}>
               {presentPercentage <= 35
                 ? t('attendance_1')
                 : presentPercentage <= 65
-                  ? t('attendance_2')
-                  : presentPercentage <= 99
-                    ? t('attendance_3')
-                    : t('attendance_4')}
-            </Text>
+                ? t('attendance_2')
+                : presentPercentage <= 99
+                ? t('attendance_3')
+                : t('attendance_4')}
+            </GlobalText>
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('FullAttendance');
               }}
               style={[globalStyles.flexrow, { marginTop: 10 }]}
             >
-              <Text style={[globalStyles.subHeading, { color: '#0D599E' }]}>
+              <GlobalText
+                style={[globalStyles.subHeading, { color: '#0D599E' }]}
+              >
                 {t('see_my_full_attendance')}
-              </Text>
+              </GlobalText>
               <Octicons
                 name="arrow-right"
                 style={{ marginHorizontal: 10 }}

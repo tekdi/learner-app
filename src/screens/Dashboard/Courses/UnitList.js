@@ -32,6 +32,8 @@ import {
   logEventFunction,
 } from '../../../utils/JsHelper/Helper';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const UnitList = ({ route }) => {
   const { children, name, course_id, unit_id, headingName } = route.params;
   // console.log('########## UnitList');
@@ -140,23 +142,21 @@ const UnitList = ({ route }) => {
         <ScrollView>
           <View style={{ padding: 20 }}>
             {headingName && (
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[globalStyles.heading, { marginBottom: 10 }]}
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
                 {headingName}
-              </Text>
+              </GlobalText>
             )}
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[globalStyles.heading2]}
               numberOfLines={2}
               ellipsizeMode="tail"
             >
               {name}
-            </Text>
+            </GlobalText>
           </View>
           <View
             style={{

@@ -41,6 +41,8 @@ import globalStyles from '../../utils/Helper/Style';
 import { useInternet } from '../../context/NetworkContext';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const LoginScreen = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -163,26 +165,25 @@ const LoginScreen = () => {
               resizeMode="contain"
               style={{ width: 30, height: 30 }}
             />
-            <Text
-              allowFontScaling={false}
+            <GlobalText
+              
               style={[globalStyles.heading2, { color: '#4D4639' }]}
             >
               {t('back')}
-            </Text>
+            </GlobalText>
           </TouchableOpacity> */}
           <View style={{ paddingVertical: 5 }}>
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[globalStyles.heading, { marginTop: 15, color: 'black' }]}
             >
               {t('login')}
-            </Text>
-            {/* <Text
-              allowFontScaling={false}
+            </GlobalText>
+            {/* <GlobalText
+              
               style={[globalStyles.subHeading, { marginVertical: 5 }]}
             >
               {t('login_with_the_cred')}
-            </Text> */}
+            </GlobalText> */}
           </View>
           <View style={styles.textfieldbox}>
             <UserNameField
@@ -200,12 +201,9 @@ const LoginScreen = () => {
             </View>
 
             {errmsg !== '' && (
-              <Text
-                allowFontScaling={false}
-                style={{ color: 'red', top: -10, left: 20 }}
-              >
+              <GlobalText style={{ color: 'red', top: -10, left: 20 }}>
                 {t(errmsg || 'invalid_username_or_password')}
-              </Text>
+              </GlobalText>
             )}
           </View>
           <TouchableOpacity
@@ -214,8 +212,7 @@ const LoginScreen = () => {
             }}
             style={{ paddingLeft: 20, marginBottom: 30 }}
           >
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={{
                 color: '#0D599E',
                 fontFamily: 'Poppins-Medium',
@@ -223,12 +220,12 @@ const LoginScreen = () => {
               }}
             >
               {t('forgot_password')}
-            </Text>
+            </GlobalText>
           </TouchableOpacity>
           {/* <View style={globalStyles.flexrow}>
             <CustomCheckbox value={savePassword} onChange={setSavePassword} />
             <View>
-              <Text allowFontScaling={false} style={globalStyles.subHeading}>{t('remember_me')}</Text>
+              <GlobalText  style={globalStyles.subHeading}>{t('remember_me')}</GlobalText>
             </View>
           </View> */}
           {/* <View style={[globalStyles.flexrow, { paddingTop: 10 }]}>
@@ -236,20 +233,20 @@ const LoginScreen = () => {
               <CustomCheckbox value={acceptTerms} onChange={setAcceptTerms} />
             </View>
             <View>
-              <Text allowFontScaling={false} style={globalStyles.subHeading}>
+              <GlobalText  style={globalStyles.subHeading}>
                 {t('Read_T_&_C')}
-              </Text>
+              </GlobalText>
               <Pressable
                 onPress={() => {
                   navigation.navigate('TermsAndCondition');
                 }}
               >
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
+                  
                   style={[globalStyles.subHeading, { color: '#0D599E' }]}
                 >
                   {t('terms_and_conditions2')}
-                </Text>
+                </GlobalText>
               </Pressable>
             </View>
           </View> */}
@@ -266,12 +263,9 @@ const LoginScreen = () => {
             }}
             style={{ alignItems: 'center', padding: 20 }}
           >
-            <Text
-              allowFontScaling={false}
-              style={[globalStyles.text, { color: '#0D599E' }]}
-            >
+            <GlobalText style={[globalStyles.text, { color: '#0D599E' }]}>
               {t('dont_have_account')}
-            </Text>
+            </GlobalText>
           </Pressable>
         </ScrollView>
       )}

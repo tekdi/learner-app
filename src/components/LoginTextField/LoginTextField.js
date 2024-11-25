@@ -5,13 +5,14 @@ import { TouchableWithoutFeedback } from '@ui-kitten/components/devsupport';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const LoginTextField = ({ text, position = 'static', onChangeText, value }) => {
   const [passwordView, setPasswordView] = useState(false);
   const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <TextInput
-        allowFontScaling={false}
         autoCapitalize="none" // Ensures keyboard stays in lowercase
         secureTextEntry={text === 'password' && !passwordView}
         onChangeText={onChangeText}
@@ -20,10 +21,7 @@ const LoginTextField = ({ text, position = 'static', onChangeText, value }) => {
       />
 
       <View style={styles.overlap}>
-        <Text allowFontScaling={false} style={styles.text}>
-          {' '}
-          {t(text)}{' '}
-        </Text>
+        <GlobalText style={styles.text}> {t(text)} </GlobalText>
       </View>
       {text === 'password' && (
         <TouchableWithoutFeedback

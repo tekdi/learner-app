@@ -13,7 +13,7 @@ import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 import CustomCardLanguage from '../../components/CustomCardLanguage/CustomCardLanguage';
-import { languages } from './Languages';
+import { languages } from '@context/Languages';
 // Multi-language context
 import { useTranslation } from '../../context/LanguageContext';
 
@@ -34,6 +34,8 @@ import {
   getData,
 } from '../../utils/JsHelper/SqliteHelper';
 import messaging from '@react-native-firebase/messaging';
+
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const LanguageScreen = () => {
   const navigation = useNavigation();
@@ -186,9 +188,9 @@ const LanguageScreen = () => {
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         {/* Text Samples here */}
         <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-          <Text allowFontScaling={false} category="s1" style={styles.title}>
+          <GlobalText category="s1" style={styles.title}>
             {t('welcome')}!
-          </Text>
+          </GlobalText>
           {/* Use to load gif and images fast */}
           <FastImage
             style={styles.gif_image}
@@ -197,12 +199,10 @@ const LanguageScreen = () => {
             priority={FastImage.priority.high} // Set the priority here
           />
         </View>
-        <Text allowFontScaling={false} style={styles.subtitle}>
-          {t('choose_language')}
-        </Text>
-        <Text allowFontScaling={false} category="p1" style={styles.description}>
+        <GlobalText style={styles.subtitle}>{t('choose_language')}</GlobalText>
+        <GlobalText category="p1" style={styles.description}>
           {t('select_language')}
-        </Text>
+        </GlobalText>
         <View>
           <FlatList
             showsVerticalScrollIndicator={false}
@@ -241,14 +241,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     marginTop: 15,
     fontWeight: '600',
+    color: 'black',
   },
   subtitle: {
     marginTop: 5,
     fontFamily: 'Poppins-Bold',
+    color: 'black',
   },
   description: {
     marginTop: 5,
     fontFamily: 'Poppins-Regular',
+    color: 'black',
   },
   list: {
     height: '55%',

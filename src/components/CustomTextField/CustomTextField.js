@@ -4,6 +4,8 @@ import { Controller } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const CustomTextField = ({
   position = 'static',
   secureTextEntry,
@@ -24,7 +26,6 @@ const CustomTextField = ({
       render={({ field: { onChange, value, onBlur } }) => (
         <View style={styles.container}>
           <TextInput
-            allowFontScaling={false}
             style={[
               styles.input,
               { position: position },
@@ -41,19 +42,17 @@ const CustomTextField = ({
             keyboardType={keyboardType} // Opens numeric keyboard by default
           />
           <View style={styles.overlap}>
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[
                 styles.text,
                 { color: errors[field.name] ? 'red' : '#4D4639' },
               ]}
             >
               {t(field.label)}
-            </Text>
+            </GlobalText>
           </View>
           {errors[field.name] && (
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={{
                 color: 'red',
                 alignSelf: 'flex-start',
@@ -63,7 +62,7 @@ const CustomTextField = ({
               }}
             >
               {errors[field.name].message}
-            </Text>
+            </GlobalText>
           )}
         </View>
       )}

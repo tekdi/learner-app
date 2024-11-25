@@ -8,6 +8,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { capitalizeFirstLetter } from '../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const TestResultModal = ({ modal, title, isFromCourse }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -36,9 +38,9 @@ const TestResultModal = ({ modal, title, isFromCourse }) => {
       >
         <View style={styles.alertBox}>
           <View style={styles.View}>
-            <Text allowFontScaling={false} style={globalStyles.heading}>
+            <GlobalText style={globalStyles.heading}>
               {t(capitalizeFirstLetter(title))}
-            </Text>
+            </GlobalText>
           </View>
           <TouchableOpacity
             activeOpacity={1} // Prevent closing the modal when clicking inside the alert box
@@ -49,15 +51,11 @@ const TestResultModal = ({ modal, title, isFromCourse }) => {
               size={48}
               color="#1A8825"
             />
-            <Text
-              allowFontScaling={false}
-              style={[globalStyles.heading2, { marginVertical: 10 }]}
-            >
+            <GlobalText style={[globalStyles.heading2, { marginVertical: 10 }]}>
               {t('test_completed')}
-            </Text>
+            </GlobalText>
             {modal?.totalMaxScore && (
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[
                   globalStyles.subHeading,
                   {
@@ -70,29 +68,27 @@ const TestResultModal = ({ modal, title, isFromCourse }) => {
                 ]}
               >
                 {t('your_marks')} {modal?.totalScore}/{modal?.totalMaxScore}
-              </Text>
+              </GlobalText>
             )}
             {!modal?.totalMaxScore && (
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[
                   globalStyles.text,
                   { textAlign: 'center', marginVertical: 10 },
                 ]}
               >
                 {t('your_test_will_be_auto_saved_once_you_are_back_online')}
-              </Text>
+              </GlobalText>
             )}
           </TouchableOpacity>
           <View style={styles.btnbox}>
             <Button status="primary" style={styles.btn} onPress={closeModal}>
               {() => (
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
                   style={[globalStyles.subHeading, { marginRight: 10 }]}
                 >
                   {t('okay')}
-                </Text>
+                </GlobalText>
               )}
             </Button>
           </View>

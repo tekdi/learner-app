@@ -66,6 +66,8 @@ import { useInternet } from '../../context/NetworkContext';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import ProfileHeader from './ProfileHeader';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
   form.fields.forEach((field) => {

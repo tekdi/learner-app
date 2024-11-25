@@ -7,6 +7,8 @@ import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import { useNavigation } from '@react-navigation/native';
 import globalStyles from '../../utils/Helper/Style';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const AssessmentHeader = ({
   testText,
   questionsets,
@@ -22,39 +24,33 @@ const AssessmentHeader = ({
   if (status === 'Completed') {
     content = (
       <View style={globalStyles.flexrow}>
-        <Text allowFontScaling={false} style={globalStyles.subHeading}>
+        <GlobalText style={globalStyles.subHeading}>
           {t('Overallscore')}{' '}
-          <Text
-            allowFontScaling={false}
-            style={{ color: percentage > 35 ? '#1A8825' : 'red' }}
-          >
+          <GlobalText style={{ color: percentage > 35 ? '#1A8825' : 'red' }}>
             {percentage}%
-          </Text>
-        </Text>
-        <Text allowFontScaling={false} style={styles.smileyText}>
+          </GlobalText>
+        </GlobalText>
+        <GlobalText style={styles.smileyText}>
           {percentage > 35 && `😄`}
-        </Text>
+        </GlobalText>
       </View>
     );
   } else if (status === 'In_Progress') {
     content = (
       <View style={globalStyles.flexrow}>
         <Icon name="circle-o" size={24} color="#4D4639" />
-        <Text
-          allowFontScaling={false}
-          style={[globalStyles.subHeading, { marginLeft: 10 }]}
-        >
+        <GlobalText style={[globalStyles.subHeading, { marginLeft: 10 }]}>
           {t('Inprogress')} ({completedCount} {t('out_of')}{' '}
           {questionsets?.length} {t('completed')})
-        </Text>
+        </GlobalText>
       </View>
     );
   } else {
     content = (
       <View style={globalStyles.flexrow}>
-        <Text allowFontScaling={false} style={globalStyles.subHeading}>
+        <GlobalText style={globalStyles.subHeading}>
           {t('not_started')}
-        </Text>
+        </GlobalText>
       </View>
     );
   }
@@ -73,13 +69,11 @@ const AssessmentHeader = ({
             color={'#000'}
             size={30}
           />
-          {/* <Text allowFontScaling={false}>Back</Text> */}
+          {/* <GlobalText >Back</GlobalText> */}
         </TouchableOpacity>
       </View>
       <View style={styles.rightContainer}>
-        <Text allowFontScaling={false} style={globalStyles.subHeading}>
-          {t(testText)}
-        </Text>
+        <GlobalText style={globalStyles.subHeading}>{t(testText)}</GlobalText>
         {content}
       </View>
     </View>

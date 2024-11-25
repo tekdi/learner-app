@@ -24,6 +24,8 @@ import RNFS from 'react-native-fs';
 import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const EpubPlayerOffline = () => {
   const [loading, setLoading] = useState(true);
   // content id
@@ -205,11 +207,9 @@ const EpubPlayerOffline = () => {
       <View style={styles.middle_screen}>
         <ActivityIndicator size="large" color="#0000ff" />
         {progress > 0 && progress < 100 ? (
-          <Text allowFontScaling={false}>{`Downloading: ${progress.toFixed(
-            2
-          )}%`}</Text>
+          <GlobalText>{`Downloading: ${progress.toFixed(2)}%`}</GlobalText>
         ) : loading_text != '' ? (
-          <Text allowFontScaling={false}>{loading_text}</Text>
+          <GlobalText>{loading_text}</GlobalText>
         ) : (
           <></>
         )}
@@ -228,7 +228,7 @@ const EpubPlayerOffline = () => {
     <View style={styles.container}>
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
-          <Text allowFontScaling={false}>Invalid Player File</Text>
+          <GlobalText>Invalid Player File</GlobalText>
         </View>
       ) : is_download == true ? (
         <View style={styles.middle_screen}>
@@ -271,7 +271,7 @@ const EpubPlayerOffline = () => {
           }
         }}
       />
-      {retrievedData && <Text allowFontScaling={false}>{retrievedData}</Text>} */}
+      {retrievedData && <GlobalText >{retrievedData}</GlobalText>} */}
     </View>
   );
 };

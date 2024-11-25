@@ -12,6 +12,8 @@ import { useTranslation } from '../../context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
 import PropTypes from 'prop-types';
 
+import GlobalText from '@components/GlobalText/GlobalText';
+
 const BackButtonHandler = ({
   exitRoute,
   onCancel,
@@ -35,8 +37,7 @@ const BackButtonHandler = ({
           <View style={styles.alertBox}>
             <Image source={question} resizeMode="contain" />
 
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[
                 globalStyles.subHeading,
                 { fontWeight: '700', textAlign: 'center', marginVertical: 20 },
@@ -45,31 +46,31 @@ const BackButtonHandler = ({
               {logout
                 ? t('are_you_sure_you_want_to_logout_the_app')
                 : content_delete
-                  ? t('content_delete')
-                  : t('are_you_sure_you_want_to_exit_the_app')}
-            </Text>
+                ? t('content_delete')
+                : t('are_you_sure_you_want_to_exit_the_app')}
+            </GlobalText>
             {content_delete && (
-              <Text style={[globalStyles.subHeading, { textAlign: 'center' }]}>
+              <GlobalText
+                style={[globalStyles.subHeading, { textAlign: 'center' }]}
+              >
                 {t('content_delete_desp')}
-              </Text>
+              </GlobalText>
             )}
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={onCancel}>
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[globalStyles.subHeading, { color: '#0D599E' }]}
               >
                 {t('no')}
-              </Text>
+              </GlobalText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={onExit}>
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[globalStyles.subHeading, { color: '#0D599E' }]}
               >
                 {t('yes')}
-              </Text>
+              </GlobalText>
             </TouchableOpacity>
           </View>
         </View>

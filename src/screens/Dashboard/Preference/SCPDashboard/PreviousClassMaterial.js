@@ -19,6 +19,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { eventList } from '../../../../utils/API/AuthService';
 import { categorizeEvents } from '../../../../utils/JsHelper/Helper';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const PreviousClassMaterial = () => {
   const navigation = useNavigation();
   const { t, language } = useTranslation();
@@ -107,9 +109,9 @@ const PreviousClassMaterial = () => {
                 size={30}
               />
             </TouchableOpacity>
-            <Text style={[globalStyles.heading2]}>
+            <GlobalText style={[globalStyles.heading2]}>
               {t('previous_class_materials')}
-            </Text>
+            </GlobalText>
           </View>
           <TouchableOpacity
             onPress={() => {
@@ -117,9 +119,11 @@ const PreviousClassMaterial = () => {
             }}
             style={[globalStyles.flexrow, { alignSelf: 'flex-end' }]}
           >
-            <Text style={[globalStyles.text, { color: '#0D599E', top: 2 }]}>
+            <GlobalText
+              style={[globalStyles.text, { color: '#0D599E', top: 2 }]}
+            >
               {currentMonthName}
-            </Text>
+            </GlobalText>
 
             <Octicons
               name="calendar"
@@ -131,23 +135,31 @@ const PreviousClassMaterial = () => {
           <View style={{ marginVertical: 20 }}>
             <WeeklyCalendar setDate={setEventDate} />
           </View>
-          <Text style={globalStyles.subHeading}>{t('planned_sessions')}</Text>
+          <GlobalText style={globalStyles.subHeading}>
+            {t('planned_sessions')}
+          </GlobalText>
 
           {eventData?.plannedSessions?.length > 0 ? (
             eventData.plannedSessions.map((item, key) => (
               <Accordion postrequisites key={key} item={item} />
             ))
           ) : (
-            <Text style={globalStyles.text}>{t('no_sessions_scheduled')}</Text>
+            <GlobalText style={globalStyles.text}>
+              {t('no_sessions_scheduled')}
+            </GlobalText>
           )}
 
-          <Text style={globalStyles.subHeading}>{t('extra_sessions')}</Text>
+          <GlobalText style={globalStyles.subHeading}>
+            {t('extra_sessions')}
+          </GlobalText>
           {eventData?.extraSessions?.length > 0 ? (
             eventData.extraSessions.map((item, key) => (
               <Accordion postrequisites key={key} item={item} />
             ))
           ) : (
-            <Text style={globalStyles.text}>{t('no_sessions_scheduled')}</Text>
+            <GlobalText style={globalStyles.text}>
+              {t('no_sessions_scheduled')}
+            </GlobalText>
           )}
         </ScrollView>
 

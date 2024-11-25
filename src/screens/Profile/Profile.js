@@ -41,6 +41,8 @@ import cloud_done from '../../assets/images/png/cloud_done.png';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from '@changwoolab/react-native-fast-image';
 
+import GlobalText from '@components/GlobalText/GlobalText';
+
 const Profile = (props) => {
   const { t } = useTranslation();
   const [userData, setUserData] = useState();
@@ -166,9 +168,9 @@ const Profile = (props) => {
       ) : (
         <ScrollView style={[globalStyles.container, { padding: 0 }]}>
           <View style={styles.view}>
-            <Text allowFontScaling={false} style={globalStyles.heading}>
+            <GlobalText style={globalStyles.heading}>
               {t('my_profile')}
-            </Text>
+            </GlobalText>
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('ProfileUpdateScreen');
@@ -188,14 +190,13 @@ const Profile = (props) => {
                   resizeMode="contain"
                 />
 
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
                   numberOfLines={2}
                   ellipsizeMode="tail"
                   style={[globalStyles.heading2, { width: 250 }]}
                 >
                   {t('you_have')} {storageData} {t('of_offline_content')}
-                </Text>
+                </GlobalText>
               </View>
 
               <TouchableOpacity
@@ -212,12 +213,9 @@ const Profile = (props) => {
                     justifyContent: 'center',
                   }}
                 >
-                  <Text
-                    allowFontScaling={false}
-                    style={[globalStyles.heading2, { padding: 10 }]}
-                  >
+                  <GlobalText style={[globalStyles.heading2, { padding: 10 }]}>
                     {t('clear_all_offline_content')}
-                  </Text>
+                  </GlobalText>
                   <Octicons
                     name="arrow-right"
                     color="black"
@@ -234,9 +232,9 @@ const Profile = (props) => {
             end={{ x: 1, y: 1.5 }} // Gradient ending point
             style={styles.gradient}
           >
-            <Text style={[globalStyles.subHeading, { fontWeight: 700 }]}>
+            <GlobalText style={[globalStyles.subHeading, { fontWeight: 700 }]}>
               {capitalizeName(userData?.name)}
-            </Text>
+            </GlobalText>
             <TextField text={userData?.username} />
           </LinearGradient>
           <View>
@@ -277,14 +275,14 @@ const Profile = (props) => {
             </View>
           </View>
           <View style={{ marginHorizontal: 20 }}>
-            <Text
+            <GlobalText
               style={[
                 globalStyles.text,
                 { color: '#7C766F', marginBottom: 20 },
               ]}
             >
               {t('other_settings')}
-            </Text>
+            </GlobalText>
             <View style={globalStyles.flexrow}>
               <TouchableOpacity
                 style={globalStyles.flexrow}
@@ -298,13 +296,13 @@ const Profile = (props) => {
                   resizeMode={FastImage.resizeMode.contain}
                   priority={FastImage.priority.high}
                 />
-                <Text
+                <GlobalText
                   style={[globalStyles.subHeading]}
                   numberOfLines={4}
                   ellipsizeMode="tail"
                 >
                   {t('clear_all_offline_content')} ( {storageData})
-                </Text>
+                </GlobalText>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -333,9 +331,9 @@ const Profile = (props) => {
                 style={styles.icon}
               />
 
-              <Text style={[globalStyles.subHeading, { marginLeft: 15 }]}>
+              <GlobalText style={[globalStyles.subHeading, { marginLeft: 15 }]}>
                 {t('reset_password')}
-              </Text>
+              </GlobalText>
             </TouchableOpacity>
             <TouchableOpacity
               style={[globalStyles.flexrow, { marginBottom: 20 }]}
@@ -345,9 +343,9 @@ const Profile = (props) => {
             >
               <Icon name="logout" color="black" size={25} style={styles.icon} />
 
-              <Text style={[globalStyles.subHeading, { marginLeft: 15 }]}>
+              <GlobalText style={[globalStyles.subHeading, { marginLeft: 15 }]}>
                 {t('logout')}
-              </Text>
+              </GlobalText>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -377,7 +375,7 @@ const Profile = (props) => {
                 size={25}
                 color={'#1170DC'}
               />
-              <Text
+              <GlobalText
                 allowFontScaling={false}
                 style={[
                   globalStyles.subHeading,
@@ -388,7 +386,7 @@ const Profile = (props) => {
                 ]}
               >
                 {t('content_delete_desp')}
-              </Text>
+              </GlobalText>
             </View>
             <View style={styles.buttonContainer}>
               <TouchableOpacity
@@ -397,12 +395,12 @@ const Profile = (props) => {
                   setConentView(false);
                 }}
               >
-                <Text
+                <GlobalText
                   allowFontScaling={false}
                   style={[globalStyles.subHeading, { color: '#0D599E' }]}
                 >
                   {t('yes')}
-                </Text>
+                </GlobalText>
               </TouchableOpacity>
             </View>
           </View>

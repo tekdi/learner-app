@@ -15,6 +15,8 @@ import HorizontalLine from '../HorizontalLine/HorizontalLine';
 import PropTypes from 'prop-types';
 import globalStyles from '../../utils/Helper/Style';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const PlainTcText = ({ setIsDisable, isDisable }) => {
   const { t } = useTranslation();
   const [checked, setChecked] = useState(false);
@@ -41,77 +43,48 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
 
   return (
     <SafeAreaView style={{ marginTop: 20, height: '100%' }}>
-      <Text allowFontScaling={false} style={styles.text1}>
+      <GlobalText style={styles.text1}>
         {t('T&C')}{' '}
-        <Text allowFontScaling={false} style={{ fontWeight: 'bold' }}>
+        <GlobalText style={{ fontWeight: 'bold' }}>
           {t('create_account')}
-        </Text>{' '}
+        </GlobalText>{' '}
         {t('button')}
-      </Text>
+      </GlobalText>
 
       <View>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_1')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_2')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_3')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_4')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_5')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_6')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_7')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_8')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_9')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_10')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_11')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('office_adrress')}
-        </Text>
-        <Text
-          allowFontScaling={false}
+        <GlobalText style={styles.text2}>{t('T&C_1')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_2')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_3')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_4')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_5')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_6')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_7')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_8')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_9')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_10')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_11')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('office_adrress')}</GlobalText>
+        <GlobalText
           style={[styles.text2, { color: '#0563C1' }]}
           onPress={sendEmail}
         >
           {t('office_email')}
-        </Text>
+        </GlobalText>
         <View style={globalStyles.flexrow}>
-          <Text
-            allowFontScaling={false}
+          <GlobalText
             style={[styles.text2, { color: '#0563C1' }]}
             onPress={callPhone}
           >
             {t('office_phone')}
-          </Text>
-          <Text
-            allowFontScaling={false}
+          </GlobalText>
+          <GlobalText
             style={[styles.text2, { color: '#0563C1' }]}
             onPress={openWebsite}
           >
             {t('office_website')}
-          </Text>
+          </GlobalText>
         </View>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('office_cin')}
-        </Text>
+        <GlobalText style={styles.text2}>{t('office_cin')}</GlobalText>
 
         <HorizontalLine />
       </View>
@@ -129,7 +102,7 @@ const PlainTcText = ({ setIsDisable, isDisable }) => {
             setIsDisable(!isDisable);
           }}
         />
-        <Text allowFontScaling={false} style={[styles.text3]}>{t('T&C_12')}</Text>
+        <GlobalText  style={[styles.text3]}>{t('T&C_12')}</GlobalText>
       </View> */}
     </SafeAreaView>
   );

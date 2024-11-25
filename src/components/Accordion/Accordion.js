@@ -25,6 +25,8 @@ import {
 import ContentCard from '../../screens/Dashboard/ContentCard';
 import { courseTrackingStatus } from '../../utils/API/ApiCalls';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 function getFilteredData(data, topic) {
   return data
     .map((item) => {
@@ -160,22 +162,22 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
         onPress={() => setAccordionOpen(!isAccordionOpen)}
       >
         {title ? (
-          <Text
+          <GlobalText
             numberOfLines={1}
             ellipsizeMode="tail"
             style={[globalStyles.text]}
           >
             {t(title)}
-          </Text>
+          </GlobalText>
         ) : (
-          <Text
+          <GlobalText
             numberOfLines={1}
             ellipsizeMode="tail"
             style={[globalStyles.text]}
           >
             {item?.metadata?.subject || ''}{' '}
             {item?.shortDescription && `- ${item?.shortDescription}`}
-          </Text>
+          </GlobalText>
         )}
         <Icon
           name={isAccordionOpen ? 'angle-up' : 'angle-down'}
@@ -245,9 +247,9 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
                 </View>
               ))
             ) : (
-              <Text style={[globalStyles.text, { marginLeft: 10 }]}>
+              <GlobalText style={[globalStyles.text, { marginLeft: 10 }]}>
                 {t('no_topics')}
-              </Text>
+              </GlobalText>
             )}
           </ScrollView>
         </View>

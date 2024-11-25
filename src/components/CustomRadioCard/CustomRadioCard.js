@@ -16,6 +16,8 @@ import program from '../../assets/images/png/program.png';
 import globalStyles from '../../utils/Helper/Style';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const CustomRadioCard = ({
   field,
   name,
@@ -99,9 +101,7 @@ const CustomRadioCard = ({
                   style={styles.radio}
                   onChange={() => handlePress(index)}
                 >
-                  <Text allowFontScaling={false} style={styles.title}>
-                    {option.name}
-                  </Text>
+                  <GlobalText style={styles.title}>{option.name}</GlobalText>
                 </Radio>
               </View>
               {/* <Image style={styles.img} source={program} resizeMode="contain" /> */}
@@ -116,9 +116,9 @@ const CustomRadioCard = ({
                   renderItem={renderItem}
                 />
               </View>
-              <Text allowFontScaling={false} style={globalStyles.subHeading}>
+              <GlobalText style={globalStyles.subHeading}>
                 {option.description}
-              </Text>
+              </GlobalText>
             </TouchableOpacity>
           ))}
 
@@ -132,13 +132,13 @@ const CustomRadioCard = ({
                 style={styles.radio}
                 onChange={() => handlePress(field?.options?.length + 1)}
               >
-                <Text allowFontScaling={false} style={styles.title}>
+                <GlobalText  style={styles.title}>
                   {t('optional_content')}
-                </Text>
+                </GlobalText>
               </Radio>
             </View>
-            <Text
-              allowFontScaling={false}
+            <GlobalText
+              
               style={[
                 globalStyles.subHeading,
                 {
@@ -151,13 +151,11 @@ const CustomRadioCard = ({
               ]}
             >
               {t('optional_content_des')}
-            </Text>
+            </GlobalText>
           </TouchableOpacity> */}
         </View>
         {errors[name] && (
-          <Text allowFontScaling={false} style={styles.error}>
-            {errors[name]?.message}
-          </Text>
+          <GlobalText style={styles.error}>{errors[name]?.message}</GlobalText>
         )}
       </ScrollView>
     </RadioGroup>

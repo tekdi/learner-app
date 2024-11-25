@@ -3,6 +3,8 @@ import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const CustomTextInput = ({
   position = 'static',
   secureTextEntry,
@@ -18,7 +20,6 @@ const CustomTextInput = ({
   return (
     <View style={styles.container}>
       <TextInput
-        allowFontScaling={false}
         style={[
           styles.input,
           { position: position },
@@ -31,16 +32,12 @@ const CustomTextInput = ({
         keyboardType={keyboardType}
       />
       <View style={styles.overlap}>
-        <Text
-          allowFontScaling={false}
-          style={[styles.text, { color: error ? 'red' : '#4D4639' }]}
-        >
+        <GlobalText style={[styles.text, { color: error ? 'red' : '#4D4639' }]}>
           {t(field)}
-        </Text>
+        </GlobalText>
       </View>
       {error && (
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={{
             color: 'red',
             alignSelf: 'flex-start',
@@ -50,7 +47,7 @@ const CustomTextInput = ({
           }}
         >
           {field} {t('is_required')}
-        </Text>
+        </GlobalText>
       )}
     </View>
   );

@@ -5,6 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from '../../context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const ProfileHeader = ({ onPress }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -23,16 +25,12 @@ const ProfileHeader = ({ onPress }) => {
             color={'#0D599E'}
             size={30}
           />
-          {/* <Text allowFontScaling={false}>Back</Text> */}
+          {/* <GlobalText >Back</GlobalText> */}
         </TouchableOpacity>
-        <Text allowFontScaling={false} style={styles.text}>
-          {t('profile')}
-        </Text>
+        <GlobalText style={styles.text}>{t('profile')}</GlobalText>
       </View>
       <TouchableOpacity onPress={onPress}>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('save')}
-        </Text>
+        <GlobalText style={styles.text2}>{t('save')}</GlobalText>
       </TouchableOpacity>
     </View>
   );

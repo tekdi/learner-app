@@ -22,6 +22,8 @@ import {
 } from '../../../../utils/JsHelper/Helper';
 import RocketImageClub from '../../../../components/rocketImageClub/RocketImageClub';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const SessionView = () => {
   const navigation = useNavigation();
   const { t, language } = useTranslation();
@@ -117,9 +119,9 @@ const SessionView = () => {
               size={30}
             />
           </TouchableOpacity>
-          <Text style={[globalStyles.heading2]}>
+          <GlobalText style={[globalStyles.heading2]}>
             {t('prepare_for')} {getTomorrowDate()} {t('sessions')}
-          </Text>
+          </GlobalText>
         </View>
         <View style={[globalStyles.flexrow, { marginVertical: 20 }]}>
           <View>
@@ -153,13 +155,13 @@ const SessionView = () => {
               color={'#000'}
               horizontal
             />
-            <Text style={[globalStyles.text, { color: '#1A8825' }]}>
+            <GlobalText style={[globalStyles.text, { color: '#1A8825' }]}>
               {percentage <= 10
                 ? t('lets_get_started_dive_in')
                 : percentage === 100
-                  ? t('mission_accomplished')
-                  : t('great_start_keep_going')}
-            </Text>
+                ? t('mission_accomplished')
+                : t('great_start_keep_going')}
+            </GlobalText>
           </View>
         </View>
         <ScrollView style={{ height: '80%' }}>
@@ -167,14 +169,18 @@ const SessionView = () => {
             return <Accordion setTrack={setTrack} key={key} item={item} />;
           })}
 
-          <Text style={globalStyles.subHeading}>{t('extra_sessions')}</Text>
+          <GlobalText style={globalStyles.subHeading}>
+            {t('extra_sessions')}
+          </GlobalText>
 
           {eventData?.extraSessions?.length > 0 ? (
             eventData.extraSessions.map((item, key) => (
               <Accordion setTrack={setTrack} key={key} item={item} />
             ))
           ) : (
-            <Text style={globalStyles.text}>{t('no_sessions_scheduled')}</Text>
+            <GlobalText style={globalStyles.text}>
+              {t('no_sessions_scheduled')}
+            </GlobalText>
           )}
         </ScrollView>
       </View>
