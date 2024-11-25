@@ -113,10 +113,7 @@ const UnitList = ({ route }) => {
       //console.log('########## courseList', courseList);
       //get course track data
       let userId = await getDataFromStorage('userId');
-      let course_track_data = await courseTrackingStatus(
-        userId,
-        courseList
-      );
+      let course_track_data = await courseTrackingStatus(userId, courseList);
       //console.log('########## course_track_data', course_track_data?.data);
       let courseTrackData = [];
       if (course_track_data?.data) {
@@ -141,7 +138,7 @@ const UnitList = ({ route }) => {
         <ActivityIndicator style={{ top: 300 }} />
       ) : (
         <ScrollView>
-          <View style={{ padding: 20, paddingBottom: 10 }}>
+          <View style={{ padding: 20 }}>
             {headingName && (
               <Text
                 allowFontScaling={false}
@@ -154,7 +151,7 @@ const UnitList = ({ route }) => {
             )}
             <Text
               allowFontScaling={false}
-              style={[globalStyles.heading2, { marginBottom: 10 }]}
+              style={[globalStyles.heading2]}
               numberOfLines={2}
               ellipsizeMode="tail"
             >
@@ -164,7 +161,8 @@ const UnitList = ({ route }) => {
           <View
             style={{
               padding: 20,
-              backgroundColor: '#F7ECDF',
+              paddingTop: 0,
+              // backgroundColor: '#F7ECDF',
               justifyContent: 'space-between',
               flexWrap: 'wrap',
               flexDirection: 'row',
