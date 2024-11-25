@@ -5,6 +5,8 @@ import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import { Layout, Text } from '@ui-kitten/components';
 import { useTranslation } from '../../context/LanguageContext';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const CustomBottomCard = ({ onPress }) => {
   //multi language setup
   const { t } = useTranslation();
@@ -13,8 +15,7 @@ const CustomBottomCard = ({ onPress }) => {
     <View>
       <View style={styles.overlap}>
         <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <Text
-            allowFontScaling={false}
+          <GlobalText
             category="p2"
             style={{
               marginBottom: 10,
@@ -24,7 +25,7 @@ const CustomBottomCard = ({ onPress }) => {
             }}
           >
             {t('language_help')}
-          </Text>
+          </GlobalText>
           <PrimaryButton onPress={onPress} text={t('continue')}></PrimaryButton>
         </Layout>
       </View>

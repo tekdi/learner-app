@@ -13,6 +13,8 @@ import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import { useNavigation } from '@react-navigation/native';
 import Accordion from '../../../../components/Accordion/Accordion';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const SubjectDetails = ({ route }) => {
   const { topic, subTopic, courseType, item } = route.params;
   const navigation = useNavigation();
@@ -37,14 +39,14 @@ const SubjectDetails = ({ route }) => {
             size={30}
           />
         </TouchableOpacity>
-        <Text style={[globalStyles.heading2]}>{topic}</Text>
+        <GlobalText style={[globalStyles.heading2]}>{topic}</GlobalText>
       </View>
       <View style={{ left: 50 }}>
         {subTopic?.map((item, key) => {
           return (
-            <Text key={key} style={styles.accordionDetails}>
+            <GlobalText key={key} style={styles.accordionDetails}>
               {item}
-            </Text>
+            </GlobalText>
           );
         })}
       </View>

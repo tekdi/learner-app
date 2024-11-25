@@ -36,6 +36,8 @@ import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import CustomSearchBox from '../../components/CustomSearchBox/CustomSearchBox';
 import globalStyles from '../../utils/Helper/Style';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const Contents = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -171,13 +173,13 @@ const Contents = () => {
             <SafeAreaView>
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
-                <Text allowFontScaling={false} style={styles.text2}>
+                <GlobalText style={styles.text2}>
                   {t('welcome')}, {capitalizeName(userInfo?.[0]?.name)}!
-                </Text>
+                </GlobalText>
               </View>
-              <Text allowFontScaling={false} style={styles.text}>
+              <GlobalText style={styles.text}>
                 {t('Learning_Content')}
-              </Text>
+              </GlobalText>
               <CustomSearchBox
                 setSearchText={setSearchText}
                 searchText={searchText}
@@ -210,9 +212,9 @@ const Contents = () => {
                     );
                   })
                 ) : (
-                  <Text style={globalStyles.heading2}>
+                  <GlobalText style={globalStyles.heading2}>
                     {t('no_data_found')}
-                  </Text>
+                  </GlobalText>
                 )}
                 {/* <FlatList
                   data={data}

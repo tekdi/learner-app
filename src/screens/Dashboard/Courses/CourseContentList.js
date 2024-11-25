@@ -36,6 +36,8 @@ import StatusCardCourse from '../../../components/StatusCard/StatusCardCourse';
 import { languages } from '../../LanguageScreen/Languages';
 import { useTranslation } from '../../../context/LanguageContext';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const CourseContentList = ({ route }) => {
   const { language } = useTranslation();
   const { do_id, course_id, content_list_node } = route.params;
@@ -267,14 +269,13 @@ const CourseContentList = ({ route }) => {
       ) : (
         <ScrollView>
           <View style={{ padding: 20, paddingBottom: 10 }}>
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[globalStyles.heading3, { marginBottom: 10 }]}
               numberOfLines={2}
               ellipsizeMode="tail"
             >
               {coursesContent?.name}
-            </Text>
+            </GlobalText>
             <FastImage
               style={styles.image}
               source={
@@ -288,12 +289,11 @@ const CourseContentList = ({ route }) => {
               resizeMode={FastImage.resizeMode.cover} // Adjust to cover the circular area
             />
             <View style={globalStyles.flexrow}>
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[globalStyles.subHeading, { marginVertical: 10 }]}
               >
                 {coursesContent?.description}
-              </Text>
+              </GlobalText>
             </View>
             <View
               style={[
@@ -332,13 +332,12 @@ const CourseContentList = ({ route }) => {
                       backgroundColor="#e6e6e6"
                       textStyle={{ fontSize: 8, color: 'black' }}
                     />
-                    <Text
-                      allowFontScaling={false}
+                    <GlobalText
                       style={{ marginLeft: 10, color: '#000' }}
                     >{`${translateDigits(
                       Math.round((trackCompleted / 100) * 100),
                       language
-                    )}%`}</Text>
+                    )}%`}</GlobalText>
                     <TextField
                       style={[globalStyles.text, { fontSize: 12 }]}
                       text={'completed'}
@@ -350,10 +349,10 @@ const CourseContentList = ({ route }) => {
                       trackCompleted >= 100
                         ? 'completed'
                         : trackCompleted > 0
-                          ? 'inprogress'
-                          : trackProgress > 0
-                            ? 'progress'
-                            : 'not_started'
+                        ? 'inprogress'
+                        : trackProgress > 0
+                        ? 'progress'
+                        : 'not_started'
                     }
                     trackCompleted={trackCompleted}
                     viewStyle={{

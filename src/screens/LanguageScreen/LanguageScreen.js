@@ -35,6 +35,8 @@ import {
 } from '../../utils/JsHelper/SqliteHelper';
 import messaging from '@react-native-firebase/messaging';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const LanguageScreen = () => {
   const navigation = useNavigation();
   const { t, setLanguage, language } = useTranslation();
@@ -186,9 +188,9 @@ const LanguageScreen = () => {
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         {/* Text Samples here */}
         <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-          <Text allowFontScaling={false} category="s1" style={styles.title}>
+          <GlobalText category="s1" style={styles.title}>
             {t('welcome')}!
-          </Text>
+          </GlobalText>
           {/* Use to load gif and images fast */}
           <FastImage
             style={styles.gif_image}
@@ -197,12 +199,10 @@ const LanguageScreen = () => {
             priority={FastImage.priority.high} // Set the priority here
           />
         </View>
-        <Text allowFontScaling={false} style={styles.subtitle}>
-          {t('choose_language')}
-        </Text>
-        <Text allowFontScaling={false} category="p1" style={styles.description}>
+        <GlobalText style={styles.subtitle}>{t('choose_language')}</GlobalText>
+        <GlobalText category="p1" style={styles.description}>
           {t('select_language')}
-        </Text>
+        </GlobalText>
         <View>
           <FlatList
             showsVerticalScrollIndicator={false}

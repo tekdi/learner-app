@@ -14,6 +14,8 @@ import female from '../../assets/images/png/female.png';
 import male from '../../assets/images/png/male.png';
 import transgender from '../../assets/images/png/transgender.png';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const CustomCards = ({
   field,
   name,
@@ -55,8 +57,7 @@ const CustomCards = ({
       <ScrollView>
         <View style={styles.cardContainer}>
           {field.name === 'gender' && (
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={{
                 color: 'black',
                 fontSize: 18,
@@ -67,7 +68,7 @@ const CustomCards = ({
               }}
             >
               {t('gender')}
-            </Text>
+            </GlobalText>
           )}
           <View style={styles.cardWrapper}>
             {field.options.map((option, index) => (
@@ -86,13 +87,12 @@ const CustomCards = ({
                       option.label == 'FEMALE'
                         ? female
                         : option.label == 'MALE'
-                          ? male
-                          : option.label == 'TRANSGENDER' && transgender
+                        ? male
+                        : option.label == 'TRANSGENDER' && transgender
                     }
                   />
                 )}
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
                   style={[
                     {
                       color: 'black',
@@ -110,15 +110,13 @@ const CustomCards = ({
                   ellipsizeMode="tail"
                 >
                   {t(option.label.toLowerCase())}
-                </Text>
+                </GlobalText>
               </TouchableOpacity>
             ))}
           </View>
         </View>
         {errors[name] && (
-          <Text allowFontScaling={false} style={styles.error}>
-            {errors[name].message}
-          </Text>
+          <GlobalText style={styles.error}>{errors[name].message}</GlobalText>
         )}
       </ScrollView>
     </View>

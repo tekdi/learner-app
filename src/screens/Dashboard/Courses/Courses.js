@@ -41,6 +41,8 @@ import ActiveLoading from '../../LoadingScreen/ActiveLoading';
 import CustomSearchBox from '../../../components/CustomSearchBox/CustomSearchBox';
 import globalStyles from '../../../utils/Helper/Style';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const Courses = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -445,13 +447,13 @@ const Courses = () => {
               />
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
-                <Text allowFontScaling={false} style={styles.text2}>
+                <GlobalText style={styles.text2}>
                   {t('welcome')}, {capitalizeName(userInfo?.[0]?.name)} !
-                </Text>
+                </GlobalText>
               </View>
-              <Text allowFontScaling={false} style={styles.text}>
+              <GlobalText style={styles.text}>
                 {youthnet ? t('l1_courses') : t('courses')}
-              </Text>
+              </GlobalText>
 
               <CustomSearchBox
                 setSearchText={setSearchText}
@@ -478,7 +480,9 @@ const Courses = () => {
                   TrackData={trackData}
                 />
               ) : (
-                <Text style={globalStyles.heading2}>{t('no_data_found')}</Text>
+                <GlobalText style={globalStyles.heading2}>
+                  {t('no_data_found')}
+                </GlobalText>
               )}
             </SafeAreaView>
           )}

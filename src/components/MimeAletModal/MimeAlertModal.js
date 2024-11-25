@@ -7,6 +7,8 @@ import { Button } from '@ui-kitten/components';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const MimeAlertModal = ({ textTitle }) => {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -28,22 +30,18 @@ const MimeAlertModal = ({ textTitle }) => {
             style={styles.alertSubBox}
           >
             <MaterialIcons name="close" size={48} color="red" />
-            <Text
-              allowFontScaling={false}
-              style={[globalStyles.heading2, { marginVertical: 10 }]}
-            >
+            <GlobalText style={[globalStyles.heading2, { marginVertical: 10 }]}>
               {t(textTitle)}
-            </Text>
+            </GlobalText>
           </TouchableOpacity>
           <View style={styles.btnbox}>
             <Button status="primary" style={styles.btn} onPress={closeModal}>
               {() => (
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
                   style={[globalStyles.subHeading, { marginRight: 10 }]}
                 >
                   {t('okay')}
-                </Text>
+                </GlobalText>
               )}
             </Button>
           </View>

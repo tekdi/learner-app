@@ -37,6 +37,8 @@ import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 import cloud_done from '../../assets/images/png/cloud_done.png';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const Profile = (props) => {
   const { t } = useTranslation();
   const [userData, setUserData] = useState();
@@ -161,9 +163,9 @@ const Profile = (props) => {
       ) : (
         <ScrollView style={globalStyles.container}>
           <View style={styles.view}>
-            <Text allowFontScaling={false} style={globalStyles.heading}>
+            <GlobalText style={globalStyles.heading}>
               {t('my_profile')}
-            </Text>
+            </GlobalText>
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('ProfileUpdateScreen');
@@ -183,14 +185,13 @@ const Profile = (props) => {
                   resizeMode="contain"
                 />
 
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
                   numberOfLines={2}
                   ellipsizeMode="tail"
                   style={[globalStyles.heading2, { width: 250 }]}
                 >
                   {t('you_have')} {storageData} {t('of_offline_content')}
-                </Text>
+                </GlobalText>
               </View>
 
               <TouchableOpacity
@@ -207,12 +208,9 @@ const Profile = (props) => {
                     justifyContent: 'center',
                   }}
                 >
-                  <Text
-                    allowFontScaling={false}
-                    style={[globalStyles.heading2, { padding: 10 }]}
-                  >
+                  <GlobalText style={[globalStyles.heading2, { padding: 10 }]}>
                     {t('clear_all_offline_content')}
-                  </Text>
+                  </GlobalText>
                   <Octicons
                     name="arrow-right"
                     color="black"
@@ -283,12 +281,9 @@ const Profile = (props) => {
                 marginBottom: 40,
               }}
             >
-              <Text
-                allowFontScaling={false}
-                style={[globalStyles.heading2, { padding: 10 }]}
-              >
+              <GlobalText style={[globalStyles.heading2, { padding: 10 }]}>
                 {t('logout')}
-              </Text>
+              </GlobalText>
               <Icon name="logout" color="black" size={20} style={styles.icon} />
             </View>
           </TouchableOpacity>

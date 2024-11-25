@@ -13,6 +13,8 @@ import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useNavigation } from '@react-navigation/native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const CoursesBox = ({
   ContentData,
   TrackData,
@@ -52,25 +54,19 @@ const CoursesBox = ({
   return (
     <SafeAreaView style={[styles.container]}>
       {title && (
-        <Text
-          allowFontScaling={false}
-          style={[styles.title, { color: style.titlecolor }]}
-        >
+        <GlobalText style={[styles.title, { color: style.titlecolor }]}>
           {t(title)}
-        </Text>
+        </GlobalText>
       )}
       <View style={styles.view}>
-        <Text
-          allowFontScaling={false}
-          style={[styles.description, { color: 'black' }]}
-        >
+        <GlobalText style={[styles.description, { color: 'black' }]}>
           {t(description)}
-        </Text>
+        </GlobalText>
         {/* <View style={styles.view}>
           <TouchableOpacity onPress={viewAllLink}>
-            <Text allowFontScaling={false} style={[styles.description, { color: '#0D599E' }]}>
+            <GlobalText  style={[styles.description, { color: '#0D599E' }]}>
               {t('view_all')}
-            </Text>
+            </GlobalText>
           </TouchableOpacity>
           <Icon
             name="arrow-right"

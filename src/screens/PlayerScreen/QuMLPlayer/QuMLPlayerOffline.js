@@ -23,6 +23,8 @@ import {
 } from '../../../utils/Helper/JSHelper';
 import RNFS from 'react-native-fs';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const QuMLPlayerOffline = () => {
   const [loading, setLoading] = useState(true);
   // content id
@@ -218,11 +220,7 @@ const QuMLPlayerOffline = () => {
     return (
       <View style={styles.middle_screen}>
         <ActivityIndicator size="large" color="#0000ff" />
-        {loading_text != '' ? (
-          <Text allowFontScaling={false}>{loading_text}</Text>
-        ) : (
-          <></>
-        )}
+        {loading_text != '' ? <GlobalText>{loading_text}</GlobalText> : <></>}
       </View>
     );
   }
@@ -245,7 +243,7 @@ const QuMLPlayerOffline = () => {
     <View style={styles.container}>
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
-          <Text allowFontScaling={false}>Invalid Player File</Text>
+          <GlobalText>Invalid Player File</GlobalText>
         </View>
       ) : is_download == true ? (
         <View style={styles.middle_screen}>
@@ -287,7 +285,7 @@ const QuMLPlayerOffline = () => {
           }
         }}
       />
-      {retrievedData && <Text allowFontScaling={false}>{retrievedData}</Text>} */}
+      {retrievedData && <GlobalText >{retrievedData}</GlobalText>} */}
     </View>
   );
 };

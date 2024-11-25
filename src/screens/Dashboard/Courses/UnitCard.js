@@ -9,6 +9,8 @@ import StatusCard from '../../../components/StatusCard/StatusCard';
 import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../../utils/API/AuthService';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
   // console.log('########## UnitCard');
   // console.log('course_id', course_id);
@@ -196,10 +198,10 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
               trackCompleted >= 100
                 ? 'completed'
                 : trackCompleted > 0
-                  ? 'inprogress'
-                  : trackProgress > 0
-                    ? 'progress'
-                    : 'not_started'
+                ? 'inprogress'
+                : trackProgress > 0
+                ? 'progress'
+                : 'not_started'
             }
             trackCompleted={trackCompleted}
             viewStyle={{
@@ -209,26 +211,24 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
           />
         </View>
         <View style={styles.overlay}>
-          <Text
-            allowFontScaling={false}
+          <GlobalText
             style={styles.cardText}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
             {t('unit')}
-          </Text>
+          </GlobalText>
         </View>
       </TouchableOpacity>
 
       <View style={[globalStyles.flexrow]}>
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={[styles.cardText, { color: '#000' }]}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {item?.name}
-        </Text>
+        </GlobalText>
       </View>
     </View>
   );

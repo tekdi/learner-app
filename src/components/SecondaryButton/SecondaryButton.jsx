@@ -3,15 +3,15 @@ import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const SecondaryButton = ({ onPress, text, style }) => {
   //multi language setup
   const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text allowFontScaling={false} style={[styles.buttontext, style]}>
-          {t(text)}
-        </Text>
+        <GlobalText style={[styles.buttontext, style]}>{t(text)}</GlobalText>
       </TouchableOpacity>
     </View>
   );

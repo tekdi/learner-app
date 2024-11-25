@@ -64,6 +64,8 @@ const desktopUserAgent =
 //multi language
 import { useTranslation } from '../../../context/LanguageContext';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const StandAlonePlayer = ({ route }) => {
   //multi language setup
   const { t, language } = useTranslation();
@@ -1217,14 +1219,11 @@ const StandAlonePlayer = ({ route }) => {
         <View style={styles.middle_screen}>
           <ActivityIndicator size="large" color="#0000ff" />
           {progress > 0 && progress < 100 ? (
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={{ color: '#000000' }}
-            >{`Loading: ${progress.toFixed(2)}%`}</Text>
+            >{`Loading: ${progress.toFixed(2)}%`}</GlobalText>
           ) : loading_text != '' ? (
-            <Text allowFontScaling={false} style={{ color: '#000000' }}>
-              {loading_text}
-            </Text>
+            <GlobalText style={{ color: '#000000' }}>{loading_text}</GlobalText>
           ) : (
             <></>
           )}
@@ -1241,7 +1240,7 @@ const StandAlonePlayer = ({ route }) => {
         {/* <StatusBar barStyle="dark-content" /> */}
         {is_valid_file == false ? (
           <View style={styles.middle_screen}>
-            <Text allowFontScaling={false}>Invalid Player File</Text>
+            <GlobalText>Invalid Player File</GlobalText>
           </View>
         ) : is_download == true ? (
           <View style={styles.middle_screen}>

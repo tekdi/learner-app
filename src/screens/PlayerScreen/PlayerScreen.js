@@ -18,6 +18,8 @@ import { WebView } from 'react-native-webview';
 
 import Orientation from 'react-native-orientation-locker';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const PlayerScreen = () => {
   useEffect(() => {
     // Lock the screen to landscape mode
@@ -50,9 +52,7 @@ const PlayerScreen = () => {
       {/* Icon png here */}
       <View style={styles.container_image}>
         <Image style={styles.image} source={Logo} resizeMode="contain" />
-        <Text allowFontScaling={false} style={styles.title}>
-          Content Players
-        </Text>
+        <GlobalText style={styles.title}>Content Players</GlobalText>
       </View>
       <ScrollView contentContainerStyle={styles.container_scroll}>
         <View style={{ padding: 10 }}></View>

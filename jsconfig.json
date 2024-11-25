@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".", // Base directory
+      "paths": {
+        "@components/*": ["src/components/*"], // Alias for components folder
+        "@src/*": ["src/*"] // Alias for the entire src directory
+      }
+    }
+  }

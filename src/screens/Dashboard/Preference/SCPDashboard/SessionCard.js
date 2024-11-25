@@ -19,6 +19,8 @@ import RocketImageClub from '../../../../components/rocketImageClub/RocketImageC
 import FastImage from '@changwoolab/react-native-fast-image';
 import { getDataFromStorage } from '../../../../utils/JsHelper/Helper';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const SessionCard = ({ percentage }) => {
   const { t, language } = useTranslation();
   const navigation = useNavigation();
@@ -76,12 +78,12 @@ const SessionCard = ({ percentage }) => {
               ]}
             >
               <View>
-                <Text style={[globalStyles.subHeading]}>
+                <GlobalText style={[globalStyles.subHeading]}>
                   {t('prepare_for')} {getTomorrowDate()} {t('sessions')}
-                </Text>
-                <Text style={[globalStyles.subHeading]}>
+                </GlobalText>
+                <GlobalText style={[globalStyles.subHeading]}>
                   {t('pre_requisites')}
-                </Text>
+                </GlobalText>
               </View>
 
               <Octicons
@@ -125,13 +127,13 @@ const SessionCard = ({ percentage }) => {
                 horizontal
               />
 
-              <Text style={[globalStyles.text, { color: '#1A8825' }]}>
+              <GlobalText style={[globalStyles.text, { color: '#1A8825' }]}>
                 {percent <= 10
                   ? t('lets_get_started_dive_in')
                   : percent === 100
-                    ? t('mission_accomplished')
-                    : t('great_start_keep_going')}
-              </Text>
+                  ? t('mission_accomplished')
+                  : t('great_start_keep_going')}
+              </GlobalText>
             </View>
           </View>
         </ImageBackground>

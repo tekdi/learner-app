@@ -12,15 +12,17 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 
 import { useNavigation } from '@react-navigation/native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const TermsAndCondition = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.View}>
-        <Text allowFontScaling={false} style={styles.text}>
+        <GlobalText style={styles.text}>
           {t('terms_and_conditions2')}
-        </Text>
+        </GlobalText>
         <Pressable
           onPress={() => {
             navigation.goBack();
@@ -30,48 +32,20 @@ const TermsAndCondition = () => {
         </Pressable>
       </View>
       <ScrollView style={styles.scroll} scrollEventThrottle={16}>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_1')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_2')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_3')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_4')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_5')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_6')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_7')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_8')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_9')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_10')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('T&C_11')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('office_adrress')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('office_email')}
-        </Text>
-        <Text allowFontScaling={false} style={styles.text2}>
-          {t('office_phone')}
-        </Text>
+        <GlobalText style={styles.text2}>{t('T&C_1')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_2')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_3')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_4')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_5')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_6')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_7')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_8')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_9')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_10')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('T&C_11')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('office_adrress')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('office_email')}</GlobalText>
+        <GlobalText style={styles.text2}>{t('office_phone')}</GlobalText>
       </ScrollView>
     </SafeAreaView>
   );

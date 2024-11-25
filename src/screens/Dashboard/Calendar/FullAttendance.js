@@ -17,6 +17,8 @@ import { useNavigation } from '@react-navigation/native';
 import MonthlyCalendar from './MonthlyCalendar';
 import { getAttendance } from '../../../utils/API/AuthService';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const FullAttendance = () => {
   const [eventDate, setEventDate] = useState(null);
   const [learnerAttendance, setLearnerAttendance] = useState(null);
@@ -63,13 +65,13 @@ const FullAttendance = () => {
               color={'#000'}
               size={30}
             />
-            {/* <Text allowFontScaling={false}>Back</Text> */}
+            {/* <GlobalText >Back</GlobalText> */}
           </TouchableOpacity>
         </View>
         <View style={styles.rightContainer}>
-          <Text allowFontScaling={false} style={globalStyles.heading}>
+          <GlobalText style={globalStyles.heading}>
             {t('my_full_attendance')}
-          </Text>
+          </GlobalText>
         </View>
       </View>
       <ScrollView style={styles.scroll}>
@@ -85,28 +87,30 @@ const FullAttendance = () => {
           <View
             style={{ padding: 10, backgroundColor: '#fafafa', marginTop: 20 }}
           >
-            <Text style={globalStyles.text}>{`Selected Date: `}</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
-            <Text style={globalStyles.text}>`sdsdsd`</Text>
+            <GlobalText
+              style={globalStyles.text}
+            >{`Selected Date: `}</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
+            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
           </View>
         )}
       </ScrollView>

@@ -7,6 +7,8 @@ import { Button } from '@ui-kitten/components';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const NetworkAlertScreen = ({ onTryAgain, routes, currentRoute }) => {
   const { t } = useTranslation();
 
@@ -15,32 +17,27 @@ const NetworkAlertScreen = ({ onTryAgain, routes, currentRoute }) => {
       <View style={styles.alertSubBox}>
         <Image style={styles.img} source={lightning} resizeMode="contain" />
 
-        <Text
-          allowFontScaling={false}
-          style={[globalStyles.heading2, { fontWeight: '700' }]}
-        >
+        <GlobalText style={[globalStyles.heading2, { fontWeight: '700' }]}>
           {t('no_internet_connection')}
-        </Text>
-        <Text
-          allowFontScaling={false}
+        </GlobalText>
+        <GlobalText
           style={[
             globalStyles.subHeading,
             { textAlign: 'center', marginVertical: 10 },
           ]}
         >
           {t('make_sure_wifi_or_mobile_data_is_turned_on_and_try_again')}
-        </Text>
+        </GlobalText>
       </View>
       <View style={styles.btnbox}>
         <Button status="primary" style={styles.btn} onPress={onTryAgain}>
           {() => (
             <>
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[globalStyles.subHeading, { marginRight: 10 }]}
               >
                 {t('try_again')}
-              </Text>
+              </GlobalText>
               <MaterialIcons name="replay" size={18} color="black" />
             </>
           )}

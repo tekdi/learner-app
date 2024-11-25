@@ -21,6 +21,8 @@ import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 import { notificationSubscribe } from './utils/API/AuthService';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const linking = {
   prefixes: ['pratham://'],
   config: {
@@ -192,9 +194,7 @@ const App = () => {
       work */}
         <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
           <NavigationContainer linking={linking}>
-            <Suspense
-              fallback={<Text allowFontScaling={false}>Loading Screen...</Text>}
-            >
+            <Suspense fallback={<GlobalText>Loading Screen...</GlobalText>}>
               <StackScreen />
             </Suspense>
           </NavigationContainer>

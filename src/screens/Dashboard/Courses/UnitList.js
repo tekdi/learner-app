@@ -32,6 +32,8 @@ import {
   logEventFunction,
 } from '../../../utils/JsHelper/Helper';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const UnitList = ({ route }) => {
   const { children, name, course_id, unit_id, headingName } = route.params;
   // console.log('########## UnitList');
@@ -113,10 +115,7 @@ const UnitList = ({ route }) => {
       //console.log('########## courseList', courseList);
       //get course track data
       let userId = await getDataFromStorage('userId');
-      let course_track_data = await courseTrackingStatus(
-        userId,
-        courseList
-      );
+      let course_track_data = await courseTrackingStatus(userId, courseList);
       //console.log('########## course_track_data', course_track_data?.data);
       let courseTrackData = [];
       if (course_track_data?.data) {
@@ -143,23 +142,21 @@ const UnitList = ({ route }) => {
         <ScrollView>
           <View style={{ padding: 20, paddingBottom: 10 }}>
             {headingName && (
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[globalStyles.heading, { marginBottom: 10 }]}
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
                 {headingName}
-              </Text>
+              </GlobalText>
             )}
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[globalStyles.heading2, { marginBottom: 10 }]}
               numberOfLines={2}
               ellipsizeMode="tail"
             >
               {name}
-            </Text>
+            </GlobalText>
           </View>
           <View
             style={{

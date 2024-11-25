@@ -12,6 +12,8 @@ import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const EyeIcon = ({ setHidden, hidden }) => (
   <TouchableOpacity
     onPress={() => {
@@ -41,7 +43,6 @@ const CustomPasswordTextField = ({
         <View style={styles.container}>
           <IconRegistry icons={EvaIconsPack} />
           <TextInput
-            allowFontScaling={false}
             style={[
               styles.input,
               { position: position },
@@ -54,22 +55,20 @@ const CustomPasswordTextField = ({
             autoCapitalize="none" // Disable auto-capitalization
           />
           <View style={styles.overlap}>
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[
                 styles.text,
                 { color: errors[field.name] ? 'red' : '#4D4639' },
               ]}
             >
               {t(field.label)}
-            </Text>
+            </GlobalText>
           </View>
           <View style={styles.overlap2}>
             <EyeIcon setHidden={setHidden} hidden={hidden} />
           </View>
           {errors[field.name] && (
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={{
                 color: 'red',
                 alignSelf: 'flex-start',
@@ -79,7 +78,7 @@ const CustomPasswordTextField = ({
               }}
             >
               {errors[field.name].message}
-            </Text>
+            </GlobalText>
           )}
         </View>
       )}

@@ -16,6 +16,8 @@ import HorizontalLine from '../../../../../components/HorizontalLine/HorizontalL
 import SessionRecording from './SessionRecording';
 import LearningMaterial from './LearningMaterial';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const MyClassDashboard = () => {
   const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -42,9 +44,9 @@ const MyClassDashboard = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
       <View style={{ padding: 0 }}>
-        <Text style={[globalStyles.heading, { paddingLeft: 20 }]}>
+        <GlobalText style={[globalStyles.heading, { paddingLeft: 20 }]}>
           {t('my_class')}
-        </Text>
+        </GlobalText>
 
         <CustomTabView
           tabs={tabs}

@@ -9,6 +9,8 @@ import ContentCard from '../../../ContentCard';
 import { getDataFromStorage } from '../../../../../utils/JsHelper/Helper';
 import { courseTrackingStatus } from '../../../../../utils/API/ApiCalls';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const ContentAccordion = ({ title, resourceData }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [trackData, setTrackData] = useState();
@@ -64,9 +66,9 @@ const ContentAccordion = ({ title, resourceData }) => {
         ]}
         onPress={() => setAccordionOpen(!isAccordionOpen)}
       >
-        <Text style={[globalStyles.text, { color: '#7C766F' }]}>
+        <GlobalText style={[globalStyles.text, { color: '#7C766F' }]}>
           {t(title)}
-        </Text>
+        </GlobalText>
         <Icon
           name={isAccordionOpen ? 'angle-up' : 'angle-down'}
           color="#0D599E"
@@ -92,7 +94,9 @@ const ContentAccordion = ({ title, resourceData }) => {
                   );
                 })
               ) : (
-                <Text style={globalStyles.text}>{t('no_topics')}</Text>
+                <GlobalText style={globalStyles.text}>
+                  {t('no_topics')}
+                </GlobalText>
               )}
             </>
           )}
@@ -112,7 +116,9 @@ const ContentAccordion = ({ title, resourceData }) => {
                   );
                 })
               ) : (
-                <Text style={globalStyles.text}>{t('no_topics')}</Text>
+                <GlobalText style={globalStyles.text}>
+                  {t('no_topics')}
+                </GlobalText>
               )}
             </>
           )}

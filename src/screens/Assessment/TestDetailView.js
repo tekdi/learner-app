@@ -22,6 +22,8 @@ import globalStyles from '../../utils/Helper/Style';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { getData } from '../../utils/Helper/JSHelper';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const instructions = [
   {
     id: 1,
@@ -83,9 +85,9 @@ const TestDetailView = ({ route }) => {
   return (
     <SafeAreaView style={{ paddingTop: 40, flex: 1 }}>
       <View style={styles.View}>
-        <Text allowFontScaling={false} style={globalStyles.heading}>
+        <GlobalText style={globalStyles.heading}>
           {t(capitalizeFirstLetter(title))}
-        </Text>
+        </GlobalText>
         <Pressable
           onPress={() => {
             navigation.goBack();
@@ -98,67 +100,46 @@ const TestDetailView = ({ route }) => {
         <View style={styles.testcard}>
           <View style={[globalStyles.flexrow, { marginBottom: 10 }]}>
             <View>
-              <Text allowFontScaling={false} style={styles.texttime}>
-                {time}
-              </Text>
+              <GlobalText style={styles.texttime}>{time}</GlobalText>
             </View>
             <View>
-              <Text allowFontScaling={false} style={styles.textMin}>
-                {t('MIN')}
-              </Text>
-              <Text allowFontScaling={false} style={styles.textMin}>
-                {data?.name}
-              </Text>
+              <GlobalText style={styles.textMin}>{t('MIN')}</GlobalText>
+              <GlobalText style={styles.textMin}>{data?.name}</GlobalText>
             </View>
           </View>
           <HorizontalLine />
           <View>
-            <Text
-              allowFontScaling={false}
-              style={[globalStyles.text, { marginTop: 10 }]}
-            >
+            <GlobalText style={[globalStyles.text, { marginTop: 10 }]}>
               {data?.description}
-            </Text>
+            </GlobalText>
           </View>
           <View>
-            <Text allowFontScaling={false} style={styles.textmed}>
-              {t('test_medium')}
-            </Text>
-            <Text allowFontScaling={false} style={styles.mediumText}>
+            <GlobalText style={styles.textmed}>{t('test_medium')}</GlobalText>
+            <GlobalText style={styles.mediumText}>
               {data?.medium?.[0]}
-            </Text>
+            </GlobalText>
           </View>
           <View>
-            <Text allowFontScaling={false} style={styles.textmed}>
-              {t('board')}
-            </Text>
-            <Text allowFontScaling={false} style={styles.mediumText}>
-              {data?.board}
-            </Text>
+            <GlobalText style={styles.textmed}>{t('board')}</GlobalText>
+            <GlobalText style={styles.mediumText}>{data?.board}</GlobalText>
           </View>
         </View>
         <View style={{ paddingHorizontal: 20 }}>
-          <Text
-            allowFontScaling={false}
+          <GlobalText
             style={[
               globalStyles.subHeading,
               { fontWeight: '700', paddingVertical: 20 },
             ]}
           >
             {t('general_instructions')}
-          </Text>
+          </GlobalText>
           {instructions.map((item) => {
             return (
               <View key={item.id.toString()} style={styles.itemContainer}>
-                <Text allowFontScaling={false} style={styles.bullet}>
-                  {'\u2022'}
-                </Text>
-                <Text
-                  allowFontScaling={false}
-                  style={[globalStyles.subHeading]}
-                >
+                <GlobalText style={styles.bullet}>{'\u2022'}</GlobalText>
+                <GlobalText style={[globalStyles.subHeading]}>
                   {t(item.title)}
-                </Text>
+                </GlobalText>
               </View>
             );
           })}

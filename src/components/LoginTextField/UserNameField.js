@@ -13,6 +13,8 @@ import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 import globalStyles from '../../utils/Helper/Style';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const LoginTextField = ({
   text,
   position = 'static',
@@ -52,7 +54,6 @@ const LoginTextField = ({
     <TouchableWithoutFeedback onPress={Keyboard.isVisible} accessible={false}>
       <View style={styles.container}>
         <TextInput
-          allowFontScaling={false}
           autoCapitalize="none"
           secureTextEntry={text === 'password' && !passwordView}
           onChangeText={handleTextChange}
@@ -62,10 +63,7 @@ const LoginTextField = ({
         />
 
         <View style={styles.overlap}>
-          <Text allowFontScaling={false} style={styles.text}>
-            {' '}
-            {t(text)}{' '}
-          </Text>
+          <GlobalText style={styles.text}> {t(text)} </GlobalText>
         </View>
 
         {showSuggestions && (
@@ -76,7 +74,7 @@ const LoginTextField = ({
                 onPress={() => handleSuggestionSelect(item)}
                 style={styles.suggestion}
               >
-                <Text style={globalStyles.text}>{item}</Text>
+                <GlobalText style={globalStyles.text}>{item}</GlobalText>
               </TouchableWithoutFeedback>
             ))}
           </ScrollView>

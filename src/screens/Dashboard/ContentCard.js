@@ -18,6 +18,8 @@ import {
 } from '../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../utils/API/AuthService';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const navigation = useNavigation();
   // console.log('########## ContentCard');
@@ -194,8 +196,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 
         {/* Content overlaid on top of the image */}
         <View style={styles.overlay}>
-          <Text
-            allowFontScaling={false}
+          <GlobalText
             style={{ fontSize: 13 }}
             numberOfLines={1}
             ellipsizeMode="tail"
@@ -203,15 +204,15 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
             {mimeType === 'x-youtube'
               ? `YouTube`
               : mimeType === 'vnd.ekstep.html-archive'
-                ? `Web`
-                : mimeType == 'vnd.ekstep.h5p-archive'
-                  ? `H5P`
-                  : mimeType == 'vnd.ekstep.h5p-archive'
-                    ? `ECML`
-                    : mimeType == 'vnd.sunbird.questionset'
-                      ? `QUML`
-                      : capitalizeFirstLetter(mimeType)}
-          </Text>
+              ? `Web`
+              : mimeType == 'vnd.ekstep.h5p-archive'
+              ? `H5P`
+              : mimeType == 'vnd.ekstep.h5p-archive'
+              ? `ECML`
+              : mimeType == 'vnd.sunbird.questionset'
+              ? `QUML`
+              : capitalizeFirstLetter(mimeType)}
+          </GlobalText>
         </View>
         <View style={styles.view}>
           <DownloadCard
@@ -229,14 +230,13 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
       >
         <StatusCardIcon status={trackStatus} />
 
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={[styles.cardText, { color: '#000' }]}
           numberOfLines={3}
           ellipsizeMode="tail"
         >
           {item?.name}
-        </Text>
+        </GlobalText>
       </View>
     </View>
   );

@@ -13,6 +13,8 @@ import CourseCard from '../../components/CourseCard/CourseCard';
 import { useTranslation } from '../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const ViewAllContent = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -57,9 +59,7 @@ const ViewAllContent = ({ route }) => {
               size={30}
             />
           </TouchableOpacity>
-          <Text allowFontScaling={false} style={styles.text}>
-            {t(title)}
-          </Text>
+          <GlobalText style={styles.text}>{t(title)}</GlobalText>
         </View>
         <FlatList
           data={data}

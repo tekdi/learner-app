@@ -5,6 +5,8 @@ import globalStyles from '../../../utils/Helper/Style';
 import Icon from 'react-native-vector-icons/AntDesign';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const MonthlyCalendar = ({
   setEventDate,
   attendance,
@@ -71,7 +73,9 @@ const MonthlyCalendar = ({
           isSelected ? styles.selected : null,
         ]}
       >
-        <Text style={[globalStyles.text, { fontSize: 8 }]}>{dayNumber}</Text>
+        <GlobalText style={[globalStyles.text, { fontSize: 8 }]}>
+          {dayNumber}
+        </GlobalText>
         {dayData &&
           (isPresent ? (
             <Icon name="checkcircleo" size={10} color="green" />

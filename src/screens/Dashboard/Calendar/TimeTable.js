@@ -20,6 +20,8 @@ import { categorizeEvents } from '../../../utils/JsHelper/Helper';
 import SubjectCard from '../Preference/SCPDashboard/SubjectCard';
 import ActiveLoading from '../../LoadingScreen/ActiveLoading';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const TimeTable = () => {
   const [eventDate, setEventDate] = useState(null);
   const [learnerAttendance, setLearnerAttendance] = useState(null);
@@ -93,13 +95,13 @@ const TimeTable = () => {
               color={'#000'}
               size={30}
             />
-            {/* <Text allowFontScaling={false}>Back</Text> */}
+            {/* <GlobalText >Back</GlobalText> */}
           </TouchableOpacity>
         </View>
         <View style={styles.rightContainer}>
-          <Text allowFontScaling={false} style={globalStyles.heading}>
+          <GlobalText style={globalStyles.heading}>
             {t('my_timetable')}
-          </Text>
+          </GlobalText>
         </View>
       </View>
       <ScrollView style={styles.scroll}>
@@ -115,27 +117,31 @@ const TimeTable = () => {
               marginBottom: 20,
             }}
           >
-            <Text style={globalStyles.heading2}>{t('planned_sessions')}</Text>
+            <GlobalText style={globalStyles.heading2}>
+              {t('planned_sessions')}
+            </GlobalText>
 
             {eventData?.plannedSessions?.length > 0 ? (
               eventData.plannedSessions.map((item, key) => (
                 <SubjectCard key={key} item={item} />
               ))
             ) : (
-              <Text style={globalStyles.text}>
+              <GlobalText style={globalStyles.text}>
                 {t('no_sessions_scheduled')}
-              </Text>
+              </GlobalText>
             )}
 
-            <Text style={globalStyles.heading2}>{t('extra_sessions')}</Text>
+            <GlobalText style={globalStyles.heading2}>
+              {t('extra_sessions')}
+            </GlobalText>
             {eventData?.extraSessions?.length > 0 ? (
               eventData.extraSessions.map((item, key) => (
                 <SubjectCard key={key} item={item} />
               ))
             ) : (
-              <Text style={globalStyles.text}>
+              <GlobalText style={globalStyles.text}>
                 {t('no_sessions_scheduled')}
-              </Text>
+              </GlobalText>
             )}
           </View>
         )}

@@ -19,6 +19,8 @@ import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const Assessment = ({ header, background }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -127,12 +129,9 @@ const Assessment = ({ header, background }) => {
         <View>
           <SyncCard doneSync={fetchData} />
           {!header && (
-            <Text
-              allowFontScaling={false}
-              style={[globalStyles.heading, { padding: 20 }]}
-            >
+            <GlobalText style={[globalStyles.heading, { padding: 20 }]}>
               {t('Assessments')}
-            </Text>
+            </GlobalText>
           )}
 
           <View
@@ -150,9 +149,9 @@ const Assessment = ({ header, background }) => {
                 );
               })
             ) : (
-              <Text allowFontScaling={false} style={globalStyles.subHeading}>
+              <GlobalText style={globalStyles.subHeading}>
                 {t('no_data_found')}
-              </Text>
+              </GlobalText>
             )}
           </View>
           {/* Use the BackButtonHandler component */}

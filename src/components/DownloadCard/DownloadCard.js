@@ -34,6 +34,8 @@ import Svg, { Circle, Text as SvgText } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import { findObjectByIdentifier } from '../../utils/JsHelper/Helper';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const DownloadCard = ({ contentId, contentMimeType, name }) => {
   const navigation = useNavigation();
   const [downloadIcon, setDownloadIcon] = useState(download);
@@ -608,7 +610,9 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
         <View style={styles.container}>
           {/* Right Bottom Corner */}
           <View style={styles.bottomRightContainer}>
-            <Text style={styles.loadingText}>{`${downloadProgress}%`}</Text>
+            <GlobalText
+              style={styles.loadingText}
+            >{`${downloadProgress}%`}</GlobalText>
             {/* Custom ActivityIndicator with Cancel Button */}
             <TouchableOpacity onPress={() => cancelDownload()}>
               <View style={styles.loadingContainer}>
@@ -619,7 +623,7 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
                 />
                 {/* Cancel Button in the center */}
                 <View style={styles.cancelButton}>
-                  <Text style={styles.cancelText}>X</Text>
+                  <GlobalText style={styles.cancelText}>X</GlobalText>
                 </View>
               </View>
             </TouchableOpacity>
@@ -660,23 +664,21 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={globalStyles.heading2}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
               {name}
-            </Text>
-            <Text
-              allowFontScaling={false}
+            </GlobalText>
+            <GlobalText
               style={[
                 globalStyles.text,
                 { marginVertical: 10, textAlign: 'center' },
               ]}
             >
               {t('delete_msg')}
-            </Text>
+            </GlobalText>
             <HorizontalLine />
             <View style={styles.modalButtonContainer}>
               <View>
@@ -706,24 +708,22 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={globalStyles.heading2}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
               {name}
-            </Text>
+            </GlobalText>
             <HorizontalLine />
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[
                 globalStyles.text,
                 { marginVertical: 10, textAlign: 'center' },
               ]}
             >
               {t('failed_msg')}
-            </Text>
+            </GlobalText>
             <View>
               <View>
                 <SecondaryButton

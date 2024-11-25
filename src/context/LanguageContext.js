@@ -20,6 +20,7 @@ import ma from './locales/ma.json'; // Marathi
 import ba from './locales/ba.json'; // Bangla
 import te from './locales/te.json'; // Telugu
 import ka from './locales/ka.json'; // Kannada
+import ta from './locales/ta.json'; // Kannada
 import gu from './locales/gu.json'; // Gujarati
 import ur from './locales/ur.json'; // Urdu
 
@@ -30,8 +31,8 @@ const translations = {
   ba,
   te,
   ka,
+  ta,
   gu,
-  // Add more languages as needed
   ur,
 };
 const rtlLanguages = ['ur']; // List of RTL languages
@@ -69,7 +70,7 @@ export const LanguageProvider = ({ children }) => {
 
   const toggleRTL = (isRTL) => {
     I18nManager.forceRTL(isRTL);
-    RNRestart.Restart(); // This will restart the app
+    //RNRestart.Restart(); // This will restart the app
   };
 
   const handleLanguageChange = async (newLanguage) => {

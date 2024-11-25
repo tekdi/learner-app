@@ -9,6 +9,8 @@ import { ProgressBar } from '@ui-kitten/components';
 import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
 import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
   const { t } = useTranslation();
 
@@ -16,15 +18,14 @@ const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
     return (
       <View style={[styles.view, viewStyle]}>
         <Icon name="check-circle-fill" style={{ color: 'green' }} />
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={[
             globalStyles.text,
             { color: 'black', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('completed')}
-        </Text>
+        </GlobalText>
       </View>
     );
   } else if (status === 'inprogress') {
@@ -41,30 +42,28 @@ const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
           source={arrow_upload_progress}
           resizeMode="contain"
         />
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={[
             globalStyles.text,
             { color: 'black', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('Inprogress')}
-        </Text>
+        </GlobalText>
       </View>
     );
   } else {
     return (
       <View style={[styles.view, viewStyle]}>
         <Icon name="circle" style={{ color: 'black' }} />
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={[
             globalStyles.text,
             { color: 'black', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('not_started')}
-        </Text>
+        </GlobalText>
       </View>
     );
   }

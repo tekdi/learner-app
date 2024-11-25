@@ -26,6 +26,8 @@ import Config from 'react-native-config';
 
 import Orientation from 'react-native-orientation-locker';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 // User-Agent string for a desktop browser (e.g., Chrome on Windows)
 const desktopUserAgent =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
@@ -230,11 +232,9 @@ const ECMLPlayerOffline = () => {
       <View style={styles.middle_screen}>
         <ActivityIndicator size="large" color="#0000ff" />
         {progress > 0 && progress < 100 ? (
-          <Text allowFontScaling={false}>{`Downloading: ${progress.toFixed(
-            2
-          )}%`}</Text>
+          <GlobalText>{`Downloading: ${progress.toFixed(2)}%`}</GlobalText>
         ) : loading_text != '' ? (
-          <Text allowFontScaling={false}>{loading_text}</Text>
+          <GlobalText>{loading_text}</GlobalText>
         ) : (
           <></>
         )}
@@ -258,7 +258,7 @@ const ECMLPlayerOffline = () => {
     <View style={styles.container}>
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
-          <Text allowFontScaling={false}>Invalid Player File</Text>
+          <GlobalText>Invalid Player File</GlobalText>
         </View>
       ) : is_download == true ? (
         <View style={styles.middle_screen}>
@@ -301,7 +301,7 @@ const ECMLPlayerOffline = () => {
           }
         }}
       />
-      {retrievedData && <Text allowFontScaling={false}>{retrievedData}</Text>} */}
+      {retrievedData && <GlobalText >{retrievedData}</GlobalText>} */}
     </View>
   );
 };
