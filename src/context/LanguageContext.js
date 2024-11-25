@@ -9,9 +9,14 @@ import React, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PropTypes from 'prop-types';
 
+import { getTitleFromValue } from '@context/Languages';
+
 //for rtl
-import { I18nManager } from 'react-native';
+import { I18nManager, Alert } from 'react-native';
 import RNRestart from 'react-native-restart'; // Install this library: https://github.com/avishayil/react-native-restart
+
+//context
+import { useConfirmation } from '@context/Confirmation/ConfirmationContext';
 
 // Import your translations
 import en from './locales/en.json'; // English
@@ -20,7 +25,7 @@ import ma from './locales/ma.json'; // Marathi
 import ba from './locales/ba.json'; // Bangla
 import te from './locales/te.json'; // Telugu
 import ka from './locales/ka.json'; // Kannada
-import ta from './locales/ta.json'; // Kannada
+import ta from './locales/ta.json'; // Tamil
 import gu from './locales/gu.json'; // Gujarati
 import ur from './locales/ur.json'; // Urdu
 
@@ -40,6 +45,8 @@ const rtlLanguages = ['ur']; // List of RTL languages
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
+  const { showConfirmation } = useConfirmation();
+
   const [language, setLanguage] = useState('en'); // Default language
 
   //for rtl
@@ -68,24 +75,54 @@ export const LanguageProvider = ({ children }) => {
     loadLanguage();
   }, []);
 
+  const toggleRTLRestart = (isRTL) => {
+    I18nManager.forceRTL(isRTL);
+    RNRestart.Restart(); // This will restart the app
+  };
   const toggleRTL = (isRTL) => {
     I18nManager.forceRTL(isRTL);
-    //RNRestart.Restart(); // This will restart the app
   };
 
   const handleLanguageChange = async (newLanguage) => {
     try {
       if (translations[newLanguage]) {
-        await AsyncStorage.setItem('appLanguage', newLanguage);
-        setLanguage(newLanguage);
+        const savedLanguage = await AsyncStorage.getItem('appLanguage');
+        const savedTitle = getTitleFromValue(savedLanguage);
+        const newTitle = getTitleFromValue(newLanguage);
+        const savedFound = rtlLanguages.includes(savedLanguage);
+        const newFound = rtlLanguages.includes(newLanguage);
 
-        //for rtl
-        const rtl = rtlLanguages.includes(newLanguage);
-        setIsRTL(rtl);
-        if (rtl !== I18nManager.isRTL) {
-          toggleRTL(rtl);
-        } else if (rtl == false) {
-          toggleRTL(rtl);
+        if (savedFound || newFound) {
+          showConfirmation(
+            `Are you sure you want to switch from ${t(savedTitle)} to ${t(
+              newTitle
+            )}? The app will restart.`,
+            async () => {
+              await AsyncStorage.setItem('appLanguage', newLanguage);
+              setLanguage(newLanguage);
+              //for rtl
+              const rtl = rtlLanguages.includes(newLanguage);
+              setIsRTL(rtl);
+              if (rtl !== I18nManager.isRTL) {
+                toggleRTLRestart(rtl);
+              } else if (rtl == false) {
+                toggleRTLRestart(rtl);
+              }
+            },
+            t('yes'),
+            t('no')
+          );
+        } else {
+          await AsyncStorage.setItem('appLanguage', newLanguage);
+          setLanguage(newLanguage);
+          //for rtl
+          const rtl = rtlLanguages.includes(newLanguage);
+          setIsRTL(rtl);
+          if (rtl !== I18nManager.isRTL) {
+            toggleRTL(rtl);
+          } else if (rtl == false) {
+            toggleRTL(rtl);
+          }
         }
       }
     } catch (error) {
@@ -96,8 +133,8 @@ export const LanguageProvider = ({ children }) => {
   const t = (key) => translations[language][key] || key;
 
   const value = useMemo(
-    () => ({ language, setLanguage: handleLanguageChange, t }),
-    [language]
+    () => ({ language, setLanguage: handleLanguageChange, t, rtlLanguages }),
+    [language, rtlLanguages]
   );
 
   return (

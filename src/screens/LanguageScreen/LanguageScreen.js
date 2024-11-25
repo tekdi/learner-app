@@ -13,7 +13,7 @@ import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 import CustomCardLanguage from '../../components/CustomCardLanguage/CustomCardLanguage';
-import { languages } from './Languages';
+import { languages } from '@context/Languages';
 // Multi-language context
 import { useTranslation } from '../../context/LanguageContext';
 
@@ -35,7 +35,7 @@ import {
 } from '../../utils/JsHelper/SqliteHelper';
 import messaging from '@react-native-firebase/messaging';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const LanguageScreen = () => {
   const navigation = useNavigation();
@@ -241,14 +241,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     marginTop: 15,
     fontWeight: '600',
+    color: 'black',
   },
   subtitle: {
     marginTop: 5,
     fontFamily: 'Poppins-Bold',
+    color: 'black',
   },
   description: {
     marginTop: 5,
     fontFamily: 'Poppins-Regular',
+    color: 'black',
   },
   list: {
     height: '55%',

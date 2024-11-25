@@ -11,7 +11,7 @@ import {
 import { IndexPath, Select, SelectItem } from '@ui-kitten/components';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useNavigation } from '@react-navigation/native';
-import { languages } from '../../screens/LanguageScreen/Languages';
+import { languages } from '@context/Languages';
 import { useTranslation } from '../../context/LanguageContext';
 import Logo from '../../assets/images/png/logo.png';
 
@@ -33,9 +33,9 @@ const SecondaryHeader = ({ logo }) => {
   }, [language]); // Include language as a dependency
 
   const onSelect = (index) => {
-    setSelectedIndex(index);
+    //setSelectedIndex(index);
     const selectedValue = languages[index.row].value;
-    setValue(selectedValue);
+    //setValue(selectedValue);
     setLanguage(selectedValue);
   };
 

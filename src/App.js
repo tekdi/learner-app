@@ -7,7 +7,9 @@ import * as eva from '@eva-design/eva';
 import theme from './assets/themes/theme.json';
 //multiple language
 import { LanguageProvider } from './context/LanguageContext'; // Adjust path as needed
+//context
 import { NetworkProvider } from './context/NetworkContext'; // Adjust path as needed
+import { ConfirmationProvider } from '@context/Confirmation/ConfirmationContext';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/StackScreen';
 import { BackHandler, Text, View } from 'react-native';
@@ -21,7 +23,7 @@ import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 import { notificationSubscribe } from './utils/API/AuthService';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const linking = {
   prefixes: ['pratham://'],
@@ -189,17 +191,19 @@ const App = () => {
 
   return (
     <NetworkProvider>
-      <LanguageProvider>
-        {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
+      <ConfirmationProvider>
+        <LanguageProvider>
+          {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
       work */}
-        <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
-          <NavigationContainer linking={linking}>
-            <Suspense fallback={<GlobalText>Loading Screen...</GlobalText>}>
-              <StackScreen />
-            </Suspense>
-          </NavigationContainer>
-        </ApplicationProvider>
-      </LanguageProvider>
+          <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+            <NavigationContainer linking={linking}>
+              <Suspense fallback={<GlobalText>Loading Screen...</GlobalText>}>
+                <StackScreen />
+              </Suspense>
+            </NavigationContainer>
+          </ApplicationProvider>
+        </LanguageProvider>
+      </ConfirmationProvider>
     </NetworkProvider>
   );
 };

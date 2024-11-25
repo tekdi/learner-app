@@ -1,8 +1,3 @@
-//multi language
-import { useTranslation } from '../../context/LanguageContext'; // Adjust path as needed
-//multi language setup
-const { t } = useTranslation();
-
 export const languages = [
   {
     title: 'english',
@@ -41,3 +36,9 @@ export const languages = [
     value: 'ur',
   },
 ];
+
+// Function to get title from value
+export const getTitleFromValue = (value) => {
+  const language = languages.find((language) => language.value === value);
+  return language ? language.title : null; // Return null if no match is found
+};

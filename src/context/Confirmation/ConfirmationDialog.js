@@ -1,75 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
+  Modal,
   View,
   Text,
-  Modal,
+  Button,
   StyleSheet,
   Image,
   TouchableOpacity,
 } from 'react-native';
+
 import question from '../../assets/images/png/question.png';
-import { useTranslation } from '../../context/LanguageContext';
-import globalStyles from '../../utils/Helper/Style';
-import PropTypes from 'prop-types';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 
-const BackButtonHandler = ({
-  exitRoute,
+import globalStyles from '../../utils/Helper/Style';
+
+const ConfirmationDialog = ({
+  message,
+  onConfirm,
   onCancel,
-  onExit,
-  logout,
-  content_delete,
+  yesText,
+  noText,
 }) => {
-  const { t } = useTranslation();
-  const [modalVisible, setModalVisible] = useState(false);
-
-  useEffect(() => {
-    if (exitRoute) {
-      setModalVisible(true);
-    }
-  }, [exitRoute]);
-
   return (
-    <Modal transparent={true} animationType="fade" visible={modalVisible}>
+    <Modal transparent={true} animationType="fade">
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <View style={styles.alertBox}>
             <Image source={question} resizeMode="contain" />
-
             <GlobalText
               style={[
                 globalStyles.subHeading,
                 { fontWeight: '700', textAlign: 'center', marginVertical: 20 },
               ]}
             >
-              {logout
-                ? t('are_you_sure_you_want_to_logout_the_app')
-                : content_delete
-                ? t('content_delete')
-                : t('are_you_sure_you_want_to_exit_the_app')}
+              {message}
             </GlobalText>
-            {content_delete && (
-              <GlobalText
-                style={[globalStyles.subHeading, { textAlign: 'center' }]}
-              >
-                {t('content_delete_desp')}
-              </GlobalText>
-            )}
           </View>
           <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={onConfirm}>
+              <GlobalText
+                style={[globalStyles.subHeading, { color: '#0D599E' }]}
+              >
+                {yesText}
+              </GlobalText>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={onCancel}>
               <GlobalText
                 style={[globalStyles.subHeading, { color: '#0D599E' }]}
               >
-                {t('no')}
-              </GlobalText>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={onExit}>
-              <GlobalText
-                style={[globalStyles.subHeading, { color: '#0D599E' }]}
-              >
-                {t('yes')}
+                {noText}
               </GlobalText>
             </TouchableOpacity>
           </View>
@@ -112,10 +92,4 @@ const styles = StyleSheet.create({
   },
 });
 
-BackButtonHandler.propTypes = {
-  exitRoute: PropTypes.any,
-  onCancel: PropTypes.any,
-  onExit: PropTypes.any,
-};
-
-export default BackButtonHandler;
+export default ConfirmationDialog;

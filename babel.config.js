@@ -7,6 +7,7 @@ module.exports = {
       {
         root: ['./'],
         alias: {
+          '@context': './src/context', // Alias for context
           '@components': './src/components', // Alias for components
           '@src': './src', // Alias for src directory
         },

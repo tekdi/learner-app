@@ -33,7 +33,6 @@ import {
 import { getSyncTrackingOfflineCourse } from '../../../utils/API/AuthService';
 import CircularProgressBarCustom from '../../../components/CircularProgressBarCustom.js/CircularProgressBarCustom';
 import StatusCardCourse from '../../../components/StatusCard/StatusCardCourse';
-import { languages } from '../../LanguageScreen/Languages';
 import { useTranslation } from '../../../context/LanguageContext';
 
 import GlobalText from "@components/GlobalText/GlobalText";
