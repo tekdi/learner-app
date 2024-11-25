@@ -1278,6 +1278,35 @@ export const forgotPassword = async ({ payload }) => {
     return handleResponseException(e);
   }
 };
+export const resetPassword = async ({ payload }) => {
+  try {
+    const url = `${EndUrls.resetPassword}`; // Define the URL
+    const headers = await getHeaders();
+
+    const curlCommand = `
+    curl -X POST '${url}' \\
+    -H 'Content-Type: application/json' \\
+    -H 'Accept: application/json' \\
+    -H 'Authorization:  ${headers.Authorization}' \\
+    -H 'tenantId: ${headers.tenantId}' \\
+    -d '${JSON.stringify(payload)}'
+        `;
+    console.log('cURL Command:', curlCommand);
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
 
 export async function reverseGeocode(latitude, longitude) {
   const GOOGLE_KEY = Config.GOOGLE_KEY;
