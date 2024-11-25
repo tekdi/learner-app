@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Button,
+  Image,
+  ImageBackground,
+  Modal,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -8,8 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from '@changwoolab/react-native-fast-image';
-import DownloadCard from '../../components/DownloadCard/DownloadCard';
-import StatusCardIcon from '../../components/StatusCard/StatusCardIcon';
+import Icon from 'react-native-vector-icons/Entypo';
 import globalStyles from '../../utils/Helper/Style';
 import {
   capitalizeFirstLetter,
@@ -17,11 +20,19 @@ import {
   logEventFunction,
 } from '../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../utils/API/AuthService';
+import LinearGradient from 'react-native-linear-gradient';
+import StatusCardLine from '../../components/StatusCard/StatusCardLine';
+import pdf from '../../assets/images/png/pdf.png';
+import mp4 from '../../assets/images/png/mp4.png';
+import html from '../../assets/images/png/html.png';
+import doc from '../../assets/images/png/doc.png';
+import DownloadModal from './DownloadModal';
 
 const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const navigation = useNavigation();
+  const [isDrawerVisible, setDrawerVisible] = useState(false);
   // console.log('########## ContentCard', item?.identifier);
-  // console.log('course_id', course_id);
+  console.log('course_id', course_id);
   // console.log('unit_id', unit_id);
   // console.log('##########', TrackData);
 
@@ -167,127 +178,184 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
     }
   };
 
+  const toggleDrawer = () => setDrawerVisible(!isDrawerVisible);
+
   return (
-    <View style={styles.card}>
-      <TouchableOpacity
-        style={styles.subcard}
-        onPress={() => {
-          handlePress(item);
-        }}
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => {
+        handlePress(item);
+      }}
+    >
+      <ImageBackground
+        source={
+          item?.posterImage
+            ? {
+                uri: item?.posterImage,
+                priority: FastImage.priority.high,
+              }
+            : backgroundImage
+        }
+        style={{ borderRadius: 50 }}
+        resizeMode="cover"
       >
-        {/* Background image covering entire card */}
-        <FastImage
-          style={styles.cardBackgroundImage}
-          source={backgroundImage}
-          resizeMode={FastImage.resizeMode.cover}
-          priority={FastImage.priority.high}
-        />
-        <FastImage
-          style={styles.AppIcon}
-          source={{
-            uri: item?.appIcon,
-            priority: FastImage.priority.high,
-          }}
-          resizeMode={FastImage.resizeMode.cover}
-          priority={FastImage.priority.high}
-        />
-
-        {/* Content overlaid on top of the image */}
-        <View style={styles.overlay}>
-          <Text
-            allowFontScaling={false}
-            style={{ fontSize: 13 }}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {mimeType === 'x-youtube'
-              ? `YouTube`
-              : mimeType === 'vnd.ekstep.html-archive'
-                ? `Web`
-                : mimeType == 'vnd.ekstep.h5p-archive'
-                  ? `H5P`
-                  : mimeType == 'vnd.ekstep.h5p-archive'
-                    ? `ECML`
-                    : mimeType == 'vnd.sunbird.questionset'
-                      ? `QUML`
-                      : capitalizeFirstLetter(mimeType)}
-          </Text>
-        </View>
-        <View style={styles.view}>
-          <DownloadCard
-            name={item?.name}
-            contentId={item?.identifier || item?.id}
-            contentMimeType={item?.mimeType || item?.app}
-          />
-        </View>
-      </TouchableOpacity>
-      <View
-        style={[
-          globalStyles.flexrow,
-          { marginBottom: 10, alignItems: 'flex-start', marginTop: 5 },
-        ]}
-      >
-        <StatusCardIcon status={trackStatus} />
-
-        <Text
-          allowFontScaling={false}
-          style={[styles.cardText, { color: '#000' }]}
-          numberOfLines={3}
-          ellipsizeMode="tail"
+        <LinearGradient
+          colors={['#00000033', '#000000CC']} // Gradient colors
+          start={{ x: 1, y: 0 }} // Gradient starting point
+          end={{ x: 1, y: 1.5 }} // Gradient ending point
+          style={styles.gradient}
         >
-          {item?.name}
-        </Text>
-      </View>
-    </View>
+          <View
+            style={{
+              alignSelf: 'flex-end',
+              padding: 5,
+              borderRadius: 5,
+              backgroundColor: '#1F1B1380',
+            }}
+          >
+            <FastImage
+              style={styles.img}
+              source={require('../../assets/images/png/cloud_done_green.png')}
+              resizeMode={FastImage.resizeMode.contain}
+              priority={FastImage.priority.high}
+            />
+          </View>
+          <View
+            style={{
+              bottom: 0,
+              position: 'absolute',
+              width: '100%',
+            }}
+          >
+            <Text
+              allowFontScaling={false}
+              style={[
+                globalStyles.subHeading,
+                { color: 'white', marginLeft: 5 },
+              ]}
+              numberOfLines={4}
+              ellipsizeMode="tail"
+            >
+              {item?.name}
+            </Text>
+            <StatusCardLine
+            // status={
+            //   trackCompleted >= 100
+            //     ? 'completed'
+            //     : trackCompleted > 0
+            //       ? 'inprogress'
+            //       : trackProgress > 0
+            //         ? 'progress'
+            //         : 'not_started'
+            // }
+            // trackCompleted={trackCompleted}
+            />
+            <View style={styles.unitCard}>
+              <View style={[globalStyles.flexrow]}>
+                {mimeType === 'pdf' ? (
+                  <Image style={styles.img} source={pdf} resizeMode="contain" />
+                ) : mimeType === 'vnd.ekstep.html-archive' ||
+                  mimeType == 'vnd.ekstep.h5p-archive' ? (
+                  <Image
+                    style={styles.img}
+                    source={html}
+                    resizeMode="contain"
+                  />
+                ) : mimeType === 'mp4' || mimeType === 'webm' ? (
+                  <Image style={styles.img} source={mp4} resizeMode="contain" />
+                ) : (
+                  <></>
+                )}
+
+                <Text
+                  allowFontScaling={false}
+                  style={[globalStyles.text, { marginLeft: 10 }]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {mimeType === 'x-youtube'
+                    ? `YouTube`
+                    : mimeType === 'vnd.ekstep.html-archive'
+                      ? `Web`
+                      : mimeType == 'vnd.ekstep.h5p-archive'
+                        ? `H5P`
+                        : mimeType == 'vnd.ekstep.h5p-archive'
+                          ? `ECML`
+                          : mimeType == 'vnd.sunbird.questionset'
+                            ? `QUML`
+                            : capitalizeFirstLetter(mimeType)}
+                </Text>
+              </View>
+              <TouchableOpacity onPress={toggleDrawer} style={styles.threeDots}>
+                <Icon name="dots-three-vertical" size={20} color="#0D599E" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </LinearGradient>
+        {isDrawerVisible && (
+          <DownloadModal
+            setDrawerVisible={setDrawerVisible}
+            isDrawerVisible={isDrawerVisible}
+            title={item?.name}
+          />
+        )}
+      </ImageBackground>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
     width: '47%',
-    height: 135,
+    height: 190,
     borderRadius: 20,
     marginVertical: 25,
-    // borderWidth: 1,
-    // overflow: 'hidden', // Ensure the background image and content stay within the card boundaries
+    borderWidth: 1,
+    overflow: 'hidden', // Ensure the background image and content stay within the card boundaries
   },
-  subcard: {
-    height: 120,
-    borderRadius: 20,
-    overflow: 'hidden', // Ensure content doesn't overflow the card boundaries
-    // borderWidth: 1,
-  },
-  cardBackgroundImage: {
-    ...StyleSheet.absoluteFillObject, // Make the background image cover the entire card
+  gradient: {
+    width: '100%',
+    height: '100%',
     borderRadius: 20,
   },
-  AppIcon: {
-    borderRadius: 50,
-    width: 50,
-    height: 50,
+  unitCard: {
+    backgroundColor: '#ECE6F0',
+    height: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    // borderRadius: 20,
+  },
+  img: {
+    width: 30,
+    height: 30,
+  },
+  dot: {
+    fontSize: 18,
+    color: '#333',
+  },
+  threeDots: {
     position: 'absolute',
-    right: 10,
     top: 10,
-  },
-  overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay for text visibility
-    width: 70,
-    padding: 5,
-    fontSize: 10,
-    top: 15,
-  },
-  cardText: {
-    color: 'white',
-    fontSize: 14,
-    paddingHorizontal: 5,
-  },
-  view: {
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    // borderWidth: 1,
     right: 10,
-    height: 60,
-    top: 20,
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  modal: {
+    justifyContent: 'flex-end',
+    margin: 0, // No margin for the modal
+  },
+  drawer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    alignItems: 'center',
+  },
+  description: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
   },
 });
 

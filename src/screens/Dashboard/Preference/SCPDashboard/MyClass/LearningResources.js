@@ -30,6 +30,8 @@ const LearningResources = ({ route }) => {
   }
 
   const getDoitsDetails = async (contentList) => {
+    console.log({ contentList });
+
     const payload = {
       request: {
         filters: {

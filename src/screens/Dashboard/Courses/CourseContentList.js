@@ -107,7 +107,7 @@ const CourseContentList = ({ route }) => {
 
     setLoading(false);
 
-    console.log('############ in focus');
+    // console.log('############ in focus');
     setLoading(true);
     fetchDataTrack();
   };
@@ -140,7 +140,7 @@ const CourseContentList = ({ route }) => {
       // console.log('##########');
       setLoading(false); // Ensure to stop loading when data fetch completes
     } catch (e) {
-      console.log('e', e);
+      // console.log('e', e);
       setLoading(false); // Stop loading even on error
     }
   };
@@ -259,6 +259,8 @@ const CourseContentList = ({ route }) => {
     fetchTrackData();
   }, [trackData]);
 
+  console.log('coursesContent', JSON.stringify(coursesContent));
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <SecondaryHeader />
@@ -267,26 +269,28 @@ const CourseContentList = ({ route }) => {
       ) : (
         <ScrollView>
           <View style={{ padding: 20, paddingBottom: 10 }}>
-            <Text
-              allowFontScaling={false}
-              style={[globalStyles.heading3, { marginBottom: 10 }]}
-              numberOfLines={2}
-              ellipsizeMode="tail"
-            >
-              {coursesContent?.name}
-            </Text>
-            <FastImage
-              style={styles.image}
-              source={
-                coursesContent?.appIcon
-                  ? {
-                      uri: coursesContent?.appIcon,
-                      priority: FastImage.priority.high,
-                    }
-                  : require('../../../assets/images/png/poster.png')
-              }
-              resizeMode={FastImage.resizeMode.cover} // Adjust to cover the circular area
-            />
+            <View style={[globalStyles.flexrow]}>
+              <FastImage
+                style={styles.image}
+                source={
+                  coursesContent?.appIcon
+                    ? {
+                        uri: coursesContent?.appIcon,
+                        priority: FastImage.priority.high,
+                      }
+                    : require('../../../assets/images/png/poster.png')
+                }
+                resizeMode={FastImage.resizeMode.cover} // Adjust to cover the circular area
+              />
+              <Text
+                allowFontScaling={false}
+                style={[globalStyles.heading2, { flex: 1 }]}
+                numberOfLines={3}
+                ellipsizeMode="tail"
+              >
+                {coursesContent?.name}
+              </Text>
+            </View>
             <View style={globalStyles.flexrow}>
               <Text
                 allowFontScaling={false}
@@ -300,7 +304,7 @@ const CourseContentList = ({ route }) => {
                 globalStyles.flexrow,
                 {
                   justifyContent: 'space-between',
-                  backgroundColor: '#FFDEA1',
+                  backgroundColor: '#3B383E',
                   paddingHorizontal: 25,
                   paddingVertical: 10,
                   borderRadius: 20,
@@ -308,20 +312,31 @@ const CourseContentList = ({ route }) => {
               ]}
             >
               {trackCompleted != 0 || trackProgress != 0 ? (
-                <View style={globalStyles.flexrow}>
+                <View style={[globalStyles.flexrow]}>
                   <TextField
-                    style={[globalStyles.text, { fontSize: 12 }]}
+                    style={[
+                      globalStyles.text,
+                      { fontSize: 12, color: 'white' },
+                    ]}
                     text={'started_on'}
                   />
                   <TextField
-                    style={[globalStyles.text, { fontSize: 12 }]}
+                    style={[
+                      globalStyles.text,
+                      { fontSize: 12, color: 'white' },
+                    ]}
                     text={`${translateDate(startedOn, language)}`}
                   />
                 </View>
               ) : (
                 <></>
               )}
-              <View style={globalStyles.flexrow}>
+              <View
+                style={[
+                  globalStyles.flexrow,
+                  { flex: 1, justifyContent: 'flex-end' },
+                ]}
+              >
                 {trackCompleted < 100 && trackCompleted > 0 ? (
                   <>
                     <CircularProgressBarCustom
@@ -330,17 +345,20 @@ const CourseContentList = ({ route }) => {
                       progress={trackCompleted / 100}
                       color="green"
                       backgroundColor="#e6e6e6"
-                      textStyle={{ fontSize: 8, color: 'black' }}
+                      textStyle={{ fontSize: 8, color: 'white' }}
                     />
                     <Text
                       allowFontScaling={false}
-                      style={{ marginLeft: 10, color: '#000' }}
+                      style={{ marginLeft: 10, color: 'white' }}
                     >{`${translateDigits(
                       Math.round((trackCompleted / 100) * 100),
                       language
                     )}%`}</Text>
                     <TextField
-                      style={[globalStyles.text, { fontSize: 12 }]}
+                      style={[
+                        globalStyles.text,
+                        { fontSize: 12, color: 'white' },
+                      ]}
                       text={'completed'}
                     />
                   </>
@@ -363,13 +381,11 @@ const CourseContentList = ({ route }) => {
                   />
                 )}
               </View>
-              <View></View>
             </View>
           </View>
           <View
             style={{
               padding: 20,
-              backgroundColor: '#F7ECDF',
               justifyContent: 'space-between',
               flexWrap: 'wrap',
               flexDirection: 'row',
@@ -427,7 +443,10 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   image: {
-    height: 200,
+    width: 150,
+    height: 100,
+    borderRadius: 20,
+    marginRight: 10,
   },
 });
 
