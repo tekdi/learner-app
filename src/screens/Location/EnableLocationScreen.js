@@ -18,6 +18,8 @@ import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { reverseGeocode } from '../../utils/API/AuthService';
 import { setDataInStorage } from '../../utils/JsHelper/Helper';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const EnableLocationScreen = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -77,22 +79,17 @@ const EnableLocationScreen = () => {
       />
       <Image style={{ width: '100%' }} source={location} resizeMode="cover" />
       <View style={{ width: '80%', marginTop: 50 }}>
-        <Text
-          allowFontScaling={false}
-          style={[globalStyles.heading2, { textAlign: 'center' }]}
-        >
+        <GlobalText style={[globalStyles.heading2, { textAlign: 'center' }]}>
           {t(
             'enable_location_to_discover_nearby_skilling_centers_and_more_opportunities_tailored_just_for_you'
           )}
-        </Text>
+        </GlobalText>
       </View>
       <View style={{ margin: 50 }}>
         <PrimaryButton onPress={requestLocationPermission} text={t('enable')} />
       </View>
       <TouchableOpacity style={styles.button} onPress={disableLocation}>
-        <Text allowFontScaling={false} style={styles.buttonText}>
-          {t('not_now')}
-        </Text>
+        <GlobalText style={styles.buttonText}>{t('not_now')}</GlobalText>
       </TouchableOpacity>
     </View>
   );

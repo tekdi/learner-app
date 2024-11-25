@@ -19,6 +19,8 @@ import unit from '../../../assets/images/png/Unit.png';
 import book from '../../../assets/images/png/book_open.png';
 import LinearGradient from 'react-native-linear-gradient';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
   // console.log('########## UnitCard');
   // console.log('course_id', course_id);
@@ -203,8 +205,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
               width: '100%',
             }}
           >
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[
                 globalStyles.subHeading,
                 { color: 'white', marginLeft: 5 },
@@ -213,7 +214,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
               ellipsizeMode="tail"
             >
               {item?.name}
-            </Text>
+            </GlobalText>
             <StatusCardLine
               status={
                 trackCompleted >= 100
@@ -229,14 +230,13 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
             <View style={styles.unitCard}>
               <View style={[globalStyles.flexrow]}>
                 <Image style={styles.img} source={book} resizeMode="contain" />
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
                   style={[globalStyles.text, { marginLeft: 10 }]}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
                   {t('unit')}
-                </Text>
+                </GlobalText>
               </View>
             </View>
           </View>

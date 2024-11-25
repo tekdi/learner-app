@@ -6,6 +6,8 @@ import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
 import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const StatusCardIcon = ({ status }) => {
   const { t } = useTranslation();
 

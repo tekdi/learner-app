@@ -8,6 +8,8 @@ import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import { useNavigation } from '@react-navigation/native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const Accordion2 = ({ title, children, index }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const { t } = useTranslation();
@@ -32,9 +34,9 @@ const Accordion2 = ({ title, children, index }) => {
         ]}
         onPress={() => setAccordionOpen(!isAccordionOpen)}
       >
-        <Text style={[globalStyles.text, { color: '#7C766F' }]}>
+        <GlobalText style={[globalStyles.text, { color: '#7C766F' }]}>
           {t('topic')} {index + 1}: {title}
-        </Text>
+        </GlobalText>
         <Icon
           name={isAccordionOpen ? 'angle-up' : 'angle-down'}
           color="#1F1B13"
@@ -57,24 +59,26 @@ const Accordion2 = ({ title, children, index }) => {
                   style={styles.box}
                 >
                   <View style={globalStyles.flexrow}>
-                    <Text style={globalStyles.subHeading}>{item?.name}</Text>
+                    <GlobalText style={globalStyles.subHeading}>
+                      {item?.name}
+                    </GlobalText>
                   </View>
                   <View style={[globalStyles.flexrow]}>
-                    <Text
+                    <GlobalText
                       style={[
                         globalStyles.text,
                         { color: 'rgb(13, 89, 158)', marginRight: 10 },
                       ]}
                     >
                       {item?.learningResources?.length} {t('resources')}
-                    </Text>
+                    </GlobalText>
                     <Icon name={'arrow-right'} color="#0D599E" size={20} />
                   </View>
                 </TouchableOpacity>
               );
             })
           ) : (
-            <Text style={globalStyles.text}>{t('no_topics')}</Text>
+            <GlobalText style={globalStyles.text}>{t('no_topics')}</GlobalText>
           )}
         </View>
       )}

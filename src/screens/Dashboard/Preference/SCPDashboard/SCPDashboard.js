@@ -33,6 +33,8 @@ import { eventList } from '../../../../utils/API/AuthService';
 import ActiveLoading from '../../../LoadingScreen/ActiveLoading';
 import BackButtonHandler from '../../../../components/BackNavigation/BackButtonHandler';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const SCPDashboard = (props) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -159,9 +161,9 @@ const SCPDashboard = (props) => {
       <ScrollView style={styles.view2}>
         <View style={globalStyles.flexrow}>
           <Image source={wave} resizeMode="contain" />
-          <Text allowFontScaling={false} style={styles.text2}>
+          <GlobalText style={styles.text2}>
             {t('welcome')}, {capitalizeName(userInfo?.[0]?.name)}!
-          </Text>
+          </GlobalText>
         </View>
         <View style={{ marginVertical: 20, alignItems: 'center' }}>
           <SessionCard percentage={10} />
@@ -173,16 +175,16 @@ const SCPDashboard = (props) => {
           style={[styles.box]}
         >
           <View style={{ width: '90%' }}>
-            <Text style={globalStyles.subHeading}>
+            <GlobalText style={globalStyles.subHeading}>
               {t('previous_class_materials')} {t('post_requisites')}
-            </Text>
-            <Text
+            </GlobalText>
+            <GlobalText
               style={globalStyles.text}
               numberOfLines={2}
               ellipsizeMode="tail"
             >
               {t('complete_activities_for_previous_classes')}
-            </Text>
+            </GlobalText>
           </View>
           <View>
             <Octicons
@@ -205,11 +207,13 @@ const SCPDashboard = (props) => {
             navigation.navigate('TimeTable');
           }}
         >
-          <Text style={globalStyles.subHeading}>{t('my_timetable')}</Text>
+          <GlobalText style={globalStyles.subHeading}>
+            {t('my_timetable')}
+          </GlobalText>
           <View style={globalStyles.flexrow}>
-            <Text style={[globalStyles.subHeading, { color: '#0D599E' }]}>
+            <GlobalText style={[globalStyles.subHeading, { color: '#0D599E' }]}>
               {currentMonthName}
-            </Text>
+            </GlobalText>
 
             <Octicons
               name="calendar"
@@ -233,27 +237,31 @@ const SCPDashboard = (props) => {
               marginBottom: 20,
             }}
           >
-            <Text style={globalStyles.heading2}>{t('planned_sessions')}</Text>
+            <GlobalText style={globalStyles.heading2}>
+              {t('planned_sessions')}
+            </GlobalText>
 
             {eventData?.plannedSessions?.length > 0 ? (
               eventData.plannedSessions.map((item, key) => (
                 <SubjectCard key={key} item={item} />
               ))
             ) : (
-              <Text style={globalStyles.text}>
+              <GlobalText style={globalStyles.text}>
                 {t('no_sessions_scheduled')}
-              </Text>
+              </GlobalText>
             )}
 
-            <Text style={globalStyles.heading2}>{t('extra_sessions')}</Text>
+            <GlobalText style={globalStyles.heading2}>
+              {t('extra_sessions')}
+            </GlobalText>
             {eventData?.extraSessions?.length > 0 ? (
               eventData.extraSessions.map((item, key) => (
                 <SubjectCard key={key} item={item} />
               ))
             ) : (
-              <Text style={globalStyles.text}>
+              <GlobalText style={globalStyles.text}>
                 {t('no_sessions_scheduled')}
-              </Text>
+              </GlobalText>
             )}
           </View>
         )}

@@ -17,6 +17,8 @@ import { useTranslation } from '../../../../context/LanguageContext';
 import { formatDateTimeRange } from '../../../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const SubjectCard = ({ item }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -42,20 +44,22 @@ const SubjectCard = ({ item }) => {
             ) : (
               <SimpleIcon name="social-youtube" size={20} color="#000" />
             )}
-            <Text style={[globalStyles.subHeading, { marginLeft: 5 }]}>
+            <GlobalText style={[globalStyles.subHeading, { marginLeft: 5 }]}>
               {item?.metadata?.subject}
-            </Text>
+            </GlobalText>
           </View>
 
-          <Text style={[globalStyles.text]}>
+          <GlobalText style={[globalStyles.text]}>
             {formatDateTimeRange(item?.startDateTime)} -
             {formatDateTimeRange(item?.endDateTime)}
-          </Text>
+          </GlobalText>
         </View>
 
-        <Text style={[globalStyles.text, { color: '#7C766F', marginTop: 5 }]}>
+        <GlobalText
+          style={[globalStyles.text, { color: '#7C766F', marginTop: 5 }]}
+        >
           {item?.metadata?.teacherName}
-        </Text>
+        </GlobalText>
         {/* Zoom Link with Copy Icon */}
         <View style={styles.linkRow}>
           {item?.onlineDetails && (
@@ -63,13 +67,13 @@ const SubjectCard = ({ item }) => {
               <TouchableOpacity
                 onPress={() => Linking.openURL(item?.onlineDetails?.url)}
               >
-                <Text
+                <GlobalText
                   style={styles.zoomLink}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
                   {item?.onlineDetails?.url}
-                </Text>
+                </GlobalText>
               </TouchableOpacity>
               <TouchableOpacity onPress={handleCopyLink}>
                 <Icon
@@ -96,9 +100,9 @@ const SubjectCard = ({ item }) => {
           ]}
           onPress={() => setAccordionOpen(!isAccordionOpen)}
         >
-          <Text style={[globalStyles.text, { color: '#7C766F' }]}>
+          <GlobalText style={[globalStyles.text, { color: '#7C766F' }]}>
             {t('what_you_are_going_to_learn')}
-          </Text>
+          </GlobalText>
           <Icon
             name={isAccordionOpen ? 'angle-up' : 'angle-down'}
             color="#0D599E"
@@ -122,9 +126,9 @@ const SubjectCard = ({ item }) => {
                 <View style={globalStyles.flexrow}>
                   <Icon name="book-open" size={20} color="#0D599E" />
 
-                  <Text style={styles.accordionDetails}>
+                  <GlobalText style={styles.accordionDetails}>
                     {item?.erMetaData?.topic}
-                  </Text>
+                  </GlobalText>
                 </View>
                 <View style={[globalStyles.flexrow, { marginLeft: 15 }]}>
                   <MaterialIcon
@@ -136,17 +140,19 @@ const SubjectCard = ({ item }) => {
                     const isLastItem =
                       index === item.erMetaData.subTopic.length - 1; // Check if it's the last item
                     return (
-                      <Text key={index} style={styles.accordionDetails}>
+                      <GlobalText key={index} style={styles.accordionDetails}>
                         {subItem}
                         {!isLastItem && ','}
                         {/* Only add comma if not the last item */}
-                      </Text>
+                      </GlobalText>
                     );
                   })}
                 </View>
               </TouchableOpacity>
             ) : (
-              <Text style={globalStyles.text}>{t('no_topics')}</Text>
+              <GlobalText style={globalStyles.text}>
+                {t('no_topics')}
+              </GlobalText>
             )}
           </View>
         )}

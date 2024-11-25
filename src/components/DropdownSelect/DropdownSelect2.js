@@ -11,6 +11,8 @@ import globalStyles from '../../utils/Helper/Style';
 import { useController } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const DropdownSelect = ({
   field,
   name,
@@ -53,14 +55,12 @@ const DropdownSelect = ({
   return (
     <View style={styles.dropdownContainer}>
       <View style={styles.label}>
-        <Text allowFontScaling={false} style={globalStyles.text}>
-          {t(name)}
-        </Text>
+        <GlobalText style={globalStyles.text}>{t(name)}</GlobalText>
       </View>
       <TouchableOpacity onPress={toggleDropdown} style={styles.dropdownButton}>
-        <Text allowFontScaling={false} style={[globalStyles.text]}>
+        <GlobalText style={[globalStyles.text]}>
           {selectedIds?.label || 'select'}
-        </Text>
+        </GlobalText>
         <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
       </TouchableOpacity>
       {isDropdownOpen && (
@@ -72,17 +72,14 @@ const DropdownSelect = ({
                 onPress={() => handleSelect(item)}
                 style={styles.dropdownOption}
               >
-                <Text allowFontScaling={false} style={styles.optionText}>
-                  {item}
-                </Text>
+                <GlobalText style={styles.optionText}>{item}</GlobalText>
               </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
       )}
       {error && (
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={{
             color: 'red',
             alignSelf: 'flex-start',
@@ -91,7 +88,7 @@ const DropdownSelect = ({
           }}
         >
           {error}
-        </Text>
+        </GlobalText>
       )}
     </View>
   );

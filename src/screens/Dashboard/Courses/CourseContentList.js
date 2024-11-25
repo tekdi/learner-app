@@ -33,8 +33,9 @@ import {
 import { getSyncTrackingOfflineCourse } from '../../../utils/API/AuthService';
 import CircularProgressBarCustom from '../../../components/CircularProgressBarCustom.js/CircularProgressBarCustom';
 import StatusCardCourse from '../../../components/StatusCard/StatusCardCourse';
-import { languages } from '../../LanguageScreen/Languages';
 import { useTranslation } from '../../../context/LanguageContext';
+
+import GlobalText from "@components/GlobalText/GlobalText";
 
 const CourseContentList = ({ route }) => {
   const { language } = useTranslation();
@@ -282,22 +283,20 @@ const CourseContentList = ({ route }) => {
                 }
                 resizeMode={FastImage.resizeMode.cover} // Adjust to cover the circular area
               />
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[globalStyles.heading2, { flex: 1 }]}
                 numberOfLines={3}
                 ellipsizeMode="tail"
               >
                 {coursesContent?.name}
-              </Text>
+              </GlobalText>
             </View>
             <View style={globalStyles.flexrow}>
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[globalStyles.subHeading, { marginVertical: 10 }]}
               >
                 {coursesContent?.description}
-              </Text>
+              </GlobalText>
             </View>
             <View
               style={[
@@ -347,13 +346,12 @@ const CourseContentList = ({ route }) => {
                       backgroundColor="#e6e6e6"
                       textStyle={{ fontSize: 8, color: 'white' }}
                     />
-                    <Text
-                      allowFontScaling={false}
+                    <GlobalText
                       style={{ marginLeft: 10, color: 'white' }}
                     >{`${translateDigits(
                       Math.round((trackCompleted / 100) * 100),
                       language
-                    )}%`}</Text>
+                    )}%`}</GlobalText>
                     <TextField
                       style={[
                         globalStyles.text,
@@ -368,10 +366,10 @@ const CourseContentList = ({ route }) => {
                       trackCompleted >= 100
                         ? 'completed'
                         : trackCompleted > 0
-                          ? 'inprogress'
-                          : trackProgress > 0
-                            ? 'progress'
-                            : 'not_started'
+                        ? 'inprogress'
+                        : trackProgress > 0
+                        ? 'progress'
+                        : 'not_started'
                     }
                     trackCompleted={trackCompleted}
                     viewStyle={{

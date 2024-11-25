@@ -5,6 +5,8 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const MaterialCard = ({ title, selectedIds }) => {
   const navigation = useNavigation();
 
@@ -27,13 +29,13 @@ const MaterialCard = ({ title, selectedIds }) => {
             backgroundColor="#e6e6e6"
             textStyle={{ fontSize: 8, color: 'black' }}
           /> */}
-        <Text
+        <GlobalText
           style={[globalStyles.subHeading, { marginLeft: 20, width: '70%' }]}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {title}
-        </Text>
+        </GlobalText>
       </View>
       <Icon
         name="angle-right"

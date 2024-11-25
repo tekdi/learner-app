@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import globalStyles from '../../../utils/Helper/Style';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const WeeklyCalendar = ({ setDate, postdays }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const flatListRef = useRef(null);
@@ -90,9 +92,9 @@ const WeeklyCalendar = ({ setDate, postdays }) => {
             style={{ alignItems: 'center' }}
             onPress={() => onDateClick(item)}
           >
-            <Text style={globalStyles.text}>
+            <GlobalText style={globalStyles.text}>
               {item.date === today.getDate() ? 'Today' : item.day}
-            </Text>
+            </GlobalText>
 
             <View
               style={[
@@ -101,7 +103,7 @@ const WeeklyCalendar = ({ setDate, postdays }) => {
                 item.date === today.getDate() && styles.todayBox,
               ]}
             >
-              <Text style={globalStyles.text}>{item.date}</Text>
+              <GlobalText style={globalStyles.text}>{item.date}</GlobalText>
             </View>
           </TouchableOpacity>
         )}

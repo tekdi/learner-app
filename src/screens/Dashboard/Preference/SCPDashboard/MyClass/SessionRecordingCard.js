@@ -4,30 +4,34 @@ import { SafeAreaView } from 'react-native';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import globalStyles from '../../../../../utils/Helper/Style';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const SessionRecordingCard = () => {
   return (
     <SafeAreaView>
       <View style={styles.view}>
-        <Text
+        <GlobalText
           style={[globalStyles.subHeading, { color: '#7C766F' }, styles.margin]}
         >
           Maths-double-clear
-        </Text>
+        </GlobalText>
         <View style={[globalStyles.flexrow, { marginVertical: 5 }]}>
           <Octicons name="calendar" color={'#0D599E'} size={20} />
-          <Text style={[globalStyles.subHeading, { top: 3, marginLeft: 10 }]}>
+          <GlobalText
+            style={[globalStyles.subHeading, { top: 3, marginLeft: 10 }]}
+          >
             10 May, 2 pm - 4 pm
-          </Text>
+          </GlobalText>
         </View>
-        <Text
+        <GlobalText
           style={[globalStyles.subHeading, { color: '#7C766F' }, styles.margin]}
         >
           Vicky Phalke
-        </Text>
+        </GlobalText>
         <TouchableOpacity style={{ marginVertical: 5 }}>
-          <Text style={[globalStyles.text, { color: '#0D599E' }]}>
+          <GlobalText style={[globalStyles.text, { color: '#0D599E' }]}>
             Recording_10AM_4 May 2024
-          </Text>
+          </GlobalText>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

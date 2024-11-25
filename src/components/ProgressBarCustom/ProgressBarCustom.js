@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { translateDigits } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const ProgressBarCustom = ({
   progress,
   language,
@@ -25,10 +27,10 @@ const ProgressBarCustom = ({
         />
         {/* Percentage Label */}
       </View>
-      <Text
-        allowFontScaling={false}
-        style={[styles.label, { color: color }]}
-      >{`${translateDigits(progress, language)}%`}</Text>
+      <GlobalText style={[styles.label, { color: color }]}>{`${translateDigits(
+        progress,
+        language
+      )}%`}</GlobalText>
     </SafeAreaView>
   );
 };

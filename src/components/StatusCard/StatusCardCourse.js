@@ -10,6 +10,8 @@ import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
 import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
 import check_circle from '../../assets/images/png/check_circle.png';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
   const { t } = useTranslation();
 
@@ -17,15 +19,14 @@ const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
     return (
       <View style={[styles.view, viewStyle]}>
         <Image style={styles.img} source={check_circle} resizeMode="contain" />
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={[
             globalStyles.text,
             { color: '#50EE42', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('completed')}
-        </Text>
+        </GlobalText>
       </View>
     );
   } else if (status === 'inprogress') {
@@ -42,30 +43,28 @@ const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
           source={arrow_upload_progress}
           resizeMode="contain"
         />
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={[
             globalStyles.text,
             { color: 'white', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('Inprogress')}
-        </Text>
+        </GlobalText>
       </View>
     );
   } else {
     return (
       <View style={[styles.view, viewStyle]}>
         <Icon name="circle" style={{ color: 'black' }} />
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={[
             globalStyles.text,
             { color: 'white', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('not_started')}
-        </Text>
+        </GlobalText>
       </View>
     );
   }

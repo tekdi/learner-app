@@ -3,14 +3,12 @@ import PropTypes from 'prop-types';
 import { useTranslation } from '../../context/LanguageContext';
 import { StyleSheet, Text } from 'react-native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const Label = ({ text }) => {
   const { t } = useTranslation();
 
-  return (
-    <Text allowFontScaling={false} style={styles.text}>
-      {t(text)}
-    </Text>
-  );
+  return <GlobalText style={styles.text}>{t(text)}</GlobalText>;
 };
 
 Label.propTypes = {

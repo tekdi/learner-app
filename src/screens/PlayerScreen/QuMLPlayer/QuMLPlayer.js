@@ -16,6 +16,8 @@ import { qumlPlayerConfig } from './data';
 import Config from 'react-native-config';
 import { Alert } from 'react-native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const QuMLPlayer = () => {
   const [loading, setLoading] = useState(true);
   // content id
@@ -89,7 +91,7 @@ const QuMLPlayer = () => {
     <View style={styles.container}>
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
-          <Text allowFontScaling={false}>Invalid Player File</Text>
+          <GlobalText>Invalid Player File</GlobalText>
         </View>
       ) : (
         <WebView
@@ -127,7 +129,7 @@ const QuMLPlayer = () => {
           }
         }}
       />
-      {retrievedData && <Text allowFontScaling={false}>{retrievedData}</Text>} */}
+      {retrievedData && <GlobalText >{retrievedData}</GlobalText>} */}
     </View>
   );
 };

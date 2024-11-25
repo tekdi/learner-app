@@ -12,6 +12,8 @@ import PropTypes from 'prop-types';
 import FastImage from '@changwoolab/react-native-fast-image';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const HeaderComponent = ({ question, questionIndex, totalForms }) => {
   const { t } = useTranslation();
 
@@ -27,12 +29,10 @@ const HeaderComponent = ({ question, questionIndex, totalForms }) => {
             priority={FastImage.priority.high} // Set the priority here
           />
           <View style={styles.textContainer}>
-            <Text allowFontScaling={false} style={styles.text1}>
+            <GlobalText style={styles.text1}>
               {questionIndex}/{totalForms}
-            </Text>
-            <Text allowFontScaling={false} style={styles.text2}>
-              {t(question)}
-            </Text>
+            </GlobalText>
+            <GlobalText style={styles.text2}>{t(question)}</GlobalText>
           </View>
         </View>
       </SafeAreaView>

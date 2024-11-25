@@ -14,6 +14,8 @@ import { useTranslation } from '../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 import globalStyles from '../../utils/Helper/Style';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const IconConditions = ({ status, styles }) => {
   let iconName;
   let IconComponent;
@@ -46,37 +48,34 @@ const StatusCondition = ({ status, styles, t, percentage }) => {
     case 'Completed':
       content = (
         <View style={globalStyles.flexrow}>
-          <Text allowFontScaling={false} style={globalStyles.subHeading}>
+          <GlobalText style={globalStyles.subHeading}>
             {t('Overallscore')}
-            <Text
-              allowFontScaling={false}
-              style={{ color: percentage > 35 ? '#1A8825' : 'red' }}
-            >
+            <GlobalText style={{ color: percentage > 35 ? '#1A8825' : 'red' }}>
               {' '}
               {percentage}%
-            </Text>
-          </Text>
-          <Text allowFontScaling={false} style={styles.smileyText}>
+            </GlobalText>
+          </GlobalText>
+          <GlobalText style={styles.smileyText}>
             {percentage > 35 && `😄`}
-          </Text>
+          </GlobalText>
         </View>
       );
       break;
     case 'In_Progress':
       content = (
         <View style={globalStyles.flexrow}>
-          <Text allowFontScaling={false} style={globalStyles.subHeading}>
+          <GlobalText style={globalStyles.subHeading}>
             {t('Inprogress')}
-          </Text>
+          </GlobalText>
         </View>
       );
       break;
     default:
       content = (
         <View style={globalStyles.flexrow}>
-          <Text allowFontScaling={false} style={globalStyles.subHeading}>
+          <GlobalText style={globalStyles.subHeading}>
             {t('not_started')}
-          </Text>
+          </GlobalText>
         </View>
       );
   }
@@ -98,9 +97,9 @@ const TestBox = ({ testText, status, percentage }) => {
         <View style={styles.card}>
           <IconConditions status={status} styles={styles} />
           <View style={styles.rightContainer}>
-            <Text allowFontScaling={false} style={globalStyles.subHeading}>
+            <GlobalText style={globalStyles.subHeading}>
               {t(testText)}
-            </Text>
+            </GlobalText>
 
             <StatusCondition
               status={status}

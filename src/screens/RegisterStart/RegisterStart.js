@@ -17,6 +17,8 @@ import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../context/NetworkContext';
 import DeviceInfo from 'react-native-device-info';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const RegisterStart = () => {
   // Multi-language setup
   const { t } = useTranslation();
@@ -88,9 +90,7 @@ const RegisterStart = () => {
           resizeMode={FastImage.resizeMode.contain}
           priority={FastImage.priority.high} // Set the priority here
         />
-        <Text allowFontScaling={false} style={styles.title}>
-          {t('form_start_lable')}
-        </Text>
+        <GlobalText style={styles.title}>{t('form_start_lable')}</GlobalText>
       </View>
 
       <View style={styles.buttonContainer}>

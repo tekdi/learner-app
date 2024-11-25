@@ -28,11 +28,17 @@ import download from '../../assets/images/png/download.png';
 import download_inprogress from '../../assets/images/png/download_inprogress.png';
 import download_complete from '../../assets/images/png/download_complete.png';
 import { getData, storeData } from '../../utils/Helper/JSHelper';
-import { hierarchyContent, listQuestion, questionsetRead } from '../../utils/API/ApiCalls';
+import {
+  hierarchyContent,
+  listQuestion,
+  questionsetRead,
+} from '../../utils/API/ApiCalls';
 import RNFS from 'react-native-fs';
 import Config from 'react-native-config';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { getAsessmentOffline } from '../../utils/API/AuthService';
+
+import GlobalText from "@components/GlobalText/GlobalText";
 
 const SubjectBox = ({ name, disabled, data }) => {
   const { t } = useTranslation();
@@ -255,21 +261,20 @@ const SubjectBox = ({ name, disabled, data }) => {
       <TouchableOpacity disabled={disabled} onPress={handlePress}>
         <View style={styles.card}>
           <View style={styles.rightContainer}>
-            <Text allowFontScaling={false} style={globalStyles.subHeading}>
+            <GlobalText style={globalStyles.subHeading}>
               {t(capitalizeFirstLetter(name))}
-            </Text>
+            </GlobalText>
             {disabled && !isSyncPending ? (
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[globalStyles.subHeading, { color: '#7C766F' }]}
               >
                 {t('not_started')}
-              </Text>
+              </GlobalText>
             ) : !isSyncPending ? (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text allowFontScaling={false} style={{ color: '#000' }}>
+                <GlobalText style={{ color: '#000' }}>
                   {data?.totalScore}/{data?.totalMaxScore}
-                </Text>
+                </GlobalText>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -278,30 +283,28 @@ const SubjectBox = ({ name, disabled, data }) => {
                   }}
                 >
                   <Icon name="circle" size={8} color="#7C766F" />
-                  <Text
-                    allowFontScaling={false}
+                  <GlobalText
                     style={[
                       globalStyles.text,
                       { color: '#7C766F', marginLeft: 5 },
                     ]}
                   >
                     {moment(data?.createdOn).format('DD MMM, YYYY')}
-                  </Text>
+                  </GlobalText>
                   <View style={[globalStyles.flexrow, { marginLeft: 15 }]}>
                     <Ionicons
                       name="cloud-outline"
                       color={'#7C766F'}
                       size={15}
                     />
-                    <Text
-                      allowFontScaling={false}
+                    <GlobalText
                       style={[
                         globalStyles.text,
                         { color: '#7C766F', marginLeft: 5 },
                       ]}
                     >
                       {moment(data?.lastAttemptedOn).format('DD MMM, YYYY')}
-                    </Text>
+                    </GlobalText>
                   </View>
                 </View>
               </View>
@@ -319,15 +322,14 @@ const SubjectBox = ({ name, disabled, data }) => {
                   color={'#7C766F'}
                   size={22}
                 />
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
                   style={[
                     globalStyles.subHeading,
                     { color: '#7C766F', marginLeft: 10 },
                   ]}
                 >
                   {t('sync_pending')}
-                </Text>
+                </GlobalText>
               </View>
             ) : (
               <SecondaryButton

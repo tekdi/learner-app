@@ -14,6 +14,8 @@ import globalStyles from '../../utils/Helper/Style';
 import { useFocusEffect } from '@react-navigation/native';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const instructions = [
   {
     id: 1,
@@ -124,9 +126,9 @@ const TestView = ({ route }) => {
           questionsets={questionsets}
         />
         <View style={styles.container}>
-          <Text allowFontScaling={false} style={globalStyles.text}>
+          <GlobalText style={globalStyles.text}>
             {t('assessment_instructions')}
-          </Text>
+          </GlobalText>
           {questionsets?.map((item, index) => {
             return (
               <SubjectBox
@@ -138,34 +140,25 @@ const TestView = ({ route }) => {
             );
           })}
           <View style={styles.note}>
-            <Text
-              allowFontScaling={false}
-              style={[globalStyles.text, { fontWeight: '700' }]}
-            >
+            <GlobalText style={[globalStyles.text, { fontWeight: '700' }]}>
               {t('assessment_note')}
-            </Text>
+            </GlobalText>
           </View>
-          <Text
-            allowFontScaling={false}
+          <GlobalText
             style={[
               globalStyles.subHeading,
               { fontWeight: '700', paddingVertical: 20 },
             ]}
           >
             {t('general_instructions')}
-          </Text>
+          </GlobalText>
           {instructions?.map((item) => {
             return (
               <View key={item.id.toString()} style={styles.itemContainer}>
-                <Text allowFontScaling={false} style={styles.bullet}>
-                  {'\u2022'}
-                </Text>
-                <Text
-                  allowFontScaling={false}
-                  style={[globalStyles.subHeading]}
-                >
+                <GlobalText style={styles.bullet}>{'\u2022'}</GlobalText>
+                <GlobalText style={[globalStyles.subHeading]}>
                   {t(item.title)}
-                </Text>
+                </GlobalText>
               </View>
             );
           })}

@@ -28,6 +28,8 @@ import html from '../../assets/images/png/html.png';
 import doc from '../../assets/images/png/doc.png';
 import DownloadModal from './DownloadModal';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const navigation = useNavigation();
   const [isDrawerVisible, setDrawerVisible] = useState(false);
@@ -227,8 +229,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
               width: '100%',
             }}
           >
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[
                 globalStyles.subHeading,
                 { color: 'white', marginLeft: 5 },
@@ -237,7 +238,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
               ellipsizeMode="tail"
             >
               {item?.name}
-            </Text>
+            </GlobalText>
             <StatusCardLine
             // status={
             //   trackCompleted >= 100
@@ -267,8 +268,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
                   <></>
                 )}
 
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
                   style={[globalStyles.text, { marginLeft: 10 }]}
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -284,7 +284,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
                           : mimeType == 'vnd.sunbird.questionset'
                             ? `QUML`
                             : capitalizeFirstLetter(mimeType)}
-                </Text>
+                </GlobalText>
               </View>
               <TouchableOpacity onPress={toggleDrawer} style={styles.threeDots}>
                 <Icon name="dots-three-vertical" size={20} color="#0D599E" />

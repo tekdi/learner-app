@@ -14,6 +14,8 @@ import globalStyles from '../../utils/Helper/Style';
 import { ProgressBar } from '@ui-kitten/components';
 import StatusCard from '../StatusCard/StatusCard';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 import moment from 'moment';
 import {
   getDataFromStorage,
@@ -198,32 +200,30 @@ const CourseCard = ({
               trackCompleted >= 100
                 ? 'completed'
                 : trackCompleted > 0
-                  ? 'inprogress'
-                  : trackProgress > 0
-                    ? 'progress'
-                    : 'not_started'
+                ? 'inprogress'
+                : trackProgress > 0
+                ? 'progress'
+                : 'not_started'
             }
             trackCompleted={trackCompleted}
           />
         </View>
       </View>
       <View style={styles.name}>
-        <Text
-          allowFontScaling={false}
+        <GlobalText
           style={[globalStyles.text, { width: '80%', fontWeight: 700 }]}
           numberOfLines={2}
           ellipsizeMode="tail"
         >
           {item?.name}
-        </Text>
-        <Text
-          allowFontScaling={false}
+        </GlobalText>
+        <GlobalText
           style={[globalStyles.text, { width: '80%', marginVertical: 10 }]}
           numberOfLines={3}
           ellipsizeMode="tail"
         >
           {item?.description}
-        </Text>
+        </GlobalText>
       </View>
     </Pressable>
   );

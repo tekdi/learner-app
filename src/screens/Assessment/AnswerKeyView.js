@@ -27,6 +27,8 @@ import globalStyles from '../../utils/Helper/Style';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../context/NetworkContext';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const ITEMS_PER_PAGE = 10;
 
 const AnswerKeyView = ({ route }) => {
@@ -149,18 +151,15 @@ const AnswerKeyView = ({ route }) => {
                 size={30}
               />
             </TouchableOpacity>
-            <Text allowFontScaling={false} style={globalStyles.heading}>
+            <GlobalText style={globalStyles.heading}>
               {t(capitalizeFirstLetter(title))}
-            </Text>
+            </GlobalText>
           </View>
           {isConnected && (
             <View style={[globalStyles.flexrow, { marginTop: 10 }]}>
-              <Text
-                allowFontScaling={false}
-                style={[globalStyles.subHeading, { color: '#000' }]}
-              >
+              <GlobalText style={[globalStyles.subHeading, { color: '#000' }]}>
                 {t('downloaded_for_offline_access')}
-              </Text>
+              </GlobalText>
               <Icon
                 name="check-circle"
                 style={{ marginHorizontal: 10 }}
@@ -171,35 +170,29 @@ const AnswerKeyView = ({ route }) => {
           )}
           <View style={styles.container}>
             <View>
-              <Text
-                allowFontScaling={false}
-                style={[globalStyles.text, { color: '#7C766F' }]}
-              >
+              <GlobalText style={[globalStyles.text, { color: '#7C766F' }]}>
                 {t('submitted_On')}
                 {moment(scoreData?.lastAttemptedOn).format('DD MMM, YYYY')}
-              </Text>
+              </GlobalText>
               <View
                 style={[
                   globalStyles.flexrow,
                   { justifyContent: 'space-between', marginVertical: 10 },
                 ]}
               >
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
                   style={[globalStyles.subHeading, { fontWeight: '700' }]}
                 >
                   {unansweredCount} {t('unanswered')}
-                </Text>
-                <Text
-                  allowFontScaling={false}
+                </GlobalText>
+                <GlobalText
                   style={[globalStyles.subHeading, { fontWeight: '700' }]}
                 >
                   {scoreData?.totalScore || 0}/{scoreData?.totalMaxScore || 0}
-                </Text>
+                </GlobalText>
               </View>
               <View style={{ borderBottomWidth: 1 }}></View>
-              <Text
-                allowFontScaling={false}
+              <GlobalText
                 style={[
                   globalStyles.text,
                   { marginVertical: 20, color: '#7C766F' },
@@ -207,7 +200,7 @@ const AnswerKeyView = ({ route }) => {
               >
                 {passedItems?.length || 0} {t('out_of')}{' '}
                 {scoreData?.score_details?.length || 0} {t('correct_answers')}
-              </Text>
+              </GlobalText>
             </View>
             <FlatList
               ref={flatListRef}
@@ -216,17 +209,16 @@ const AnswerKeyView = ({ route }) => {
               renderItem={({ item, index }) => (
                 <View style={styles.questionContainer}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text allowFontScaling={false} style={styles.questionText}>
+                    <GlobalText style={styles.questionText}>
                       {`Q${startIndex + index + 1}.`}
-                    </Text>
+                    </GlobalText>
                     <RenderHtml
                       contentWidth={width}
                       baseStyle={baseStyle}
                       source={{ html: item.queTitle }}
                     />
                   </View>
-                  <Text
-                    allowFontScaling={false}
+                  <GlobalText
                     style={[
                       styles.questionText,
                       { color: item?.pass == 'Yes' ? 'green' : 'red' },
@@ -236,7 +228,7 @@ const AnswerKeyView = ({ route }) => {
                     {JSON.parse(item?.resValue)?.[0]
                       ?.label.replace(/<\/?[^>]+(>|$)/g, '')
                       .replace(/^\d+\.\s*/, '') || 'NA'}
-                  </Text>
+                  </GlobalText>
                 </View>
               )}
               contentContainerStyle={{ paddingBottom: 20 }}
@@ -256,15 +248,14 @@ const AnswerKeyView = ({ route }) => {
               />
             </TouchableOpacity>
 
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[
                 globalStyles.subHeading,
                 { flex: 2, textAlign: 'center' },
               ]}
             >{`${startIndex ? startIndex + 1 : 0}-${endIndex || 0}  of ${
               scoreData?.score_details.length || 0
-            }`}</Text>
+            }`}</GlobalText>
             <TouchableOpacity
               style={{ flex: 1, alignItems: 'center' }}
               onPress={handleNext}

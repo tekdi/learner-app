@@ -10,6 +10,8 @@ import { useController } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const InterestedCardsComponent = ({
   field,
   control,
@@ -76,17 +78,15 @@ const InterestedCardsComponent = ({
                     styles.selectedCard,
                 ]}
               >
-                <Text allowFontScaling={false} style={styles.cardText}>
-                  {t(item.label)}
-                </Text>
+                <GlobalText style={styles.cardText}>{t(item.label)}</GlobalText>
               </View>
             </TouchableOpacity>
           ))}
         </View>
         {errors[name] && (
-          <Text allowFontScaling={false} style={styles.error}>
+          <GlobalText style={styles.error}>
             {errors[name]?.value?.message || errors[name]?.message}
-          </Text>
+          </GlobalText>
         )}
       </ScrollView>
     </View>

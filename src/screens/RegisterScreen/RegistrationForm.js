@@ -71,6 +71,8 @@ import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../context/NetworkContext';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
   form.fields.forEach((field) => {
@@ -696,12 +698,9 @@ const RegistrationForm = ({ schema, geoData }) => {
       />
       {currentForm === 4 && (
         <>
-          <Text
-            allowFontScaling={false}
-            style={[globalStyles.text, { marginLeft: 20 }]}
-          >
+          <GlobalText style={[globalStyles.text, { marginLeft: 20 }]}>
             {t('location_des')}
-          </Text>
+          </GlobalText>
           <View
             style={{
               padding: 15,
@@ -710,9 +709,9 @@ const RegistrationForm = ({ schema, geoData }) => {
               marginTop: 10,
             }}
           >
-            <Text allowFontScaling={false} style={[globalStyles.text]}>
+            <GlobalText style={[globalStyles.text]}>
               {t('location_des2')}
-            </Text>
+            </GlobalText>
           </View>
         </>
       )}
@@ -723,12 +722,11 @@ const RegistrationForm = ({ schema, geoData }) => {
             <View key={form.formNumber}>{renderFields(form.fields)}</View>
           ))}
         {currentForm === 1 && (
-          <Text
-            allowFontScaling={false}
+          <GlobalText
             style={[globalStyles.text, { marginLeft: 20, marginTop: -20 }]}
           >
             {t('phone_des')}
-          </Text>
+          </GlobalText>
         )}
       </ScrollView>
       <View style={styles.buttonContainer}>
@@ -749,9 +747,11 @@ const RegistrationForm = ({ schema, geoData }) => {
               <View style={styles.alertBox}>
                 <Image source={lightning} resizeMode="contain" />
 
-                <Text style={[globalStyles.subHeading, { marginVertical: 10 }]}>
+                <GlobalText
+                  style={[globalStyles.subHeading, { marginVertical: 10 }]}
+                >
                   Error: {err}
-                </Text>
+                </GlobalText>
                 <PrimaryButton
                   text={t('continue')}
                   onPress={() => {
@@ -767,15 +767,14 @@ const RegistrationForm = ({ schema, geoData }) => {
                   resizeMode={FastImage.resizeMode.contain}
                   priority={FastImage.priority.high} // Set the priority here
                 />
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
                   style={[
                     globalStyles.heading2,
                     { marginVertical: 10, textAlign: 'center' },
                   ]}
                 >
                   {t('congratulations')}
-                </Text>
+                </GlobalText>
               </View>
             )}
           </TouchableOpacity>
@@ -872,8 +871,7 @@ const RenderBtn = ({
       return (
         <>
           {showMore && (
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={[
                 globalStyles.subHeading,
                 { color: '#0563C1', textAlign: 'center', marginTop: 10 },
@@ -881,7 +879,7 @@ const RenderBtn = ({
               onPress={() => setShowMore(false)}
             >
               {t('read_more')}
-            </Text>
+            </GlobalText>
           )}
           <View style={[globalStyles.flexrow, { marginVertical: 15 }]}>
             <CustomCheckbox
@@ -892,8 +890,7 @@ const RenderBtn = ({
               }}
             />
 
-            <Text
-              allowFontScaling={false}
+            <GlobalText
               style={{
                 fontSize: 12,
                 color: '#000',
@@ -901,19 +898,18 @@ const RenderBtn = ({
               }}
             >
               {t('T&C_12')}
-            </Text>
+            </GlobalText>
           </View>
           <PrimaryButton
             isDisabled={isBtnDisable}
             text={t('create_account')}
             onPress={handleSubmit(onSubmit)}
           />
-          <Text
-            allowFontScaling={false}
+          <GlobalText
             style={{ color: 'black', marginVertical: 10, textAlign: 'center' }}
           >
             {t('T&C_13')}
-          </Text>
+          </GlobalText>
 
           <NetworkAlert
             onTryAgain={handleSubmit(onSubmit)}

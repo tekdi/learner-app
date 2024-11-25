@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import HorizontalLine from '../HorizontalLine/HorizontalLine';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const CustomTabView = ({
   tabs,
   activeTabStyle,
@@ -31,14 +33,14 @@ const CustomTabView = ({
               ]}
               onPress={() => setSelectedTab(index)}
             >
-              <Text
+              <GlobalText
                 style={[
                   styles.tabText,
                   selectedTab === index ? activeTextStyle : tabTextStyle,
                 ]}
               >
                 {tab.title}
-              </Text>
+              </GlobalText>
             </TouchableOpacity>
           ))}
         </View>

@@ -9,7 +9,9 @@
   "bangla": "বাংলা",
   "telugu": "తెలుగు",
   "kannada": "ಕನ್ನಡ",
+  "tamil": "தமிழ்",
   "gujarati": "ગુજરાતી",
+  "urdu": "اُردُو",
   "language_help": "You can change the language any time later",
   "continue": "Continue",
   "back": "Back",
@@ -146,7 +148,9 @@
   "ba": "বা",
   "te": "తె.",
   "ka": "ಕಾ.",
+  "ta": "த",
   "gu": "ગુ",
+  "ur": "اُردُو",
   "invalid_username_or_password": "Invalid Username or Password",
   "network_error_try_again_later": "Network error try again later",
   "log_in": "Log In",
@@ -246,5 +250,7 @@
   "of_offline_content": "of offline content",
   "clear_all_offline_content": "Clear all Offline Content",
   "content_delete_desp": "All saved content for offline access will be removed and will no longer be available without an internet connection",
-  "content_delete": "Are you sure you want to remove all offline content?"
+  "content_delete": "Are you sure you want to remove all offline content?",
+  "Search Content": "Search Content",
+  "Search Courses": "Search Courses"
 }

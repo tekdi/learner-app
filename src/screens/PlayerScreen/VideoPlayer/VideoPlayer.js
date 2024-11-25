@@ -15,6 +15,8 @@ import { readContent } from '../../../utils/API/ApiCalls';
 import { videoPlayerConfig } from './data';
 import { Alert } from 'react-native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const VideoPlayer = () => {
   const [loading, setLoading] = useState(true);
   // content id
@@ -84,7 +86,7 @@ const VideoPlayer = () => {
     <View style={styles.container}>
       {is_valid_file == false ? (
         <View style={styles.middle_screen}>
-          <Text allowFontScaling={false}>Invalid Player File</Text>
+          <GlobalText>Invalid Player File</GlobalText>
         </View>
       ) : (
         <WebView
@@ -122,7 +124,7 @@ const VideoPlayer = () => {
           }
         }}
       />
-      {retrievedData && <Text allowFontScaling={false}>{retrievedData}</Text>} */}
+      {retrievedData && <GlobalText >{retrievedData}</GlobalText>} */}
     </View>
   );
 };

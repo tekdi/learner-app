@@ -21,6 +21,8 @@ import { forgotPassword } from '../../utils/API/AuthService';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const ForgotPassword = () => {
   const [value, setvalue] = useState('');
   const [username, setusename] = useState('');
@@ -88,14 +90,14 @@ const ForgotPassword = () => {
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         <Image style={styles.image2} source={lock_open} resizeMode="contain" />
 
-        <Text style={[globalStyles.heading, { marginBottom: 10 }]}>
+        <GlobalText style={[globalStyles.heading, { marginBottom: 10 }]}>
           {t('trouble_with_logging_in')}
-        </Text>
-        {/* <Text
+        </GlobalText>
+        {/* <GlobalText
           style={[globalStyles.text, { marginBottom: 20, textAlign: 'center' }]}
         >
           {t('forgot_password_desp')}
-        </Text> */}
+        </GlobalText> */}
         <CustomTextInput
           error={error}
           field="username"
@@ -115,7 +117,7 @@ const ForgotPassword = () => {
         }}
       >
         <HorizontalLine />
-        <Text
+        <GlobalText
           style={[
             globalStyles.text,
             { textAlign: 'center', padding: 30, color: '#0D599E' },
@@ -125,7 +127,7 @@ const ForgotPassword = () => {
           }}
         >
           {t('back_to_login')}
-        </Text>
+        </GlobalText>
       </View>
       <Modal visible={modal} transparent={true} animationType="slide" onclo>
         <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
@@ -135,15 +137,14 @@ const ForgotPassword = () => {
               style={styles.alertSubBox}
             >
               {modalError ? (
-                <Text
-                  allowFontScaling={false}
+                <GlobalText
                   style={[
                     globalStyles.subHeading,
                     { textAlign: 'center', marginVertical: 10 },
                   ]}
                 >
                   {t(modalError.toLowerCase().replace(/\s+/g, '_'))}
-                </Text>
+                </GlobalText>
               ) : (
                 <>
                   <Icon
@@ -151,8 +152,7 @@ const ForgotPassword = () => {
                     size={60}
                     color="#1A8825"
                   />
-                  <Text
-                    allowFontScaling={false}
+                  <GlobalText
                     style={[
                       globalStyles.subHeading,
                       { textAlign: 'center', marginVertical: 10 },
@@ -160,7 +160,7 @@ const ForgotPassword = () => {
                   >
                     {t('we_sent_an_email_to')} {encryptEmail(username)}{' '}
                     {t('with_a_link_to_get_back_to_your_account')}
-                  </Text>
+                  </GlobalText>
                 </>
               )}
             </TouchableOpacity>

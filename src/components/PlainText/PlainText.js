@@ -3,13 +3,11 @@ import { StyleSheet, Text } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
+import GlobalText from "@components/GlobalText/GlobalText";
+
 const PlainText = ({ text }) => {
   const { t } = useTranslation();
-  return (
-    <Text allowFontScaling={false} style={styles.text2}>
-      {t(text)}
-    </Text>
-  );
+  return <GlobalText style={styles.text2}>{t(text)}</GlobalText>;
 };
 
 PlainText.propTypes = {
