@@ -13,7 +13,7 @@ const CustomSearchBox = ({
   const debouncedSearch = useCallback(
     debounce((query) => {
       handleSearch(query);
-    }, 500), // Adjust debounce time in milliseconds as needed
+    }, 2000), // Adjust debounce time in milliseconds as needed
     []
   );
 
@@ -69,6 +69,9 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     alignSelf: 'center',
     textAlign: 'center',
+    // borderWidth: 1,
+    borderRadius: 20,
+    backgroundColor: '#EDEDED',
   },
 });
 

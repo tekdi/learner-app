@@ -8,18 +8,15 @@ import { ProgressBar } from '@ui-kitten/components';
 
 import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
 import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
+import check_circle from '../../assets/images/png/check_circle.png';
 
-const StatusCard = ({
-  status,
-  trackCompleted,
-  viewStyle,
-}) => {
+const StatusCard = ({ status, trackCompleted, viewStyle }) => {
   const { t, language } = useTranslation();
 
   if (status === 'completed') {
     return (
       <View style={[styles.view, viewStyle]}>
-        <Icon name="check-circle-fill" style={{ color: '#50EE42' }} />
+        <Image style={styles.img} source={check_circle} resizeMode="contain" />
         <Text
           allowFontScaling={false}
           style={[
@@ -91,6 +88,10 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
     overflow: 'hidden',
+  },
+  img: {
+    width: 16,
+    height: 16,
   },
 });
 
