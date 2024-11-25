@@ -423,7 +423,7 @@ const Courses = () => {
     console.log('result?.content', result?.content);
 
     setData(result?.content || []);
-    console.log(result?.content?.length, 'ddddd');
+    // console.log(result?.content?.length, 'ddddd');
 
     // if (result?.content?.length == undefined) {
     //   setSearchText('');
@@ -432,7 +432,7 @@ const Courses = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
       <ScrollView nestedScrollEnabled>
         <View style={styles.view}>

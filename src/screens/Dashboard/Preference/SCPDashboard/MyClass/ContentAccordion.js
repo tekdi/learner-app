@@ -8,51 +8,16 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 import ContentCard from '../../../ContentCard';
 import { getDataFromStorage } from '../../../../../utils/JsHelper/Helper';
 import { courseTrackingStatus } from '../../../../../utils/API/ApiCalls';
+import { getDoits } from '../../../../../utils/API/AuthService';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
-const ContentAccordion = ({ title, resourceData }) => {
+const ContentAccordion = ({ title, resourceData, trackData }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
-  const [trackData, setTrackData] = useState();
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  console.log('resourceData', JSON.stringify(resourceData));
-
-  useEffect(() => {
-    const trackingData = async () => {
-      let contentIdList = [];
-
-      if (resourceData) {
-        // Push IDs from prerequisites
-        resourceData?.prerequisites?.forEach((prerequisite) => {
-          contentIdList.push(prerequisite.id);
-        });
-
-        // Push IDs from postrequisites
-        resourceData?.postrequisites?.forEach((postrequisite) => {
-          contentIdList?.push(postrequisite.id);
-        });
-
-        let userId = await getDataFromStorage('userId');
-        let course_track_data = await courseTrackingStatus(
-          userId,
-          contentIdList
-        );
-
-        let courseTrackData = [];
-        if (course_track_data?.data) {
-          courseTrackData =
-            course_track_data?.data?.find((course) => course.userId === userId)
-              ?.course || [];
-        }
-        console.log('sssss', JSON.stringify(course_track_data));
-
-        setTrackData(courseTrackData || []);
-      }
-    };
-    trackingData();
-  }, [resourceData]);
+  // console.log('resourceData', JSON.stringify(resourceData));
 
   return (
     <>
@@ -87,8 +52,8 @@ const ContentAccordion = ({ title, resourceData }) => {
                       key={index}
                       item={data}
                       index={index}
-                      course_id={data?.id}
-                      unit_id={data?.id}
+                      course_id={data?.identifier}
+                      unit_id={data?.identifier}
                       TrackData={trackData}
                     />
                   );
@@ -109,8 +74,8 @@ const ContentAccordion = ({ title, resourceData }) => {
                       key={index}
                       item={data}
                       index={index}
-                      course_id={data?.id}
-                      unit_id={data?.id}
+                      course_id={data?.identifier}
+                      unit_id={data?.identifier}
                       TrackData={trackData}
                     />
                   );

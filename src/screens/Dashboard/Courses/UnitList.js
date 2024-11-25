@@ -140,7 +140,7 @@ const UnitList = ({ route }) => {
         <ActivityIndicator style={{ top: 300 }} />
       ) : (
         <ScrollView>
-          <View style={{ padding: 20, paddingBottom: 10 }}>
+          <View style={{ padding: 20 }}>
             {headingName && (
               <GlobalText
                 style={[globalStyles.heading, { marginBottom: 10 }]}
@@ -151,7 +151,7 @@ const UnitList = ({ route }) => {
               </GlobalText>
             )}
             <GlobalText
-              style={[globalStyles.heading2, { marginBottom: 10 }]}
+              style={[globalStyles.heading2]}
               numberOfLines={2}
               ellipsizeMode="tail"
             >
@@ -161,7 +161,8 @@ const UnitList = ({ route }) => {
           <View
             style={{
               padding: 20,
-              backgroundColor: '#F7ECDF',
+              paddingTop: 0,
+              // backgroundColor: '#F7ECDF',
               justifyContent: 'space-between',
               flexWrap: 'wrap',
               flexDirection: 'row',

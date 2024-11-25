@@ -171,15 +171,6 @@ const CourseCard = ({
     }
   };
 
-  const replaceContentPath = (image) => {
-    const CONTENT_STORAGE_BASE_PATH = 'CONTENT_STORAGE_BASE_PATH';
-    const replacementUrl = 'https://cdn.sunbirdsaas.com/content';
-
-    return item?.appIcon?.includes(CONTENT_STORAGE_BASE_PATH)
-      ? item?.appIcon?.replace(CONTENT_STORAGE_BASE_PATH, replacementUrl)
-      : item?.appIcon;
-  };
-
   return (
     <Pressable
       onPress={onPress}
@@ -193,9 +184,9 @@ const CourseCard = ({
         <FastImage
           style={styles.cardBackgroundImage}
           source={
-            replaceContentPath()
+            item?.posterImage
               ? {
-                  uri: replaceContentPath(),
+                  uri: item?.posterImage,
                   priority: FastImage.priority.high,
                 }
               : backgroundImage

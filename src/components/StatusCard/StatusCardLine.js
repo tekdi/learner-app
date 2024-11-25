@@ -1,34 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import globalStyles from '../../utils/Helper/Style';
-import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
-import { ProgressBar } from '@ui-kitten/components';
-
-import GlobalText from "@components/GlobalText/GlobalText";
 
 import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
-import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
-import check_circle from '../../assets/images/png/check_circle.png';
 
-const StatusCard = ({ status, trackCompleted, viewStyle }) => {
+const StatusCardLine = ({ status, trackCompleted, viewStyle }) => {
   const { t, language } = useTranslation();
 
   if (status === 'completed') {
-    return (
-      <View style={[styles.view, viewStyle]}>
-        <Image style={styles.img} source={check_circle} resizeMode="contain" />
-        <GlobalText
-          style={[
-            globalStyles.text,
-            { color: '#50EE42', marginLeft: 10, fontSize: 12 },
-          ]}
-        >
-          {t('completed')}
-        </GlobalText>
-      </View>
-    );
+    return <View style={styles.complete} />;
   } else if (status === 'inprogress') {
     return (
       <View style={[styles.view, viewStyle, { paddingVertical: 5 }]}>
@@ -42,33 +23,31 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
   } else if (status === 'progress') {
     return (
       <View style={[styles.view, viewStyle]}>
-        <Image
-          style={styles.img}
-          source={arrow_upload_progress}
-          resizeMode="contain"
-        />
-        <GlobalText
+        <View style={styles.inprogress} />
+        <Text
+          allowFontScaling={false}
           style={[
             globalStyles.text,
             { color: 'white', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('Inprogress')}
-        </GlobalText>
+        </Text>
       </View>
     );
   } else {
     return (
-      <View style={[styles.view, viewStyle]}>
-        <Icon name="circle" />
-        <GlobalText
+      <View style={[styles.view]}>
+        <View style={styles.not_started} />
+        <Text
+          allowFontScaling={false}
           style={[
             globalStyles.text,
             { color: 'white', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('not_started')}
-        </GlobalText>
+        </Text>
       </View>
     );
   }
@@ -92,8 +71,32 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
   },
+  complete: {
+    width: '100%',
+    borderWidth: 2,
+    borderColor: '#FF0000',
+    backgroundColor: '#FF0000',
+    borderBottomRightRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  inprogress: {
+    width: '40%',
+    borderWidth: 2,
+    borderColor: '#FF0000',
+    backgroundColor: '#FF0000',
+    borderBottomRightRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  not_started: {
+    width: '40%',
+    borderWidth: 2,
+    borderColor: '#CDC5BD',
+    backgroundColor: '#CDC5BD',
+    borderBottomRightRadius: 10,
+    borderTopRightRadius: 10,
+  },
 });
 
-StatusCard.propTypes = {};
+StatusCardLine.propTypes = {};
 
-export default StatusCard;
+export default StatusCardLine;

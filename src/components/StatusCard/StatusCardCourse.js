@@ -8,6 +8,7 @@ import { ProgressBar } from '@ui-kitten/components';
 
 import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
 import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
+import check_circle from '../../assets/images/png/check_circle.png';
 
 import GlobalText from "@components/GlobalText/GlobalText";
 
@@ -17,11 +18,11 @@ const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
   if (status === 'completed') {
     return (
       <View style={[styles.view, viewStyle]}>
-        <Icon name="check-circle-fill" style={{ color: 'green' }} />
+        <Image style={styles.img} source={check_circle} resizeMode="contain" />
         <GlobalText
           style={[
             globalStyles.text,
-            { color: 'black', marginLeft: 10, fontSize: 12 },
+            { color: '#50EE42', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('completed')}
@@ -45,7 +46,7 @@ const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
         <GlobalText
           style={[
             globalStyles.text,
-            { color: 'black', marginLeft: 10, fontSize: 12 },
+            { color: 'white', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('Inprogress')}
@@ -59,7 +60,7 @@ const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
         <GlobalText
           style={[
             globalStyles.text,
-            { color: 'black', marginLeft: 10, fontSize: 12 },
+            { color: 'white', marginLeft: 10, fontSize: 12 },
           ]}
         >
           {t('not_started')}
@@ -80,6 +81,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 5,
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
+  },
+  img: {
+    width: 16,
+    height: 16,
   },
 });
 

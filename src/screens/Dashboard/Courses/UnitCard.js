@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from '@changwoolab/react-native-fast-image';
 import { useTranslation } from '../../../context/LanguageContext';
 import StatusCardIcon from '../../../components/StatusCard/StatusCardIcon';
 import globalStyles from '../../../utils/Helper/Style';
-import StatusCard from '../../../components/StatusCard/StatusCard';
+import StatusCardLine from '../../../components/StatusCard/StatusCardLine';
 import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../../utils/API/AuthService';
+import unit from '../../../assets/images/png/Unit.png';
+import book from '../../../assets/images/png/book_open.png';
+import LinearGradient from 'react-native-linear-gradient';
 
 import GlobalText from "@components/GlobalText/GlobalText";
 
@@ -180,57 +190,59 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
   };
 
   return (
-    <View style={styles.card}>
-      <TouchableOpacity
-        style={styles.subcard}
-        onPress={() => handleCardPress(item)}
-      >
-        {/* Background image */}
-        <FastImage
-          style={styles.cardBackgroundImage}
-          source={require('../../../assets/images/png/Unit.png')}
-          resizeMode={FastImage.resizeMode.cover}
-          priority={FastImage.priority.high}
-        />
-        <View style={{ top: 15 }}>
-          <StatusCard
-            status={
-              trackCompleted >= 100
-                ? 'completed'
-                : trackCompleted > 0
-                ? 'inprogress'
-                : trackProgress > 0
-                ? 'progress'
-                : 'not_started'
-            }
-            trackCompleted={trackCompleted}
-            viewStyle={{
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
-            }}
-          />
-        </View>
-        <View style={styles.overlay}>
-          <GlobalText
-            style={styles.cardText}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {t('unit')}
-          </GlobalText>
-        </View>
-      </TouchableOpacity>
-
-      <View style={[globalStyles.flexrow]}>
-        <GlobalText
-          style={[styles.cardText, { color: '#000' }]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
+    <TouchableOpacity style={styles.card} onPress={() => handleCardPress(item)}>
+      <ImageBackground source={unit} resizeMode="cover">
+        <LinearGradient
+          colors={['#00000033', '#000000CC']} // Gradient colors
+          start={{ x: 1, y: 0 }} // Gradient starting point
+          end={{ x: 1, y: 1.5 }} // Gradient ending point
+          style={styles.gradient}
         >
-          {item?.name}
-        </GlobalText>
-      </View>
-    </View>
+          <View
+            style={{
+              bottom: 0,
+              position: 'absolute',
+              width: '100%',
+            }}
+          >
+            <GlobalText
+              style={[
+                globalStyles.subHeading,
+                { color: 'white', marginLeft: 5 },
+              ]}
+              numberOfLines={4}
+              ellipsizeMode="tail"
+            >
+              {item?.name}
+            </GlobalText>
+            <StatusCardLine
+              status={
+                trackCompleted >= 100
+                  ? 'completed'
+                  : trackCompleted > 0
+                    ? 'inprogress'
+                    : trackProgress > 0
+                      ? 'progress'
+                      : 'not_started'
+              }
+              trackCompleted={trackCompleted}
+            />
+            <View style={styles.unitCard}>
+              <View style={[globalStyles.flexrow]}>
+                <Image style={styles.img} source={book} resizeMode="contain" />
+                <GlobalText
+                  style={[globalStyles.text, { marginLeft: 10 }]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {t('unit')}
+                </GlobalText>
+              </View>
+            </View>
+          </View>
+        </LinearGradient>
+      </ImageBackground>
+    </TouchableOpacity>
   );
 };
 
@@ -243,31 +255,23 @@ const styles = StyleSheet.create({
     overflow: 'hidden', // Ensure content doesn't overflow the card boundaries
     // borderWidth: 1,
   },
-  subcard: {
-    width: '95%',
-    height: 135,
-    borderRadius: 20,
-    overflow: 'hidden', // Ensure content doesn't overflow the card boundaries
-    // borderWidth: 1,
+  gradient: {
+    width: '100%',
+    height: '100%',
   },
-  cardBackgroundImage: {
-    ...StyleSheet.absoluteFillObject, // Makes the background image cover the entire card
-    borderRadius: 20,
+
+  unitCard: {
+    backgroundColor: '#ECE6F0',
+    height: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 15,
   },
-  overlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay for text visibility
-    width: 70,
-    padding: 5,
-    fontSize: 10,
-    position: 'absolute',
-    bottom: 20,
+  img: {
+    width: 30,
+    height: 30,
   },
-  cardText: {
-    color: 'white',
-    fontSize: 12,
-    paddingHorizontal: 5,
-    textAlign: 'left',
-  },
+
   downloadView: {
     // top: 0,
     bottom: 70,
