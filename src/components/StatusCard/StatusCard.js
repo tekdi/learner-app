@@ -6,11 +6,13 @@ import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
 import { ProgressBar } from '@ui-kitten/components';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
+import CircularProgressBarCustom from '../CircularProgressBarCustom.js/CircularProgressBarCustom';
 import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
 import check_circle from '../../assets/images/png/check_circle.png';
+import { translateDigits } from '@src/utils/JsHelper/Helper';
 
 const StatusCard = ({ status, trackCompleted, viewStyle }) => {
   const { t, language } = useTranslation();
@@ -32,11 +34,25 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
   } else if (status === 'inprogress') {
     return (
       <View style={[styles.view, viewStyle, { paddingVertical: 5 }]}>
-        <ProgressBarCustom
+        {/* <ProgressBarCustom
           progress={trackCompleted}
           language={language}
           width={100}
+        /> */}
+        <CircularProgressBarCustom
+          size={20}
+          strokeWidth={5}
+          progress={trackCompleted / 100}
+          color="green"
+          backgroundColor="#e6e6e6"
+          textStyle={{ fontSize: 8, color: 'white' }}
         />
+        <GlobalText
+          style={{ marginLeft: 10, color: 'white' }}
+        >{`${translateDigits(
+          Math.round((trackCompleted / 100) * 100),
+          language
+        )}%`}</GlobalText>
       </View>
     );
   } else if (status === 'progress') {
@@ -87,6 +103,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5,
     overflow: 'hidden',
+    height: 30,
   },
   img: {
     width: 16,

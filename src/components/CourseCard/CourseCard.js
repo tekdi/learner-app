@@ -11,10 +11,9 @@ import {
 } from 'react-native';
 import FastImage from '@changwoolab/react-native-fast-image';
 import globalStyles from '../../utils/Helper/Style';
-import { ProgressBar } from '@ui-kitten/components';
 import StatusCard from '../StatusCard/StatusCard';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 import moment from 'moment';
 import {
@@ -35,13 +34,7 @@ const CourseCard = ({
 }) => {
   const { width } = Dimensions.get('window');
 
-  const backgroundImages = [
-    require('../../assets/images/CardBackground/abstract_01.png'),
-    require('../../assets/images/CardBackground/abstract_02.png'),
-    require('../../assets/images/CardBackground/abstract_03.png'),
-    require('../../assets/images/CardBackground/abstract_04.png'),
-    require('../../assets/images/CardBackground/abstract_05.png'),
-  ];
+  const backgroundImages = [require('../../assets/images/png/Course.png')];
 
   const backgroundImage = backgroundImages[index % backgroundImages.length];
 
@@ -200,12 +193,16 @@ const CourseCard = ({
               trackCompleted >= 100
                 ? 'completed'
                 : trackCompleted > 0
-                ? 'inprogress'
-                : trackProgress > 0
-                ? 'progress'
-                : 'not_started'
+                  ? 'inprogress'
+                  : trackProgress > 0
+                    ? 'progress'
+                    : 'not_started'
             }
             trackCompleted={trackCompleted}
+            viewStyle={{
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+            }}
           />
         </View>
       </View>
@@ -219,7 +216,7 @@ const CourseCard = ({
         </GlobalText>
         <GlobalText
           style={[globalStyles.text, { width: '80%', marginVertical: 10 }]}
-          numberOfLines={3}
+          numberOfLines={4}
           ellipsizeMode="tail"
         >
           {item?.description}
@@ -231,9 +228,9 @@ const CourseCard = ({
 
 const styles = StyleSheet.create({
   card: {
-    height: 200,
+    minHeight: 200,
     backgroundColor: '#e0e0e0',
-    borderRadius: 8,
+    borderRadius: 15,
     alignItems: 'center',
     borderWidth: 1,
     margin: 10,
@@ -247,7 +244,7 @@ const styles = StyleSheet.create({
   },
   cardBackgroundImage: {
     width: '100%',
-    height: '100%',
+    height: 80,
     borderRadius: 8,
   },
 
@@ -309,10 +306,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
     paddingLeft: 10,
+    top: 15,
   },
   downloadView: {
     // top: 0,
-    bottom: 70,
+    bottom: 80,
   },
   img: {
     width: 30,

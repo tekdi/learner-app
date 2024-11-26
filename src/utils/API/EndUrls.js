@@ -34,6 +34,7 @@ const EndUrls = {
   CourseTrackingStatus: `${TRACKING_MICROSERVICE}/v1/tracking/content/course/status`,
   geolocation: `${API_URL}/user/v1/fields/options/read`,
   forgotPassword: `${API_URL}/user/v1/password-reset-link`,
+  resetPassword: `${API_URL}/user/v1/reset-password`,
   eventList: `${NEXT_PUBLIC_EVENT_BASE_URL}/event-service/event/v1/list`,
   targetedSolutions: `${EVENT_DETAILS}/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
   EventDetails: `${EVENT_DETAILS}/userProjects/details`,
@@ -61,7 +62,6 @@ const EndUrls = {
   contentSearch: `${CONTENT_URL}/action/composite/v3/search`,
   framework: `${CONTENT_URL}/api/framework/v1/read/${FRAMEWORK_ID}`,
   question_set_read: `${CONTENT_URL}/action/questionset/v2/read/`, //pass do id at end ?fields=instructions,outcomeDeclaration
-
 };
 
 export default EndUrls;

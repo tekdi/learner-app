@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import { translateDigits } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const ProgressBarCustom = ({
   progress,
@@ -13,7 +13,7 @@ const ProgressBarCustom = ({
   horizontal,
 }) => {
   return (
-    <SafeAreaView style={horizontal && globalStyles.flexrow}>
+    <SafeAreaView style={globalStyles.flexrow}>
       <View style={[styles.container, { width }]}>
         {/* Progress Bar */}
         <View
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#ff0000',
     borderRadius: 5,
+    width: 100,
   },
   label: {
     marginLeft: 5, // Space between progress bar and label
