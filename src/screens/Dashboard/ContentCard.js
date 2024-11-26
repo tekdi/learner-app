@@ -29,14 +29,22 @@ import doc from '../../assets/images/png/doc.png';
 import epub from '../../assets/images/png/Epub.png';
 import qml from '../../assets/images/png/Qml.png';
 import youtube from '../../assets/images/png/youtube.png';
+import YouTubeNoimg from '../../assets/images/png/YouTubeNoimg.png';
+import QmlNoimg from '../../assets/images/png/QmlNoimg.png';
+import PDFnoimg from '../../assets/images/png/PDFnoimg.png';
+import Epubnoimg from '../../assets/images/png/Epubnoimg.png';
+import HtmlNoimg from '../../assets/images/png/HtmlNoimg.png';
+import MP4Noimg from '../../assets/images/png/MP4Noimg.png';
 import DownloadModal from './DownloadModal';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import StatusCardIcon from '../../components/StatusCard/StatusCardIcon';
+import { getData } from '../../utils/Helper/JSHelper';
 
 const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const navigation = useNavigation();
   const [isDrawerVisible, setDrawerVisible] = useState(false);
+  const [download, setDownload] = useState('');
   // console.log('########## ContentCard', item?.identifier);
   console.log('course_id', course_id);
   // console.log('unit_id', unit_id);
@@ -184,6 +192,33 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const contentMimeType = item?.mimeType;
+      if (
+        contentMimeType == 'application/vnd.ekstep.ecml-archive' ||
+        contentMimeType == 'application/vnd.ekstep.html-archive' ||
+        contentMimeType == 'application/vnd.ekstep.h5p-archive' ||
+        contentMimeType == 'application/pdf' ||
+        contentMimeType == 'video/mp4' ||
+        contentMimeType == 'video/webm' ||
+        contentMimeType == 'application/epub' ||
+        contentMimeType == 'application/vnd.sunbird.questionset'
+      ) {
+        let content_do_id = item?.identifier;
+        let contentObj = await getData(content_do_id, 'json');
+        //console.log('contentObj', contentObj);
+        if (contentObj == null) {
+          setDownload('download');
+        } else {
+          setDownload('completed');
+        }
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const toggleDrawer = () => setDrawerVisible(!isDrawerVisible);
 
   return (
@@ -200,7 +235,18 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
                 uri: item?.posterImage,
                 priority: FastImage.priority.high,
               }
-            : pdf
+            : mimeType === 'pdf'
+              ? PDFnoimg
+              : mimeType === 'vnd.ekstep.html-archive' ||
+                  mimeType == 'vnd.ekstep.h5p-archive'
+                ? HtmlNoimg
+                : mimeType === 'mp4' || mimeType === 'webm'
+                  ? MP4Noimg
+                  : mimeType === 'epub'
+                    ? Epubnoimg
+                    : mimeType === 'x-youtube'
+                      ? YouTubeNoimg
+                      : mimeType === 'vnd.sunbird.questionset' && QmlNoimg
         }
         style={{ borderRadius: 50 }}
         resizeMode="cover"
@@ -219,12 +265,14 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
               backgroundColor: '#1F1B1380',
             }}
           >
-            <FastImage
-              style={styles.img}
-              source={require('../../assets/images/png/cloud_done_green.png')}
-              resizeMode={FastImage.resizeMode.contain}
-              priority={FastImage.priority.high}
-            />
+            {download === 'completed' && (
+              <FastImage
+                style={styles.img}
+                source={require('../../assets/images/png/cloud_done_g.png')}
+                resizeMode={FastImage.resizeMode.contain}
+                priority={FastImage.priority.high}
+              />
+            )}
           </View>
           <View
             style={{
@@ -264,6 +312,14 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
                     source={epub}
                     resizeMode="contain"
                   />
+                ) : mimeType === 'x-youtube' ? (
+                  <Image
+                    style={styles.img}
+                    source={youtube}
+                    resizeMode="contain"
+                  />
+                ) : mimeType === 'vnd.sunbird.questionset' ? (
+                  <Image style={styles.img} source={qml} resizeMode="contain" />
                 ) : (
                   <></>
                 )}
@@ -297,6 +353,9 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
             setDrawerVisible={setDrawerVisible}
             isDrawerVisible={isDrawerVisible}
             title={item?.name}
+            contentId={item?.identifier}
+            contentMimeType={item?.mimeType}
+            setDownload={setDownload}
           />
         )}
       </ImageBackground>
@@ -307,10 +366,10 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 const styles = StyleSheet.create({
   card: {
     width: '47%',
-    height: 190,
+    height: 210,
     borderRadius: 20,
     marginVertical: 10,
-    borderWidth: 1,
+    // borderWidth: 1,
     overflow: 'hidden', // Ensure the background image and content stay within the card boundaries
   },
   gradient: {

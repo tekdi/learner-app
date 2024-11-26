@@ -15,7 +15,7 @@ import globalStyles from '../../../utils/Helper/Style';
 import StatusCardLine from '../../../components/StatusCard/StatusCardLine';
 import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
 import { getSyncTrackingOfflineCourse } from '../../../utils/API/AuthService';
-import unit from '../../../assets/images/png/Unit.png';
+import unit from '../../../assets/images/png/Unitcard.png';
 import book from '../../../assets/images/png/book_open.png';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -192,12 +192,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={() => handleCardPress(item)}>
       <ImageBackground source={unit} resizeMode="cover">
-        <LinearGradient
-          colors={['#00000033', '#000000CC']} // Gradient colors
-          start={{ x: 1, y: 0 }} // Gradient starting point
-          end={{ x: 1, y: 1.5 }} // Gradient ending point
-          style={styles.gradient}
-        >
+        <View style={styles.gradient}>
           <View
             style={{
               bottom: 0,
@@ -256,7 +251,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
               </View>
             </View>
           </View>
-        </LinearGradient>
+        </View>
       </ImageBackground>
     </TouchableOpacity>
   );
@@ -265,7 +260,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
 const styles = StyleSheet.create({
   card: {
     width: '47%',
-    height: 200,
+    height: 210,
     borderRadius: 20,
     marginVertical: 10,
     overflow: 'hidden', // Ensure content doesn't overflow the card boundaries

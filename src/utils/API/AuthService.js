@@ -711,7 +711,7 @@ export const getDoits = async ({ payload }) => {
 
   // Construct curl command
   const curlCommand = `curl -X POST '${url}' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '${JSON.stringify(payload)}'`;
-  // console.log('Curl Command:', curlCommand);
+  console.log('Curl Command:', curlCommand);
 
   try {
     // Make the actual request
