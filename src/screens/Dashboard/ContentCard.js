@@ -342,9 +342,14 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
                             : capitalizeFirstLetter(mimeType)}
                 </GlobalText>
               </View>
-              <TouchableOpacity onPress={toggleDrawer} style={styles.threeDots}>
-                <Icon name="dots-three-vertical" size={20} color="#0D599E" />
-              </TouchableOpacity>
+              {mimeType !== 'x-youtube' && (
+                <TouchableOpacity
+                  onPress={toggleDrawer}
+                  style={styles.threeDots}
+                >
+                  <Icon name="dots-three-vertical" size={20} color="#0D599E" />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </LinearGradient>
