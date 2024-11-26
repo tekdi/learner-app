@@ -35,7 +35,7 @@ import CircularProgressBarCustom from '../../../components/CircularProgressBarCu
 import StatusCardCourse from '../../../components/StatusCard/StatusCardCourse';
 import { useTranslation } from '../../../context/LanguageContext';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const CourseContentList = ({ route }) => {
   const { language } = useTranslation();
@@ -245,7 +245,7 @@ const CourseContentList = ({ route }) => {
             // console.log('########### completed', completed);
             // console.log('########### leafNodes', totalContent);
             // console.log('########### content_list_node', content_list_node);
-            // console.log('########### percentageCompleted', percentageCompleted);
+            console.log('########### percentageCompleted', percentageCompleted);
             setTrackCompleted(percentageCompleted);
 
             //get unique in progress content list
@@ -260,7 +260,7 @@ const CourseContentList = ({ route }) => {
     fetchTrackData();
   }, [trackData]);
 
-  console.log('coursesContent', JSON.stringify(coursesContent));
+  console.log('coursesContent', JSON.stringify(trackCompleted));
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -279,7 +279,7 @@ const CourseContentList = ({ route }) => {
                         uri: coursesContent?.appIcon,
                         priority: FastImage.priority.high,
                       }
-                    : require('../../../assets/images/png/poster.png')
+                    : require('../../../assets/images/png/Course.png')
                 }
                 resizeMode={FastImage.resizeMode.cover} // Adjust to cover the circular area
               />
@@ -366,10 +366,10 @@ const CourseContentList = ({ route }) => {
                       trackCompleted >= 100
                         ? 'completed'
                         : trackCompleted > 0
-                        ? 'inprogress'
-                        : trackProgress > 0
-                        ? 'progress'
-                        : 'not_started'
+                          ? 'inprogress'
+                          : trackProgress > 0
+                            ? 'progress'
+                            : 'not_started'
                     }
                     trackCompleted={trackCompleted}
                     viewStyle={{

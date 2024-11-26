@@ -26,9 +26,13 @@ import pdf from '../../assets/images/png/pdf.png';
 import mp4 from '../../assets/images/png/mp4.png';
 import html from '../../assets/images/png/html.png';
 import doc from '../../assets/images/png/doc.png';
+import epub from '../../assets/images/png/Epub.png';
+import qml from '../../assets/images/png/Qml.png';
+import youtube from '../../assets/images/png/youtube.png';
 import DownloadModal from './DownloadModal';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import StatusCardIcon from '../../components/StatusCard/StatusCardIcon';
 
 const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const navigation = useNavigation();
@@ -196,7 +200,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
                 uri: item?.posterImage,
                 priority: FastImage.priority.high,
               }
-            : backgroundImage
+            : pdf
         }
         style={{ borderRadius: 50 }}
         resizeMode="cover"
@@ -239,18 +243,8 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
             >
               {item?.name}
             </GlobalText>
-            <StatusCardLine
-            // status={
-            //   trackCompleted >= 100
-            //     ? 'completed'
-            //     : trackCompleted > 0
-            //       ? 'inprogress'
-            //       : trackProgress > 0
-            //         ? 'progress'
-            //         : 'not_started'
-            // }
-            // trackCompleted={trackCompleted}
-            />
+            <StatusCardIcon status={trackStatus} />
+
             <View style={styles.unitCard}>
               <View style={[globalStyles.flexrow]}>
                 {mimeType === 'pdf' ? (
@@ -264,6 +258,12 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
                   />
                 ) : mimeType === 'mp4' || mimeType === 'webm' ? (
                   <Image style={styles.img} source={mp4} resizeMode="contain" />
+                ) : mimeType === 'epub' ? (
+                  <Image
+                    style={styles.img}
+                    source={epub}
+                    resizeMode="contain"
+                  />
                 ) : (
                   <></>
                 )}
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     width: '47%',
     height: 190,
     borderRadius: 20,
-    marginVertical: 25,
+    marginVertical: 10,
     borderWidth: 1,
     overflow: 'hidden', // Ensure the background image and content stay within the card boundaries
   },

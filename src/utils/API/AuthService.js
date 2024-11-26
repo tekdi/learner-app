@@ -37,11 +37,11 @@ export const login = async (params = {}) => {
         Accept: 'application/json',
       },
     });
-    // console.log(`curl -X POST '${EndUrls.login}' \
-    // -H 'Content-Type: application/json' \
-    // -H 'Accept: application/json' \
-    // -d '${params}'
-    // `);
+    console.log(`curl -X POST '${EndUrls.login}' \
+    -H 'Content-Type: application/json' \
+    -H 'Accept: application/json' \
+    -d '${params}'
+    `);
     if (result?.data) {
       return result?.data?.result;
     } else {
@@ -660,22 +660,15 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program: ['Second chance'],
-        se_boards: [`${params?.boardName}`],
+        board: `${params?.boardName}`,
+        status: ['Live'],
         primaryCategory: ['Practice Question Set'],
-        visibility: ['Default', 'Parent'],
       },
-      limit: 100,
       sort_by: {
-        lastPublishedOn: 'desc',
+        lastUpdatedOn: 'desc',
       },
-      facets: [
-        'se_boards',
-        'se_gradeLevels',
-        'se_subjects',
-        'se_mediums',
-        'primaryCategory',
-      ],
+      query: '',
+      limit: 10,
       offset: 0,
     },
   };

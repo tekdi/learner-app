@@ -41,7 +41,7 @@ import globalStyles from '../../utils/Helper/Style';
 import { useInternet } from '../../context/NetworkContext';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -77,6 +77,8 @@ const LoginScreen = () => {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
         const userDetails = await getuserDetails();
+        console.log(JSON.stringify(userDetails));
+
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
