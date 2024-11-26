@@ -263,5 +263,6 @@
   "save_for_offline_access": "Save for offline access",
   "saving": "Saving",
   "old_password": "Old Password",
-  "old_password_is_incorrect": "Old Password is incorrect"
+  "old_password_is_incorrect": "Old Password is incorrect",
+  "create_new_account": "Create New Account"
 }

@@ -263,5 +263,6 @@
   "save_for_offline_access": "ऑफलाइन प्रवेशासाठी जतन करा",
   "saving": "जतन करत आहे",
   "old_password": "जुना पासवर्ड",
-  "old_password_is_incorrect": "जुना पासवर्ड चुकीचा आहे"
+  "old_password_is_incorrect": "जुना पासवर्ड चुकीचा आहे",
+  "create_new_account": "नवीन खाते तयार करा"
 }

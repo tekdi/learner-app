@@ -263,5 +263,6 @@
   "save_for_offline_access": "ऑफ़लाइन एक्सेस के लिए सहेजें",
   "saving": "सहेजा जा रहा है",
   "old_password": "पुराना पासवर्ड",
-  "old_password_is_incorrect": "पुराना पासवर्ड गलत है"
+  "old_password_is_incorrect": "पुराना पासवर्ड गलत है",
+  "create_new_account": "नया खाता बनाएं"
 }
