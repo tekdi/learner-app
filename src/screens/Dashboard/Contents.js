@@ -36,7 +36,7 @@ import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import CustomSearchBox from '../../components/CustomSearchBox/CustomSearchBox';
 import globalStyles from '../../utils/Helper/Style';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const Contents = () => {
   const navigation = useNavigation();

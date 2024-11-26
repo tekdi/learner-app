@@ -10,6 +10,8 @@ import Contents from '../screens/Dashboard/Contents';
 import Profile from '../screens/Profile/Profile';
 import AssessmentStack from './AssessmentStack';
 import Coursesfilled from '../assets/images/png/Coursesfilled.png';
+import profile from '../assets/images/png/profile.png';
+import profile_filled from '../assets/images/png/profile_filled.png';
 import Coursesunfilled from '../assets/images/png/Coursesunfilled.png';
 import ProfileStack from './ProfileStack';
 import { getTentantId } from '../utils/JsHelper/Helper';
@@ -71,13 +73,18 @@ const TabScreen = () => {
               />
             );
           } else if (route.name === 'Profile') {
-            return (
-              <MaterialIcons
-                name="account-circle-outline"
-                color={focused ? '#987100' : 'black'}
-                size={30}
-              />
-            );
+            if (focused) {
+              return (
+                <Image
+                  source={profile_filled}
+                  style={{ width: 30, height: 30 }}
+                />
+              );
+            } else {
+              return (
+                <Image source={profile} style={{ width: 30, height: 30 }} />
+              );
+            }
           }
         },
         tabBarStyle: styles.footer,

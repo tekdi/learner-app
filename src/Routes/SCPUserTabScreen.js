@@ -4,11 +4,7 @@ import { Image, StyleSheet } from 'react-native';
 import { useTranslation } from '../context/LanguageContext';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import DashboardStack from './DashboardStack';
-import Contents from '../screens/Dashboard/Contents';
-import Profile from '../screens/Profile/Profile';
-import AssessmentStack from './AssessmentStack';
+
 import SCPUserStack from './SCPUserStack';
 import MyClassStack from './MyClassStack';
 import homeoutline from '../assets/images/png/homeoutline.png';
@@ -16,6 +12,12 @@ import bookoutline from '../assets/images/png/bookoutline.png';
 import homefilled from '../assets/images/png/homefilled.png';
 import bookfillednew from '../assets/images/png/bookfillednew.png';
 import ProfileStack from './ProfileStack';
+import profile from '../assets/images/png/profile.png';
+import profile_filled from '../assets/images/png/profile_filled.png';
+import home from '../assets/images/png/home.png';
+import home_filled from '../assets/images/png/home_filled.png';
+import book_filled from '../assets/images/png/book_filled.png';
+import book from '../assets/images/png/book.png';
 
 const Tab = createBottomTabNavigator();
 
@@ -29,27 +31,21 @@ const SCPUserTabScreen = () => {
         headerShown: false,
         tabBarIcon: ({ focused }) => {
           if (route.name === 'MyClass') {
-            return (
-              // <Icon
-              //   name="book-reader"
-              //   color={focused ? '#987100' : 'black'}
-              //   size={30}
-              // />
-              focused ? (
-                <Image
-                  source={bookfillednew}
-                  style={{ width: 30, height: 30 }}
-                />
-              ) : (
-                <Image source={bookoutline} style={{ width: 30, height: 30 }} />
-              )
-            );
+            if (focused) {
+              return (
+                <Image source={book_filled} style={{ width: 30, height: 30 }} />
+              );
+            } else {
+              return <Image source={book} style={{ width: 30, height: 30 }} />;
+            }
           } else if (route.name === 'SCPUserStack') {
-            return focused ? (
-              <Image source={homefilled} style={{ width: 30, height: 30 }} />
-            ) : (
-              <Image source={homeoutline} style={{ width: 30, height: 30 }} />
-            );
+            if (focused) {
+              return (
+                <Image source={home_filled} style={{ width: 30, height: 30 }} />
+              );
+            } else {
+              return <Image source={home} style={{ width: 30, height: 30 }} />;
+            }
           } else if (route.name === 'AssessmentStack') {
             return (
               <SimpleIcon
@@ -59,13 +55,18 @@ const SCPUserTabScreen = () => {
               />
             );
           } else if (route.name === 'Profile') {
-            return (
-              <MaterialIcons
-                name="account-circle-outline"
-                color={focused ? '#987100' : 'black'}
-                size={30}
-              />
-            );
+            if (focused) {
+              return (
+                <Image
+                  source={profile_filled}
+                  style={{ width: 30, height: 30 }}
+                />
+              );
+            } else {
+              return (
+                <Image source={profile} style={{ width: 30, height: 30 }} />
+              );
+            }
           }
         },
         tabBarStyle: styles.footer,

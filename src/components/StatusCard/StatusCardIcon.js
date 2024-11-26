@@ -6,25 +6,43 @@ import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../context/LanguageContext';
 import arrow_upload_progress from '../../assets/images/png/arrow_upload_progress.png';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const StatusCardIcon = ({ status }) => {
   const { t } = useTranslation();
 
   if (status === 'completed') {
-    return (
-      <Icon name="check-circle-fill" style={{ color: '#08A835' }} size={15} />
-    );
+    return <View style={styles.complete} />;
   } else if (status === 'inprogress') {
     return (
-      <Image
-        style={styles.img}
-        source={arrow_upload_progress}
-        resizeMode="contain"
-      />
+      <View style={[styles.view]}>
+        <View style={styles.inprogress} />
+        <Text
+          allowFontScaling={false}
+          style={[
+            globalStyles.text,
+            { color: 'white', marginLeft: 10, fontSize: 12 },
+          ]}
+        >
+          {t('Inprogress')}
+        </Text>
+      </View>
     );
   } else {
-    return <Icon name="circle" style={{ color: '#000' }} size={15} />;
+    return (
+      <View style={[styles.view]}>
+        <View style={styles.not_started} />
+        <Text
+          allowFontScaling={false}
+          style={[
+            globalStyles.text,
+            { color: 'white', marginLeft: 10, fontSize: 12 },
+          ]}
+        >
+          {t('not_started')}
+        </Text>
+      </View>
+    );
   }
 };
 
@@ -37,6 +55,30 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingVertical: 3,
     borderRadius: 5,
+  },
+  complete: {
+    width: '100%',
+    borderWidth: 2,
+    borderColor: '#FF0000',
+    backgroundColor: '#FF0000',
+    borderBottomRightRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  inprogress: {
+    width: '40%',
+    borderWidth: 2,
+    borderColor: '#FF0000',
+    backgroundColor: '#FF0000',
+    borderBottomRightRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  not_started: {
+    width: '40%',
+    borderWidth: 2,
+    borderColor: '#CDC5BD',
+    backgroundColor: '#CDC5BD',
+    borderBottomRightRadius: 10,
+    borderTopRightRadius: 10,
   },
 });
 

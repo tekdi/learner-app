@@ -19,7 +19,7 @@ import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const Assessment = ({ header, background }) => {
   const { t } = useTranslation();
@@ -68,6 +68,8 @@ const Assessment = ({ header, background }) => {
 
     if (board) {
       const boardName = board.value;
+      console.log({ boardName });
+
       const assessmentList = await assessmentListApi({ boardName, user_id });
       if (assessmentList) {
         // const OfflineAssessmentList = JSON.parse(

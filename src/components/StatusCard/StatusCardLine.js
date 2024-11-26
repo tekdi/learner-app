@@ -8,6 +8,8 @@ import ProgressBarCustom from '../ProgressBarCustom/ProgressBarCustom';
 const StatusCardLine = ({ status, trackCompleted, viewStyle }) => {
   const { t, language } = useTranslation();
 
+  console.log({ status });
+
   if (status === 'completed') {
     return <View style={styles.complete} />;
   } else if (status === 'inprogress') {

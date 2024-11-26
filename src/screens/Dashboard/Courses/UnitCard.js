@@ -10,7 +10,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import FastImage from '@changwoolab/react-native-fast-image';
 import { useTranslation } from '../../../context/LanguageContext';
-import StatusCardIcon from '../../../components/StatusCard/StatusCardIcon';
+import StatusCard from '../../../components/StatusCard/StatusCard';
 import globalStyles from '../../../utils/Helper/Style';
 import StatusCardLine from '../../../components/StatusCard/StatusCardLine';
 import { getDataFromStorage } from '../../../utils/JsHelper/Helper';
@@ -19,7 +19,7 @@ import unit from '../../../assets/images/png/Unit.png';
 import book from '../../../assets/images/png/book_open.png';
 import LinearGradient from 'react-native-linear-gradient';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
   // console.log('########## UnitCard');
@@ -227,6 +227,22 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
               }
               trackCompleted={trackCompleted}
             />
+            {/* <StatusCard
+              status={
+                trackCompleted >= 100
+                  ? 'completed'
+                  : trackCompleted > 0
+                    ? 'inprogress'
+                    : trackProgress > 0
+                      ? 'progress'
+                      : 'not_started'
+              }
+              trackCompleted={trackCompleted}
+              viewStyle={{
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+              }}
+            /> */}
             <View style={styles.unitCard}>
               <View style={[globalStyles.flexrow]}>
                 <Image style={styles.img} source={book} resizeMode="contain" />
@@ -249,7 +265,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
 const styles = StyleSheet.create({
   card: {
     width: '47%',
-    height: 160,
+    height: 200,
     borderRadius: 20,
     marginVertical: 10,
     overflow: 'hidden', // Ensure content doesn't overflow the card boundaries
