@@ -283,9 +283,9 @@ const Profile = (props) => {
             >
               {t('other_settings')}
             </GlobalText>
-            <View style={globalStyles.flexrow}>
+            <View style={[globalStyles.flexrow]}>
               <TouchableOpacity
-                style={globalStyles.flexrow}
+                style={[globalStyles.flexrow, { flexWrap: 'wrap' }]}
                 onPress={() => {
                   setShowContentModal(true);
                 }}
@@ -297,16 +297,16 @@ const Profile = (props) => {
                   priority={FastImage.priority.high}
                 />
                 <GlobalText
-                  style={[globalStyles.subHeading]}
-                  numberOfLines={4}
+                  style={[globalStyles.subHeading, { width: '85%' }]}
+                  numberOfLines={2}
                   ellipsizeMode="tail"
                 >
-                  {t('clear_all_offline_content')} ( {storageData})
+                  {t('remove_all_offline_content')} ( {storageData})
                 </GlobalText>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={{ marginLeft: 5, top: -2 }}
+                style={{ top: -2 }}
                 onPress={() => {
                   setConentView(true);
                 }}

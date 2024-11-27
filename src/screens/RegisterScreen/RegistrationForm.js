@@ -71,7 +71,7 @@ import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../context/NetworkContext';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -341,8 +341,14 @@ const RegistrationForm = ({ schema, geoData }) => {
 
     await storeUsername(profileData?.getUserDetails?.[0]?.username);
     if (cohort_id) {
+      await setDataInStorage('userType', 'scp');
       navigation.navigate('SCPUserTabScreen');
     } else {
+      if (tenantid === '6c8b810a-66c2-4f0d-8c0c-c025415a4414') {
+        await setDataInStorage('userType', 'youthnet');
+      } else {
+        await setDataInStorage('userType', 'public');
+      }
       navigation.navigate('Dashboard');
     }
     setModal(false);

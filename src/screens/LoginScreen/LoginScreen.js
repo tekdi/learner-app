@@ -77,8 +77,7 @@ const LoginScreen = () => {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
         const userDetails = await getuserDetails();
-        console.log(JSON.stringify(userDetails));
-
+        // console.log(JSON.stringify(userDetails));
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
@@ -86,14 +85,14 @@ const LoginScreen = () => {
         await setDataInStorage('userId', user_id);
 
         const academicyear = await setAcademicYear({ tenantid });
-        console.log({ tenantData, user_id, tenantid });
+        // console.log({ tenantData, user_id, tenantid });
         const academicYearId = academicyear?.[0]?.id;
         await setDataInStorage('academicYearId', academicYearId || '');
         const cohort = await getCohort({ user_id, tenantid, academicYearId });
-        console.log('################### cohort', JSON.stringify({ cohort }));
+        // console.log('################### cohort', JSON.stringify({ cohort }));
         await setDataInStorage('cohortData', JSON.stringify(cohort));
         const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-        console.log({ cohort_id });
+        // console.log({ cohort_id });
 
         const profileData = await getProfileDetails({
           userId: user_id,
@@ -111,7 +110,13 @@ const LoginScreen = () => {
         );
         if (cohort_id) {
           navigation.navigate('SCPUserTabScreen');
+          await setDataInStorage('userType', 'scp');
         } else {
+          if (tenantid === '6c8b810a-66c2-4f0d-8c0c-c025415a4414') {
+            await setDataInStorage('userType', 'youthnet');
+          } else {
+            await setDataInStorage('userType', 'public');
+          }
           navigation.navigate('Dashboard');
         }
         const deviceId = await getDeviceId();

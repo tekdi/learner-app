@@ -16,36 +16,60 @@ import { useTranslation } from '../../context/LanguageContext';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 import Logo from '../../assets/images/png/logo.png';
 import lock_open from '../../assets/images/png/lock_open.png';
-import { forgotPassword, resetPassword } from '../../utils/API/AuthService';
+import {
+  forgotPassword,
+  login,
+  resetPassword,
+} from '../../utils/API/AuthService';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import PasswordField from '../../components/CustomPasswordComponent/PasswordField';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
+import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
   const [ConfirmPassword, setConfirmPassword] = useState('');
-  const [username, setusename] = useState('');
+  const [userName, setuserName] = useState('');
+  const [email, setEmail] = useState('');
   const [modalError, setmodalError] = useState('');
   const [modal, setmodal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [passwordError, setPasswordError] = useState(false);
+  const [oldPasswordError, setOldPasswordError] = useState(false);
   const { t } = useTranslation();
   const navigation = useNavigation();
 
+  useEffect(() => {
+    const check = async () => {
+      const data = JSON.parse(await getDataFromStorage('profileData'));
+      console.log(data?.getUserDetails?.[0]);
+
+      setEmail(data?.getUserDetails?.[0]?.email);
+      setuserName(data?.getUserDetails?.[0]?.username);
+    };
+    check();
+  }, []);
+
+  const handleOldPassword = (e) => {
+    setOldPassword(e.trim());
+    if (e.trim() === '') {
+      setIsDisabled(true);
+    } else if (ConfirmPassword == '' && password == '') {
+      setIsDisabled(true);
+    }
+  };
   const handlePassword = (e) => {
     setPassword(e.trim());
     if (e.trim() === '') {
       setIsDisabled(true);
-      console.log('hi');
     } else if (ConfirmPassword !== '' && e.trim() !== ConfirmPassword) {
       setPasswordError(true);
       setIsDisabled(true);
-      console.log('hi2');
     } else if (e.trim() === ConfirmPassword) {
       setPasswordError(false);
       setIsDisabled(false);
-      console.log('hi3');
     }
   };
 
@@ -62,6 +86,23 @@ const ResetPassword = () => {
     }
   };
 
+  const handlelogin = async () => {
+    const payload = {
+      username: userName,
+      password: oldPassword,
+    };
+    console.log({ payload });
+
+    const data = await login({ payload });
+    console.log({ data });
+
+    if (data?.params?.status !== 'failed' && !data?.error) {
+      resetPasswordAPi();
+    } else {
+      setOldPasswordError(true);
+    }
+  };
+
   const resetPasswordAPi = async () => {
     const payload = {
       newPassword: password,
@@ -71,9 +112,8 @@ const ResetPassword = () => {
       console.log('reached');
       setmodalError(data?.params?.err);
     } else {
-      console.log('reached else');
+      console.log('reached else', data);
       setmodalError();
-      setusename(data?.email);
     }
     setmodal(true);
     console.log(data?.email);
@@ -82,10 +122,12 @@ const ResetPassword = () => {
 
   function encryptEmail(email) {
     // Split the email into username and domain
-    const [emailUsername, domain] = email.split('@');
+    console.log({ email });
+
+    const [emailUsername, domain] = email?.split('@');
 
     // Check if emailUsername is valid
-    if (!emailUsername || emailUsername.length < 2) {
+    if (!emailUsername || emailUsername?.length < 2) {
       return email; // Return the original email if it's too short
     }
 
@@ -107,6 +149,14 @@ const ResetPassword = () => {
           {t('reset_password')}
         </Text>
         <View style={styles.view}>
+          <PasswordField
+            error={false}
+            field="old_password"
+            onChange={handleOldPassword}
+            value={oldPassword}
+            autoCapitalize="none"
+          />
+
           <PasswordField
             error={false}
             field="new_password"
@@ -135,9 +185,23 @@ const ResetPassword = () => {
               {t('Password_must_match')}
             </Text>
           )}
+          {oldPasswordError && (
+            <Text
+              allowFontScaling={false}
+              style={{
+                color: 'red',
+                alignSelf: 'flex-start',
+                marginBottom: 10,
+                marginTop: -20,
+                fontFamily: 'Poppins-Regular',
+              }}
+            >
+              {t('old_password_is_incorrect')}
+            </Text>
+          )}
           <PrimaryButton
             isDisabled={isDisabled}
-            onPress={resetPasswordAPi}
+            onPress={handlelogin}
             text={t('reset_password')}
           />
         </View>
@@ -191,7 +255,7 @@ const ResetPassword = () => {
                         { textAlign: 'center', marginVertical: 10 },
                       ]}
                     >
-                      {t('we_sent_an_email_to')} {encryptEmail(username)}{' '}
+                      {t('we_sent_an_email_to')} {encryptEmail(email)}{' '}
                       {t('with_a_link_to_get_back_to_your_account')}
                     </Text>
                   </>
@@ -201,6 +265,7 @@ const ResetPassword = () => {
                 <PrimaryButton
                   onPress={() => {
                     setmodal(false);
+                    navigation.navigate('MyProfile');
                   }}
                   text={t('ok')}
                 ></PrimaryButton>

@@ -11,13 +11,25 @@ import { courseTrackingStatus } from '../../../../../utils/API/ApiCalls';
 import { getDoits } from '../../../../../utils/API/AuthService';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import CourseCard from '@components/CourseCard/CourseCard';
 
 const ContentAccordion = ({ title, resourceData, trackData }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  // console.log('resourceData', JSON.stringify(resourceData));
+  console.log('resourceData', JSON.stringify(resourceData));
+
+  const handlePress = (item) => {
+    // console.log('Card pressed!', item);
+    // console.log('identifier', item?.identifier);
+    // console.log('item', item?.leafNodes);
+    navigation.navigate('CourseContentList', {
+      do_id: item?.identifier,
+      course_id: item?.identifier,
+      content_list_node: item?.leafNodes,
+    });
+  };
 
   return (
     <>
@@ -47,7 +59,18 @@ const ContentAccordion = ({ title, resourceData, trackData }) => {
             <>
               {resourceData?.prerequisites.length > 0 ? (
                 resourceData?.prerequisites?.map((data, index) => {
-                  return (
+                  return data?.mimeType ===
+                    'application/vnd.ekstep.content-collection' ? (
+                    <CourseCard
+                      onPress={() => handlePress(data)}
+                      appIcon={data?.appIcon}
+                      index={index}
+                      cardWidth={'44%'}
+                      item={data}
+                      TrackData={trackData}
+                      navigation={navigation}
+                    />
+                  ) : (
                     <ContentCard
                       key={index}
                       item={data}
