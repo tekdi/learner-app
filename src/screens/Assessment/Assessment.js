@@ -60,9 +60,9 @@ const Assessment = ({ header, background }) => {
     }
 
     //fix for public user get maharashtra board assessments
-    if (!board?.value) {
+    /*if (!board?.value) {
       board = { value: 'maharashtra' };
-    }
+    }*/
 
     console.log('########### board', board);
 
@@ -79,7 +79,7 @@ const Assessment = ({ header, background }) => {
 
         const uniqueAssessments = [
           ...new Set(
-            OfflineAssessmentList?.QuestionSet?.map((item) => item.assessment1)
+            OfflineAssessmentList?.QuestionSet?.map((item) => item.assessmentType)
           ),
         ];
 

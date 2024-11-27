@@ -661,6 +661,7 @@ export const assessmentListApi = async (params = {}) => {
     request: {
       filters: {
         board: `${params?.boardName}`,
+        assessmentType: ['pre-test', 'post-test'],
         status: ['Live'],
         primaryCategory: ['Practice Question Set'],
       },
@@ -710,7 +711,9 @@ export const getDoits = async ({ payload }) => {
   };
 
   // Construct curl command
-  const curlCommand = `curl -X POST '${url}' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '${JSON.stringify(payload)}'`;
+  const curlCommand = `curl -X POST '${url}' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '${JSON.stringify(
+    payload
+  )}'`;
   // console.log('Curl Command:', curlCommand);
 
   try {
