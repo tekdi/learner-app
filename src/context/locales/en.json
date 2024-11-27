@@ -252,5 +252,17 @@
   "content_delete_desp": "All saved content for offline access will be removed and will no longer be available without an internet connection",
   "content_delete": "Are you sure you want to remove all offline content?",
   "Search Content": "Search Content",
-  "Search Courses": "Search Courses"
+  "Search Courses": "Search Courses",
+  "New": "New 26 Nov",
+  "reset_password": "Reset Password",
+  "other_settings": "Other settings",
+  "new_password": "New Password",
+  "confirm_new_password": "Confirm New Password",
+  "remove_offline_access": "Remove offline access",
+  "remove_all_offline_content": "Remove All Offline Content",
+  "save_for_offline_access": "Save for offline access",
+  "saving": "Saving",
+  "old_password": "Old Password",
+  "old_password_is_incorrect": "Old Password is incorrect",
+  "create_new_account": "Create New Account"
 }

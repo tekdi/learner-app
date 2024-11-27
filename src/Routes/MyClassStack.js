@@ -13,6 +13,8 @@ import AssessmentStack from './AssessmentStack';
 import TestView from '../screens/Assessment/TestView';
 import AnswerKeyView from '../screens/Assessment/AnswerKeyView';
 import TestDetailView from '../screens/Assessment/TestDetailView';
+import CourseContentList from '@src/screens/Dashboard/Courses/CourseContentList';
+import UnitList from '@src/screens/Dashboard/Courses/UnitList';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +49,16 @@ const SCPUserStack = () => {
         component={PreviousClassMaterial}
         options={{ lazy: true }} // Lazily load LoadingScreen
       /> */}
+      <Stack.Screen
+        name="CourseContentList"
+        component={CourseContentList}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="UnitList"
+        component={UnitList}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
     </Stack.Navigator>
   );
 };

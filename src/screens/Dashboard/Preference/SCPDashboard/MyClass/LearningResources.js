@@ -12,11 +12,12 @@ const LearningResources = ({ route }) => {
   const [trackData, setTrackData] = useState([]);
 
   function separatePrerequisitesAndPostrequisites(data) {
-    let prerequisites = ['do_2141830551647928321130'];
+    let prerequisites = [];
     let postrequisites = [];
-    let contentList = ['do_2141830551647928321130'];
+    let contentList = [];
 
     data.forEach((item) => {
+      console.log('item', JSON.stringify(item));
       if (item.type === 'prerequisite') {
         prerequisites.push(item?.id);
         contentList.push(item?.id);
@@ -26,29 +27,33 @@ const LearningResources = ({ route }) => {
       }
     });
 
+    // console.log('sdsads', { prerequisites, postrequisites, contentList });
+
     return { prerequisites, postrequisites, contentList };
   }
 
   const getDoitsDetails = async (contentList) => {
-    console.log({ contentList });
+    // console.log({ contentList });
 
     const payload = {
       request: {
         filters: {
-          identifier: 'do_2141830551647928321130',
+          identifier: contentList,
+          // identifier: ['do_2141915232762675201250'],
         },
         fields: [
           'name',
           'appIcon',
-          'medium',
-          'subject',
-          'resourceType',
-          'contentType',
-          'organisation',
-          'topic',
+          'description',
+          'posterImage',
           'mimeType',
+          'identifier',
+          'resourceType',
+          'primaryCategory',
+          'contentType',
           'trackable',
-          'gradeLevel',
+          'children',
+          'leafNodes',
         ],
       },
     };
@@ -74,6 +79,7 @@ const LearningResources = ({ route }) => {
   useEffect(() => {
     const fetchData = async () => {
       const data = separatePrerequisitesAndPostrequisites(resources);
+      // console.log({ data });
       await trackingData(data);
       const result = await getDoitsDetails(data?.contentList);
       const prerequisites = result.filter((item) =>

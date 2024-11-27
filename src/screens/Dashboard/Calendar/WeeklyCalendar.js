@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import globalStyles from '../../../utils/Helper/Style';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const WeeklyCalendar = ({ setDate, postdays }) => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -48,7 +48,7 @@ const WeeklyCalendar = ({ setDate, postdays }) => {
   const last30Days = generateDaysData();
 
   const onDateClick = (item) => {
-    console.log('Selected Date:', formatDate(item.exactDate));
+    // console.log('Selected Date:', formatDate(item.exactDate));
     setSelectedDate(item.date);
     setDate(item?.exactDate);
   };

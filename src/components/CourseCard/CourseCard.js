@@ -238,13 +238,13 @@ const styles = StyleSheet.create({
   },
   cardBackground: {
     width: '100%',
-    height: 70,
+    height: 90,
     borderRadius: 8,
     // overflow: 'hidden',
   },
   cardBackgroundImage: {
     width: '100%',
-    height: 80,
+    height: 90,
     borderRadius: 8,
   },
 
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   },
   downloadView: {
     // top: 0,
-    bottom: 80,
+    bottom: 90,
   },
   img: {
     width: 30,

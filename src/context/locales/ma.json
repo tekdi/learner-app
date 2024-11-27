@@ -252,5 +252,17 @@
   "content_delete_desp": "ऑफलाइन प्रवेशासाठी जतन केलेली सर्व सामग्री हटवली जाईल आणि ती इंटरनेट कनेक्शनशिवाय उपलब्ध राहणार नाही.",
   "content_delete": "आपण सर्व ऑफलाइन सामग्री हटवण्याची खात्री आहात का?",
   "Search Content": "सामग्री शोधा",
-  "Search Courses": "कोर्स शोधा"
+  "Search Courses": "कोर्स शोधा",
+  "New": "नवीन 26 नोव्हेंबर",
+  "reset_password": "पासवर्ड रीसेट करा",
+  "other_settings": "इतर सेटिंग्ज",
+  "new_password": "नवीन पासवर्ड",
+  "confirm_new_password": "नवीन पासवर्डची पुष्टी करा",
+  "remove_offline_access": "ऑफलाइन प्रवेश काढा",
+  "remove_all_offline_content": "सर्व ऑफलाइन सामग्री काढा",
+  "save_for_offline_access": "ऑफलाइन प्रवेशासाठी जतन करा",
+  "saving": "जतन करत आहे",
+  "old_password": "जुना पासवर्ड",
+  "old_password_is_incorrect": "जुना पासवर्ड चुकीचा आहे",
+  "create_new_account": "नवीन खाते तयार करा"
 }

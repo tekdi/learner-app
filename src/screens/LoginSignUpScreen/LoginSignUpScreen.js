@@ -8,7 +8,7 @@ import { useTranslation } from '../../context/LanguageContext';
 
 import Logo from '../../assets/images/png/logo.png';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const LoginSignUpScreen = () => {
   //multi language setup
@@ -36,16 +36,16 @@ const LoginSignUpScreen = () => {
       </View>
       <View style={styles.buttonContainer}>
         <PrimaryButton
-          text={t('i_am_new_user')}
+          text={t('login')}
           onPress={() => {
-            nav.navigate('RegisterStart');
+            nav.navigate('LoginScreen');
           }}
         />
         <View style={{ padding: 10 }}></View>
         <SecondaryButton
-          text={'already_login'}
+          text={'create_new_account'}
           onPress={() => {
-            nav.navigate('LoginScreen');
+            nav.navigate('RegisterStart');
           }}
           style={{ fontSize: 14.5 }}
         />

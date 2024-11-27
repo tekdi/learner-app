@@ -11,15 +11,16 @@ const CustomSearchBox = ({
   placeholder,
 }) => {
   const debouncedSearch = useCallback(
-    debounce((query) => {
-      handleSearch(query);
-    }, 2000), // Adjust debounce time in milliseconds as needed
+    debounce(() => {}, 2000), // Adjust debounce time in milliseconds as needed
     []
   );
 
   const onChangeText = (text) => {
     setSearchText(text);
-    debouncedSearch(text);
+
+    if (text == '') {
+      handleSearch();
+    }
   };
 
   return (
@@ -31,9 +32,9 @@ const CustomSearchBox = ({
         value={searchText}
         onChangeText={onChangeText}
       />
-      <View style={styles.searchButton}>
+      <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
         <Ionicons name="search" size={24} color="#4D4639" />
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };
