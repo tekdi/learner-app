@@ -215,9 +215,11 @@ export const courseListApi_testing = async ({ searchText }) => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
+  let userType = await getDataFromStorage('userType');
   const payload = {
     request: {
       filters: {
+        program: (userType = 'scp' ? 'secondchance' : 'youthnet'),
         status: ['Live'],
         primaryCategory: ['Course'],
       },
@@ -279,190 +281,6 @@ export const courseListApi_testing = async ({ searchText }) => {
   }
 };
 
-export const courseListApi = async ({ payload }) => {
-  const user_id = await getDataFromStorage('userId');
-  const url = `${EndUrls.contentList}`; // Define the URL
-  const headers = {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-    // Uncomment and set the Authorization header if needed
-    // 'Authorization': 'Bearer YOUR_API_KEY', // Example for an API key or token
-  };
-
-  // let payload = {
-  //   request: {
-  //     filters: {
-  //       se_boards: [
-  //         'Odisha',
-  //         'Uttar Pradesh',
-  //         'Madhya Pradesh',
-  //         'NIOS',
-  //         'Rajasthan',
-  //       ],
-  //       primaryCategory: ['Course'],
-  //       visibility: ['Default', 'Parent'],
-  //     },
-  //     limit: 100,
-  //     sort_by: {
-  //       lastPublishedOn: 'desc',
-  //     },
-  //     fields: [
-  //       'name',
-  //       'appIcon',
-  //       'description',
-  //       'posterImage',
-  //       'mimeType',
-  //       'identifier',
-  //       'resourceType',
-  //       'primaryCategory',
-  //       'contentType',
-  //       'trackable',
-  //       'children',
-  //       'leafNodes',
-  //     ],
-  //     facets: [
-  //       'se_boards',
-  //       'se_gradeLevels',
-  //       'se_subjects',
-  //       'se_mediums',
-  //       'primaryCategory',
-  //     ],
-  //     offset: 0,
-  //   },
-  // };
-
-  // Log the curl command
-  //   console.log(
-  //     `curl -X POST '${url}' \
-  // -H 'Content-Type: application/json' \
-  // -H 'Accept: application/json' \
-  // -d '${JSON.stringify(payload)}'`
-  //   );
-
-  // get language user
-  // removed below filter for Pilot release
-  /*
-  const result = JSON.parse(await getDataFromStorage('profileData'));
-  if (result?.getUserDetails?.[0]?.customFields?.[0]?.value) {
-    let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
-    payload.request.filters['se_mediums'] = language;
-  }
-  */
-
-  try {
-    // Make the actual request
-    const result = await post(url, payload, {
-      headers: headers || {},
-    });
-
-    if (result) {
-      // store result
-      await storeApiResponse(
-        user_id,
-        url,
-        'post',
-        payload,
-        result?.data?.result
-      );
-      return result?.data?.result;
-    } else {
-      let result_offline = await getApiResponse(user_id, url, 'post', payload);
-      return result_offline;
-    }
-  } catch (e) {
-    console.log('no internet available', e);
-
-    let result_offline = await getApiResponse(user_id, url, 'post', payload);
-    return result_offline;
-  }
-};
-
-export const contentListApi = async ({ searchText }) => {
-  const user_id = await getDataFromStorage('userId');
-  const url = `${EndUrls.contentList}`; // Define the URL
-  const headers = {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
-  };
-  let payload = {
-    request: {
-      filters: {
-        board: [
-          'Odisha',
-          'Uttar Pradesh',
-          'Madhya Pradesh',
-          'NIOS',
-          'Rajasthan',
-        ],
-        primaryCategory: ['Learning Resource'],
-        visibility: ['Default', 'Parent'],
-      },
-      limit: 100,
-      sort_by: {
-        lastPublishedOn: 'desc',
-      },
-      ...(searchText && { query: searchText }), // Add query conditionally
-      fields: [
-        'name',
-        'appIcon',
-        'description',
-        'posterImage',
-        'mimeType',
-        'identifier',
-        'resourceType',
-        'primaryCategory',
-        'contentType',
-        'trackable',
-        'children',
-        'leafNodes',
-      ],
-      facets: [
-        'se_boards',
-        'se_gradeLevels',
-        'se_subjects',
-        'se_mediums',
-        'primaryCategory',
-      ],
-      offset: 0,
-    },
-  };
-
-  //get language user
-  //removed below filter for Pilot release
-  /*const result = JSON.parse(await getDataFromStorage('profileData'));
-  if (result?.getUserDetails?.[0]?.customFields?.[0]?.value) {
-    let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
-    payload.request.filters['se_mediums'] = language;
-  }*/
-  //console.log('######## payload ', JSON.stringify(payload));
-
-  try {
-    // Make the actual request
-    const result = await post(url, payload, {
-      headers: headers || {},
-    });
-
-    if (result) {
-      // store result
-      await storeApiResponse(
-        user_id,
-        url,
-        'post',
-        payload,
-        result?.data?.result
-      );
-      return result?.data?.result;
-    } else {
-      let result_offline = await getApiResponse(user_id, url, 'post', payload);
-      return result_offline;
-    }
-  } catch (e) {
-    console.log('no internet available');
-    let result_offline = await getApiResponse(user_id, url, 'post', payload);
-    return result_offline;
-  }
-};
-
 export const contentListApi_Pratham = async ({ searchText }) => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList}`; // Define the URL
@@ -470,10 +288,12 @@ export const contentListApi_Pratham = async ({ searchText }) => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
+  let userType = await getDataFromStorage('userType');
   let payload = {
     request: {
       filters: {
-        board: ['CBSE'],
+        program: (userType = 'scp' ? 'secondchance' : 'youthnet'),
+        //board: ['CBSE'],
         primaryCategory: ['Learning Resource', 'Practice Question Set'],
         visibility: ['Default', 'Parent'],
       },
@@ -657,9 +477,11 @@ export const assessmentListApi = async (params = {}) => {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
+  let userType = await getDataFromStorage('userType');
   const payload = {
     request: {
       filters: {
+        program: (userType = 'scp' ? 'secondchance' : 'youthnet'),
         board: `${params?.boardName}`,
         assessmentType: ['pre-test', 'post-test'],
         status: ['Live'],
@@ -711,7 +533,9 @@ export const getDoits = async ({ payload }) => {
   };
 
   // Construct curl command
-  const curlCommand = `curl -X POST '${url}' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '${JSON.stringify(payload)}'`;
+  const curlCommand = `curl -X POST '${url}' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '${JSON.stringify(
+    payload
+  )}'`;
   console.log('Curl Command:', curlCommand);
 
   try {

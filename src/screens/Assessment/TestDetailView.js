@@ -50,7 +50,7 @@ const instructions = [
 const TestDetailView = ({ route }) => {
   const { title, data } = route.params;
   let time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
-  if (time=='NaN') {
+  if (time == 'NaN') {
     time = convertSecondsToMinutes(
       JSON.parse(data?.timeLimits)?.questionSet?.max
     );
@@ -104,13 +104,14 @@ const TestDetailView = ({ route }) => {
       <ScrollView>
         <View style={styles.testcard}>
           <View style={[globalStyles.flexrow, { marginBottom: 10 }]}>
-            <View>
+            {/* <View>
               <GlobalText style={styles.texttime}>{time}</GlobalText>
             </View>
             <View>
               <GlobalText style={styles.textMin}>{t('MIN')}</GlobalText>
               <GlobalText style={styles.textMin}>{data?.name}</GlobalText>
-            </View>
+            </View> */}
+            <GlobalText style={styles.textMin}>{data?.name}</GlobalText>
           </View>
           <HorizontalLine />
           <View>

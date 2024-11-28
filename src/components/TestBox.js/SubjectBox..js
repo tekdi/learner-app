@@ -9,6 +9,7 @@ import {
   View,
   ActivityIndicator,
   Alert,
+  Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -27,7 +28,7 @@ import globalStyles from '../../utils/Helper/Style';
 import download from '../../assets/images/png/download.png';
 import download_inprogress from '../../assets/images/png/download_inprogress.png';
 import download_complete from '../../assets/images/png/download_complete.png';
-import { getData, storeData } from '../../utils/Helper/JSHelper';
+import { getData, removeData, storeData } from '../../utils/Helper/JSHelper';
 import {
   hierarchyContent,
   listQuestion,
@@ -37,8 +38,10 @@ import RNFS from 'react-native-fs';
 import Config from 'react-native-config';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { getAsessmentOffline } from '../../utils/API/AuthService';
+import HorizontalLine from '../HorizontalLine/HorizontalLine';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const SubjectBox = ({ name, disabled, data }) => {
   const { t } = useTranslation();
@@ -49,36 +52,35 @@ const SubjectBox = ({ name, disabled, data }) => {
   const questionListUrl = Config.QUESTION_LIST_URL;
   const [networkstatus, setNetworkstatus] = useState(true);
   const [isSyncPending, setIsSyncPending] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      console.log('########### IN SUBJECT BOX');
-      let content_do_id = data?.IL_UNIQUE_ID;
-      console.log('########### content_do_id', content_do_id);
-      let contentObj = await getData(content_do_id, 'json');
-      if (contentObj == null) {
-        setDownloadStatus('download');
-        setDownloadIcon(download);
-      } else {
-        setDownloadStatus('completed');
-        setDownloadIcon(download_complete);
-      }
-      //get sync pending
-      const user_id = await getDataFromStorage('userId');
-      const content_id = data?.IL_UNIQUE_ID;
-      const result_sync_offline = await getAsessmentOffline(
-        user_id,
-        content_id
-      );
-      console.log('############ result_sync_offline', result_sync_offline);
-      if (result_sync_offline) {
-        setIsSyncPending(true);
-      } else {
-        setIsSyncPending(false);
-      }
-    };
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    console.log('########### IN SUBJECT BOX');
+    let content_do_id = data?.IL_UNIQUE_ID;
+    console.log('########### content_do_id', content_do_id);
+    let contentObj = await getData(content_do_id, 'json');
+    if (contentObj == null) {
+      setDownloadStatus('download');
+      setDownloadIcon(download);
+    } else {
+      setDownloadStatus('completed');
+      setDownloadIcon(download_complete);
+    }
+    //get sync pending
+    const user_id = await getDataFromStorage('userId');
+    const content_id = data?.IL_UNIQUE_ID;
+    const result_sync_offline = await getAsessmentOffline(user_id, content_id);
+    console.log('############ result_sync_offline', result_sync_offline);
+    if (result_sync_offline) {
+      setIsSyncPending(true);
+    } else {
+      setIsSyncPending(false);
+    }
+  };
 
   const handlePress = () => {
     navigation.navigate('AnswerKeyView', {
@@ -256,6 +258,43 @@ const SubjectBox = ({ name, disabled, data }) => {
     }
   };
 
+  const handleDelete = async () => {
+    let contentId = data?.IL_UNIQUE_ID;
+    const content_folder = `${RNFS.DocumentDirectoryPath}/${contentId}`;
+    const content_zip_file = `${content_folder}.zip`;
+    //delete from internal storage
+    try {
+      //delete json object
+      let contentRemoveObj = await removeData(contentId);
+      console.log('contentRemoveObj', contentRemoveObj);
+      if (contentRemoveObj) {
+        // Check if the folder exists
+        const folderExists = await RNFS.exists(content_folder);
+        if (folderExists) {
+          // Delete the folder and its contents
+          await RNFS.unlink(content_folder);
+          console.log('Folder deleted successfully');
+        } else {
+          console.log('Folder does not exist');
+        }
+        // Check if the file exists
+        const fileExists = await RNFS.exists(content_zip_file);
+        if (fileExists) {
+          // Delete the file
+          await RNFS.unlink(content_zip_file);
+          console.log('File deleted successfully');
+        } else {
+          console.log('File does not exist');
+        }
+        //delete completed
+        fetchData();
+        setModalVisible(false);
+      }
+    } catch (error) {
+      console.error('Error deleting folder files:', error);
+    }
+  };
+
   return (
     <SafeAreaView>
       <TouchableOpacity disabled={disabled} onPress={handlePress}>
@@ -347,7 +386,7 @@ const SubjectBox = ({ name, disabled, data }) => {
           {!data?.lastAttemptedOn && downloadStatus == 'progress' ? (
             <ActivityIndicator size="large" />
           ) : !data?.lastAttemptedOn && downloadStatus == 'completed' ? (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
               <Image
                 style={styles.img}
                 source={downloadIcon}
@@ -374,6 +413,49 @@ const SubjectBox = ({ name, disabled, data }) => {
           setNetworkstatus(!networkstatus);
         }}
       />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <GlobalText
+              style={globalStyles.heading2}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {name}
+            </GlobalText>
+            <GlobalText
+              style={[
+                globalStyles.text,
+                { marginVertical: 10, textAlign: 'center' },
+              ]}
+            >
+              {t('delete_msg')}
+            </GlobalText>
+            <HorizontalLine />
+            <View style={styles.modalButtonContainer}>
+              <View>
+                <SecondaryButton
+                  onPress={() => {
+                    setModalVisible(false);
+                  }}
+                  text={'cancel'}
+                />
+              </View>
+              <View style={{ width: 120 }}>
+                <PrimaryButton
+                  onPress={handleDelete}
+                  text={t('delete')}
+                ></PrimaryButton>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -415,6 +497,24 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     marginHorizontal: 10,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingVertical: 20,
   },
 });
 

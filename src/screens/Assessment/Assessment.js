@@ -26,8 +26,6 @@ const Assessment = ({ header, background }) => {
   const navigation = useNavigation();
   const [assessments, setAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState('');
-  const [percentage, setPercentage] = useState('');
   const [networkstatus, setNetworkstatus] = useState(true);
 
   /*useEffect(() => {
@@ -49,7 +47,7 @@ const Assessment = ({ header, background }) => {
     const cohortparse = await getDataFromStorage('cohortData');
     const cohort = JSON.parse(cohortparse);
     const cohort_id = await getDataFromStorage('cohortId');
-    console.log('########### cohort', cohort);
+    //console.log('########### cohort', cohort);
     let board = null;
     try {
       board = cohort?.cohortData?.[0]?.customField?.find(
@@ -72,47 +70,58 @@ const Assessment = ({ header, background }) => {
 
       const assessmentList = await assessmentListApi({ boardName, user_id });
       if (assessmentList) {
-        // const OfflineAssessmentList = JSON.parse(
-        //   await getDataFromStorage('assessmentList')
-        // );
         const OfflineAssessmentList = assessmentList;
-
         const uniqueAssessments = [
           ...new Set(
-            OfflineAssessmentList?.QuestionSet?.map((item) => item.assessmentType)
+            OfflineAssessmentList?.QuestionSet?.map(
+              (item) => item.assessmentType
+            )
           ),
         ];
+        //extract all question list with assessment type
+        let questionSetData = {};
+        let assessmentStatusData = {};
+        if (uniqueAssessments) {
+          for (let i = 0; i < uniqueAssessments.length; i++) {
+            let key = uniqueAssessments[i];
+            let questionSetDataId = [];
+            let uniqueAssessmentsId = [];
+            if (OfflineAssessmentList?.QuestionSet) {
+              for (
+                let j = 0;
+                j < OfflineAssessmentList?.QuestionSet.length;
+                j++
+              ) {
+                let question_set = OfflineAssessmentList.QuestionSet[j];
+                if (question_set?.assessmentType == key) {
+                  // Extract DO_id from assessmentList (content)
+                  questionSetDataId.push(question_set);
+                  uniqueAssessmentsId.push(question_set?.IL_UNIQUE_ID);
+                }
+              }
+            }
+            const assessmentStatusDataResponse =
+              (await getAssessmentStatus({
+                user_id,
+                cohort_id,
+                uniqueAssessmentsId,
+              })) || [];
+            assessmentStatusData[key] = assessmentStatusDataResponse;
+            questionSetData[key] = questionSetDataId;
+          }
+        }
 
-        // Extract DO_id from assessmentList (content)
-        const uniqueAssessmentsId = [
-          ...new Set(
-            OfflineAssessmentList?.QuestionSet?.map((item) => item.IL_UNIQUE_ID)
-          ),
-        ];
-
-        const assessmentStatusData =
-          (await getAssessmentStatus({
-            user_id,
-            cohort_id,
-            uniqueAssessmentsId,
-          })) || [];
-        console.log('############ ', assessmentStatusData);
-
-        if (assessmentStatusData?.[0]?.assessments) {
+        if (assessmentStatusData) {
           await setDataInStorage(
             'assessmentStatusData',
             JSON.stringify(assessmentStatusData) || ''
           );
         }
-        const OfflineAssessmentStatusData = JSON.parse(
-          await getDataFromStorage('assessmentStatusData')
-        );
-        setStatus(OfflineAssessmentStatusData?.[0]?.status || 'not_started');
-        setPercentage(OfflineAssessmentStatusData?.[0]?.percentage || '');
 
+        //set question set
         await setDataInStorage(
           'QuestionSet',
-          JSON.stringify(OfflineAssessmentList?.QuestionSet) || ''
+          JSON.stringify(questionSetData) || ''
         );
         setAssessments(uniqueAssessments);
       } else {
@@ -145,8 +154,6 @@ const Assessment = ({ header, background }) => {
                   <TestBox
                     key={item}
                     testText={item}
-                    status={status}
-                    percentage={percentage}
                   />
                 );
               })
