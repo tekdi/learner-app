@@ -15,7 +15,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[0]?.coreField,
             fieldId: data?.[0]?.fieldId,
             validation: {
-              required: true,
+              // required: true,
               pattern: /^[A-Za-z]+$/, // Only letters, no numbers
               minLength: 3,
               maxLength: 30,
@@ -28,7 +28,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[1]?.coreField,
             fieldId: data?.[1]?.fieldId,
             validation: {
-              required: true,
+              // required: true,
               pattern: /^[A-Za-z]+$/, // Only letters, no numbers
               minLength: 3,
               maxLength: 30,
@@ -41,7 +41,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[2]?.coreField,
             fieldId: data?.[2]?.fieldId,
             validation: {
-              required: true,
+              // required: true,
               pattern: /^[6-9]\d{9}$/, // Only numbers,
               minLength: 10,
               maxLength: 10,
@@ -54,7 +54,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[3]?.coreField,
             fieldId: data?.[3]?.fieldId,
             validation: {
-              required: true,
+              // required: true,
               pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, // Only letters, no numbers
             },
           },
@@ -71,7 +71,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[4]?.coreField,
             fieldId: data?.[4]?.fieldId,
             validation: {
-              required: true,
+              // required: true,
               pattern: /^(0?[1-9]|[1-9][0-9])$/, // Only letters, no numbers
               minLength: 1,
               maxLength: 2,
@@ -85,7 +85,7 @@ export const registerSchema = async (data, states) => {
             fieldId: data?.[5]?.fieldId,
             options: data?.[5]?.options,
             validation: {
-              required: true,
+              // required: true,
             },
           },
         ],

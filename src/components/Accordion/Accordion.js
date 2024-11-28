@@ -25,7 +25,7 @@ import {
 import ContentCard from '../../screens/Dashboard/ContentCard';
 import { courseTrackingStatus } from '../../utils/API/ApiCalls';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 function getFilteredData(data, topic) {
   return data
@@ -73,7 +73,7 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
     const templateId = data?.externalId;
 
     const result = await SolutionEventDetails({ templateId, solutionId });
-    console.log({ id, solutionId, templateId });
+    // console.log({ id, solutionId, templateId });
 
     if (!id) {
       fetchData();
@@ -90,14 +90,16 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
 
     const id = data?.data?.[0]?._id;
     const solutionId = data?.data?.[0]?.solutionId;
+    // console.log({ data, id });
 
     if (id == '') {
       callProgramIfempty({ solutionId, id });
     } else {
       result = await EventDetails({ id });
+      // console.log('result', JSON.stringify(result));
+
       const filterData = getFilteredData(result?.tasks || [], topic);
       setTasks(filterData);
-      console.log(JSON.stringify(filterData));
 
       let contentIdList = [];
 
@@ -125,7 +127,7 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
           course_track_data?.data?.find((course) => course.userId === userId)
             ?.course || [];
       }
-      console.log('sssss', JSON.stringify(course_track_data));
+      // console.log('sssss', JSON.stringify(course_track_data));
 
       setTrackData(courseTrackData || []);
       setTrack(courseTrackData || []);
@@ -141,6 +143,8 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // console.log('tasks', JSON.stringify(tasks));
 
   return (
     <View
@@ -188,7 +192,7 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
 
       {isAccordionOpen && (
         <View style={styles.accordionDetails}>
-          <ScrollView style={{ height: '80%' }}>
+          <ScrollView>
             {tasks.length > 0 ? (
               tasks.map((task, index) => (
                 <View

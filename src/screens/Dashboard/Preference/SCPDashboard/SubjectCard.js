@@ -17,7 +17,7 @@ import { useTranslation } from '../../../../context/LanguageContext';
 import { formatDateTimeRange } from '../../../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const SubjectCard = ({ item }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
@@ -67,11 +67,7 @@ const SubjectCard = ({ item }) => {
               <TouchableOpacity
                 onPress={() => Linking.openURL(item?.onlineDetails?.url)}
               >
-                <GlobalText
-                  style={styles.zoomLink}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
+                <GlobalText style={styles.zoomLink}>
                   {item?.onlineDetails?.url}
                 </GlobalText>
               </TouchableOpacity>
@@ -136,17 +132,33 @@ const SubjectCard = ({ item }) => {
                     size={20}
                     color="#0D599E"
                   />
-                  {item?.erMetaData?.subTopic?.map((subItem, index) => {
-                    const isLastItem =
-                      index === item.erMetaData.subTopic.length - 1; // Check if it's the last item
-                    return (
-                      <GlobalText key={index} style={styles.accordionDetails}>
-                        {subItem}
-                        {!isLastItem && ','}
-                        {/* Only add comma if not the last item */}
-                      </GlobalText>
-                    );
-                  })}
+                  <View
+                    style={[
+                      globalStyles.flexrow,
+                      {
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        // justifyContent: 'space-around',
+                      },
+                    ]}
+                  >
+                    {item?.erMetaData?.subTopic?.map((subItem, index) => {
+                      const isLastItem =
+                        index === item.erMetaData.subTopic.length - 1; // Check if it's the last item
+                      return (
+                        <Text
+                          numberOfLines={4}
+                          ellipsizeMode="tail"
+                          key={index}
+                          style={[styles.accordionDetails]}
+                        >
+                          {subItem}
+                          {!isLastItem && ','}
+                          {/* Only add comma if not the last item */}
+                        </Text>
+                      );
+                    })}
+                  </View>
                 </View>
               </TouchableOpacity>
             ) : (

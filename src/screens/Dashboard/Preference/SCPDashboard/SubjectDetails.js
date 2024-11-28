@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import SecondaryHeader from '../../../../components/Layout/SecondaryHeader';
 import {
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -10,18 +11,171 @@ import {
 } from 'react-native';
 import globalStyles from '../../../../utils/Helper/Style';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Accordion from '../../../../components/Accordion/Accordion';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import {
+  getDataFromStorage,
+  setDataInStorage,
+} from '../../../../utils/JsHelper/Helper';
+import { courseTrackingStatus } from '../../../../utils/API/ApiCalls';
+import {
+  EventDetails,
+  getDoits,
+  SolutionEvent,
+  SolutionEventDetails,
+  targetedSolutions,
+} from '../../../../utils/API/AuthService';
+import ContentAccordion from './MyClass/ContentAccordion';
+
+function getFilteredData(data, topic) {
+  return data
+    .map((item) => {
+      const prerequisites = [];
+      const postrequisites = [];
+
+      if (item?.name === topic) {
+        item?.children?.forEach((child) => {
+          const learningResources = child?.learningResources || [];
+
+          prerequisites.push(
+            ...learningResources
+              .filter((resource) => resource.type === 'prerequisite')
+              .map((resource) => resource?.id)
+          );
+
+          postrequisites.push(
+            ...learningResources
+              .filter((resource) => resource.type === 'postrequisite')
+              .map((resource) => resource?.id)
+          );
+        });
+
+        return {
+          // name: item.name,
+          prerequisites: prerequisites,
+          postrequisites: postrequisites,
+          contentIdList: [...prerequisites, ...postrequisites],
+        };
+      }
+      // Return null if the item name doesn't match the topic
+      return null;
+    })
+    .filter((result) => result !== null); // Filter out null values
+}
 
 const SubjectDetails = ({ route }) => {
   const { topic, subTopic, courseType, item } = route.params;
   const navigation = useNavigation();
-
+  const [trackData, setTrackData] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [track, setTrack] = useState();
+  const [resourceData, setResourceData] = useState();
 
-  console.log({ item });
+  // console.log({ item });
+
+  const callProgramIfempty = async ({ solutionId, id }) => {
+    const data = await SolutionEvent({ solutionId });
+    const templateId = data?.externalId;
+    const result = await SolutionEventDetails({ templateId, solutionId });
+    if (!id) {
+      fetchData();
+    } else {
+      console.log('error_API_Success');
+    }
+  };
+
+  const getDoidsDetails = async (contentList) => {
+    // console.log('#####');
+    // console.log({ contentList });
+
+    const payload = {
+      request: {
+        filters: {
+          identifier: contentList,
+          // identifier: ['do_2141915232762675201250'],
+        },
+        fields: [
+          'name',
+          'appIcon',
+          'description',
+          'posterImage',
+          'mimeType',
+          'identifier',
+          'resourceType',
+          'primaryCategory',
+          'contentType',
+          'trackable',
+          'children',
+          'leafNodes',
+        ],
+      },
+    };
+    const result = await getDoits({ payload });
+    return result?.content;
+  };
+
+  const fetchData = async () => {
+    let result;
+    const subjectName = item?.metadata?.subject || '';
+    const type = item?.metadata?.courseType || '';
+    const data = await targetedSolutions({ subjectName, type });
+
+    const id = data?.data?.[0]?._id;
+    const solutionId = data?.data?.[0]?.solutionId;
+    // console.log({ data, id });
+
+    if (id == '') {
+      callProgramIfempty({ solutionId, id });
+    } else {
+      result = await EventDetails({ id });
+      // console.log('result', JSON.stringify(result));
+
+      const filterData = getFilteredData(result?.tasks || [], topic);
+      // setTasks(filterData);
+
+      // console.log('filterData', JSON.stringify(filterData?.[0]?.contentIdList));
+
+      let userId = await getDataFromStorage('userId');
+      let course_track_data = await courseTrackingStatus(
+        userId,
+        filterData?.[0]?.contentIdList
+      );
+
+      let courseTrackData = [];
+      if (course_track_data?.data) {
+        courseTrackData =
+          course_track_data?.data?.find((course) => course.userId === userId)
+            ?.course || [];
+      }
+      // console.log('sssss', JSON.stringify(course_track_data));
+
+      setTrackData(courseTrackData || []);
+      setTrack(courseTrackData || []);
+
+      if (filterData) {
+        const result = await getDoidsDetails(filterData?.[0]?.contentIdList);
+
+        const prerequisites = result?.filter((item) =>
+          filterData?.[0].prerequisites?.includes(item?.identifier)
+        );
+        const postrequisites = result?.filter((item) =>
+          filterData?.[0]?.postrequisites?.includes(item?.identifier)
+        );
+
+        setResourceData({ prerequisites, postrequisites });
+      }
+    }
+  };
+
+  useEffect(() => {}, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
@@ -50,19 +204,19 @@ const SubjectDetails = ({ route }) => {
           );
         })}
       </View>
-      <Accordion
-        setTrack={setTrack}
-        item={item}
-        topic={topic}
-        title={'pre_requisites_2'}
-      />
-      <Accordion
-        setTrack={setTrack}
-        item={item}
-        topic={topic}
-        title={'post_requisites_2'}
-        postrequisites
-      />
+      <ScrollView>
+        <ContentAccordion
+          trackData={trackData}
+          resourceData={resourceData}
+          title={'pre_requisites_2'}
+          openDropDown={true}
+        />
+        <ContentAccordion
+          trackData={trackData}
+          resourceData={resourceData}
+          title={'post_requisites_2'}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 };

@@ -16,7 +16,8 @@ import program from '../../assets/images/png/program.png';
 import globalStyles from '../../utils/Helper/Style';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import { ImageCarousel } from '@src/screens/LanguageScreen/ImageCarousel';
 
 const CustomRadioCard = ({
   field,
@@ -57,7 +58,6 @@ const CustomRadioCard = ({
       ...prevSelectedIds,
       [name]: { value: selectedValue, fieldId: field?.fieldId },
     }));
-    console.log({ selectedName });
 
     onChange({
       tenantId: selectedValue,
@@ -65,12 +65,6 @@ const CustomRadioCard = ({
       name: selectedName,
     });
   };
-
-  const images = [
-    { id: '1', src: program },
-    { id: '2', src: program },
-    { id: '3', src: program },
-  ];
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
@@ -106,7 +100,7 @@ const CustomRadioCard = ({
               </View>
               {/* <Image style={styles.img} source={program} resizeMode="contain" /> */}
               <View style={styles.carocontainer}>
-                <SwiperFlatList
+                {/* <SwiperFlatList
                   autoplay
                   autoplayDelay={2}
                   autoplayLoop
@@ -114,11 +108,12 @@ const CustomRadioCard = ({
                   showPagination
                   data={images}
                   renderItem={renderItem}
-                />
+                /> */}
+                <ImageCarousel images={option?.programImages || []} />
               </View>
-              <GlobalText style={globalStyles.subHeading}>
+              {/* <GlobalText style={globalStyles.subHeading}>
                 {option.description}
-              </GlobalText>
+              </GlobalText> */}
             </TouchableOpacity>
           ))}
 
@@ -205,7 +200,7 @@ const styles = StyleSheet.create({
   carocontainer: {
     // flex: 1,
     backgroundColor: 'white',
-    height: 200,
+    // height: 200,
     // borderWidth: 5,
   },
 });
