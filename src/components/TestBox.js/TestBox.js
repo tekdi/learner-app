@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   SafeAreaView,
@@ -14,7 +14,8 @@ import { useTranslation } from '../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 import globalStyles from '../../utils/Helper/Style';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 
 const IconConditions = ({ status, styles }) => {
   let iconName;
@@ -83,11 +84,35 @@ const StatusCondition = ({ status, styles, t, percentage }) => {
   return <View>{content}</View>;
 };
 
-const TestBox = ({ testText, status, percentage }) => {
+const TestBox = ({ testText }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
+  const [status, setStatus] = useState('');
+  const [percentage, setPercentage] = useState('');
+
+  useEffect(() => {
+    fetchData();
+  }, [status]);
+
+  const fetchData = async () => {
+    let key = testText;
+    const OfflineAssessmentStatusData = JSON.parse(
+      await getDataFromStorage('assessmentStatusData')
+    );
+    setStatus(OfflineAssessmentStatusData[key]?.[0]?.status || 'not_started');
+    setPercentage(OfflineAssessmentStatusData[key]?.[0]?.percentage || '');
+  };
+
   const handlePress = () => {
+    //remove other questions set and save again
+    //testText filter
+
+    /*await setDataInStorage(
+      'QuestionSet',
+      JSON.stringify(OfflineAssessmentList?.QuestionSet) || ''
+    );*/
+
     navigation.navigate('TestView', { title: testText });
   };
 

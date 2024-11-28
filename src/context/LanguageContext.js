@@ -91,12 +91,14 @@ export const LanguageProvider = ({ children }) => {
         const newTitle = getTitleFromValue(newLanguage);
         const savedFound = rtlLanguages.includes(savedLanguage);
         const newFound = rtlLanguages.includes(newLanguage);
+        let switch_language = t('switch_language');
+        const message = switch_language
+          .replace('{old}', savedTitle)
+          .replace('{new}', newTitle);
 
         if (savedFound || newFound) {
           showConfirmation(
-            `Are you sure you want to switch from ${t(savedTitle)} to ${t(
-              newTitle
-            )}? The app will restart.`,
+            message,
             async () => {
               await AsyncStorage.setItem('appLanguage', newLanguage);
               setLanguage(newLanguage);

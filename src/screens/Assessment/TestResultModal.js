@@ -5,25 +5,43 @@ import PropTypes from 'prop-types';
 import globalStyles from '../../utils/Helper/Style';
 import { Button } from '@ui-kitten/components';
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { capitalizeFirstLetter } from '../../utils/JsHelper/Helper';
+import {
+  capitalizeFirstLetter,
+  getDataFromStorage,
+  setDataInStorage,
+} from '../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import { removeData } from '../../utils/Helper/JSHelper';
 
-const TestResultModal = ({ modal, title, isFromCourse }) => {
+const TestResultModal = ({ modal, title }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const closeModal = () => {
+  const closeModal = async () => {
     //navigation.replace('Dashboard');
-    if (isFromCourse && isFromCourse == true) {
-      console.log('############# isFromCourse', isFromCourse);
-      navigation.navigate('AssessmentStack');
+    let isSCP = false;
+    let userType = await getDataFromStorage('userType');
+    if (userType == 'scp') {
+      isSCP = true;
+    }
+    console.log('############# isSCP', isSCP);
+    if (isSCP == true) {
+      console.log('############# isSCP', isSCP);
+      // const stackRoutes = navigation.getState()?.routes || [];
+      // // Extract screen names from the routes array
+      // const screenNames = stackRoutes.map((route) => route.name);
+      // console.log('############# Screens in navigation stack:', screenNames);
+      await setDataInStorage('isFromPlayer', 'yes');
+      navigation.navigate('SCPUserTabScreen');
+      navigation.navigate('MyClass');
+      navigation.navigate('TestView', { title: title });
       // After navigating to the 'Profile' tab, reset the stack inside the tab
-      navigation.reset({
-        index: 0, // Reset to the zeroth index screen of the tab
-        routes: [{ name: 'Assessment' }], // Ensure this is the initial screen of the stack
-      });
+      // navigation.reset({
+      //   index: 0, // Reset to the first index screen of the tab for assessment
+      //   routes: [{ name: 'MyClass' }], // Ensure this is the initial screen of the stack
+      // });
     } else {
       navigation.goBack();
     }

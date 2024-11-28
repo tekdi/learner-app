@@ -12,6 +12,7 @@ export const getDataFromStorage = async (value) => {
     const data = await AsyncStorage.getItem(value);
     return data;
   } catch (e) {
+    return null;
     console.error('Error retrieving credentials:', e);
   }
 };
