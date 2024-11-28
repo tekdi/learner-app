@@ -24,8 +24,9 @@ import {
   getRefreshToken,
   saveAccessToken,
   saveRefreshToken,
+  setDataInStorage,
 } from '../../utils/JsHelper/Helper';
-import { refreshToken } from '../../utils/API/AuthService';
+import { getProgramDetails, refreshToken } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { useInternet } from '../../context/NetworkContext';
 import {
@@ -43,6 +44,11 @@ const LanguageScreen = () => {
   const [loading, setLoading] = useState(true);
   const { isConnected } = useInternet();
 
+  const getProgramData = async () => {
+    const data = await getProgramDetails();
+    await setDataInStorage('tenantDetails', JSON.stringify(data));
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -58,7 +64,6 @@ const LanguageScreen = () => {
         'response TEXT',
       ];
       const query_APIResponses = await createTable({ tableName, columns });
-      console.log('query_APIResponses', query_APIResponses);
       //asessment_offline_2
       tableName = 'Asessment_Offline_2';
       columns = [
@@ -71,7 +76,6 @@ const LanguageScreen = () => {
         tableName,
         columns,
       });
-      console.log('query_Asessment_Offline_2', query_Asessment_Offline_2);
       //telemetry_offline
       tableName = 'Telemetry_Offline';
       columns = [
@@ -80,7 +84,6 @@ const LanguageScreen = () => {
         'telemetry_object TEXT',
       ];
       const query_Telemetry_Offline = await createTable({ tableName, columns });
-      console.log('query_Telemetry_Offline', query_Telemetry_Offline);
       //Tracking_Offline_2
       tableName = 'Tracking_Offline_2';
       columns = [
@@ -94,7 +97,6 @@ const LanguageScreen = () => {
         'detailsObject TEXT',
       ];
       const query_Tracking_Offline = await createTable({ tableName, columns });
-      console.log('query_Tracking_Offline', query_Tracking_Offline);
 
       //alter table for new columns add
       //add unit_id in Tracking_Offline_2
@@ -104,26 +106,18 @@ const LanguageScreen = () => {
         tableName,
         newColumns: columns,
       });
-      console.log('query_alter_Tracking_Offline', query_alter_Tracking_Offline);
       const cohort_id = await getDataFromStorage('cohortId');
       const token = await getDataFromStorage('Accesstoken');
       if (token) {
-        // console.log('isConnected', isConnected);
         if (isConnected) {
           const refresh_token = await getRefreshToken();
-          // console.log('refresh_token', refresh_token);
           const data = await refreshToken({
             refresh_token: refresh_token,
           });
-          // console.log('data', data);
+          const program = await getProgramData();
           if (token && data?.access_token) {
-            console.log(
-              '########################## access token',
-              JSON.stringify(data)
-            );
             await saveAccessToken(data?.access_token);
             await saveRefreshToken(data?.refresh_token);
-            console.log('status successful');
             if (cohort_id !== '00000000-0000-0000-0000-000000000000') {
               navigation.navigate('SCPUserTabScreen');
             } else {
@@ -136,16 +130,16 @@ const LanguageScreen = () => {
               navigation.navigate('Dashboard');
             }
           } else {
-            console.log('error');
             setLoading(false);
           }
         } else {
-          console.log('no connected auto login');
-          // navigation.replace('Dashboard');
-          navigation.replace('SCPUserTabScreen');
+          if (cohort_id !== '00000000-0000-0000-0000-000000000000') {
+            navigation.navigate('SCPUserTabScreen');
+          } else {
+            navigation.navigate('Dashboard');
+          }
         }
       } else {
-        console.log('no Accesstoken');
         setLoading(false);
       }
     };
@@ -214,9 +208,11 @@ const LanguageScreen = () => {
             numColumns={2}
             windowSize={21} // Controls the number of items rendered around the current index
           />
-          <HorizontalLine />
         </View>
-        <CustomBottomCard onPress={handlethis} />
+        <View style={{ top: -10 }}>
+          <HorizontalLine />
+          <CustomBottomCard onPress={handlethis} />
+        </View>
       </Layout>
     </SafeAreaView>
   );

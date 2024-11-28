@@ -65,6 +65,7 @@ const MaterialCardView = ({ route }) => {
                 <Accordion2
                   key={i}
                   index={i}
+                  openDropDown={true}
                   title={item?.name}
                   children={item?.children}
                 />

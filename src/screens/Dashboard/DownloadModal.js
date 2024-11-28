@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   Pressable,
+  Alert,
 } from 'react-native';
 import FastImage from '@changwoolab/react-native-fast-image';
 import globalStyles from '../../utils/Helper/Style';
@@ -13,9 +14,15 @@ import { useTranslation } from '../../context/LanguageContext';
 import Config from 'react-native-config';
 import RNFS from 'react-native-fs';
 import { unzip } from 'react-native-zip-archive';
-import { readContent } from '../../utils/API/ApiCalls';
+import {
+  hierarchyContent,
+  listQuestion,
+  questionsetRead,
+  readContent,
+} from '../../utils/API/ApiCalls';
 import { getData, removeData, storeData } from '../../utils/Helper/JSHelper';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
+import { findObjectByIdentifier } from '../../utils/JsHelper/Helper';
 
 const DownloadModal = ({
   setDrawerVisible,
@@ -203,14 +210,12 @@ const DownloadModal = ({
     const streamingPath = `${content_file}/${content_do_id}.json`;
     //content read
     setDownloadStatus('progress');
-    setDownload('progress');
     //get data online
     let content_response = await hierarchyContent(content_do_id);
     if (content_response == null) {
       //Alert.alert('Error', 'Internet is not available', [{ text: 'OK' }]);
       setNetworkstatus(false);
       setDownloadStatus('download');
-      setDownload('download');
     } else {
       let contentObj = content_response?.result?.questionSet;
       //fix for response with questionset
@@ -330,11 +335,9 @@ const DownloadModal = ({
               //console.log(contentObj);
               await storeData(content_do_id, contentObj, 'json');
               setDownloadStatus('completed');
-              setDownload('completed');
             } else {
               Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
               setDownloadStatus('download');
-              setDownload('download');
             }
             //end download
           } catch (error) {
@@ -343,7 +346,6 @@ const DownloadModal = ({
             ]);
             console.error('Error creating file:', error);
             setDownloadStatus('download');
-            setDownload('download');
           }
         } catch (err) {
           Alert.alert('Error Catch', `Failed to create file: ${err}`, [
@@ -351,12 +353,10 @@ const DownloadModal = ({
           ]);
           console.log('display error', err);
           setDownloadStatus('download');
-          setDownload('download');
         }
       } else {
         Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
         setDownloadStatus('download');
-        setDownload('download');
       }
     }
   };

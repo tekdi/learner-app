@@ -632,6 +632,10 @@ const RegistrationForm = ({ schema, geoData }) => {
       setValue('state', state);
       fetchDistricts();
     }
+
+    if (currentForm === 3) {
+      console.log('hi');
+    }
   };
 
   const prevForm = () => {

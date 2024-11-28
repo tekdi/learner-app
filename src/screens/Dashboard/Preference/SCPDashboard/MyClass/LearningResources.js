@@ -5,6 +5,7 @@ import ContentAccordion from './ContentAccordion';
 import { getDoits } from '../../../../../utils/API/AuthService';
 import { getDataFromStorage } from '../../../../../utils/JsHelper/Helper';
 import { courseTrackingStatus } from '../../../../../utils/API/ApiCalls';
+import { ScrollView } from 'react-native';
 
 const LearningResources = ({ route }) => {
   const { resources } = route.params;
@@ -33,7 +34,7 @@ const LearningResources = ({ route }) => {
   }
 
   const getDoitsDetails = async (contentList) => {
-    // console.log({ contentList });
+    console.log({ contentList });
 
     const payload = {
       request: {
@@ -58,7 +59,7 @@ const LearningResources = ({ route }) => {
       },
     };
     const result = await getDoits({ payload });
-    return result?.content;
+    return result;
   };
 
   const trackingData = async (data) => {
@@ -78,35 +79,70 @@ const LearningResources = ({ route }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = separatePrerequisitesAndPostrequisites(resources);
-      // console.log({ data });
-      await trackingData(data);
-      const result = await getDoitsDetails(data?.contentList);
-      const prerequisites = result.filter((item) =>
-        data?.prerequisites.includes(item.identifier)
-      );
-      const postrequisites = result.filter((item) =>
-        data?.postrequisites.includes(item.identifier)
-      );
+      try {
+        // Separate prerequisites and postrequisites from resources
+        const data = separatePrerequisitesAndPostrequisites(resources);
+        console.log({ data });
 
-      setResourceData({ prerequisites, postrequisites });
+        // Track the data
+        await trackingData(data);
+
+        // Fetch details based on contentList
+        const result = await getDoitsDetails(data?.contentList);
+        console.log('result', JSON.stringify(result));
+
+        // Initialize arrays for prerequisites and postrequisites
+        const prerequisites = [];
+        const postrequisites = [];
+
+        // Filter prerequisites
+        result?.content?.forEach((item) => {
+          if (data?.prerequisites.includes(item.identifier)) {
+            prerequisites.push(item); // Push filtered items
+          }
+          if (data?.postrequisites.includes(item.identifier)) {
+            postrequisites.push(item); // Push filtered items
+          }
+        });
+
+        // Filter postrequisites
+        result?.QuestionSet?.forEach((item) => {
+          if (data?.prerequisites.includes(item.identifier)) {
+            prerequisites.push(item); // Push filtered items
+          }
+          if (data?.postrequisites.includes(item.identifier)) {
+            postrequisites.push(item); // Push filtered items
+          }
+        });
+
+        // Update state with filtered data
+        setResourceData({ prerequisites, postrequisites });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
+
     fetchData();
-  }, []);
+  }, [resources]); // Add dependencies if necessary
+
+  console.log(JSON.stringify(resourceData));
 
   return (
     <>
       <SecondaryHeader />
-      <ContentAccordion
-        trackData={trackData}
-        resourceData={resourceData}
-        title={'pre_requisites_2'}
-      />
-      <ContentAccordion
-        trackData={trackData}
-        resourceData={resourceData}
-        title={'post_requisites_2'}
-      />
+      <ScrollView>
+        <ContentAccordion
+          trackData={trackData}
+          resourceData={resourceData}
+          title={'pre_requisites_2'}
+          openDropDown={true}
+        />
+        <ContentAccordion
+          trackData={trackData}
+          resourceData={resourceData}
+          title={'post_requisites_2'}
+        />
+      </ScrollView>
     </>
   );
 };

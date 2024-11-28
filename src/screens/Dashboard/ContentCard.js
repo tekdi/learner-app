@@ -46,7 +46,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const [isDrawerVisible, setDrawerVisible] = useState(false);
   const [download, setDownload] = useState('');
   // console.log('########## ContentCard', item?.identifier);
-  console.log('course_id', course_id);
+  // console.log('course_id', course_id);
   // console.log('unit_id', unit_id);
   // console.log('##########', TrackData);
 

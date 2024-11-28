@@ -13,12 +13,10 @@ import { getDoits } from '../../../../../utils/API/AuthService';
 import GlobalText from '@components/GlobalText/GlobalText';
 import CourseCard from '@components/CourseCard/CourseCard';
 
-const ContentAccordion = ({ title, resourceData, trackData }) => {
-  const [isAccordionOpen, setAccordionOpen] = useState(false);
+const ContentAccordion = ({ title, resourceData, trackData, openDropDown }) => {
+  const [isAccordionOpen, setAccordionOpen] = useState(openDropDown || false);
   const { t } = useTranslation();
   const navigation = useNavigation();
-
-  console.log('resourceData', JSON.stringify(resourceData));
 
   const handlePress = (item) => {
     // console.log('Card pressed!', item);
@@ -56,8 +54,16 @@ const ContentAccordion = ({ title, resourceData, trackData }) => {
       {isAccordionOpen && (
         <View style={styles.accordionContent}>
           {title === 'pre_requisites_2' && (
-            <>
-              {resourceData?.prerequisites.length > 0 ? (
+            <View
+              style={{
+                padding: 10,
+                // backgroundColor: '#F7ECDF',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                flexDirection: 'row',
+              }}
+            >
+              {resourceData?.prerequisites?.length > 0 ? (
                 resourceData?.prerequisites?.map((data, index) => {
                   return data?.mimeType ===
                     'application/vnd.ekstep.content-collection' ? (
@@ -86,11 +92,19 @@ const ContentAccordion = ({ title, resourceData, trackData }) => {
                   {t('no_topics')}
                 </GlobalText>
               )}
-            </>
+            </View>
           )}
           {title === 'post_requisites_2' && (
-            <>
-              {resourceData?.postrequisites.length > 0 ? (
+            <View
+              style={{
+                padding: 10,
+                // backgroundColor: '#F7ECDF',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                flexDirection: 'row',
+              }}
+            >
+              {resourceData?.postrequisites?.length > 0 ? (
                 resourceData?.postrequisites?.map((data, index) => {
                   return (
                     <ContentCard
@@ -108,7 +122,7 @@ const ContentAccordion = ({ title, resourceData, trackData }) => {
                   {t('no_topics')}
                 </GlobalText>
               )}
-            </>
+            </View>
           )}
         </View>
       )}

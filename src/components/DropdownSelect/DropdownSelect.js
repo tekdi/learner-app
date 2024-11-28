@@ -11,7 +11,7 @@ import globalStyles from '../../utils/Helper/Style';
 import { useController } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const DropdownSelect = ({
   field,

@@ -8,10 +8,10 @@ import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import { useNavigation } from '@react-navigation/native';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
-const Accordion2 = ({ title, children, index }) => {
-  const [isAccordionOpen, setAccordionOpen] = useState(false);
+const Accordion2 = ({ title, children, index, openDropDown }) => {
+  const [isAccordionOpen, setAccordionOpen] = useState(openDropDown || false);
   const { t } = useTranslation();
   const navigation = useNavigation();
 
@@ -24,25 +24,28 @@ const Accordion2 = ({ title, children, index }) => {
         borderRadius: 10,
       }}
     >
-      <TouchableOpacity
-        style={[
-          globalStyles.flexrow,
-          {
-            justifyContent: 'space-between',
-            padding: 10,
-          },
-        ]}
-        onPress={() => setAccordionOpen(!isAccordionOpen)}
-      >
-        <GlobalText style={[globalStyles.text, { color: '#7C766F' }]}>
-          {t('topic')} {index + 1}: {title}
-        </GlobalText>
-        <Icon
-          name={isAccordionOpen ? 'angle-up' : 'angle-down'}
-          color="#1F1B13"
-          size={20}
-        />
-      </TouchableOpacity>
+      {title && (
+        <TouchableOpacity
+          style={[
+            globalStyles.flexrow,
+            {
+              justifyContent: 'space-between',
+              padding: 10,
+            },
+          ]}
+          onPress={() => setAccordionOpen(!isAccordionOpen)}
+        >
+          <GlobalText style={[globalStyles.text, { color: '#7C766F' }]}>
+            {t('topic')} {index + 1}: {title}
+          </GlobalText>
+
+          <Icon
+            name={isAccordionOpen ? 'angle-up' : 'angle-down'}
+            color="#1F1B13"
+            size={20}
+          />
+        </TouchableOpacity>
+      )}
 
       {isAccordionOpen && (
         <View style={styles.accordionContent}>
@@ -99,7 +102,7 @@ const styles = StyleSheet.create({
   accordionContent: {
     paddingVertical: 10,
     // borderBottomWidth: 1,
-    borderTopWidth: 1,
+    // borderTopWidth: 1,
     borderColor: '#D0C5B4',
   },
   accordionDetails: {

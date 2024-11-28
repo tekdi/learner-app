@@ -5,10 +5,12 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const MaterialCard = ({ title, selectedIds }) => {
   const navigation = useNavigation();
+
+  console.log({ selectedIds });
 
   return (
     <TouchableOpacity

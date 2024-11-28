@@ -53,6 +53,7 @@ const Profile = (props) => {
   const [showContentModal, setShowContentModal] = useState(false);
   const [conentView, setConentView] = useState(false);
   const [storageData, setStorageData] = useState();
+  const [userType, setUserType] = useState();
 
   const createNewObject = (customFields, labels) => {
     const result = {};
@@ -70,7 +71,10 @@ const Profile = (props) => {
 
   const fetchData = async () => {
     const result = JSON.parse(await getDataFromStorage('profileData'));
-    // console.log('result', result);
+    const userTypes = await getDataFromStorage('userType');
+    console.log('userType', userTypes);
+
+    setUserType(userTypes);
 
     const requiredLabels = [
       'WHATS_YOUR_GENDER',
@@ -171,13 +175,15 @@ const Profile = (props) => {
             <GlobalText style={globalStyles.heading}>
               {t('my_profile')}
             </GlobalText>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('ProfileUpdateScreen');
-              }}
-            >
-              <Icon name="edit" size={30} color={'#000'} />
-            </TouchableOpacity>
+            {userType !== 'scp' && (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('ProfileUpdateScreen');
+                }}
+              >
+                <Icon name="edit" size={30} color={'#000'} />
+              </TouchableOpacity>
+            )}
           </View>
           {/* {storageData !== '0.00 KB' && (
             <View style={[styles.viewBox, { backgroundColor: '#F7ECDF' }]}>

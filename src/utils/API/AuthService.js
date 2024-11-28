@@ -1049,11 +1049,11 @@ export const getGeoLocation = async ({ payload }) => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
-    console.log(
-      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
-        payload
-      )}'`
-    );
+    // console.log(
+    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
+    //     payload
+    //   )}'`
+    // );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1222,11 +1222,11 @@ export const targetedSolutions = async ({ subjectName, type }) => {
       type: type,
     };
 
-    console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-        headers['x-auth-token']
-      }' -d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+    //     headers['x-auth-token']
+    //   }' -d '${JSON.stringify(payload)}'`
+    // );
 
     // Make the actual request
     const result = await post(url, payload, {
