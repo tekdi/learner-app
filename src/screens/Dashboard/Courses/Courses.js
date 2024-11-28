@@ -24,7 +24,6 @@ import wave from '../../../assets/images/png/wave.png';
 import CoursesBox from '../../../components/CoursesBox/CoursesBox';
 import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
 import {
-  courseListApi,
   courseListApi_testing,
   getAccessToken,
 } from '../../../utils/API/AuthService';
@@ -41,7 +40,7 @@ import ActiveLoading from '../../LoadingScreen/ActiveLoading';
 import CustomSearchBox from '../../../components/CustomSearchBox/CustomSearchBox';
 import globalStyles from '../../../utils/Helper/Style';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const Courses = () => {
   const navigation = useNavigation();
@@ -136,129 +135,7 @@ const Courses = () => {
   const fetchData = async () => {
     setSearchText('');
     setLoading(true);
-    let data;
-    const tenantId = await getTentantId();
-    // id = '10a9f829-3652-47d0-b17b-68c4428f9f89';
-    /*id = '6c8b810a-66c2-4f0d-8c0c-c025415a4414';
-    if (tenantId === id) {
-      const payload = {
-        request: {
-          filters: {
-            se_boards: ['nios'],
-            se_gradeLevels: ['program'],
-            se_subjects: ['literacy'],
-            primaryCategory: [
-              'Collection',
-              'Resource',
-              'Content Playlist',
-              'Course',
-              'Course Assessment',
-              'Digital Textbook',
-              'eTextbook',
-              'Explanation Content',
-              'Learning Resource',
-              'Lesson Plan Unit',
-              'Practice Question Set',
-              'Teacher Resource',
-              'Textbook Unit',
-              'LessonPlan',
-              'FocusSpot',
-              'Learning Outcome Definition',
-              'Curiosity Questions',
-              'MarkingSchemeRubric',
-              'ExplanationResource',
-              'ExperientialResource',
-              'Practice Resource',
-              'TVLesson',
-              'Course Unit',
-              'Program',
-              'Project',
-              'improvementProject',
-            ],
-            visibility: ['Default', 'Parent'],
-          },
-          limit: 100,
-          sort_by: {
-            lastPublishedOn: 'desc',
-          },
-          fields: [
-            'name',
-            'appIcon',
-            'mimeType',
-            'gradeLevel',
-            'description',
-            'posterImage',
-            'identifier',
-            'medium',
-            'pkgVersion',
-            'board',
-            'subject',
-            'resourceType',
-            'primaryCategory',
-            'contentType',
-            'channel',
-            'organisation',
-            'trackable',
-          ],
-          facets: [
-            'se_boards',
-            'se_gradeLevels',
-            'se_subjects',
-            'se_mediums',
-            'primaryCategory',
-          ],
-          offset: 0,
-        },
-      };
-      data = await courseListApi({ payload });
-      setYouthnet(true);
-    } else {
-      const payload = {
-        request: {
-          filters: {
-            se_boards: [
-              'Odisha',
-              'Uttar Pradesh',
-              'Madhya Pradesh',
-              'NIOS',
-              'Rajasthan',
-            ],
-            primaryCategory: ['Course'],
-            visibility: ['Default', 'Parent'],
-          },
-          limit: 100,
-          sort_by: {
-            lastPublishedOn: 'desc',
-          },
-          fields: [
-            'name',
-            'appIcon',
-            'description',
-            'posterImage',
-            'mimeType',
-            'identifier',
-            'resourceType',
-            'primaryCategory',
-            'contentType',
-            'trackable',
-            'children',
-            'leafNodes',
-          ],
-          facets: [
-            'se_boards',
-            'se_gradeLevels',
-            'se_subjects',
-            'se_mediums',
-            'primaryCategory',
-          ],
-          offset: 0,
-        },
-      };
-      data = await courseListApi({ payload });
-    }*/
-
-    //testing
-    data = await courseListApi_testing({ searchText });
+    let data = await courseListApi_testing({ searchText });
 
     //found course progress
     try {
@@ -296,130 +173,7 @@ const Courses = () => {
 
   const handleSearch = async () => {
     setLoading(true);
-    let result;
-    const tenantId = await getTentantId();
-    // id = '10a9f829-3652-47d0-b17b-68c4428f9f89';
-    /*id = '6c8b810a-66c2-4f0d-8c0c-c025415a4414';
-    if (tenantId === id) {
-      const payload = {
-        request: {
-          filters: {
-            se_boards: ['nios'],
-            se_gradeLevels: ['program'],
-            se_subjects: ['literacy'],
-            primaryCategory: [
-              'Collection',
-              'Resource',
-              'Content Playlist',
-              'Course',
-              'Course Assessment',
-              'Digital Textbook',
-              'eTextbook',
-              'Explanation Content',
-              'Learning Resource',
-              'Lesson Plan Unit',
-              'Practice Question Set',
-              'Teacher Resource',
-              'Textbook Unit',
-              'LessonPlan',
-              'FocusSpot',
-              'Learning Outcome Definition',
-              'Curiosity Questions',
-              'MarkingSchemeRubric',
-              'ExplanationResource',
-              'ExperientialResource',
-              'Practice Resource',
-              'TVLesson',
-              'Course Unit',
-              'Program',
-              'Project',
-              'improvementProject',
-            ],
-            visibility: ['Default', 'Parent'],
-          },
-          limit: 100,
-          sort_by: {
-            lastPublishedOn: 'desc',
-          },
-          query: searchText,
-          fields: [
-            'name',
-            'appIcon',
-            'mimeType',
-            'gradeLevel',
-            'description',
-            'posterImage',
-            'identifier',
-            'medium',
-            'pkgVersion',
-            'board',
-            'subject',
-            'resourceType',
-            'primaryCategory',
-            'contentType',
-            'channel',
-            'organisation',
-            'trackable',
-          ],
-          facets: [
-            'se_boards',
-            'se_gradeLevels',
-            'se_subjects',
-            'se_mediums',
-            'primaryCategory',
-          ],
-          offset: 0,
-        },
-      };
-      result = await courseListApi({ payload });
-      setYouthnet(true);
-    } else {
-      const payload = {
-        request: {
-          filters: {
-            se_boards: [
-              'Odisha',
-              'Uttar Pradesh',
-              'Madhya Pradesh',
-              'NIOS',
-              'Rajasthan',
-            ],
-            primaryCategory: ['Course'],
-            visibility: ['Default', 'Parent'],
-          },
-          limit: 100,
-          sort_by: {
-            lastPublishedOn: 'desc',
-          },
-          query: searchText,
-          fields: [
-            'name',
-            'appIcon',
-            'description',
-            'posterImage',
-            'mimeType',
-            'identifier',
-            'resourceType',
-            'primaryCategory',
-            'contentType',
-            'trackable',
-            'children',
-            'leafNodes',
-          ],
-          facets: [
-            'se_boards',
-            'se_gradeLevels',
-            'se_subjects',
-            'se_mediums',
-            'primaryCategory',
-          ],
-          offset: 0,
-        },
-      };
-      result = await courseListApi({ payload });
-    }*/
-
-    result = await courseListApi_testing({ searchText });
+    let result = await courseListApi_testing({ searchText });
     console.log('result?.content', result?.content);
 
     setData(result?.content || []);

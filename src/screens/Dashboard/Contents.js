@@ -20,7 +20,6 @@ import { useTranslation } from '../../context/LanguageContext';
 import ContentCard from './ContentCard';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import {
-  contentListApi,
   contentListApi_Pratham,
 } from '../../utils/API/AuthService';
 import SyncCard from '../../components/SyncComponent/SyncCard';
@@ -91,11 +90,7 @@ const Contents = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    //sunbird saas
-    //const data = await contentListApi();
-    //pratham
     const data = await contentListApi_Pratham({ searchText });
-    //const data = await contentListApi({ searchText });
     //found content progress
     try {
       console.log('########## contentListApi');

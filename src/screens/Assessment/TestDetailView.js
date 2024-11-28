@@ -22,7 +22,7 @@ import globalStyles from '../../utils/Helper/Style';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { getData } from '../../utils/Helper/JSHelper';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const instructions = [
   {
@@ -49,7 +49,12 @@ const instructions = [
 
 const TestDetailView = ({ route }) => {
   const { title, data } = route.params;
-  const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
+  let time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
+  if (time == 'NaN') {
+    time = convertSecondsToMinutes(
+      JSON.parse(data?.timeLimits)?.questionSet?.max
+    );
+  }
   const { t } = useTranslation();
   const { isConnected } = useInternet();
   const [networkstatus, setNetworkstatus] = useState(true);
@@ -99,13 +104,14 @@ const TestDetailView = ({ route }) => {
       <ScrollView>
         <View style={styles.testcard}>
           <View style={[globalStyles.flexrow, { marginBottom: 10 }]}>
-            <View>
+            {/* <View>
               <GlobalText style={styles.texttime}>{time}</GlobalText>
             </View>
             <View>
               <GlobalText style={styles.textMin}>{t('MIN')}</GlobalText>
               <GlobalText style={styles.textMin}>{data?.name}</GlobalText>
-            </View>
+            </View> */}
+            <GlobalText style={styles.textMin}>{data?.name}</GlobalText>
           </View>
           <HorizontalLine />
           <View>

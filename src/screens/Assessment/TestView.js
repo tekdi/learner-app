@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Header from '../../components/Layout/Header';
 import AssessmentHeader from './AssessmentHeader';
 import { useTranslation } from '../../context/LanguageContext';
@@ -14,7 +15,8 @@ import globalStyles from '../../utils/Helper/Style';
 import { useFocusEffect } from '@react-navigation/native';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import { removeData } from '../../utils/Helper/JSHelper';
 
 const instructions = [
   {
@@ -61,6 +63,7 @@ function mergeDataWithQuestionSet(questionSet, datatest) {
 
 const TestView = ({ route }) => {
   const { title } = route.params;
+  const navigation = useNavigation();
   const { t } = useTranslation();
 
   const [questionsets, setQuestionsets] = useState([]);
@@ -75,16 +78,27 @@ const TestView = ({ route }) => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('########## in focus assessments');
-
-      fetchData();
+      loadData();
     }, []) // Make sure to include the dependencies
   );
+
+  //fix for assessment back button press
+  const loadData = async () => {
+    let isFromPlayer = await getDataFromStorage('isFromPlayer');
+    if (isFromPlayer == 'yes') {
+      await removeData('isFromPlayer');
+      navigation.goBack();
+    } else {
+      fetchData();
+    }
+  };
 
   const fetchData = async () => {
     const data = await getDataFromStorage('QuestionSet');
 
-    const parseData = JSON.parse(data);
+    const tempParseData = JSON.parse(data);
+
+    const parseData = tempParseData[title];
     // Extract DO_id from assessmentList (content)
 
     const uniqueAssessmentsId = [
@@ -93,9 +107,10 @@ const TestView = ({ route }) => {
 
     // Get data of exam if given
 
-    const assessmentStatusData = JSON.parse(
+    const tempAssessmentStatusData = JSON.parse(
       await getDataFromStorage('assessmentStatusData')
     );
+    const assessmentStatusData = tempAssessmentStatusData[title];
 
     // console.log(JSON.stringify(assessmentStatusData));
     setStatus(assessmentStatusData?.[0]?.status || 'not_started');
@@ -134,7 +149,8 @@ const TestView = ({ route }) => {
               <SubjectBox
                 key={item?.subject}
                 disabled={!item?.lastAttemptedOn}
-                name={item?.subject?.[0]?.toUpperCase()}
+                //name={item?.subject?.[0]?.toUpperCase()}
+                name={item?.name}
                 data={item}
               />
             );

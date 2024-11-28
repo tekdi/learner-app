@@ -64,7 +64,7 @@ const desktopUserAgent =
 //multi language
 import { useTranslation } from '../../../context/LanguageContext';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const StandAlonePlayer = ({ route }) => {
   //multi language setup
@@ -1033,7 +1033,7 @@ const StandAlonePlayer = ({ route }) => {
           }
         )}));
         window.setData();
-        })(); ${disableZoomJS} true;`
+        })(); true;`
       : content_mime_type == 'application/pdf'
       ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
@@ -1041,7 +1041,7 @@ const StandAlonePlayer = ({ route }) => {
       : content_mime_type == 'video/mp4' || content_mime_type == 'video/webm'
       ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
-        })(); ${disableZoomJS} true;`
+        })(); true;`
       : content_mime_type == 'application/epub'
       ? `(function() {
         window.setData('${JSON.stringify(epubPlayerConfig)}');
@@ -1302,12 +1302,7 @@ const StandAlonePlayer = ({ route }) => {
             */
           />
         )}
-        <TestResultModal
-          modal={modal}
-          title={title}
-          //isFromCourse={courseId == content_do_id ? true : false}
-          isFromCourse={false}
-        />
+        <TestResultModal modal={modal} title={title} />
         {alertModal && <MimeAlertModal textTitle={errorDetail} />}
       </SafeAreaView>
     </>
