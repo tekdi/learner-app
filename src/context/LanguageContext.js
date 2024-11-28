@@ -93,8 +93,8 @@ export const LanguageProvider = ({ children }) => {
         const newFound = rtlLanguages.includes(newLanguage);
         let switch_language = t('switch_language');
         const message = switch_language
-          .replace('{old}', savedTitle)
-          .replace('{new}', newTitle);
+          .replace('{old}', t(savedTitle))
+          .replace('{new}', t(newTitle));
 
         if (savedFound || newFound) {
           showConfirmation(
