@@ -123,8 +123,12 @@ const LoginScreen = () => {
         });
 
         if (tenantid === scp?.[0]?.tenantId) {
-          navigation.navigate('SCPUserTabScreen');
           await setDataInStorage('userType', 'scp');
+          if (cohort_id) {
+            navigation.navigate('SCPUserTabScreen');
+          } else {
+            navigation.navigate('Dashboard');
+          }
         } else {
           if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
             await setDataInStorage('userType', 'youthnet');
