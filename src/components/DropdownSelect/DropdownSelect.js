@@ -81,6 +81,7 @@ const DropdownSelect = ({
       <View style={styles.label}>
         <GlobalText style={globalStyles.text}>{t(name)}</GlobalText>
       </View>
+
       <TouchableOpacity onPress={toggleDropdown} style={styles.dropdownButton}>
         <GlobalText style={[globalStyles.text]}>{value?.label}</GlobalText>
         <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
@@ -121,6 +122,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: '95%',
     alignSelf: 'center',
+    top: -10,
   },
   dropdownButton: {
     flexDirection: 'row',
@@ -132,13 +134,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   label: {
+    // position: 'absolute',
     top: 15,
     left: 15,
     backgroundColor: 'white',
     paddingHorizontal: 5,
     zIndex: 1,
-    width: 70,
-    alignItems: 'center',
+    alignSelf: 'flex-start', // Allow the label to adjust to its content width
   },
   selectedValue: {
     fontSize: 16,

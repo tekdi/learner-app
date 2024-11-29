@@ -265,5 +265,16 @@
   "saving": "जतन करत आहे",
   "old_password": "जुना पासवर्ड",
   "old_password_is_incorrect": "जुना पासवर्ड चुकीचा आहे",
-  "create_new_account": "नवीन खाते तयार करा"
+  "create_new_account": "नवीन खाते तयार करा",
+  "the_following_details_must_be_filled_by_parents_or_guardians": "खालील तपशील पालक किंवा संरक्षकाने भरले पाहिजे",
+  "parent_name": "पालक/संरक्षकाचे नाव",
+  "parent_phone": "पालक/संरक्षकाचा फोन नंबर",
+  "parent_phone_belong": "हा फोन नंबर कोणाचा आहे?",
+  "PARENT": "पालक",
+  "GUARDIAN": "संरक्षक",
+  "NEIGHBOR_OTHERS": "शेजारी/इतर",
+  "create_account_desp2": "मी पुष्टी करतो की हे चेकबॉक्स विद्यार्थ्याच्या पालक/संरक्षकाने भरले आहे.",
+  "privacy_guidelines": "गोपनीयता मार्गदर्शक तत्त्वे",
+  "and_i_consent_to_the_collection_and_use_of_my_personal_data_as_described_in_the": "आणि मी माझ्या वैयक्तिक माहितीच्या संकलन आणि वापरास सहमती देतो, जे जसे वर्णन केले आहे",
+  "consent_form": "सहमती फॉर्म"
 }

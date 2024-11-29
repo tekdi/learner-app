@@ -82,6 +82,7 @@ const Courses = () => {
         method: 'on-view',
         screenName: 'Courses',
       };
+
       await logEventFunction(obj);
     };
     logEvent();

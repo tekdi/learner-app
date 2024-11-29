@@ -17,7 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import MonthlyCalendar from './MonthlyCalendar';
 import { getAttendance } from '../../../utils/API/AuthService';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const FullAttendance = () => {
   const [eventDate, setEventDate] = useState(null);
@@ -81,16 +81,6 @@ const FullAttendance = () => {
             attendance
             setEventDate={setEventDate}
           />
-        )}
-
-        {eventDate && (
-          <View
-            style={{ padding: 10, backgroundColor: '#fafafa', marginTop: 20 }}
-          >
-            <GlobalText
-              style={globalStyles.text}
-            >{`Selected Date: `}</GlobalText>
-          </View>
         )}
       </ScrollView>
     </SafeAreaView>

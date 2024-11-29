@@ -108,11 +108,25 @@ const LoginScreen = () => {
           'cohortId',
           cohort_id || '00000000-0000-0000-0000-000000000000'
         );
-        if (cohort_id) {
+        const tenantDetails = JSON.parse(
+          await getDataFromStorage('tenantDetails')
+        );
+        const youthnetTenantIds = tenantDetails.filter((item) => {
+          if (item?.name === 'YouthNet') {
+            return item;
+          }
+        });
+        const scp = tenantDetails.filter((item) => {
+          if (item?.name === 'Second Chance Program') {
+            return item;
+          }
+        });
+
+        if (tenantid === scp?.[0]?.tenantId) {
           navigation.navigate('SCPUserTabScreen');
           await setDataInStorage('userType', 'scp');
         } else {
-          if (tenantid === '6c8b810a-66c2-4f0d-8c0c-c025415a4414') {
+          if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
             await setDataInStorage('userType', 'youthnet');
           } else {
             await setDataInStorage('userType', 'public');

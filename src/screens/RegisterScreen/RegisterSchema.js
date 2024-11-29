@@ -1,6 +1,8 @@
 // SchemaConverting
 
-export const registerSchema = async (data, states) => {
+export const registerSchema = async (data, states, getage) => {
+  console.log({ getage });
+
   try {
     // Fix field order and labels
     const schema = [
@@ -15,7 +17,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[0]?.coreField,
             fieldId: data?.[0]?.fieldId,
             validation: {
-              // required: true,
+              required: true,
               pattern: /^[A-Za-z]+$/, // Only letters, no numbers
               minLength: 3,
               maxLength: 30,
@@ -28,7 +30,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[1]?.coreField,
             fieldId: data?.[1]?.fieldId,
             validation: {
-              // required: true,
+              required: true,
               pattern: /^[A-Za-z]+$/, // Only letters, no numbers
               minLength: 3,
               maxLength: 30,
@@ -41,7 +43,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[2]?.coreField,
             fieldId: data?.[2]?.fieldId,
             validation: {
-              // required: true,
+              required: true,
               pattern: /^[6-9]\d{9}$/, // Only numbers,
               minLength: 10,
               maxLength: 10,
@@ -54,7 +56,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[3]?.coreField,
             fieldId: data?.[3]?.fieldId,
             validation: {
-              // required: true,
+              required: true,
               pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, // Only letters, no numbers
             },
           },
@@ -71,7 +73,7 @@ export const registerSchema = async (data, states) => {
             coreField: data?.[4]?.coreField,
             fieldId: data?.[4]?.fieldId,
             validation: {
-              // required: true,
+              required: true,
               pattern: /^(0?[1-9]|[1-9][0-9])$/, // Only letters, no numbers
               minLength: 1,
               maxLength: 2,
@@ -85,7 +87,7 @@ export const registerSchema = async (data, states) => {
             fieldId: data?.[5]?.fieldId,
             options: data?.[5]?.options,
             validation: {
-              // required: true,
+              required: true,
             },
           },
         ],
@@ -241,6 +243,56 @@ export const registerSchema = async (data, states) => {
               match: true,
             },
           },
+          ...(getage < 18
+            ? [
+                {
+                  type: 'parent_text',
+                  // label: data?.[14]?.name.replace(/ /g, '_').toLowerCase(),
+                  // name: data?.[14]?.name.replace(/ /g, '_').toLowerCase(),
+                  // coreField: data?.[14]?.coreField,
+                  // fieldId: data?.[14]?.fieldId,
+                },
+                {
+                  type: 'text',
+                  label: data?.[14]?.name.replace(/ /g, '_').toLowerCase(),
+                  name: data?.[14]?.name.replace(/ /g, '_').toLowerCase(),
+                  coreField: data?.[14]?.coreField,
+                  fieldId: data?.[14]?.fieldId,
+                  placeholder: data?.[14]?.placeholder,
+                  validation: {
+                    required: true,
+                    pattern: /^[A-Za-z]+$/, // Only letters, no numbers
+                    minLength: 3,
+                    maxLength: 30,
+                  },
+                },
+                {
+                  type: 'number',
+                  label: data?.[15]?.name.replace(/ /g, '_').toLowerCase(),
+                  name: data?.[15]?.name.replace(/ /g, '_').toLowerCase(),
+                  coreField: data?.[15]?.coreField,
+                  fieldId: data?.[15]?.fieldId,
+                  placeholder: data?.[15]?.placeholder,
+                  validation: {
+                    required: true,
+                    pattern: /^[6-9]\d{9}$/, // Only numbers,
+                    minLength: 10,
+                    maxLength: 10,
+                  },
+                },
+                {
+                  type: 'select_drop_down',
+                  label: data?.[16]?.name.replace(/ /g, '_').toLowerCase(),
+                  name: data?.[16]?.name.replace(/ /g, '_').toLowerCase(),
+                  coreField: data?.[16]?.coreField,
+                  fieldId: data?.[16]?.fieldId,
+                  options: data?.[16]?.options,
+                  validation: {
+                    required: true,
+                  },
+                },
+              ]
+            : []),
         ],
       },
       // {
@@ -256,19 +308,19 @@ export const registerSchema = async (data, states) => {
       //     },
       //   ],
       // },
-      {
-        formNumber: 6,
-        question: null,
-        fields: [
-          {
-            type: 'tc_text',
-            label: '',
-            name: '',
-            coreField: '',
-            fieldId: null,
-          },
-        ],
-      },
+      // {
+      //   formNumber: 6,
+      //   question: null,
+      //   fields: [
+      //     {
+      //       type: 'tc_text',
+      //       label: '',
+      //       name: '',
+      //       coreField: '',
+      //       fieldId: null,
+      //     },
+      //   ],
+      // },
     ];
     return schema;
   } catch (e) {
