@@ -231,6 +231,7 @@ const Courses = () => {
                   }
                   ContentData={data}
                   TrackData={trackData}
+                  isHorizontal={false}
                 />
               ) : (
                 <GlobalText style={globalStyles.heading2}>
