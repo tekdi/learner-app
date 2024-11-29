@@ -219,7 +219,7 @@ export const courseListApi_testing = async ({ searchText }) => {
   const payload = {
     request: {
       filters: {
-        program: (userType = 'scp' ? 'secondchance' : 'youthnet'),
+        //program: (userType == 'scp' ? 'secondchance' : 'youthnet'),
         status: ['Live'],
         primaryCategory: ['Course'],
       },
@@ -292,7 +292,7 @@ export const contentListApi_Pratham = async ({ searchText }) => {
   let payload = {
     request: {
       filters: {
-        program: (userType = 'scp' ? 'secondchance' : 'youthnet'),
+        program: (userType == 'scp' ? 'secondchance' : 'youthnet'),
         //board: ['CBSE'],
         primaryCategory: ['Learning Resource', 'Practice Question Set'],
         visibility: ['Default', 'Parent'],
@@ -481,7 +481,7 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program: (userType = 'scp' ? 'secondchance' : 'youthnet'),
+        program: (userType == 'scp' ? 'secondchance' : 'youthnet'),
         board: `${params?.boardName}`,
         assessmentType: ['pre-test', 'post-test'],
         status: ['Live'],

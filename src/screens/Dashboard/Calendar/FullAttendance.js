@@ -90,27 +90,6 @@ const FullAttendance = () => {
             <GlobalText
               style={globalStyles.text}
             >{`Selected Date: `}</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
-            <GlobalText style={globalStyles.text}>`sdsdsd`</GlobalText>
           </View>
         )}
       </ScrollView>

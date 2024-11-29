@@ -507,3 +507,44 @@ export const courseTrackingStatus = async (userId, courseId) => {
     throw new Error(error.response?.data?.message || 'Content Status Failed');
   }
 };
+
+//course in progress
+export const CourseInProgress = async (userId) => {
+  try {
+    const url = EndUrls.CourseInProgress;
+
+    let data = JSON.stringify({
+      userId: [userId],
+    });
+
+    let api_response = null;
+
+    const headers = await getHeaders();
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url,
+      headers: headers || {},
+      data: data,
+    };
+
+    try {
+      const response = await axios.request(config);
+      api_response = response.data;
+      if (api_response) {
+        await storeApiResponse(userId, url, 'post', data, api_response);
+        return api_response;
+      } else {
+        const result_offline = await getApiResponse(userId, url, 'post', data);
+        return result_offline;
+      }
+    } catch (error) {
+      console.log('No internet available, retrieving offline data...');
+      const result_offline = await getApiResponse(userId, url, 'post', data);
+      return result_offline;
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Content Status Failed');
+  }
+};

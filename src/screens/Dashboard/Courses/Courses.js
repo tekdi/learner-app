@@ -23,6 +23,7 @@ import { useTranslation } from '../../../context/LanguageContext';
 import wave from '../../../assets/images/png/wave.png';
 import CoursesBox from '../../../components/CoursesBox/CoursesBox';
 import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
+import ContinueLearning from '../../../components/ContinueLearning/ContinueLearning';
 import {
   courseListApi_testing,
   getAccessToken,
@@ -53,6 +54,7 @@ const Courses = () => {
   const [showExitModal, setShowExitModal] = useState(false);
   const [youthnet, setYouthnet] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [userId, setUserId] = useState('');
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -63,6 +65,11 @@ const Courses = () => {
     const fetch = async () => {
       const cohort_id = await getDataFromStorage('cohortId');
       console.log({ cohort_id });
+      let userType = await getDataFromStorage('userType');
+      let isYouthnet = userType == 'youthnet' ? true : false;
+      setYouthnet(isYouthnet);
+      let userId = await getDataFromStorage('userId');
+      setUserId(userId);
     };
     fetch();
   }, []);
@@ -133,7 +140,7 @@ const Courses = () => {
   );
 
   const fetchData = async () => {
-    setSearchText('');
+    //setSearchText('');
     setLoading(true);
     let data = await courseListApi_testing({ searchText });
 
@@ -172,17 +179,7 @@ const Courses = () => {
   };
 
   const handleSearch = async () => {
-    setLoading(true);
-    let result = await courseListApi_testing({ searchText });
-    console.log('result?.content', result?.content);
-
-    setData(result?.content || []);
-    // console.log(result?.content?.length, 'ddddd');
-
-    // if (result?.content?.length == undefined) {
-    //   setSearchText('');
-    // }
-    setLoading(false);
+    await fetchData();
   };
 
   return (
@@ -208,7 +205,7 @@ const Courses = () => {
               <GlobalText style={styles.text}>
                 {youthnet ? t('l1_courses') : t('courses')}
               </GlobalText>
-
+              <ContinueLearning youthnet={youthnet} t={t} userId={userId} />
               <CustomSearchBox
                 setSearchText={setSearchText}
                 searchText={searchText}

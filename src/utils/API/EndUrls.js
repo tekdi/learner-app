@@ -32,6 +32,7 @@ const EndUrls = {
   ContentCreate: `${TRACKING_MICROSERVICE}/v1/tracking/content/create`,
   ContentTrackingStatus: `${TRACKING_MICROSERVICE}/v1/tracking/content/search/status`,
   CourseTrackingStatus: `${TRACKING_MICROSERVICE}/v1/tracking/content/course/status`,
+  CourseInProgress: `${TRACKING_MICROSERVICE}/v1/tracking/content/course/inprogress`,
   geolocation: `${API_URL}/user/v1/fields/options/read`,
   forgotPassword: `${API_URL}/user/v1/password-reset-link`,
   resetPassword: `${API_URL}/user/v1/reset-password`,

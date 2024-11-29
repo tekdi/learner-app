@@ -19,9 +19,7 @@ import {
 import { useTranslation } from '../../context/LanguageContext';
 import ContentCard from './ContentCard';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
-import {
-  contentListApi_Pratham,
-} from '../../utils/API/AuthService';
+import { contentListApi_Pratham } from '../../utils/API/AuthService';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 import {
@@ -131,15 +129,7 @@ const Contents = () => {
   };
 
   const handleSearch = async () => {
-    setLoading(true);
-    console.log({ searchText });
-
-    let result = await contentListApi_Pratham({ searchText });
-    setData(result?.content || []);
-    if (data.length < 0) {
-      setSearchText('');
-    }
-    setLoading(false);
+    await fetchData();
   };
 
   useEffect(() => {
