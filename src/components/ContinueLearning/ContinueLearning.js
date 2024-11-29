@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -9,7 +9,7 @@ import GlobalText from '@components/GlobalText/GlobalText';
 const ContinueLearning = ({ youthnet, t, userId }) => {
   useEffect(() => {
     const fetch = async () => {
-      userId
+      userId;
     };
     fetch();
   }, []);
