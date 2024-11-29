@@ -11,7 +11,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import debounce from 'lodash.debounce';
 
 import GlobalText from '@components/GlobalText/GlobalText';
-import { CourseInProgress } from '../../utils/API/ApiCalls';
+import {
+  CourseInProgress,
+  courseTrackingStatus,
+} from '../../utils/API/ApiCalls';
 import globalStyles from '../../utils/Helper/Style';
 import { courseListApi_testing } from '../../utils/API/AuthService';
 import CoursesBox from '../CoursesBox/CoursesBox';
@@ -42,7 +45,7 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
           let data = await courseListApi_testing({ inprogress_do_ids });
           //found course progress
           try {
-            // console.log('########## contentListApi');
+            console.log('########## contentListApi');
             const contentList = data?.content;
             //console.log('########## contentList', contentList);
             let courseList = [];
@@ -53,12 +56,14 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
             }
             //console.log('########## courseList', courseList);
             //get course track data
-            let userId = userId;
             let course_track_data = await courseTrackingStatus(
               userId,
               courseList
             );
-            //console.log('########## course_track_data', course_track_data?.data);
+            console.log(
+              '########## course_track_data',
+              JSON.stringify(course_track_data?.data)
+            );
             let courseTrackData = [];
             if (course_track_data?.data) {
               courseTrackData =
@@ -67,7 +72,7 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
                 )?.course || [];
             }
             setTrackData(courseTrackData);
-            // console.log('########## courseTrackData', courseTrackData);
+            console.log('########## courseTrackData', courseTrackData);
             // console.log('##########');
           } catch (e) {
             console.log('e', e);
