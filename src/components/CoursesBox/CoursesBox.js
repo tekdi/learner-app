@@ -22,6 +22,7 @@ const CoursesBox = ({
   style,
   title,
   description,
+  isHorizontal,
 }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -77,17 +78,29 @@ const CoursesBox = ({
         </View> */}
       </View>
       <View>
-        <FlatList
-          data={ContentData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item?.identifier}
-          // horizontal={true} // Enable horizontal scrolling
-          initialNumToRender={10} // Adjust the number of items to render initially
-          maxToRenderPerBatch={10} // Number of items rendered per batch
-          numColumns={2}
-          windowSize={21} // Controls the number of items rendered around the current index
-          scrollEnabled={false}
-        />
+        {isHorizontal ? (
+          <FlatList
+            data={ContentData}
+            renderItem={renderItem}
+            keyExtractor={(item) => item?.identifier}
+            horizontal={true} // Enable horizontal scrolling
+            initialNumToRender={10} // Adjust the number of items to render initially
+            maxToRenderPerBatch={10} // Number of items rendered per batch
+            windowSize={21} // Controls the number of items rendered around the current index
+          />
+        ) : (
+          <FlatList
+            data={ContentData}
+            renderItem={renderItem}
+            keyExtractor={(item) => item?.identifier}
+            horizontal={false} // Enable horizontal scrolling
+            initialNumToRender={10} // Adjust the number of items to render initially
+            maxToRenderPerBatch={10} // Number of items rendered per batch
+            numColumns={2}
+            windowSize={21} // Controls the number of items rendered around the current index
+            scrollEnabled={false}
+          />
+        )}
       </View>
     </SafeAreaView>
   );

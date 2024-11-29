@@ -157,7 +157,9 @@ export const registerUser = async (params = {}) => {
     };
     // Log the cURL command
     console.log(
-      `curl -X ${method} ${url} -H 'Content-Type: application/json' -d '${JSON.stringify(params)}'`
+      `curl -X ${method} ${url} -H 'Content-Type: application/json' -d '${JSON.stringify(
+        params
+      )}'`
     );
 
     // Make the actual request
@@ -206,7 +208,11 @@ export const updateUser = async ({ payload, user_id }) => {
   }
 };
 
-export const courseListApi_testing = async ({ searchText }) => {
+export const courseListApi_testing = async ({
+  searchText,
+  inprogress_do_ids,
+}) => {
+  console.log('######## inprogress_do_ids in api', inprogress_do_ids);
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList_testing}`; // Define the URL
   const headers = {
@@ -217,7 +223,8 @@ export const courseListApi_testing = async ({ searchText }) => {
   const payload = {
     request: {
       filters: {
-        program: (userType = 'scp' ? 'secondchance' : 'youthnet'),
+        program: userType == 'scp' ? 'secondchance' : userType,
+        ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
         status: ['Live'],
         primaryCategory: ['Course'],
       },
@@ -250,7 +257,7 @@ export const courseListApi_testing = async ({ searchText }) => {
       offset: 0,
     },
   };
-
+  console.log('############## payload', JSON.stringify(payload));
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -290,7 +297,7 @@ export const contentListApi_Pratham = async ({ searchText }) => {
   let payload = {
     request: {
       filters: {
-        program: (userType = 'scp' ? 'secondchance' : 'youthnet'),
+        program: userType == 'scp' ? 'secondchance' : userType,
         //board: ['CBSE'],
         primaryCategory: ['Learning Resource', 'Practice Question Set'],
         visibility: ['Default', 'Parent'],
@@ -479,7 +486,7 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program: (userType = 'scp' ? 'secondchance' : 'youthnet'),
+        program: userType == 'scp' ? 'secondchance' : userType,
         board: `${params?.boardName}`,
         assessmentType: ['pre-test', 'post-test'],
         status: ['Live'],
