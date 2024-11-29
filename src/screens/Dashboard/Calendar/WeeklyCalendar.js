@@ -103,7 +103,9 @@ const WeeklyCalendar = ({ setDate, postdays }) => {
                 item.date === today.getDate() && styles.todayBox,
               ]}
             >
-              <GlobalText style={globalStyles.text}>{item.date}</GlobalText>
+              <GlobalText style={[globalStyles.text, { fontSize: 12 }]}>
+                {item.date}
+              </GlobalText>
             </View>
           </TouchableOpacity>
         )}
@@ -122,6 +124,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     backgroundColor: '#eee',
+    width: 50,
   },
   todayBox: {
     backgroundColor: '#FDBE16',

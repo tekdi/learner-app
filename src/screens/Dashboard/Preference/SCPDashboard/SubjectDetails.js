@@ -29,36 +29,35 @@ import {
 } from '../../../../utils/API/AuthService';
 import ContentAccordion from './MyClass/ContentAccordion';
 
-function getFilteredData(data, topic) {
+function getFilteredData(data) {
   return data
     .map((item) => {
       const prerequisites = [];
       const postrequisites = [];
 
-      if (item?.name === topic) {
-        item?.children?.forEach((child) => {
-          const learningResources = child?.learningResources || [];
+      item?.children?.forEach((child) => {
+        const learningResources = child?.learningResources || [];
 
-          prerequisites.push(
-            ...learningResources
-              .filter((resource) => resource.type === 'prerequisite')
-              .map((resource) => resource?.id)
-          );
+        prerequisites.push(
+          ...learningResources
+            .filter((resource) => resource.type === 'prerequisite')
+            .map((resource) => resource?.id?.toLowerCase())
+        );
 
-          postrequisites.push(
-            ...learningResources
-              .filter((resource) => resource.type === 'postrequisite')
-              .map((resource) => resource?.id)
-          );
-        });
+        postrequisites.push(
+          ...learningResources
+            .filter((resource) => resource.type === 'postrequisite')
+            .map((resource) => resource?.id?.toLowerCase())
+        );
+      });
 
-        return {
-          // name: item.name,
-          prerequisites: prerequisites,
-          postrequisites: postrequisites,
-          contentIdList: [...prerequisites, ...postrequisites],
-        };
-      }
+      return {
+        // name: item.name,
+        prerequisites: prerequisites,
+        postrequisites: postrequisites,
+        contentIdList: [...prerequisites, ...postrequisites],
+      };
+
       // Return null if the item name doesn't match the topic
       return null;
     })
@@ -113,7 +112,7 @@ const SubjectDetails = ({ route }) => {
       },
     };
     const result = await getDoits({ payload });
-    return result?.content;
+    return result;
   };
 
   const fetchData = async () => {
@@ -132,10 +131,8 @@ const SubjectDetails = ({ route }) => {
       result = await EventDetails({ id });
       // console.log('result', JSON.stringify(result));
 
-      const filterData = getFilteredData(result?.tasks || [], topic);
+      const filterData = getFilteredData(result?.tasks || []);
       // setTasks(filterData);
-
-      // console.log('filterData', JSON.stringify(filterData?.[0]?.contentIdList));
 
       let userId = await getDataFromStorage('userId');
       let course_track_data = await courseTrackingStatus(
@@ -154,14 +151,63 @@ const SubjectDetails = ({ route }) => {
       setTrackData(courseTrackData || []);
       setTrack(courseTrackData || []);
 
+      // console.log('filterData', JSON.stringify(filterData?.[0].prerequisites));
+      // console.log(
+      //   'postrequisites',
+      //   JSON.stringify(filterData?.[0].postrequisites)
+      // );
+
       if (filterData) {
         const result = await getDoidsDetails(filterData?.[0]?.contentIdList);
-
-        const prerequisites = result?.filter((item) =>
-          filterData?.[0].prerequisites?.includes(item?.identifier)
+        console.log('result', JSON.stringify(result?.content));
+        console.log(
+          'filterData?.[0]?.prerequisites',
+          JSON.stringify(filterData?.[0]?.prerequisites)
         );
-        const postrequisites = result?.filter((item) =>
-          filterData?.[0]?.postrequisites?.includes(item?.identifier)
+
+        // Initialize arrays for prerequisites and postrequisites
+        const prerequisites = [];
+        const postrequisites = [];
+
+        // Filter prerequisites
+        result?.content?.forEach((item) => {
+          if (
+            filterData?.[0]?.prerequisites?.includes(
+              item?.identifier?.toLowerCase()
+            )
+          ) {
+            prerequisites.push(item); // Push filtered items
+          }
+          if (
+            filterData?.[0]?.postrequisites?.includes(
+              item?.identifier?.toLowerCase()
+            )
+          ) {
+            postrequisites.push(item); // Push filtered items
+          }
+        });
+
+        // Filter postrequisites
+        result?.QuestionSet?.forEach((item) => {
+          if (
+            filterData?.[0]?.prerequisites?.includes(
+              item?.identifier?.toLowerCase()
+            )
+          ) {
+            prerequisites.push(item); // Push filtered items
+          }
+          if (
+            filterData?.[0]?.postrequisites?.includes(
+              item?.identifier?.toLowerCase()
+            )
+          ) {
+            postrequisites.push(item); // Push filtered items
+          }
+        });
+
+        console.log(
+          '{ prerequisites, postrequisites }',
+          JSON.stringify({ prerequisites })
         );
 
         setResourceData({ prerequisites, postrequisites });

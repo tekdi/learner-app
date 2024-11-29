@@ -679,6 +679,8 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
   };
 
   const prevForm = () => {
+    console.log('hi');
+
     let prevFormNumber = currentForm - 1;
 
     if (currentForm === 5 && programValue?.name === 'Public') {
@@ -690,6 +692,7 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
       setIsDisable(true);
       return true; // Indicates that the back action has been handled
     } else {
+      navigation.goBack();
       return false; // Indicates that the back action should continue (exit)
     }
   };

@@ -83,6 +83,7 @@ const LoginScreen = () => {
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
         await setDataInStorage('userId', user_id);
+        console.log({ user_id });
 
         const academicyear = await setAcademicYear({ tenantid });
         // console.log({ tenantData, user_id, tenantid });
@@ -111,12 +112,13 @@ const LoginScreen = () => {
         const tenantDetails = JSON.parse(
           await getDataFromStorage('tenantDetails')
         );
-        const youthnetTenantIds = tenantDetails.filter((item) => {
+
+        const youthnetTenantIds = tenantDetails?.filter((item) => {
           if (item?.name === 'YouthNet') {
             return item;
           }
         });
-        const scp = tenantDetails.filter((item) => {
+        const scp = tenantDetails?.filter((item) => {
           if (item?.name === 'Second Chance Program') {
             return item;
           }

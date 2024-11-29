@@ -93,7 +93,7 @@ const ResetPassword = () => {
     };
     console.log({ payload });
 
-    const data = await login({ payload });
+    const data = await login(payload);
     console.log({ data });
 
     if (data?.params?.status !== 'failed' && !data?.error) {

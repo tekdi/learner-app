@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
+  FlatList,
   SafeAreaView,
   StyleSheet,
   TextInput,
@@ -18,10 +19,13 @@ import {
 import globalStyles from '../../utils/Helper/Style';
 import { courseListApi_testing } from '../../utils/API/AuthService';
 import CoursesBox from '../CoursesBox/CoursesBox';
+import CourseCard from '../CourseCard/CourseCard';
+import { useNavigation } from '@react-navigation/native';
 
 const ContinueLearning = ({ youthnet, t, userId }) => {
   const [data, setData] = useState([]);
   const [trackData, setTrackData] = useState([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetch = async () => {
@@ -84,50 +88,67 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
     fetch();
   }, []);
 
-  const debouncedSearch = useCallback(
-    debounce(() => {}, 2000), // Adjust debounce time in milliseconds as needed
-    []
+  const handlePress = (item) => {
+    //console.log('Card pressed!', item);
+    // console.log('identifier', item?.identifier);
+    // console.log('item', item?.leafNodes);
+    navigation.navigate('CourseContentList', {
+      do_id: item?.identifier,
+      course_id: item?.identifier,
+      content_list_node: item?.leafNodes,
+    });
+  };
+
+  const renderItem = ({ item, index }) => (
+    <CourseCard
+      onPress={() => handlePress(item)}
+      appIcon={item?.appIcon}
+      index={index}
+      cardWidth={260}
+      item={item}
+      TrackData={trackData}
+      navigation={navigation}
+    />
   );
+
+  console.log('####data', JSON.stringify(data));
 
   return (
     <View style={styles.searchContainer}>
-      <GlobalText style={styles.text}>{t('Continue_Learning')}</GlobalText>
-      <SafeAreaView>
-        {data.length > 0 ? (
-          <CoursesBox
-            // title={'Continue_Learning'}
-            // description={'Food_Production'}
-            style={{ titlecolor: '#06A816' }}
-            viewAllLink={() =>
-              navigation.navigate('ViewAll', {
-                title: 'Continue_Learning',
-                data: data,
-              })
-            }
-            ContentData={data}
-            TrackData={trackData}
-            isHorizontal={true}
-          />
-        ) : (
-          <GlobalText style={globalStyles.heading2}>
-            {t('no_data_found')}
-          </GlobalText>
-        )}
-      </SafeAreaView>
+      <GlobalText style={[globalStyles.heading2, { color: '#06A816' }]}>
+        {t('Inprogress')}
+      </GlobalText>
+      <GlobalText style={[globalStyles.text]}>
+        {t('you_have_ongoing').replace('{value}', data?.length)}
+      </GlobalText>
+
+      {data.length > 0 ? (
+        //
+        <FlatList
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={(item) => item?.identifier}
+          horizontal={true} // Enable horizontal scrolling
+          initialNumToRender={10} // Adjust the number of items to render initially
+          maxToRenderPerBatch={10} // Number of items rendered per batch
+          windowSize={21} // Controls the number of items rendered around the current index
+        />
+      ) : (
+        <GlobalText style={globalStyles.heading2}>
+          {t('no_data_found')}
+        </GlobalText>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     marginVertical: 16,
-    alignSelf: 'center',
     textAlign: 'center',
     // borderWidth: 1,
     borderRadius: 20,
+    padding: 10,
     backgroundColor: '#EDEDED',
   },
 });

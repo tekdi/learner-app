@@ -66,6 +66,9 @@ const Accordion2 = ({ title, children, index, openDropDown }) => {
                       {item?.name}
                     </GlobalText>
                   </View>
+                  {item?.learningResources?.filter((item) => {
+                    return;
+                  })}
                   <View style={[globalStyles.flexrow]}>
                     <GlobalText
                       style={[
@@ -73,7 +76,13 @@ const Accordion2 = ({ title, children, index, openDropDown }) => {
                         { color: 'rgb(13, 89, 158)', marginRight: 10 },
                       ]}
                     >
-                      {item?.learningResources?.length} {t('resources')}
+                      {
+                        item?.learningResources?.filter(
+                          (resource) =>
+                            resource?.type !== 'facilitator-requisite'
+                        ).length
+                      }{' '}
+                      {t('resources')}
                     </GlobalText>
                     <Icon name={'arrow-right'} color="#0D599E" size={20} />
                   </View>
