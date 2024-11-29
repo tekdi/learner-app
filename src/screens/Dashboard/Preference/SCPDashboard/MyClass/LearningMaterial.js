@@ -20,6 +20,8 @@ const LearningMaterial = () => {
   const [loading, setLoading] = useState(true);
   const [subjects, setSubjects] = useState([]);
 
+  console.log({ selectedIds });
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);

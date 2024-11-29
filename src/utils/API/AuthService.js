@@ -156,11 +156,9 @@ export const registerUser = async (params = {}) => {
       Accept: 'application/json',
     };
     // Log the cURL command
-    // console.log(
-    //   `curl -X ${method} ${url} -H 'Content-Type: application/json' -H 'Authorization: ${
-    //     headers.Authorization
-    //   }' -d '${JSON.stringify(params)}'`
-    // );
+    console.log(
+      `curl -X ${method} ${url} -H 'Content-Type: application/json' -d '${JSON.stringify(params)}'`
+    );
 
     // Make the actual request
     const result = await post(url, params, {
@@ -1257,11 +1255,11 @@ export const EventDetails = async ({ id }) => {
 
     const payload = {};
 
-    // console.log(
-    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-    //     headers['x-auth-token']
-    //   }' -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {

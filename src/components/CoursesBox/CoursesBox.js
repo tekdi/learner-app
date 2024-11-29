@@ -13,7 +13,7 @@ import { useTranslation } from '../../context/LanguageContext';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useNavigation } from '@react-navigation/native';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const CoursesBox = ({
   ContentData,

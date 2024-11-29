@@ -254,7 +254,7 @@
   "Search Content": "Search Content",
   "Search Courses": "Search Courses",
   "New": "New 26 Nov",
-  "switch_language" : "Are you sure you want to switch from {old} to {new}? The app will restart.",
+  "switch_language": "Are you sure you want to switch from {old} to {new}? The app will restart.",
   "reset_password": "Reset Password",
   "other_settings": "Other settings",
   "new_password": "New Password",
@@ -265,5 +265,16 @@
   "saving": "Saving",
   "old_password": "Old Password",
   "old_password_is_incorrect": "Old Password is incorrect",
-  "create_new_account": "Create New Account"
+  "create_new_account": "Create New Account",
+  "the_following_details_must_be_filled_by_parents_or_guardians": "The following details must be filled by parents or guardians",
+  "parent_name": "Parent/Guardian Name",
+  "parent_phone": "Parent/Guardian’s Phone Number",
+  "parent_phone_belong": "Whose phone number is this?",
+  "PARENT": "Parent",
+  "GUARDIAN": "Guardian",
+  "NEIGHBOR_OTHERS": "Neighbor/Others",
+  "create_account_desp2": "I confirm this checkbox is filled out by the parent/guardian of the learner.",
+  "privacy_guidelines": "Privacy Guidelines",
+  "and_i_consent_to_the_collection_and_use_of_my_personal_data_as_described_in_the": "and I consent to the collection and use of my personal data as described in the",
+  "consent_form": "Consent Form"
 }

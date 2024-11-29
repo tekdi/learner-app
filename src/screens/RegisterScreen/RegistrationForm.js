@@ -13,6 +13,7 @@ import {
   BackHandler,
   Modal,
   Button,
+  Dimensions,
 } from 'react-native';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -25,7 +26,7 @@ import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import lightning from '../../assets/images/png/lightning.png';
-
+import InAppBrowser from 'react-native-inappbrowser-reborn';
 // import Geolocation from 'react-native-geolocation-service';
 
 //multi language
@@ -72,6 +73,9 @@ import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../context/NetworkContext';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import ParentText from '../../components/PlainText/ParentText';
+import { registerSchema } from './RegisterSchemaUpdate';
+import FullPagePdfModal from './FullPagePdfModal';
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -237,7 +241,7 @@ const buildYupSchema = (form, currentForm, t) => {
   return yup.object().shape(shape);
 };
 
-const RegistrationForm = ({ schema, geoData }) => {
+const RegistrationForm = ({ schema, geoData, setGetage }) => {
   //multi language setup
   const { t, language } = useTranslation();
   //dynamic schema for json object validation
@@ -246,20 +250,40 @@ const RegistrationForm = ({ schema, geoData }) => {
   const [selectedIds, setSelectedIds] = useState({});
   const [isDisable, setIsDisable] = useState(true);
   const [currentForm, setCurrentForm] = useState(1);
+  const [currentMySchema, setCurrentMySchema] = useState();
   const [modal, setModal] = useState(false);
   const [err, setErr] = useState();
   const [networkError, setNetworkError] = useState(false);
   const [programData, setProgramData] = useState([]);
+  const [isBtnDisable, setIsBtnDisable] = useState(true);
+  const [checked, setChecked] = useState(false);
+  const [secondChecked, setSecondChecked] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
 
-  const { isConnected } = useInternet();
+  const openInAppBrowser = async () => {
+    try {
+      const url = 'https://pratham.org/privacy-guidelines/';
+      if (await InAppBrowser.isAvailable()) {
+        await InAppBrowser.open(url, {
+          // Optional customization
+          toolbarColor: '#6200EE',
+          showTitle: true,
+          enableUrlBarHiding: true,
+          enableDefaultShare: true,
+        });
+      } else {
+        console.log('In-App Browser not available');
+      }
+    } catch (error) {
+      console.error('Error opening browser:', error);
+    }
+  };
 
   const stepSchema = schema?.map((form) =>
     buildYupSchema(form, currentForm, t)
   );
 
   const currentschema = stepSchema[currentForm - 1];
-
-  // console.log(JSON.stringify(stepSchema));
 
   const {
     handleSubmit,
@@ -282,23 +306,6 @@ const RegistrationForm = ({ schema, geoData }) => {
       },
     },
   });
-
-  // const TENANT_ID = Config.TENANT_ID;
-
-  // console.log({ TENANT_ID });
-
-  // const programData = {
-  //   options: [
-  //     {
-  //       tenantId: '6c8b810a-66c2-4f0d-8c0c-c025415a4414',
-  //       name: 'Second Chance Program',
-  //       domain: 'pratham.shiksha.com',
-  //       description:
-  //         'Get a second pro to complete your 10th grade education',
-  //       images: [],
-  //     },
-  //   ],
-  // };
 
   const RegisterLogin = async (loginData) => {
     const payload = {
@@ -375,14 +382,13 @@ const RegistrationForm = ({ schema, geoData }) => {
   };
 
   const onSubmit = async (data) => {
-    console.log({ data });
+    console.log('hi');
 
     const payload = await transformPayload(data);
-    const token = await getAccessToken();
-    // await saveToken(token);
-    const register = await registerUser(payload);
+    console.log(JSON.stringify(payload));
 
-    // console.log({ isConnected, networkError, register });
+    const token = await getAccessToken();
+    const register = await registerUser(payload);
 
     if (!isConnected) {
       setNetworkError(true);
@@ -398,6 +404,11 @@ const RegistrationForm = ({ schema, geoData }) => {
   const programValue = watch('program') || null;
   const stateValue = watch('state') || null;
   const districtValue = watch('district') || null;
+  const age = watch('age') || null;
+
+  useEffect(() => {
+    setGetage(age);
+  }, [age]);
 
   function addOptionsToField(formObject, fieldName, newOptions) {
     // Find the field in the 'fields' array where the name or label matches the given fieldName
@@ -454,6 +465,31 @@ const RegistrationForm = ({ schema, geoData }) => {
     const newSchema = addOptionsToField(currentSchema, 'block', data?.values);
     currentSchema = newSchema;
   };
+
+  const setcontent = () => {
+    let mySchema = schema?.find((form) => form.formNumber === 5);
+
+    const updatedschema = [
+      {
+        type: 'parent_text',
+        label: 'label',
+        name: 'label',
+        coreField: 'label',
+        fieldId: 'label',
+      },
+    ];
+
+    const newSchema = {
+      ...currentSchema,
+      fields: [...currentSchema.fields, ...updatedschema],
+    };
+
+    currentSchema = newSchema;
+  };
+
+  useEffect(() => {
+    setcontent();
+  }, [currentForm === 4]);
 
   useEffect(() => {
     fetchDistricts();
@@ -593,6 +629,12 @@ const RegistrationForm = ({ schema, geoData }) => {
               />
             </View>
           );
+        case 'parent_text':
+          return (
+            <View key={field.name} style={styles.inputContainer}>
+              <ParentText />
+            </View>
+          );
         default:
           return null;
       }
@@ -601,7 +643,6 @@ const RegistrationForm = ({ schema, geoData }) => {
 
   const nextForm = async (data) => {
     let nextFormNumber = currentForm + 1;
-    // console.log({ programValue });
 
     // Skip a specific form, e.g., form number 4
     if (currentForm === 3 && programValue?.name === 'Public') {
@@ -632,10 +673,6 @@ const RegistrationForm = ({ schema, geoData }) => {
       setValue('state', state);
       fetchDistricts();
     }
-
-    if (currentForm === 3) {
-      console.log('hi');
-    }
   };
 
   const prevForm = () => {
@@ -656,8 +693,6 @@ const RegistrationForm = ({ schema, geoData }) => {
 
   const getProgramData = async () => {
     const data = await getProgramDetails();
-    console.log({ data });
-
     setProgramData(data);
   };
 
@@ -738,6 +773,86 @@ const RegistrationForm = ({ schema, geoData }) => {
             {t('phone_des')}
           </GlobalText>
         )}
+
+        {currentForm === 5 && (
+          <>
+            <View
+              style={[
+                globalStyles.flexrow,
+                { marginVertical: 15, width: '85%' },
+              ]}
+            >
+              <CustomCheckbox
+                value={checked}
+                onChange={(nextChecked) => {
+                  setChecked(nextChecked);
+                }}
+              />
+
+              <GlobalText
+                numberOfLines={5}
+                ellipsizeMode="tail"
+                style={[globalStyles.text, { textAlign: 'justify' }]}
+              >
+                {t('Read_T_&_C')}{' '}
+                <GlobalText
+                  onPress={openInAppBrowser}
+                  style={[
+                    globalStyles.text,
+                    {
+                      color: '#0000cd',
+                      textDecorationLine: 'underline', // This adds the underline
+                    },
+                  ]}
+                >
+                  {t('privacy_guidelines')}{' '}
+                </GlobalText>
+                {t(
+                  'and_i_consent_to_the_collection_and_use_of_my_personal_data_as_described_in_the'
+                )}{' '}
+                <GlobalText
+                  onPress={() => {
+                    setModalVisible(true);
+                  }}
+                  style={[
+                    globalStyles.text,
+                    {
+                      color: '#0000cd',
+                      textDecorationLine: 'underline', // This adds the underline
+                    },
+                  ]}
+                >
+                  {t('consent_form')}
+                </GlobalText>
+              </GlobalText>
+            </View>
+            {age < 18 && (
+              <View
+                style={[
+                  globalStyles.flexrow,
+                  { marginVertical: 15, width: '85%' },
+                ]}
+              >
+                <CustomCheckbox
+                  value={secondChecked}
+                  onChange={(nextChecked) => {
+                    setSecondChecked(nextChecked);
+                  }}
+                />
+
+                <GlobalText style={globalStyles.text}>
+                  {t('create_account_desp2')}
+                </GlobalText>
+              </View>
+            )}
+            <FullPagePdfModal
+              // pdfPath={pdfPath}
+              isModalVisible={isModalVisible}
+              setModalVisible={setModalVisible}
+              age={age}
+            />
+          </>
+        )}
       </ScrollView>
       <View style={styles.buttonContainer}>
         <RenderBtn
@@ -748,6 +863,10 @@ const RegistrationForm = ({ schema, geoData }) => {
           onSubmit={onSubmit}
           isDisable={isDisable}
           networkError={networkError}
+          isModalVisible={isModalVisible}
+          secondChecked={secondChecked}
+          checked={checked}
+          age={age}
         />
       </View>
       {modal && (
@@ -849,77 +968,30 @@ const RenderBtn = ({
   handleSubmit,
   nextForm,
   onSubmit,
-  isDisable,
+  age,
   networkError,
+  isModalVisible,
+  secondChecked,
+  checked,
 }) => {
   const { t } = useTranslation();
-  const [isBtnDisable, setIsBtnDisable] = useState(true);
-  const [checked, setChecked] = useState(false);
+
   const [showMore, setShowMore] = useState(true); // State for showing more content
+  const { isConnected } = useInternet();
 
   const renderContent = () => {
     if (currentForm !== 8 && currentForm < schema?.length) {
       return (
         <PrimaryButton text={t('continue')} onPress={handleSubmit(nextForm)} />
       );
-    } else if (currentForm === 8) {
-      return (
-        <SafeAreaView style={{ justifyContent: 'space-between', height: 150 }}>
-          <PrimaryButton
-            text={t('I_am_18_or_older')}
-            onPress={handleSubmit(nextForm)}
-            color={'#FFFFFF'}
-          />
-          <PrimaryButton
-            text={t('I_am_under_18')}
-            onPress={handleSubmit(nextForm)}
-            color={'#FFFFFF'}
-          />
-        </SafeAreaView>
-      );
     } else {
       return (
         <>
-          {showMore && (
-            <GlobalText
-              style={[
-                globalStyles.subHeading,
-                { color: '#0563C1', textAlign: 'center', marginTop: 10 },
-              ]}
-              onPress={() => setShowMore(false)}
-            >
-              {t('read_more')}
-            </GlobalText>
-          )}
-          <View style={[globalStyles.flexrow, { marginVertical: 15 }]}>
-            <CustomCheckbox
-              value={checked}
-              onChange={(nextChecked) => {
-                setChecked(nextChecked);
-                setIsBtnDisable(!isBtnDisable);
-              }}
-            />
-
-            <GlobalText
-              style={{
-                fontSize: 12,
-                color: '#000',
-                width: '90%',
-              }}
-            >
-              {t('T&C_12')}
-            </GlobalText>
-          </View>
           <PrimaryButton
-            isDisabled={isBtnDisable}
+            isDisabled={age < 18 ? !(checked && secondChecked) : !checked} // Button disabled until both are checked
             text={t('create_account')}
             onPress={handleSubmit(onSubmit)}
           />
-          <GlobalText
-            style={{ color: 'black', marginVertical: 10, textAlign: 'center' }}
-          >
-            {t('T&C_13')}
-          </GlobalText>
 
           <NetworkAlert
             onTryAgain={handleSubmit(onSubmit)}
