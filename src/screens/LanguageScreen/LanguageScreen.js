@@ -47,7 +47,7 @@ const LanguageScreen = () => {
   const getProgramData = async () => {
     const data = await getProgramDetails();
 
-    //console.log('################ getProgramData', JSON.stringify(data));
+    console.log('################ getProgramData', JSON.stringify(data));
 
     await setDataInStorage('tenantDetails', JSON.stringify(data));
   };
@@ -117,7 +117,6 @@ const LanguageScreen = () => {
           const data = await refreshToken({
             refresh_token: refresh_token,
           });
-          const program = await getProgramData();
           if (token && data?.access_token) {
             await saveAccessToken(data?.access_token);
             await saveRefreshToken(data?.refresh_token);
@@ -145,6 +144,7 @@ const LanguageScreen = () => {
       } else {
         setLoading(false);
       }
+      const program = await getProgramData();
     };
     fetchData();
   }, [navigation]);

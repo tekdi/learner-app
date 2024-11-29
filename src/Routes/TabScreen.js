@@ -14,7 +14,7 @@ import profile from '../assets/images/png/profile.png';
 import profile_filled from '../assets/images/png/profile_filled.png';
 import Coursesunfilled from '../assets/images/png/Coursesunfilled.png';
 import ProfileStack from './ProfileStack';
-import { getTentantId } from '../utils/JsHelper/Helper';
+import { getDataFromStorage, getTentantId } from '../utils/JsHelper/Helper';
 
 const Tab = createBottomTabNavigator();
 
@@ -25,8 +25,16 @@ const TabScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       const tenantId = await getTentantId();
-      id = '6c8b810a-66c2-4f0d-8c0c-c025415a4414';
-      if (tenantId === id) {
+      const tenantDetails = JSON.parse(
+        await getDataFromStorage('tenantDetails')
+      );
+
+      const youthnetTenantIds = tenantDetails?.filter((item) => {
+        if (item?.name === 'YouthNet') {
+          return item;
+        }
+      });
+      if (tenantId === youthnetTenantIds?.[0]?.tenantId) {
         setContentShow(false);
       }
     };

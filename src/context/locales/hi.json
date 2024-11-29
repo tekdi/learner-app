@@ -276,5 +276,8 @@
   "create_account_desp2": "मैं पुष्टि करता हूँ कि यह चेकबॉक्स विद्यार्थी के माता-पिता/संरक्षक द्वारा भरा गया है।",
   "privacy_guidelines": "गोपनीयता दिशानिर्देश",
   "and_i_consent_to_the_collection_and_use_of_my_personal_data_as_described_in_the": "और मैं अपनी व्यक्तिगत जानकारी संग्रहण और उपयोग की सहमति देता हूँ जैसा कि में विवरणित है",
-  "consent_form": "सहमति पत्र"
+  "consent_form": "सहमति पत्र",
+  "select": "चुनें",
+  "topic": "विषय",
+  "you_have_ongoing": "आपके पास {value} चल रहे पाठ्यक्रम हैं"
 }

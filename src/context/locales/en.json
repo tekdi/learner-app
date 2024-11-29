@@ -278,5 +278,6 @@
   "and_i_consent_to_the_collection_and_use_of_my_personal_data_as_described_in_the": "and I consent to the collection and use of my personal data as described in the",
   "consent_form": "Consent Form",
   "select": "Select",
-  "topic": "Topic"
+  "topic": "Topic",
+  "you_have_ongoing": "You have {value} Ongoing Courses"
 }
