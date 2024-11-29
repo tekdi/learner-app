@@ -20,6 +20,7 @@ const RegisterScreen = () => {
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState(false);
   const [geoData, setgeoData] = useState();
+  const [getage, setGetage] = useState();
 
   const fetchstates = async () => {
     const payload = {
@@ -31,6 +32,8 @@ const RegisterScreen = () => {
     setDataInStorage('states', JSON.stringify(data?.values));
     return data?.values;
   };
+
+  console.log({ getage });
 
   // GetLocation Comment
 
@@ -60,7 +63,9 @@ const RegisterScreen = () => {
     } else {
       const states = await fetchstates();
       setDataInStorage('studentForm', JSON.stringify(data?.fields));
-      let schema = await registerSchema(data?.fields, states);
+      let schema = await registerSchema(data?.fields, states, getage);
+      console.log({ schema });
+
       getLocation(); // GetLocation Comment
       setMainSchema(schema);
     }
@@ -71,12 +76,21 @@ const RegisterScreen = () => {
   useEffect(() => {
     fetchData();
   }, []);
+  useEffect(() => {
+    if (getage < 18) {
+    }
+    fetchData();
+  }, [getage]);
 
   return loading ? (
     <Loading />
   ) : (
     <SafeAreaView style={styles.container}>
-      <RegistrationForm schema={mainSchema} geoData={geoData} />
+      <RegistrationForm
+        schema={mainSchema}
+        setGetage={setGetage}
+        geoData={geoData}
+      />
       <NetworkAlert onTryAgain={fetchData} isConnected={!networkError} />
     </SafeAreaView>
   );

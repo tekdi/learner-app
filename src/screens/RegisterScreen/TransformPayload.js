@@ -4,6 +4,8 @@ import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 export const transformPayload = async (data) => {
   const studentForm = JSON.parse(await getDataFromStorage('studentForm'));
 
+  console.log('data', JSON.stringify(data));
+
   const getFieldIdByName = (name) => {
     const field = studentForm.find(
       (item) => item.name.toLowerCase() === name.toLowerCase()
@@ -26,6 +28,23 @@ export const transformPayload = async (data) => {
       value: data.gender.value,
       fieldId: data.gender.fieldId,
     },
+    ...(data?.parent_name
+      ? [
+          {
+            value: data.parent_name,
+            fieldId: getFieldIdByName('parent_name'),
+          },
+          {
+            value: data.parent_phone,
+            fieldId: getFieldIdByName('parent_phone'),
+          },
+          {
+            value: [data.parent_phone_belong?.value],
+            fieldId: getFieldIdByName('parent_phone_belong'),
+          },
+        ]
+      : []),
+
     // Add state, district, and block only if block value is present
     ...(data?.block?.value
       ? [

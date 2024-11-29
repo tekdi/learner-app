@@ -109,7 +109,7 @@ const CustomRadioCard = ({
                   data={images}
                   renderItem={renderItem}
                 /> */}
-                <ImageCarousel images={option?.programImages || []} />
+                {/* <ImageCarousel images={option?.programImages || []} /> */}
               </View>
               {/* <GlobalText style={globalStyles.subHeading}>
                 {option.description}
