@@ -259,6 +259,7 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
   const [checked, setChecked] = useState(false);
   const [secondChecked, setSecondChecked] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
+  const { isConnected } = useInternet();
 
   const openInAppBrowser = async () => {
     try {
@@ -307,6 +308,11 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
     },
   });
 
+  const programValue = watch('program') || null;
+  const stateValue = watch('state') || null;
+  const districtValue = watch('district') || null;
+  const age = watch('age') || null;
+
   const RegisterLogin = async (loginData) => {
     const payload = {
       username: loginData?.username,
@@ -347,12 +353,14 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
     );
 
     await storeUsername(profileData?.getUserDetails?.[0]?.username);
+    console.log({ cohort_id, tenantid, programValue });
+
     if (cohort_id) {
       await setDataInStorage('userType', 'scp');
       navigation.navigate('SCPUserTabScreen');
     } else {
-      if (tenantid === '6c8b810a-66c2-4f0d-8c0c-c025415a4414') {
-        await setDataInStorage('userType', 'youthnet');
+      if (programValue?.name === 'YouthNet') {
+        await setDataInStorage('userType', 'YouthNet');
       } else {
         await setDataInStorage('userType', 'public');
       }
@@ -382,7 +390,7 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
   };
 
   const onSubmit = async (data) => {
-    console.log('hi');
+    // console.log('hi');
 
     const payload = await transformPayload(data);
     console.log(JSON.stringify(payload));
@@ -400,11 +408,6 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
       await RegisterLogin(data);
     }
   };
-
-  const programValue = watch('program') || null;
-  const stateValue = watch('state') || null;
-  const districtValue = watch('district') || null;
-  const age = watch('age') || null;
 
   useEffect(() => {
     setGetage(age);

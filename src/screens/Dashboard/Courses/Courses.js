@@ -62,7 +62,9 @@ const Courses = () => {
   useEffect(() => {
     const fetch = async () => {
       const cohort_id = await getDataFromStorage('cohortId');
-      console.log({ cohort_id });
+      const data = await getDataFromStorage('userType');
+
+      console.log({ cohort_id, data });
     };
     fetch();
   }, []);
@@ -74,6 +76,7 @@ const Courses = () => {
         method: 'on-view',
         screenName: 'Courses',
       };
+
       await logEventFunction(obj);
     };
     logEvent();
