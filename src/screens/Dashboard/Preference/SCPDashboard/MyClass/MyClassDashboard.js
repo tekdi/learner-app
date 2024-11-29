@@ -16,7 +16,7 @@ import HorizontalLine from '../../../../../components/HorizontalLine/HorizontalL
 import SessionRecording from './SessionRecording';
 import LearningMaterial from './LearningMaterial';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const MyClassDashboard = () => {
   const { t } = useTranslation();
@@ -44,7 +44,9 @@ const MyClassDashboard = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
       <View style={{ padding: 0 }}>
-        <GlobalText style={[globalStyles.heading, { paddingLeft: 20 }]}>
+        <GlobalText
+          style={[globalStyles.heading, { paddingLeft: 20, marginTop: 20 }]}
+        >
           {t('my_class')}
         </GlobalText>
 

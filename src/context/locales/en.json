@@ -276,5 +276,7 @@
   "create_account_desp2": "I confirm this checkbox is filled out by the parent/guardian of the learner.",
   "privacy_guidelines": "Privacy Guidelines",
   "and_i_consent_to_the_collection_and_use_of_my_personal_data_as_described_in_the": "and I consent to the collection and use of my personal data as described in the",
-  "consent_form": "Consent Form"
+  "consent_form": "Consent Form",
+  "select": "Select",
+  "topic": "Topic"
 }

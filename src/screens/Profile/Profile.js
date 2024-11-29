@@ -347,7 +347,10 @@ const Profile = (props) => {
             )}
 
             <TouchableOpacity
-              style={[globalStyles.flexrow, { marginBottom: 20 }]}
+              style={[
+                globalStyles.flexrow,
+                { marginBottom: 20, marginTop: 10 },
+              ]}
               onPress={() => {
                 setShowExitModal(true);
               }}

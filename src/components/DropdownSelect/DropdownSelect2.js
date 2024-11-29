@@ -11,7 +11,7 @@ import globalStyles from '../../utils/Helper/Style';
 import { useController } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const DropdownSelect = ({
   field,
@@ -59,7 +59,7 @@ const DropdownSelect = ({
       </View>
       <TouchableOpacity onPress={toggleDropdown} style={styles.dropdownButton}>
         <GlobalText style={[globalStyles.text]}>
-          {selectedIds?.label || 'select'}
+          {selectedIds?.label || t('select')}
         </GlobalText>
         <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
       </TouchableOpacity>
@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: '95%',
     alignSelf: 'center',
+    top: -10,
   },
   dropdownButton: {
     flexDirection: 'row',
@@ -110,13 +111,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   label: {
+    // position: 'absolute',
     top: 15,
     left: 15,
     backgroundColor: 'white',
     paddingHorizontal: 5,
     zIndex: 1,
-    width: 100,
-    alignItems: 'center',
+    alignSelf: 'flex-start', // Allow the label to adjust to its content width
   },
   selectedValue: {
     fontSize: 16,

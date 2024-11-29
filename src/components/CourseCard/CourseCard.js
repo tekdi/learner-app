@@ -164,7 +164,7 @@ const CourseCard = ({
     }
   };
 
-  console.log(JSON.stringify(item));
+  // console.log(JSON.stringify(item));
 
   return (
     <Pressable

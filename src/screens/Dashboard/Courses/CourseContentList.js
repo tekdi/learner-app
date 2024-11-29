@@ -260,7 +260,7 @@ const CourseContentList = ({ route }) => {
     fetchTrackData();
   }, [trackData]);
 
-  console.log('coursesContent', JSON.stringify(coursesContent));
+  // console.log('coursesContent', JSON.stringify(coursesContent));
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -352,13 +352,13 @@ const CourseContentList = ({ route }) => {
                       Math.round((trackCompleted / 100) * 100),
                       language
                     )}%`}</GlobalText>
-                    <TextField
+                    {/* <TextField
                       style={[
                         globalStyles.text,
                         { fontSize: 12, color: 'white' },
                       ]}
                       text={'completed'}
-                    />
+                    /> */}
                   </>
                 ) : (
                   <StatusCardCourse

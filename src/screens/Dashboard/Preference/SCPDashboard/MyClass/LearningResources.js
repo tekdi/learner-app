@@ -20,10 +20,10 @@ const LearningResources = ({ route }) => {
     data.forEach((item) => {
       console.log('item', JSON.stringify(item));
       if (item.type === 'prerequisite') {
-        prerequisites.push(item?.id);
+        prerequisites.push(item?.id?.toLowerCase());
         contentList.push(item?.id);
       } else if (item.type === 'postrequisite') {
-        postrequisites.push(item?.id);
+        postrequisites.push(item?.id?.toLowerCase());
         contentList.push(item?.id);
       }
     });
@@ -97,10 +97,10 @@ const LearningResources = ({ route }) => {
 
         // Filter prerequisites
         result?.content?.forEach((item) => {
-          if (data?.prerequisites.includes(item.identifier)) {
+          if (data?.prerequisites.includes(item?.identifier?.toLowerCase())) {
             prerequisites.push(item); // Push filtered items
           }
-          if (data?.postrequisites.includes(item.identifier)) {
+          if (data?.postrequisites.includes(item?.identifier?.toLowerCase())) {
             postrequisites.push(item); // Push filtered items
           }
         });
