@@ -324,23 +324,28 @@ const Profile = (props) => {
                 />
               </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={[globalStyles.flexrow, { marginVertical: 10 }]}
-              onPress={() => {
-                navigation.navigate('ResetPassword');
-              }}
-            >
-              <Icon
-                name="lock-reset"
-                color="black"
-                size={25}
-                style={styles.icon}
-              />
+            {userType !== 'scp' && (
+              <TouchableOpacity
+                style={[globalStyles.flexrow, { marginVertical: 10 }]}
+                onPress={() => {
+                  navigation.navigate('ResetPassword');
+                }}
+              >
+                <Icon
+                  name="lock-reset"
+                  color="black"
+                  size={25}
+                  style={styles.icon}
+                />
 
-              <GlobalText style={[globalStyles.subHeading, { marginLeft: 15 }]}>
-                {t('reset_password')}
-              </GlobalText>
-            </TouchableOpacity>
+                <GlobalText
+                  style={[globalStyles.subHeading, { marginLeft: 15 }]}
+                >
+                  {t('reset_password')}
+                </GlobalText>
+              </TouchableOpacity>
+            )}
+
             <TouchableOpacity
               style={[globalStyles.flexrow, { marginBottom: 20 }]}
               onPress={() => {

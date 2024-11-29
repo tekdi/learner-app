@@ -222,149 +222,135 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const toggleDrawer = () => setDrawerVisible(!isDrawerVisible);
 
   return (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => {
-        handlePress(item);
-      }}
-    >
-      <ImageBackground
-        source={
-          item?.posterImage
-            ? {
-                uri: item?.posterImage,
-                priority: FastImage.priority.high,
-              }
-            : mimeType === 'pdf'
-              ? PDFnoimg
-              : mimeType === 'vnd.ekstep.html-archive' ||
-                  mimeType == 'vnd.ekstep.h5p-archive'
-                ? HtmlNoimg
-                : mimeType === 'mp4' || mimeType === 'webm'
-                  ? MP4Noimg
-                  : mimeType === 'epub'
-                    ? Epubnoimg
-                    : mimeType === 'x-youtube'
-                      ? YouTubeNoimg
-                      : mimeType === 'vnd.sunbird.questionset' && QmlNoimg
-        }
-        style={{ borderRadius: 50 }}
-        resizeMode="cover"
+    <View style={styles.card}>
+      <TouchableOpacity
+        onPress={() => {
+          handlePress(item);
+        }}
+        style={{ height: 170 }}
       >
-        <LinearGradient
-          colors={['#00000033', '#000000CC']} // Gradient colors
-          start={{ x: 1, y: 0 }} // Gradient starting point
-          end={{ x: 1, y: 1.5 }} // Gradient ending point
-          style={styles.gradient}
+        <ImageBackground
+          source={
+            item?.posterImage
+              ? {
+                  uri: item?.posterImage,
+                  priority: FastImage.priority.high,
+                }
+              : mimeType === 'pdf'
+                ? PDFnoimg
+                : mimeType === 'vnd.ekstep.html-archive' ||
+                    mimeType == 'vnd.ekstep.h5p-archive'
+                  ? HtmlNoimg
+                  : mimeType === 'mp4' || mimeType === 'webm'
+                    ? MP4Noimg
+                    : mimeType === 'epub'
+                      ? Epubnoimg
+                      : mimeType === 'x-youtube'
+                        ? YouTubeNoimg
+                        : mimeType === 'vnd.sunbird.questionset' && QmlNoimg
+          }
+          style={{ borderRadius: 50 }}
+          resizeMode="cover"
         >
-          <View
-            style={{
-              alignSelf: 'flex-end',
-              padding: 5,
-              borderRadius: 5,
-              backgroundColor: '#1F1B1380',
-            }}
+          <LinearGradient
+            colors={['#00000033', '#000000CC']} // Gradient colors
+            start={{ x: 1, y: 0 }} // Gradient starting point
+            end={{ x: 1, y: 1.5 }} // Gradient ending point
+            style={styles.gradient}
           >
-            {download === 'completed' && (
-              <FastImage
-                style={styles.img}
-                source={require('../../assets/images/png/cloud_done_g.png')}
-                resizeMode={FastImage.resizeMode.contain}
-                priority={FastImage.priority.high}
-              />
-            )}
-          </View>
-          <View
-            style={{
-              bottom: 0,
-              position: 'absolute',
-              width: '100%',
-            }}
-          >
-            <GlobalText
-              style={[
-                globalStyles.subHeading,
-                { color: 'white', marginLeft: 5 },
-              ]}
-              numberOfLines={4}
-              ellipsizeMode="tail"
+            <View
+              style={{
+                alignSelf: 'flex-end',
+                padding: 5,
+                borderRadius: 5,
+                backgroundColor: '#1F1B1380',
+              }}
             >
-              {item?.name}
-            </GlobalText>
-            <StatusCardIcon status={trackStatus} />
-
-            <View style={styles.unitCard}>
-              <View style={[globalStyles.flexrow]}>
-                {mimeType === 'pdf' ? (
-                  <Image style={styles.img} source={pdf} resizeMode="contain" />
-                ) : mimeType === 'vnd.ekstep.html-archive' ||
-                  mimeType == 'vnd.ekstep.h5p-archive' ? (
-                  <Image
-                    style={styles.img}
-                    source={html}
-                    resizeMode="contain"
-                  />
-                ) : mimeType === 'mp4' || mimeType === 'webm' ? (
-                  <Image style={styles.img} source={mp4} resizeMode="contain" />
-                ) : mimeType === 'epub' ? (
-                  <Image
-                    style={styles.img}
-                    source={epub}
-                    resizeMode="contain"
-                  />
-                ) : mimeType === 'x-youtube' ? (
-                  <Image
-                    style={styles.img}
-                    source={youtube}
-                    resizeMode="contain"
-                  />
-                ) : mimeType === 'vnd.sunbird.questionset' ? (
-                  <Image style={styles.img} source={qml} resizeMode="contain" />
-                ) : (
-                  <></>
-                )}
-
-                <GlobalText
-                  style={[globalStyles.text, { marginLeft: 10 }]}
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                >
-                  {mimeType === 'x-youtube'
-                    ? `YouTube`
-                    : mimeType === 'vnd.ekstep.html-archive'
-                      ? `Web`
-                      : mimeType == 'vnd.ekstep.h5p-archive'
-                        ? `H5P`
-                        : mimeType == 'vnd.ekstep.h5p-archive'
-                          ? `ECML`
-                          : mimeType == 'vnd.sunbird.questionset'
-                            ? `QUML`
-                            : capitalizeFirstLetter(mimeType)}
-                </GlobalText>
-              </View>
-              {mimeType !== 'x-youtube' && (
-                <TouchableOpacity
-                  onPress={toggleDrawer}
-                  style={styles.threeDots}
-                >
-                  <Icon name="dots-three-vertical" size={20} color="#0D599E" />
-                </TouchableOpacity>
+              {download === 'completed' && (
+                <FastImage
+                  style={styles.img}
+                  source={require('../../assets/images/png/cloud_done_g.png')}
+                  resizeMode={FastImage.resizeMode.contain}
+                  priority={FastImage.priority.high}
+                />
               )}
             </View>
-          </View>
-        </LinearGradient>
-        {isDrawerVisible && (
-          <DownloadModal
-            setDrawerVisible={setDrawerVisible}
-            isDrawerVisible={isDrawerVisible}
-            title={item?.name}
-            contentId={item?.identifier}
-            contentMimeType={item?.mimeType}
-            setDownload={setDownload}
-          />
+            <View
+              style={{
+                bottom: 0,
+                position: 'absolute',
+                width: '100%',
+              }}
+            >
+              <GlobalText
+                style={[
+                  globalStyles.subHeading,
+                  { color: 'white', marginLeft: 5 },
+                ]}
+                numberOfLines={4}
+                ellipsizeMode="tail"
+              >
+                {item?.name}
+              </GlobalText>
+              <StatusCardIcon status={trackStatus} />
+            </View>
+          </LinearGradient>
+          {isDrawerVisible && (
+            <DownloadModal
+              setDrawerVisible={setDrawerVisible}
+              isDrawerVisible={isDrawerVisible}
+              title={item?.name}
+              contentId={item?.identifier}
+              contentMimeType={item?.mimeType}
+              setDownload={setDownload}
+            />
+          )}
+        </ImageBackground>
+      </TouchableOpacity>
+      <View style={styles.unitCard}>
+        <View style={[globalStyles.flexrow]}>
+          {mimeType === 'pdf' ? (
+            <Image style={styles.img} source={pdf} resizeMode="contain" />
+          ) : mimeType === 'vnd.ekstep.html-archive' ||
+            mimeType == 'vnd.ekstep.h5p-archive' ? (
+            <Image style={styles.img} source={html} resizeMode="contain" />
+          ) : mimeType === 'mp4' || mimeType === 'webm' ? (
+            <Image style={styles.img} source={mp4} resizeMode="contain" />
+          ) : mimeType === 'epub' ? (
+            <Image style={styles.img} source={epub} resizeMode="contain" />
+          ) : mimeType === 'x-youtube' ? (
+            <Image style={styles.img} source={youtube} resizeMode="contain" />
+          ) : mimeType === 'vnd.sunbird.questionset' ? (
+            <Image style={styles.img} source={qml} resizeMode="contain" />
+          ) : (
+            <></>
+          )}
+
+          <GlobalText
+            style={[globalStyles.text, { marginLeft: 10 }]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {mimeType === 'x-youtube'
+              ? `YouTube`
+              : mimeType === 'vnd.ekstep.html-archive'
+                ? `Web`
+                : mimeType == 'vnd.ekstep.h5p-archive'
+                  ? `H5P`
+                  : mimeType == 'vnd.ekstep.h5p-archive'
+                    ? `ECML`
+                    : mimeType == 'vnd.sunbird.questionset'
+                      ? `QUML`
+                      : capitalizeFirstLetter(mimeType)}
+          </GlobalText>
+        </View>
+        {mimeType !== 'x-youtube' && (
+          <TouchableOpacity onPress={toggleDrawer} style={styles.threeDots}>
+            <Icon name="dots-three-vertical" size={20} color="#0D599E" />
+          </TouchableOpacity>
         )}
-      </ImageBackground>
-    </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 
@@ -389,10 +375,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     // borderRadius: 20,
+    // borderWidth: 1,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    // borderBtoRadius: 20,
   },
   img: {
-    width: 30,
-    height: 30,
+    width: 25,
+    height: 25,
   },
   dot: {
     fontSize: 18,

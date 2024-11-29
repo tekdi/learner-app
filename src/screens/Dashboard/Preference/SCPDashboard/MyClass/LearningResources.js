@@ -89,7 +89,7 @@ const LearningResources = ({ route }) => {
 
         // Fetch details based on contentList
         const result = await getDoitsDetails(data?.contentList);
-        console.log('result', JSON.stringify(result));
+        // console.log('result', JSON.stringify(result));
 
         // Initialize arrays for prerequisites and postrequisites
         const prerequisites = [];

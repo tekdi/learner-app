@@ -260,7 +260,7 @@ const CourseContentList = ({ route }) => {
     fetchTrackData();
   }, [trackData]);
 
-  console.log('coursesContent', JSON.stringify(trackCompleted));
+  console.log('coursesContent', JSON.stringify(coursesContent));
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -274,14 +274,14 @@ const CourseContentList = ({ route }) => {
               <FastImage
                 style={styles.image}
                 source={
-                  coursesContent?.appIcon
+                  coursesContent?.posterImage
                     ? {
-                        uri: coursesContent?.appIcon,
+                        uri: coursesContent?.posterImage,
                         priority: FastImage.priority.high,
                       }
                     : require('../../../assets/images/png/Course.png')
                 }
-                resizeMode={FastImage.resizeMode.cover} // Adjust to cover the circular area
+                resizeMode={FastImage.resizeMode.contain} // Adjust to cover the circular area
               />
               <GlobalText
                 style={[globalStyles.heading2, { flex: 1 }]}

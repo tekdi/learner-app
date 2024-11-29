@@ -164,6 +164,8 @@ const CourseCard = ({
     }
   };
 
+  console.log(JSON.stringify(item));
+
   return (
     <Pressable
       onPress={onPress}
@@ -215,7 +217,10 @@ const CourseCard = ({
           {item?.name}
         </GlobalText>
         <GlobalText
-          style={[globalStyles.text, { width: '80%', marginVertical: 10 }]}
+          style={[
+            globalStyles.text,
+            { width: '80%', marginVertical: 10, marginBottom: 20 },
+          ]}
           numberOfLines={4}
           ellipsizeMode="tail"
         >
