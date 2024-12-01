@@ -49,8 +49,12 @@ const Assessment = ({ header, background }) => {
     const cohort_id = await getDataFromStorage('cohortId');
     //console.log('########### cohort', cohort);
     let board = null;
+    let state = null;
     try {
       board = cohort?.cohortData?.[0]?.customField?.find(
+        (field) => field.label === 'BOARD'
+      );
+      state = cohort?.cohortData?.[0]?.customField?.find(
         (field) => field.label === 'STATES'
       );
     } catch (e) {
@@ -63,12 +67,18 @@ const Assessment = ({ header, background }) => {
     }*/
 
     console.log('########### board', board);
+    console.log('########### state', state);
 
-    if (board) {
+    if (board && state) {
       const boardName = board.value;
+      const stateName = state.value;
       console.log({ boardName });
 
-      const assessmentList = await assessmentListApi({ boardName, user_id });
+      const assessmentList = await assessmentListApi({
+        boardName,
+        stateName,
+        user_id,
+      });
       if (assessmentList) {
         const OfflineAssessmentList = assessmentList;
         const uniqueAssessments = [
@@ -150,12 +160,7 @@ const Assessment = ({ header, background }) => {
           >
             {assessments.length > 0 ? (
               assessments?.map((item) => {
-                return (
-                  <TestBox
-                    key={item}
-                    testText={item}
-                  />
-                );
+                return <TestBox key={item} testText={item} />;
               })
             ) : (
               <GlobalText style={globalStyles.subHeading}>

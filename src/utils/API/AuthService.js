@@ -223,7 +223,10 @@ export const courseListApi_testing = async ({
   const payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? 'secondchance' : userType,
+        program:
+          userType == 'scp'
+            ? ['secondchance', 'Second Chance']
+            : ['Youthnet', 'youthnet'],
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
         status: ['Live'],
         primaryCategory: ['Course'],
@@ -297,7 +300,10 @@ export const contentListApi_Pratham = async ({ searchText }) => {
   let payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? 'secondchance' : userType,
+        program:
+          userType == 'scp'
+            ? ['secondchance', 'Second Chance']
+            : ['Youthnet', 'youthnet'],
         //board: ['CBSE'],
         primaryCategory: ['Learning Resource', 'Practice Question Set'],
         visibility: ['Default', 'Parent'],
@@ -486,8 +492,12 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? 'secondchance' : userType,
+        program:
+          userType == 'scp'
+            ? ['secondchance', 'Second Chance']
+            : ['Youthnet', 'youthnet'],
         board: `${params?.boardName}`,
+        state: `${params?.stateName}`,
         assessmentType: ['pre-test', 'post-test'],
         status: ['Live'],
         primaryCategory: ['Practice Question Set'],
