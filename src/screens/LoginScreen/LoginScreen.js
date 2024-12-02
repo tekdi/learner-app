@@ -66,7 +66,7 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     if (isConnected) {
       setNetworkstatus(true);
-      // setLoading(true);
+      setLoading(true);
       const payload = {
         username: userName,
         password: password,
@@ -141,6 +141,7 @@ const LoginScreen = () => {
         }
         const deviceId = await getDeviceId();
         await notificationSubscribe({ deviceId, user_id });
+        setLoading(false);
       } else {
         setLoading(false);
         setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));
@@ -235,7 +236,7 @@ const LoginScreen = () => {
           </View>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ForgotPassword');
+              navigation.navigate('ForgotPassword', { enableLogin: true });
             }}
             style={{ paddingLeft: 20, marginBottom: 30 }}
           >
@@ -246,7 +247,7 @@ const LoginScreen = () => {
                 fontSize: 15,
               }}
             >
-              {t('forgot_password', { enableLogin: true })}
+              {t('forgot_password')}?
             </GlobalText>
           </TouchableOpacity>
           {/* <View style={globalStyles.flexrow}>

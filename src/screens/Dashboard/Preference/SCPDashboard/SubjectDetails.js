@@ -29,13 +29,23 @@ import {
 } from '../../../../utils/API/AuthService';
 import ContentAccordion from './MyClass/ContentAccordion';
 
-function getFilteredData(data) {
+function getFilteredData(data, subTopic) {
   return data
     .map((item) => {
+      // Check if any child has a name matching the subTopic
+      const filteredChildren = item?.children?.filter((child) =>
+        subTopic.includes(child.name)
+      );
+
+      if (!filteredChildren || filteredChildren.length === 0) {
+        return null; // Skip items with no matching children
+      }
+
       const prerequisites = [];
       const postrequisites = [];
 
-      item?.children?.forEach((child) => {
+      // Process filtered children
+      filteredChildren.forEach((child) => {
         const learningResources = child?.learningResources || [];
 
         prerequisites.push(
@@ -52,14 +62,11 @@ function getFilteredData(data) {
       });
 
       return {
-        // name: item.name,
+        name: item.name, // Include the name of the item for reference
         prerequisites: prerequisites,
         postrequisites: postrequisites,
         contentIdList: [...prerequisites, ...postrequisites],
       };
-
-      // Return null if the item name doesn't match the topic
-      return null;
     })
     .filter((result) => result !== null); // Filter out null values
 }
@@ -72,7 +79,7 @@ const SubjectDetails = ({ route }) => {
   const [track, setTrack] = useState();
   const [resourceData, setResourceData] = useState();
 
-  // console.log({ item });
+  console.log({ subTopic });
 
   const callProgramIfempty = async ({ solutionId, id }) => {
     const data = await SolutionEvent({ solutionId });
@@ -131,7 +138,7 @@ const SubjectDetails = ({ route }) => {
       result = await EventDetails({ id });
       // console.log('result', JSON.stringify(result));
 
-      const filterData = getFilteredData(result?.tasks || []);
+      const filterData = getFilteredData(result?.tasks || [], subTopic);
       // setTasks(filterData);
 
       let userId = await getDataFromStorage('userId');

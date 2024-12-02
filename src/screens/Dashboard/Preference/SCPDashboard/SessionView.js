@@ -119,7 +119,11 @@ const SessionView = () => {
               size={30}
             />
           </TouchableOpacity>
-          <GlobalText style={[globalStyles.heading2]}>
+          <GlobalText
+            numberOfLines={2}
+            ellipsizeMode="tail"
+            style={[globalStyles.heading2]}
+          >
             {t('prepare_for')} {getTomorrowDate()} {t('sessions')}
           </GlobalText>
         </View>

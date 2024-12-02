@@ -31,6 +31,8 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
     const fetch = async () => {
       let course_in_progress = await CourseInProgress(userId);
       let courseData = course_in_progress?.data;
+      // console.log('courseData', courseData);
+
       if (courseData) {
         console.log(
           '########## course_in_progress',
@@ -40,16 +42,16 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
           '########## course_in_progress?.[0]?.courseIdList',
           courseData?.[0]?.courseIdList
         );
-        if (courseData?.[0]?.courseIdList) {
+        if (courseData?.[0]?.courseIdList?.length > 0) {
           let inprogress_do_ids = [];
           for (let i = 0; i < courseData?.[0]?.courseIdList.length; i++) {
             inprogress_do_ids.push(courseData?.[0]?.courseIdList[i]?.courseId);
           }
-          console.log('########## inprogress_do_ids', inprogress_do_ids);
+          // console.log('########## inprogress_do_ids', inprogress_do_ids);
           let data = await courseListApi_testing({ inprogress_do_ids });
           //found course progress
           try {
-            console.log('########## contentListApi');
+            // console.log('########## contentListApi');
             const contentList = data?.content;
             //console.log('########## contentList', contentList);
             let courseList = [];
@@ -64,10 +66,10 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
               userId,
               courseList
             );
-            console.log(
-              '########## course_track_data',
-              JSON.stringify(course_track_data?.data)
-            );
+            // console.log(
+            //   '########## course_track_data',
+            //   JSON.stringify(course_track_data?.data)
+            // );
             let courseTrackData = [];
             if (course_track_data?.data) {
               courseTrackData =
@@ -76,7 +78,7 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
                 )?.course || [];
             }
             setTrackData(courseTrackData);
-            console.log('########## courseTrackData', courseTrackData);
+            // console.log('########## courseTrackData', courseTrackData);
             // console.log('##########');
           } catch (e) {
             console.log('e', e);
