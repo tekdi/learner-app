@@ -5,7 +5,7 @@ import globalStyles from '../../../utils/Helper/Style';
 import Icon from 'react-native-vector-icons/AntDesign';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const MonthlyCalendar = ({
   setEventDate,
@@ -17,12 +17,6 @@ const MonthlyCalendar = ({
   const [date, setDate] = useState(new Date());
 
   const today = new Date();
-
-  useEffect(() => {
-    if (learnerAttendance) {
-      // console.log('Updated learnerAttendance:', learnerAttendance);
-    }
-  }, [learnerAttendance]);
 
   const handleDateSelection = (selectedDate) => {
     const correctedDate = new Date(selectedDate);
@@ -73,14 +67,14 @@ const MonthlyCalendar = ({
           isSelected ? styles.selected : null,
         ]}
       >
-        <GlobalText style={[globalStyles.text, { fontSize: 8 }]}>
+        <GlobalText style={[globalStyles.text, { fontSize: 14 }]}>
           {dayNumber}
         </GlobalText>
         {dayData &&
           (isPresent ? (
-            <Icon name="checkcircleo" size={10} color="green" />
+            <Icon name="checkcircleo" size={15} color="green" />
           ) : isAbsent ? (
-            <FeatherIcon name="x-circle" size={10} color="red" />
+            <FeatherIcon name="x-circle" size={15} color="red" />
           ) : null)}
       </View>
     );
@@ -105,7 +99,7 @@ const MonthlyCalendar = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%', // Set container width
-    height: 320, // Set container height
+    height: 420, // Set container height
   },
   dayBox: {
     borderRadius: 8,
@@ -114,8 +108,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     margin: 2, // Reduced margin to fit better in smaller size
-    height: 35, // Adjusted height to fit in smaller size
-    width: 45, // Adjusted width to fit in smaller size
+    height: 55, // Adjusted height to fit in smaller size
+    width: 42, // Adjusted width to fit in smaller size
   },
   today: {
     backgroundColor: '#FDBE16',

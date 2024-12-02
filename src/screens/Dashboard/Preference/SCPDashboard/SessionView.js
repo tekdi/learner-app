@@ -15,7 +15,7 @@ import Accordion from '../../../../components/Accordion/Accordion';
 import ProgressBarCustom from '../../../../components/ProgressBarCustom/ProgressBarCustom';
 import FastImage from '@changwoolab/react-native-fast-image';
 import { eventList } from '../../../../utils/API/AuthService';
-import Loading from '../../../LoadingScreen/Loading';
+import ActiveLoading from '../../../LoadingScreen/ActiveLoading';
 import {
   categorizeEvents,
   setDataInStorage,
@@ -101,7 +101,7 @@ const SessionView = () => {
   console.log({ percentage });
 
   return loading ? (
-    <Loading />
+    <ActiveLoading />
   ) : (
     <>
       <SecondaryHeader logo />
@@ -122,9 +122,9 @@ const SessionView = () => {
           <GlobalText
             numberOfLines={2}
             ellipsizeMode="tail"
-            style={[globalStyles.heading2]}
+            style={[globalStyles.heading2, { width: '95%' }]}
           >
-            {t('prepare_for')} {getTomorrowDate()} {t('sessions')}
+            {t('prepare_for')} d {getTomorrowDate()} {t('sessions')}
           </GlobalText>
         </View>
         <View style={[globalStyles.flexrow, { marginVertical: 20 }]}>

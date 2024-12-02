@@ -36,7 +36,7 @@ const StatusCardIcon = ({ status }) => {
           allowFontScaling={false}
           style={[
             globalStyles.text,
-            { color: 'white', marginLeft: 10, fontSize: 12 },
+            { marginLeft: 5, color: 'white', fontSize: 12 },
           ]}
         >
           {t('not_started')}
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
   },
   not_started: {
-    width: '40%',
+    width: '38%',
     borderWidth: 2,
     borderColor: '#CDC5BD',
     backgroundColor: '#CDC5BD',

@@ -150,7 +150,7 @@ const Contents = () => {
   }, [navigation]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
       <ScrollView nestedScrollEnabled>
         <View style={styles.view}>
@@ -179,6 +179,7 @@ const Contents = () => {
               <View
                 style={{
                   padding: 10,
+                  PaddinTop: 0,
                   // backgroundColor: '#F7ECDF',
                   justifyContent: 'space-between',
                   flexWrap: 'wrap',

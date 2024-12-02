@@ -279,5 +279,6 @@
   "consent_form": "सहमती फॉर्म",
   "select": "निवडा",
   "topic": "विषय",
-  "you_have_ongoing": "तुमच्याकडे {value} चालू अभ्यासक्रम आहेत"
+  "you_have_ongoing": "तुमच्याकडे {value} चालू अभ्यासक्रम आहेत",
+  "username_should_not_be_empty,password_should_not_be_empty": "वापरकर्तानाव रिक्त असू नये, पासवर्ड रिक्त असू नये"
 }

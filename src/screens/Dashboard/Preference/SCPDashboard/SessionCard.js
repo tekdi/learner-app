@@ -19,7 +19,7 @@ import RocketImageClub from '../../../../components/rocketImageClub/RocketImageC
 import FastImage from '@changwoolab/react-native-fast-image';
 import { getDataFromStorage } from '../../../../utils/JsHelper/Helper';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const SessionCard = ({ percentage }) => {
   const { t, language } = useTranslation();
@@ -78,7 +78,9 @@ const SessionCard = ({ percentage }) => {
               ]}
             >
               <View>
-                <GlobalText style={[globalStyles.subHeading]}>
+                <GlobalText
+                  style={[globalStyles.subHeading, { fontWeight: 'bold' }]}
+                >
                   {t('prepare_for')} {getTomorrowDate()} {t('sessions')}
                 </GlobalText>
                 <GlobalText style={[globalStyles.subHeading]}>
@@ -131,8 +133,8 @@ const SessionCard = ({ percentage }) => {
                 {percent <= 10
                   ? t('lets_get_started_dive_in')
                   : percent === 100
-                  ? t('mission_accomplished')
-                  : t('great_start_keep_going')}
+                    ? t('mission_accomplished')
+                    : t('great_start_keep_going')}
               </GlobalText>
             </View>
           </View>

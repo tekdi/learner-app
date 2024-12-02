@@ -17,7 +17,7 @@ import FastImage from '@changwoolab/react-native-fast-image';
 import { getAttendance } from '../../../../utils/API/AuthService';
 import { setDataInStorage } from '../../../../utils/JsHelper/Helper';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const AttendanceCard = ({ attendance }) => {
   const { t } = useTranslation();
@@ -92,10 +92,10 @@ const AttendanceCard = ({ attendance }) => {
                 presentPercentage <= 35
                   ? require('../../../../assets/images/gif/turtle.gif')
                   : presentPercentage <= 65
-                  ? require('../../../../assets/images/gif/rabbit.gif')
-                  : presentPercentage <= 99
-                  ? require('../../../../assets/images/gif/horse.gif')
-                  : require('../../../../assets/images/gif/happy.gif')
+                    ? require('../../../../assets/images/gif/rabbit.gif')
+                    : presentPercentage <= 99
+                      ? require('../../../../assets/images/gif/horse.gif')
+                      : require('../../../../assets/images/gif/happy.gif')
               }
               resizeMode={FastImage.resizeMode.contain}
               priority={FastImage.priority.high} // Set the priority here
@@ -108,14 +108,16 @@ const AttendanceCard = ({ attendance }) => {
             <GlobalText style={[globalStyles.text, { color: '#635E57' }]}>
               {t('overall_attendance')}
             </GlobalText>
-            <GlobalText style={[globalStyles.text, { color: '#1A8825' }]}>
+            <GlobalText
+              style={[globalStyles.text, { color: '#1A8825', width: '95%' }]}
+            >
               {presentPercentage <= 35
                 ? t('attendance_1')
                 : presentPercentage <= 65
-                ? t('attendance_2')
-                : presentPercentage <= 99
-                ? t('attendance_3')
-                : t('attendance_4')}
+                  ? t('attendance_2')
+                  : presentPercentage <= 99
+                    ? t('attendance_3')
+                    : t('attendance_4')}
             </GlobalText>
             <TouchableOpacity
               onPress={() => {

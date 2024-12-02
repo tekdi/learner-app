@@ -27,8 +27,6 @@ const FullAttendance = () => {
 
   // Sample data for the last 30 days
 
-  console.log({ eventDate });
-
   const fetchData = async () => {
     // Get today's date
     const todayDate = new Date();

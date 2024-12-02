@@ -33,7 +33,7 @@ import { eventList } from '../../../../utils/API/AuthService';
 import ActiveLoading from '../../../LoadingScreen/ActiveLoading';
 import BackButtonHandler from '../../../../components/BackNavigation/BackButtonHandler';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const SCPDashboard = (props) => {
   const { t } = useTranslation();
@@ -175,11 +175,13 @@ const SCPDashboard = (props) => {
           style={[styles.box]}
         >
           <View style={{ width: '90%' }}>
-            <GlobalText style={globalStyles.subHeading}>
+            <GlobalText
+              style={[globalStyles.subHeading, { fontWeight: 'bold' }]}
+            >
               {t('previous_class_materials')} {t('post_requisites')}
             </GlobalText>
             <GlobalText
-              style={globalStyles.text}
+              style={globalStyles.subHeading}
               numberOfLines={2}
               ellipsizeMode="tail"
             >

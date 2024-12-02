@@ -261,8 +261,10 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
             <View
               style={{
                 alignSelf: 'flex-end',
-                padding: 5,
-                borderRadius: 5,
+                paddingLeft: 5,
+                paddingBottom: 5,
+                paddingRight: 5,
+                borderBottomLeftRadius: 5,
                 backgroundColor: '#1F1B1380',
               }}
             >
@@ -346,7 +348,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         </View>
         {mimeType !== 'x-youtube' && (
           <TouchableOpacity onPress={toggleDrawer} style={styles.threeDots}>
-            <Icon name="dots-three-vertical" size={20} color="#0D599E" />
+            <Icon name="dots-three-vertical" size={20} color="black" />
           </TouchableOpacity>
         )}
       </View>
