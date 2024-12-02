@@ -355,12 +355,27 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
     await storeUsername(profileData?.getUserDetails?.[0]?.username);
     console.log({ cohort_id, tenantid, programValue });
 
-    if (cohort_id) {
+    const youthnetTenantIds = programData?.filter((item) => {
+      if (item?.name === 'YouthNet') {
+        return item;
+      }
+    });
+    const scp = programData?.filter((item) => {
+      if (item?.name === 'Second Chance Program') {
+        return item;
+      }
+    });
+
+    if (tenantid === scp?.[0]?.tenantId) {
       await setDataInStorage('userType', 'scp');
-      navigation.navigate('SCPUserTabScreen');
+      if (cohort_id) {
+        navigation.navigate('SCPUserTabScreen');
+      } else {
+        navigation.navigate('Dashboard');
+      }
     } else {
-      if (programValue?.name === 'YouthNet') {
-        await setDataInStorage('userType', 'YouthNet');
+      if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
+        await setDataInStorage('userType', 'youthnet');
       } else {
         await setDataInStorage('userType', 'public');
       }

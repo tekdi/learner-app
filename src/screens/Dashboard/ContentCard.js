@@ -46,9 +46,9 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
   const [isDrawerVisible, setDrawerVisible] = useState(false);
   const [download, setDownload] = useState('');
   // console.log('########## ContentCard', item?.identifier);
-  // console.log('course_id', course_id);
+  console.log('course_id', course_id);
   // console.log('unit_id', unit_id);
-  // console.log('##########', TrackData);
+  console.log('##########', TrackData);
 
   const backgroundImages = [
     require('../../assets/images/CardBackground/abstract_01.png'),
@@ -98,10 +98,12 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 
   const fetchDataTrack = async () => {
     try {
-      //console.log('########### TrackData', TrackData);
+      console.log('########### TrackData', TrackData);
       if (TrackData && (item?.identifier || item?.id)) {
         for (let i = 0; i < TrackData.length; i++) {
           if (TrackData[i]?.courseId == course_id) {
+            console.log('reached');
+
             let userId = await getDataFromStorage('userId');
             let offlineTrack = await getSyncTrackingOfflineCourse(
               userId,
@@ -183,7 +185,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
               status = 'completed';
             }
             setTrackStatus(status);
-            //console.log('########### trackStatus', status);
+            console.log('########### trackStatus', status);
           }
         }
       }

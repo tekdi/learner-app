@@ -215,8 +215,6 @@ const SubjectDetails = ({ route }) => {
     }
   };
 
-  useEffect(() => {}, []);
-
   useFocusEffect(
     useCallback(() => {
       fetchData();

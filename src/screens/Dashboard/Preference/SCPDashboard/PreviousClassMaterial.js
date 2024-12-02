@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { eventList } from '../../../../utils/API/AuthService';
 import { categorizeEvents } from '../../../../utils/JsHelper/Helper';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const PreviousClassMaterial = () => {
   const navigation = useNavigation();
@@ -28,6 +28,8 @@ const PreviousClassMaterial = () => {
   const [eventDate, setEventDate] = useState();
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [track, setTrack] = useState([]);
+
   const monthNames = [
     'January',
     'February',
@@ -140,8 +142,13 @@ const PreviousClassMaterial = () => {
           </GlobalText>
 
           {eventData?.plannedSessions?.length > 0 ? (
-            eventData.plannedSessions.map((item, key) => (
-              <Accordion postrequisites key={key} item={item} />
+            eventData?.plannedSessions?.map((item, key) => (
+              <Accordion
+                postrequisites
+                setTrack={setTrack}
+                key={key}
+                item={item}
+              />
             ))
           ) : (
             <GlobalText style={globalStyles.text}>
@@ -153,8 +160,13 @@ const PreviousClassMaterial = () => {
             {t('extra_sessions')}
           </GlobalText>
           {eventData?.extraSessions?.length > 0 ? (
-            eventData.extraSessions.map((item, key) => (
-              <Accordion postrequisites key={key} item={item} />
+            eventData?.extraSessions?.map((item, key) => (
+              <Accordion
+                postrequisites
+                setTrack={setTrack}
+                key={key}
+                item={item}
+              />
             ))
           ) : (
             <GlobalText style={globalStyles.text}>

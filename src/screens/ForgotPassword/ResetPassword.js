@@ -143,7 +143,7 @@ const ResetPassword = () => {
 
   return (
     <>
-      <SecondaryHeader logo />
+      <SecondaryHeader />
       <KeyboardAvoidingView style={globalStyles.container}>
         <Text style={[globalStyles.heading, { marginBottom: 10 }]}>
           {t('reset_password')}
@@ -218,7 +218,7 @@ const ResetPassword = () => {
               { textAlign: 'center', padding: 30, color: '#0D599E' },
             ]}
             onPress={() => {
-              navigation.navigate('ForgotPassword');
+              navigation.navigate('ForgotPassword', { enableLogin: false });
             }}
           >
             {t('forgot_password')}?

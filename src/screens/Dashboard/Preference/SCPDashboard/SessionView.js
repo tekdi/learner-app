@@ -22,7 +22,7 @@ import {
 } from '../../../../utils/JsHelper/Helper';
 import RocketImageClub from '../../../../components/rocketImageClub/RocketImageClub';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const SessionView = () => {
   const navigation = useNavigation();
@@ -159,11 +159,14 @@ const SessionView = () => {
               {percentage <= 10
                 ? t('lets_get_started_dive_in')
                 : percentage === 100
-                ? t('mission_accomplished')
-                : t('great_start_keep_going')}
+                  ? t('mission_accomplished')
+                  : t('great_start_keep_going')}
             </GlobalText>
           </View>
         </View>
+        <GlobalText style={globalStyles.subHeading}>
+          {t('planned_sessions')}
+        </GlobalText>
         <ScrollView style={{ height: '80%' }}>
           {eventData?.plannedSessions?.map((item, key) => {
             return <Accordion setTrack={setTrack} key={key} item={item} />;

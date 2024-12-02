@@ -54,6 +54,7 @@ const Profile = (props) => {
   const [conentView, setConentView] = useState(false);
   const [storageData, setStorageData] = useState();
   const [userType, setUserType] = useState();
+  const [cohortId, setCohortId] = useState();
 
   const createNewObject = (customFields, labels) => {
     const result = {};
@@ -72,8 +73,10 @@ const Profile = (props) => {
   const fetchData = async () => {
     const result = JSON.parse(await getDataFromStorage('profileData'));
     const userTypes = await getDataFromStorage('userType');
-    console.log('userType', userTypes);
-
+    const cohortId = await getDataFromStorage('cohortId');
+    // console.log('userType', userTypes);
+    console.log('cohortId', cohortId);
+    setCohortId(cohortId);
     setUserType(userTypes);
 
     const requiredLabels = [
@@ -175,7 +178,7 @@ const Profile = (props) => {
             <GlobalText style={globalStyles.heading}>
               {t('my_profile')}
             </GlobalText>
-            {userType !== 'scp' && (
+            {cohortId === '00000000-0000-0000-0000-000000000000' && (
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('ProfileUpdateScreen');
@@ -324,7 +327,7 @@ const Profile = (props) => {
                 />
               </TouchableOpacity>
             </View>
-            {userType !== 'scp' && (
+            {cohortId === '00000000-0000-0000-0000-000000000000' && (
               <TouchableOpacity
                 style={[globalStyles.flexrow, { marginVertical: 10 }]}
                 onPress={() => {

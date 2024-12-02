@@ -21,9 +21,10 @@ import { forgotPassword } from '../../utils/API/AuthService';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
-const ForgotPassword = () => {
+const ForgotPassword = ({ route }) => {
+  const { enableLogin } = route.params;
   const [value, setvalue] = useState('');
   const [username, setusename] = useState('');
   const [modalError, setmodalError] = useState('');
@@ -117,17 +118,19 @@ const ForgotPassword = () => {
         }}
       >
         <HorizontalLine />
-        <GlobalText
-          style={[
-            globalStyles.text,
-            { textAlign: 'center', padding: 30, color: '#0D599E' },
-          ]}
-          onPress={() => {
-            navigation.navigate('LoginScreen');
-          }}
-        >
-          {t('back_to_login')}
-        </GlobalText>
+        {enableLogin && (
+          <GlobalText
+            style={[
+              globalStyles.text,
+              { textAlign: 'center', padding: 30, color: '#0D599E' },
+            ]}
+            onPress={() => {
+              navigation.navigate('LoginScreen');
+            }}
+          >
+            {t('back_to_login')}
+          </GlobalText>
+        )}
       </View>
       <Modal visible={modal} transparent={true} animationType="slide" onclo>
         <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>

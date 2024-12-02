@@ -246,7 +246,7 @@ const LoginScreen = () => {
                 fontSize: 15,
               }}
             >
-              {t('forgot_password')}
+              {t('forgot_password', { enableLogin: true })}
             </GlobalText>
           </TouchableOpacity>
           {/* <View style={globalStyles.flexrow}>

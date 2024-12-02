@@ -12,6 +12,7 @@ import globalStyles from '../../utils/Helper/Style';
 import { useTranslation } from '../../context/LanguageContext';
 import {
   EventDetails,
+  getDoits,
   SolutionEvent,
   SolutionEventDetails,
   targetedSolutions,
@@ -27,35 +28,35 @@ import { courseTrackingStatus } from '../../utils/API/ApiCalls';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 
-function getFilteredData(data, topic) {
+function getFilteredData(data) {
   return data
     .map((item) => {
       const prerequisites = [];
       const postrequisites = [];
 
-      if (item?.name === topic) {
-        item?.children?.forEach((child) => {
-          const learningResources = child?.learningResources || [];
+      item?.children?.forEach((child) => {
+        const learningResources = child?.learningResources || [];
 
-          prerequisites.push(
-            ...learningResources
-              .filter((resource) => resource.type === 'prerequisite')
-              .map((resource) => resource)
-          );
+        prerequisites.push(
+          ...learningResources
+            .filter((resource) => resource.type === 'prerequisite')
+            .map((resource) => resource?.id?.toLowerCase())
+        );
 
-          postrequisites.push(
-            ...learningResources
-              .filter((resource) => resource.type === 'postrequisite')
-              .map((resource) => resource)
-          );
-        });
+        postrequisites.push(
+          ...learningResources
+            .filter((resource) => resource.type === 'postrequisite')
+            .map((resource) => resource?.id?.toLowerCase())
+        );
+      });
 
-        return {
-          name: item.name,
-          prerequisites: prerequisites,
-          postrequisites: postrequisites,
-        };
-      }
+      return {
+        // name: item.name,
+        prerequisites: prerequisites,
+        postrequisites: postrequisites,
+        contentIdList: [...prerequisites, ...postrequisites],
+      };
+
       // Return null if the item name doesn't match the topic
       return null;
     })
@@ -65,6 +66,7 @@ function getFilteredData(data, topic) {
 const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const [resourceData, setResourceData] = useState([]);
   const [trackData, setTrackData] = useState([]);
   const { t } = useTranslation();
 
@@ -73,13 +75,39 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
     const templateId = data?.externalId;
 
     const result = await SolutionEventDetails({ templateId, solutionId });
-    // console.log({ id, solutionId, templateId });
 
     if (!id) {
       fetchData();
     } else {
       console.log('error_API_Success');
     }
+  };
+
+  const getDoidsDetails = async (contentList) => {
+    const payload = {
+      request: {
+        filters: {
+          identifier: contentList,
+          // identifier: ['do_2141915232762675201250'],
+        },
+        fields: [
+          'name',
+          'appIcon',
+          'description',
+          'posterImage',
+          'mimeType',
+          'identifier',
+          'resourceType',
+          'primaryCategory',
+          'contentType',
+          'trackable',
+          'children',
+          'leafNodes',
+        ],
+      },
+    };
+    const result = await getDoits({ payload });
+    return result;
   };
 
   const fetchData = async () => {
@@ -90,36 +118,25 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
 
     const id = data?.data?.[0]?._id;
     const solutionId = data?.data?.[0]?.solutionId;
-    // console.log({ data, id });
 
     if (id == '') {
       callProgramIfempty({ solutionId, id });
     } else {
       result = await EventDetails({ id });
-      // console.log('result', JSON.stringify(result));
-
-      const filterData = getFilteredData(result?.tasks || [], topic);
-      setTasks(filterData);
-
-      let contentIdList = [];
-
-      if (filterData) {
-        for (let item of filterData) {
-          // Push IDs from prerequisites
-          item?.prerequisites?.forEach((prerequisite) => {
-            contentIdList.push(prerequisite.id);
-          });
-
-          if (postrequisites) {
-            // Push IDs from postrequisites
-            item?.postrequisites?.forEach((postrequisite) => {
-              contentIdList?.push(postrequisite.id);
-            });
-          }
-        }
-      }
+      const filterData = getFilteredData(result?.tasks || []);
       let userId = await getDataFromStorage('userId');
-      let course_track_data = await courseTrackingStatus(userId, contentIdList);
+      let course_track_data;
+      if (postrequisites) {
+        course_track_data = await courseTrackingStatus(
+          userId,
+          filterData?.[0]?.contentIdList
+        );
+      } else {
+        course_track_data = await courseTrackingStatus(
+          userId,
+          filterData?.[0]?.prerequisites
+        );
+      }
 
       let courseTrackData = [];
       if (course_track_data?.data) {
@@ -127,24 +144,70 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
           course_track_data?.data?.find((course) => course.userId === userId)
             ?.course || [];
       }
-      // console.log('sssss', JSON.stringify(course_track_data));
 
       setTrackData(courseTrackData || []);
       setTrack(courseTrackData || []);
-      if (!postrequisites) {
-        setDataInStorage(
-          'courseTrackData',
-          JSON.stringify(courseTrackData || {})
-        );
+
+      if (filterData) {
+        const result = await getDoidsDetails(filterData?.[0]?.contentIdList);
+
+        // Initialize arrays for prerequisites and postrequisites
+        const prerequisites = [];
+        const postrequisites = [];
+
+        // Filter prerequisites
+        result?.content?.forEach((item) => {
+          if (
+            filterData?.[0]?.prerequisites?.includes(
+              item?.identifier?.toLowerCase()
+            )
+          ) {
+            prerequisites.push(item); // Push filtered items
+          }
+          if (
+            filterData?.[0]?.postrequisites?.includes(
+              item?.identifier?.toLowerCase()
+            )
+          ) {
+            postrequisites.push(item); // Push filtered items
+          }
+        });
+
+        // Filter postrequisites
+        result?.QuestionSet?.forEach((item) => {
+          if (
+            filterData?.[0]?.prerequisites?.includes(
+              item?.identifier?.toLowerCase()
+            )
+          ) {
+            prerequisites.push(item); // Push filtered items
+          }
+          if (
+            filterData?.[0]?.postrequisites?.includes(
+              item?.identifier?.toLowerCase()
+            )
+          ) {
+            postrequisites.push(item); // Push filtered items
+          }
+        });
+
+        setResourceData({ prerequisites, postrequisites });
       }
+
+      // console.log('courseTrackData', JSON.stringify(trackData));
+
+      // if (!postrequisites) {
+      //   setDataInStorage(
+      //     'courseTrackData',
+      //     JSON.stringify(courseTrackData || {})
+      //   );
+      // }
     }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
-
-  // console.log('tasks', JSON.stringify(tasks));
 
   return (
     <View
@@ -193,63 +256,60 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
       {isAccordionOpen && (
         <View style={styles.accordionDetails}>
           <ScrollView>
-            {tasks.length > 0 ? (
-              tasks.map((task, index) => (
-                <View
-                  key={index}
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  {!postrequisites ? (
-                    <View
-                      style={{
-                        padding: 10,
-                        // backgroundColor: '#F7ECDF',
-                        justifyContent: 'space-between',
-                        flexWrap: 'wrap',
-                        flexDirection: 'row',
-                      }}
-                    >
-                      {task?.prerequisites?.map((data, index) => {
-                        return (
-                          <ContentCard
-                            key={index}
-                            item={data}
-                            index={index}
-                            course_id={data?.id}
-                            unit_id={data?.id}
-                            TrackData={trackData}
-                          />
-                        );
-                      })}
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        // backgroundColor: '#F7ECDF',
-                        justifyContent: 'space-between',
-                        flexWrap: 'wrap',
-                        flexDirection: 'row',
-                        paddingBottom: 50,
-                      }}
-                    >
-                      {task?.postrequisites?.map((data, index) => {
-                        return (
-                          <ContentCard
-                            key={index}
-                            item={data}
-                            index={index}
-                            course_id={data?.id}
-                            unit_id={data?.id}
-                            TrackData={trackData}
-                          />
-                        );
-                      })}
-                    </View>
-                  )}
-                </View>
-              ))
+            {resourceData ? (
+              <View
+                style={{
+                  width: '100%',
+                }}
+              >
+                {!postrequisites ? (
+                  <View
+                    style={{
+                      padding: 10,
+                      // backgroundColor: '#F7ECDF',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      flexDirection: 'row',
+                    }}
+                  >
+                    {resourceData?.prerequisites?.map((data, index) => {
+                      return (
+                        <ContentCard
+                          key={index}
+                          item={data}
+                          index={index}
+                          course_id={data?.identifier}
+                          unit_id={data?.identifier}
+                          TrackData={trackData}
+                        />
+                      );
+                    })}
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      // backgroundColor: '#F7ECDF',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      flexDirection: 'row',
+                      paddingBottom: 50,
+                    }}
+                  >
+                    {resourceData?.postrequisites?.map((data, index) => {
+                      return (
+                        <ContentCard
+                          key={index}
+                          item={data}
+                          index={index}
+                          course_id={data?.identifier}
+                          unit_id={data?.identifier}
+                          TrackData={trackData}
+                        />
+                      );
+                    })}
+                  </View>
+                )}
+              </View>
             ) : (
               <GlobalText style={[globalStyles.text, { marginLeft: 10 }]}>
                 {t('no_topics')}

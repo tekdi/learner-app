@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { eventList } from '../../../../utils/API/AuthService';
 import { categorizeEvents } from '../../../../utils/JsHelper/Helper';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const PreviousClassMaterialFullView = () => {
   const navigation = useNavigation();
@@ -27,6 +27,8 @@ const PreviousClassMaterialFullView = () => {
   const [eventDate, setEventDate] = useState();
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [track, setTrack] = useState([]);
+
   const monthNames = [
     'January',
     'February',
@@ -121,7 +123,12 @@ const PreviousClassMaterialFullView = () => {
 
           {eventData?.plannedSessions?.length > 0 ? (
             eventData.plannedSessions.map((item, key) => (
-              <Accordion postrequisites key={key} item={item} />
+              <Accordion
+                setTrack={setTrack}
+                postrequisites
+                key={key}
+                item={item}
+              />
             ))
           ) : (
             <GlobalText style={globalStyles.text}>
@@ -134,7 +141,12 @@ const PreviousClassMaterialFullView = () => {
           </GlobalText>
           {eventData?.extraSessions?.length > 0 ? (
             eventData.extraSessions.map((item, key) => (
-              <Accordion postrequisites key={key} item={item} />
+              <Accordion
+                setTrack={setTrack}
+                postrequisites
+                key={key}
+                item={item}
+              />
             ))
           ) : (
             <GlobalText style={globalStyles.text}>
