@@ -228,45 +228,47 @@ const SCPDashboard = (props) => {
         <View style={{ marginVertical: 20 }}>
           <WeeklyCalendar setDate={setDate} postdays={true} />
         </View>
-        {loading ? (
-          <ActiveLoading />
-        ) : (
-          <View
-            style={{
-              padding: 10,
-              backgroundColor: '#fafafa',
-              marginTop: 20,
-              marginBottom: 20,
-            }}
-          >
-            <GlobalText style={globalStyles.heading2}>
-              {t('planned_sessions')}
-            </GlobalText>
-
-            {eventData?.plannedSessions?.length > 0 ? (
-              eventData.plannedSessions.map((item, key) => (
-                <SubjectCard key={key} item={item} />
-              ))
-            ) : (
-              <GlobalText style={globalStyles.text}>
-                {t('no_sessions_scheduled')}
+        <View style={{ minHeight: 240 }}>
+          {loading ? (
+            <ActiveLoading />
+          ) : (
+            <View
+              style={{
+                padding: 10,
+                backgroundColor: '#fafafa',
+                marginTop: 20,
+                marginBottom: 20,
+              }}
+            >
+              <GlobalText style={globalStyles.heading2}>
+                {t('planned_sessions')}
               </GlobalText>
-            )}
 
-            <GlobalText style={globalStyles.heading2}>
-              {t('extra_sessions')}
-            </GlobalText>
-            {eventData?.extraSessions?.length > 0 ? (
-              eventData.extraSessions.map((item, key) => (
-                <SubjectCard key={key} item={item} />
-              ))
-            ) : (
-              <GlobalText style={globalStyles.text}>
-                {t('no_sessions_scheduled')}
+              {eventData?.plannedSessions?.length > 0 ? (
+                eventData.plannedSessions.map((item, key) => (
+                  <SubjectCard key={key} item={item} />
+                ))
+              ) : (
+                <GlobalText style={globalStyles.text}>
+                  {t('no_sessions_scheduled')}
+                </GlobalText>
+              )}
+
+              <GlobalText style={globalStyles.heading2}>
+                {t('extra_sessions')}
               </GlobalText>
-            )}
-          </View>
-        )}
+              {eventData?.extraSessions?.length > 0 ? (
+                eventData.extraSessions.map((item, key) => (
+                  <SubjectCard key={key} item={item} />
+                ))
+              ) : (
+                <GlobalText style={globalStyles.text}>
+                  {t('no_sessions_scheduled')}
+                </GlobalText>
+              )}
+            </View>
+          )}
+        </View>
       </ScrollView>
       {showExitModal && (
         <BackButtonHandler

@@ -72,79 +72,80 @@ const AttendanceCard = ({ attendance }) => {
   }, []);
 
   return (
-    <SafeAreaView>
-      <ImageBackground
-        source={BG}
-        style={styles.backgroundImage}
-        resizeMode="cover"
+    <ImageBackground
+      source={BG}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View
+        style={[
+          styles.viewBox,
+          globalStyles.flexrow,
+          { justifyContent: 'space-between' },
+        ]}
       >
-        <View
-          style={[
-            styles.viewBox,
-            globalStyles.flexrow,
-            { justifyContent: 'space-between' },
-          ]}
-        >
-          <View>
-            <FastImage
-              style={styles.img}
-              source={
-                presentPercentage <= 35
-                  ? require('../../../../assets/images/gif/turtle.gif')
-                  : presentPercentage <= 65
-                    ? require('../../../../assets/images/gif/rabbit.gif')
-                    : presentPercentage <= 99
-                      ? require('../../../../assets/images/gif/horse.gif')
-                      : require('../../../../assets/images/gif/happy.gif')
-              }
-              resizeMode={FastImage.resizeMode.contain}
-              priority={FastImage.priority.high} // Set the priority here
-            />
-          </View>
-          <View style={{ width: '80%', marginLeft: 25 }}>
-            <GlobalText style={[globalStyles.heading2, { fontWeight: 800 }]}>
-              {presentPercentage}%
-            </GlobalText>
-            <GlobalText style={[globalStyles.text, { color: '#635E57' }]}>
-              {t('overall_attendance')}
-            </GlobalText>
-            <GlobalText
-              style={[globalStyles.text, { color: '#1A8825', width: '95%' }]}
-            >
-              {presentPercentage <= 35
-                ? t('attendance_1')
+        <View>
+          <FastImage
+            style={styles.img}
+            source={
+              presentPercentage <= 35
+                ? require('../../../../assets/images/gif/turtle.gif')
                 : presentPercentage <= 65
-                  ? t('attendance_2')
+                  ? require('../../../../assets/images/gif/rabbit.gif')
                   : presentPercentage <= 99
-                    ? t('attendance_3')
-                    : t('attendance_4')}
-            </GlobalText>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('FullAttendance');
-              }}
-              style={[globalStyles.flexrow, { marginTop: 10 }]}
-            >
-              <GlobalText
-                style={[globalStyles.subHeading, { color: '#0D599E' }]}
-              >
-                {t('see_my_full_attendance')}
-              </GlobalText>
-              <Octicons
-                name="arrow-right"
-                style={{ marginHorizontal: 10 }}
-                color={'#0D599E'}
-                size={20}
-              />
-            </TouchableOpacity>
-          </View>
+                    ? require('../../../../assets/images/gif/horse.gif')
+                    : require('../../../../assets/images/gif/happy.gif')
+            }
+            resizeMode={FastImage.resizeMode.contain}
+            priority={FastImage.priority.high} // Set the priority here
+          />
         </View>
-      </ImageBackground>
-    </SafeAreaView>
+        <View style={{ width: '80%', marginLeft: 25 }}>
+          <GlobalText style={[globalStyles.heading2, { fontWeight: 800 }]}>
+            {presentPercentage}%
+          </GlobalText>
+          <GlobalText style={[globalStyles.text, { color: '#635E57' }]}>
+            {t('overall_attendance')}
+          </GlobalText>
+          <GlobalText
+            style={[globalStyles.text, { color: '#1A8825', width: '95%' }]}
+          >
+            {presentPercentage <= 35
+              ? t('attendance_1')
+              : presentPercentage <= 65
+                ? t('attendance_2')
+                : presentPercentage <= 99
+                  ? t('attendance_3')
+                  : t('attendance_4')}
+          </GlobalText>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('FullAttendance');
+            }}
+            style={[globalStyles.flexrow, { marginTop: 10 }]}
+          >
+            <GlobalText style={[globalStyles.subHeading, { color: '#0D599E' }]}>
+              {t('see_my_full_attendance')}
+            </GlobalText>
+            <Octicons
+              name="arrow-right"
+              style={{ marginHorizontal: 10 }}
+              color={'#0D599E'}
+              size={20}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    // borderWidth: 1,
+  },
   viewBox: {
     padding: 20,
     justifyContent: 'space-between',

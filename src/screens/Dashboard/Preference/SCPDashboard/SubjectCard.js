@@ -7,6 +7,7 @@ import {
   Clipboard,
   Linking,
   ImageBackground,
+  Image,
 } from 'react-native';
 import { Layout } from '@ui-kitten/components';
 import globalStyles from '../../../../utils/Helper/Style';
@@ -16,6 +17,7 @@ import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from '../../../../context/LanguageContext';
 import { formatDateTimeRange } from '../../../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
+import menu_book from '../../../../assets/images/png/menu_book.png';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 
@@ -120,7 +122,11 @@ const SubjectCard = ({ item }) => {
                 }}
               >
                 <View style={globalStyles.flexrow}>
-                  <Icon name="book-open" size={20} color="#0D599E" />
+                  <Image
+                    source={menu_book}
+                    style={{ width: 20, height: 20 }}
+                    resizeMode="contain"
+                  />
 
                   <GlobalText style={styles.accordionDetails}>
                     {item?.erMetaData?.topic}

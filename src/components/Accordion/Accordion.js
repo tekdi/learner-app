@@ -27,6 +27,7 @@ import ContentCard from '../../screens/Dashboard/ContentCard';
 import { courseTrackingStatus } from '../../utils/API/ApiCalls';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 
 function getFilteredData(data) {
   return data
@@ -64,10 +65,12 @@ function getFilteredData(data) {
 }
 
 const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
-  const [isAccordionOpen, setAccordionOpen] = useState(false);
+  const [isAccordionOpen, setAccordionOpen] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [resourceData, setResourceData] = useState([]);
   const [trackData, setTrackData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const { t } = useTranslation();
 
   const callProgramIfempty = async ({ solutionId, id }) => {
@@ -110,6 +113,7 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
   };
 
   const fetchData = async () => {
+    setLoading(true);
     let result;
     const subjectName = item?.metadata?.subject || '';
     const type = item?.metadata?.courseType || '';
@@ -192,6 +196,7 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
 
         setResourceData({ prerequisites, postrequisites });
       }
+      setLoading(false);
 
       // if (!postrequisites) {
       //   setDataInStorage(
@@ -224,6 +229,8 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
           {
             justifyContent: 'space-between',
             padding: 10,
+            borderBottomWidth: 1,
+            borderColor: '#D0C5B4',
           },
         ]}
         onPress={() => setAccordionOpen(!isAccordionOpen)}
@@ -242,8 +249,8 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
             ellipsizeMode="tail"
             style={[globalStyles.text]}
           >
-            {item?.metadata?.subject || ''}{' '}
-            {item?.shortDescription && `- ${item?.shortDescription}`}
+            {item?.metadata?.subject || ''}
+            {/* {item?.shortDescription && `- ${item?.shortDescription}`} */}
           </GlobalText>
         )}
         <Icon
@@ -255,67 +262,71 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
 
       {isAccordionOpen && (
         <View style={styles.accordionDetails}>
-          <ScrollView>
-            {resourceData ? (
-              <View
-                style={{
-                  width: '100%',
-                }}
-              >
-                {!postrequisites ? (
-                  <View
-                    style={{
-                      padding: 10,
-                      // backgroundColor: '#F7ECDF',
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      flexDirection: 'row',
-                    }}
-                  >
-                    {resourceData?.prerequisites?.map((data, index) => {
-                      return (
-                        <ContentCard
-                          key={index}
-                          item={data}
-                          index={index}
-                          course_id={data?.identifier}
-                          unit_id={data?.identifier}
-                          TrackData={trackData}
-                        />
-                      );
-                    })}
-                  </View>
-                ) : (
-                  <View
-                    style={{
-                      // backgroundColor: '#F7ECDF',
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      flexDirection: 'row',
-                      paddingBottom: 50,
-                    }}
-                  >
-                    {resourceData?.postrequisites?.map((data, index) => {
-                      return (
-                        <ContentCard
-                          key={index}
-                          item={data}
-                          index={index}
-                          course_id={data?.identifier}
-                          unit_id={data?.identifier}
-                          TrackData={trackData}
-                        />
-                      );
-                    })}
-                  </View>
-                )}
-              </View>
-            ) : (
-              <GlobalText style={[globalStyles.text, { marginLeft: 10 }]}>
-                {t('no_topics')}
-              </GlobalText>
-            )}
-          </ScrollView>
+          {loading ? (
+            <ActiveLoading />
+          ) : (
+            <ScrollView>
+              {resourceData ? (
+                <View
+                  style={{
+                    width: '100%',
+                  }}
+                >
+                  {!postrequisites ? (
+                    <View
+                      style={{
+                        padding: 10,
+                        // backgroundColor: '#F7ECDF',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        flexDirection: 'row',
+                      }}
+                    >
+                      {resourceData?.prerequisites?.map((data, index) => {
+                        return (
+                          <ContentCard
+                            key={index}
+                            item={data}
+                            index={index}
+                            course_id={data?.identifier}
+                            unit_id={data?.identifier}
+                            TrackData={trackData}
+                          />
+                        );
+                      })}
+                    </View>
+                  ) : (
+                    <View
+                      style={{
+                        // backgroundColor: '#F7ECDF',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        flexDirection: 'row',
+                        paddingBottom: 50,
+                      }}
+                    >
+                      {resourceData?.postrequisites?.map((data, index) => {
+                        return (
+                          <ContentCard
+                            key={index}
+                            item={data}
+                            index={index}
+                            course_id={data?.identifier}
+                            unit_id={data?.identifier}
+                            TrackData={trackData}
+                          />
+                        );
+                      })}
+                    </View>
+                  )}
+                </View>
+              ) : (
+                <GlobalText style={[globalStyles.text, { marginLeft: 10 }]}>
+                  {t('no_topics')}
+                </GlobalText>
+              )}
+            </ScrollView>
+          )}
         </View>
       )}
     </View>
