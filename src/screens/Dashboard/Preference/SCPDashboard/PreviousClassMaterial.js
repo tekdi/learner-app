@@ -49,7 +49,6 @@ const PreviousClassMaterial = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    // console.log('hi');
 
     const startDate = new Date();
     startDate.setUTCDate(startDate.getUTCDate() - 1); // Go to yesterday
@@ -57,7 +56,6 @@ const PreviousClassMaterial = () => {
 
     const endDate = new Date();
     endDate.setUTCHours(18, 29, 59, 999); // Set to 18:29:59.999
-    console.log(startDate, endDate, 'FirstTime');
 
     const data = await eventList({ startDate, endDate });
     const finalData = await categorizeEvents(data?.events);
@@ -72,8 +70,6 @@ const PreviousClassMaterial = () => {
 
     const endDate = new Date(eventDate); // Create endDate from startDate
     endDate.setUTCHours(18, 29, 59, 999); // Set to 18:29:59.999
-    console.log({ startDate, endDate });
-
     const data = await eventList({ startDate, endDate });
     const finalData = await categorizeEvents(data?.events);
     setEventData(finalData);
@@ -89,8 +85,6 @@ const PreviousClassMaterial = () => {
       fetchPrevData();
     }
   }, [eventDate]);
-
-  console.log(eventData?.extraSessions?.length);
 
   return (
     <>

@@ -88,7 +88,6 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
       request: {
         filters: {
           identifier: contentList,
-          // identifier: ['do_2141915232762675201250'],
         },
         fields: [
           'name',
@@ -194,8 +193,6 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
         setResourceData({ prerequisites, postrequisites });
       }
 
-      // console.log('courseTrackData', JSON.stringify(trackData));
-
       // if (!postrequisites) {
       //   setDataInStorage(
       //     'courseTrackData',
@@ -204,6 +201,9 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
       // }
     }
   };
+
+  // console.log('courseTrackData', JSON.stringify(trackData));
+  // console.log('postrequisites', JSON.stringify(resourceData));
 
   useEffect(() => {
     fetchData();
