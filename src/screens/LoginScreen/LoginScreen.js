@@ -229,7 +229,9 @@ const LoginScreen = () => {
             </View>
 
             {errmsg !== '' && (
-              <GlobalText style={{ color: 'red', top: -10, left: 20 }}>
+              <GlobalText
+                style={{ color: 'red', top: -10, left: 20, width: '90%' }}
+              >
                 {t(errmsg || 'invalid_username_or_password')}
               </GlobalText>
             )}

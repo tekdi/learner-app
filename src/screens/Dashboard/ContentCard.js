@@ -35,7 +35,7 @@ import PDFnoimg from '../../assets/images/png/PDFnoimg.png';
 import Epubnoimg from '../../assets/images/png/Epubnoimg.png';
 import HtmlNoimg from '../../assets/images/png/HtmlNoimg.png';
 import MP4Noimg from '../../assets/images/png/MP4Noimg.png';
-import Question from '../../assets/images/png/Question.png';
+import Question from '../../assets/images/png/Quest.png';
 import QuestionIcon from '../../assets/images/png/QuestionIcon.png';
 import GameIcon from '../../assets/images/png/GameIcon.png';
 import Game from '../../assets/images/png/Game.png';

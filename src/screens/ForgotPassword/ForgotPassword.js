@@ -91,7 +91,7 @@ const ForgotPassword = ({ route }) => {
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         <Image style={styles.image2} source={lock_open} resizeMode="contain" />
 
-        <GlobalText style={[globalStyles.heading, { marginBottom: 10 }]}>
+        <GlobalText style={[globalStyles.heading2, { marginBottom: 10 }]}>
           {t('trouble_with_logging_in')}
         </GlobalText>
         {/* <GlobalText

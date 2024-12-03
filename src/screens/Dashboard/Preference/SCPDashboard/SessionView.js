@@ -124,7 +124,7 @@ const SessionView = () => {
             ellipsizeMode="tail"
             style={[globalStyles.heading2, { width: '95%' }]}
           >
-            {t('prepare_for')} d {getTomorrowDate()} {t('sessions')}
+            {t('prepare_for')} {getTomorrowDate()} {t('sessions')}
           </GlobalText>
         </View>
         <View style={[globalStyles.flexrow, { marginVertical: 20 }]}>
@@ -172,9 +172,15 @@ const SessionView = () => {
           {t('planned_sessions')}
         </GlobalText>
         <ScrollView style={{ height: '80%' }}>
-          {eventData?.plannedSessions?.map((item, key) => {
-            return <Accordion setTrack={setTrack} key={key} item={item} />;
-          })}
+          {eventData?.plannedSessions?.length > 0 ? (
+            eventData?.plannedSessions.map((item, key) => (
+              <Accordion setTrack={setTrack} key={key} item={item} />
+            ))
+          ) : (
+            <GlobalText style={globalStyles.text}>
+              {t('no_sessions_scheduled')}
+            </GlobalText>
+          )}
 
           <GlobalText style={globalStyles.subHeading}>
             {t('extra_sessions')}

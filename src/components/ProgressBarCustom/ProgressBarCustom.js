@@ -27,7 +27,7 @@ const ProgressBarCustom = ({
         />
         {/* Percentage Label */}
       </View>
-      <GlobalText style={[styles.label, { color: color }]}>
+      <GlobalText style={[styles.label, { color: color, fontSize: 16 }]}>
         {translateDigits(progress, language) === null
           ? `0%`
           : `${translateDigits(progress, language)} %`}
