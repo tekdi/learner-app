@@ -1173,7 +1173,7 @@ export const eventList = async ({ startDate, endDate }) => {
     const url = `${EndUrls.eventList}`; // Define the URL
     const headers = await getHeaders();
     const cohort = JSON.parse(await getDataFromStorage('cohortData'));
-    // console.log({ startDate, endDate, cohort });
+    console.log({ startDate, endDate, cohort });
     // console.log(cohort?.cohortData?.[0]?.cohortId);
 
     const payload = {
