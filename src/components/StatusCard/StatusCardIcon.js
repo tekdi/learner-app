@@ -32,15 +32,17 @@ const StatusCardIcon = ({ status }) => {
     return (
       <View style={[styles.view]}>
         <View style={styles.not_started} />
-        <Text
+        <GlobalText
           allowFontScaling={false}
+          numberOfLines={2}
+          ellipsizeMode="tail"
           style={[
             globalStyles.text,
-            { marginLeft: 5, color: 'white', fontSize: 12 },
+            { marginLeft: 5, color: 'white', fontSize: 12, width: '60%' },
           ]}
         >
           {t('not_started')}
-        </Text>
+        </GlobalText>
       </View>
     );
   }
