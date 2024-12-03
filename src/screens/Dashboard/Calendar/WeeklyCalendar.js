@@ -6,21 +6,24 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  Image,
 } from 'react-native';
 import globalStyles from '../../../utils/Helper/Style';
+import eventcal from '../../../assets/images/png/eventcal.png';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 
-const WeeklyCalendar = ({ setDate, postdays }) => {
+const WeeklyCalendar = ({ setDate, postdays, allEventData }) => {
   const [selectedDate, setSelectedDate] = useState(null);
+  const [eventDate, setEventDate] = useState(null);
   const flatListRef = useRef(null);
 
-  const formatDate = (date) => {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${month}/${day}/${year}`;
-  };
+  // const formatDate = (date) => {
+  //   const day = date.getDate().toString().padStart(2, '0');
+  //   const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  //   const year = date.getFullYear();
+  //   return `${month}/${day}/${year}`;
+  // };
 
   // Generate data for last 7 or next 7 days
   const generateDaysData = () => {
@@ -48,7 +51,6 @@ const WeeklyCalendar = ({ setDate, postdays }) => {
   const last30Days = generateDaysData();
 
   const onDateClick = (item) => {
-    // console.log('Selected Date:', formatDate(item.exactDate));
     setSelectedDate(item.date);
     setDate(item?.exactDate);
   };
@@ -80,6 +82,24 @@ const WeeklyCalendar = ({ setDate, postdays }) => {
     }
   };
 
+  useEffect(() => {
+    if (allEventData) {
+      setEventDate([]);
+      const uniqueDates = Array.from(
+        new Set(
+          allEventData.map((item) => {
+            const eventDate = new Date(item?.startDateTime);
+            return eventDate.getUTCDate(); // Get the day of the month
+          })
+        )
+      );
+
+      setEventDate(uniqueDates);
+    }
+  }, [allEventData]);
+
+  // console.log('eventDate', JSON.stringify(eventDate));
+
   return (
     <SafeAreaView>
       <FlatList
@@ -106,6 +126,10 @@ const WeeklyCalendar = ({ setDate, postdays }) => {
               <GlobalText style={[globalStyles.text, { fontSize: 12 }]}>
                 {item.date}
               </GlobalText>
+
+              {eventDate?.includes(item.date) && (
+                <Image source={eventcal} style={{ width: 20, height: 20 }} />
+              )}
             </View>
           </TouchableOpacity>
         )}
@@ -119,12 +143,14 @@ const WeeklyCalendar = ({ setDate, postdays }) => {
 const styles = StyleSheet.create({
   box: {
     padding: 16,
-    paddingVertical: 25,
+    paddingVertical: 10,
     margin: 5,
     alignItems: 'center',
+    // justifyContent: 'center',
     borderRadius: 8,
     backgroundColor: '#eee',
     width: 50,
+    minHeight: 70,
   },
   todayBox: {
     backgroundColor: '#FDBE16',

@@ -20,6 +20,7 @@ import { eventList } from '../../../../utils/API/AuthService';
 import { categorizeEvents } from '../../../../utils/JsHelper/Helper';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import { convertDates } from '@src/utils/Helper/JSHelper';
 
 const PreviousClassMaterialFullView = () => {
   const navigation = useNavigation();
@@ -28,6 +29,7 @@ const PreviousClassMaterialFullView = () => {
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [track, setTrack] = useState([]);
+  const [allEventData, setAllEventData] = useState([]);
 
   const monthNames = [
     'January',
@@ -79,8 +81,51 @@ const PreviousClassMaterialFullView = () => {
     setLoading(false);
   };
 
+  const fetchCompleteMonthData = async () => {
+    setLoading(true);
+
+    // Get the current date
+    const currentDate = new Date();
+
+    // Set startDate to the 1st day of the current month at 18:30:00 UTC
+    const startDate = new Date(
+      Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 0, 18, 30, 0)
+    );
+
+    // Set endDate to the last day of the current month at 18:29:59.999 UTC
+    const endDate = new Date(
+      Date.UTC(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        0,
+        18,
+        29,
+        59,
+        999
+      )
+    );
+
+    // Fetch the data within the specified date range
+    const data = await eventList({ startDate, endDate });
+    const uniqueDates = Array.from(
+      new Set(
+        data?.events?.map((item) => {
+          const eventDate = new Date(item?.startDateTime);
+
+          return eventDate; // Get the day of the month
+        })
+      )
+    );
+    const convertedData = convertDates(uniqueDates);
+    // console.log('allEventData', JSON.stringify(convertedData));
+
+    setAllEventData(convertedData);
+    setLoading(false);
+  };
+
   useEffect(() => {
     fetchData();
+    fetchCompleteMonthData();
   }, []);
 
   useEffect(() => {
@@ -89,7 +134,7 @@ const PreviousClassMaterialFullView = () => {
     }
   }, [eventDate]);
 
-  console.log(eventData?.extraSessions?.length);
+  // console.log(allEventData);
 
   return (
     <>
@@ -115,7 +160,13 @@ const PreviousClassMaterialFullView = () => {
             </GlobalText>
           </View>
           <View style={{ marginVertical: 10 }}>
-            <MonthlyCalendar attendance={false} setEventDate={setEventDate} />
+            {allEventData?.length > 0 && allEventData && (
+              <MonthlyCalendar
+                allEventData={allEventData}
+                attendance={false}
+                setEventDate={setEventDate}
+              />
+            )}
           </View>
           <GlobalText style={[globalStyles.subHeading]}>
             {t('planned_sessions')}

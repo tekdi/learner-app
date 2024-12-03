@@ -29,6 +29,7 @@ const PreviousClassMaterial = () => {
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [track, setTrack] = useState([]);
+  const [allEventData, setAllEventData] = useState();
 
   const monthNames = [
     'January',
@@ -76,8 +77,25 @@ const PreviousClassMaterial = () => {
     setLoading(false);
   };
 
+  const fetchCompleteWeekData = async () => {
+    setLoading(true);
+
+    // Set start date to yesterday at 18:30:00 UTC
+    const startDate = new Date();
+    startDate.setUTCDate(startDate.getUTCDate() - 7); // Set to yesterday
+    startDate.setUTCHours(18, 30, 0, 0); // Set time to 18:30:00 UTC
+    const endDate = new Date();
+    endDate.setUTCHours(18, 29, 59, 999); // Set time to 18:29:59 UTC
+    // Fetch the data within the specified date range
+    const data = await eventList({ startDate, endDate });
+
+    setAllEventData(data?.events);
+    // setLoading(false);
+  };
+
   useEffect(() => {
     fetchData();
+    fetchCompleteWeekData();
   }, []);
 
   useEffect(() => {
@@ -129,7 +147,10 @@ const PreviousClassMaterial = () => {
             />
           </TouchableOpacity>
           <View style={{ marginVertical: 20 }}>
-            <WeeklyCalendar setDate={setEventDate} />
+            <WeeklyCalendar
+              allEventData={allEventData}
+              setDate={setEventDate}
+            />
           </View>
           <GlobalText style={globalStyles.subHeading}>
             {t('planned_sessions')}

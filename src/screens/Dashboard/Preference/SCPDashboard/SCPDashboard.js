@@ -40,6 +40,7 @@ const SCPDashboard = (props) => {
   const navigation = useNavigation();
   const [userInfo, setUserInfo] = useState();
   const [date, setDate] = useState();
+  const [allEventData, setAllEventData] = useState();
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
   const monthNames = [
@@ -115,6 +116,24 @@ const SCPDashboard = (props) => {
     setLoading(false);
   };
 
+  const fetchCompleteWeekData = async () => {
+    setLoading(true);
+
+    // Set start date to yesterday at 18:30:00 UTC
+    const startDate = new Date();
+    startDate.setUTCDate(startDate.getUTCDate() - 1); // Set to yesterday
+    startDate.setUTCHours(18, 30, 0, 0); // Set time to 18:30:00 UTC
+    const endDate = new Date();
+    endDate.setDate(startDate.getDate() + 6);
+    endDate.setUTCHours(18, 29, 59, 999); // Set time to 18:29:59 UTC
+
+    // Fetch the data within the specified date range
+    const data = await eventList({ startDate, endDate });
+
+    setAllEventData(data?.events);
+    // setLoading(false);
+  };
+
   useEffect(() => {
     if (date) {
       fetchUpcomingData();
@@ -123,6 +142,7 @@ const SCPDashboard = (props) => {
 
   useEffect(() => {
     fetchData();
+    fetchCompleteWeekData();
   }, []);
 
   const handleCancel = () => {
@@ -136,7 +156,6 @@ const SCPDashboard = (props) => {
 
   useFocusEffect(
     useCallback(() => {
-      // console.log('########## in focus course');
       const onBackPress = () => {
         if (routeName === 'Home') {
           setShowExitModal(true);
@@ -226,7 +245,11 @@ const SCPDashboard = (props) => {
           </View>
         </TouchableOpacity>
         <View style={{ marginVertical: 20 }}>
-          <WeeklyCalendar setDate={setDate} postdays={true} />
+          <WeeklyCalendar
+            allEventData={allEventData}
+            setDate={setDate}
+            postdays={true}
+          />
         </View>
         <View style={{ minHeight: 240 }}>
           {loading ? (

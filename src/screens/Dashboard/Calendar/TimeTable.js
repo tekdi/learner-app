@@ -19,8 +19,8 @@ import { eventList, getAttendance } from '../../../utils/API/AuthService';
 import { categorizeEvents } from '../../../utils/JsHelper/Helper';
 import SubjectCard from '../Preference/SCPDashboard/SubjectCard';
 import ActiveLoading from '../../LoadingScreen/ActiveLoading';
-
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import { convertDates } from '@src/utils/Helper/JSHelper';
 
 const TimeTable = () => {
   const [eventDate, setEventDate] = useState(null);
@@ -29,6 +29,8 @@ const TimeTable = () => {
   const navigation = useNavigation();
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [allEventData, setAllEventData] = useState([]);
+
   // Sample data for the last 30 days
 
   const fetchData = async () => {
@@ -70,6 +72,47 @@ const TimeTable = () => {
     setLoading(false);
   };
 
+  const fetchCompleteMonthData = async () => {
+    setLoading(true);
+
+    // Get the current date
+    const currentDate = new Date();
+
+    // Set startDate to the 1st day of the current month at 18:30:00 UTC
+    const startDate = new Date(
+      Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), 0, 18, 30, 0)
+    );
+
+    // Set endDate to the last day of the current month at 18:29:59.999 UTC
+    const endDate = new Date(
+      Date.UTC(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        0,
+        18,
+        29,
+        59,
+        999
+      )
+    );
+
+    // Fetch the data within the specified date range
+    const data = await eventList({ startDate, endDate });
+    const uniqueDates = Array.from(
+      new Set(
+        data?.events?.map((item) => {
+          const eventDate = new Date(item?.startDateTime);
+
+          return eventDate; // Get the day of the month
+        })
+      )
+    );
+    const convertedData = convertDates(uniqueDates) || null;
+    // console.log('allEventData', JSON.stringify(convertedData));
+    setAllEventData(convertedData);
+    setLoading(false);
+  };
+
   useEffect(() => {
     if (eventDate) {
       fetchUpcomingData();
@@ -78,6 +121,7 @@ const TimeTable = () => {
 
   useEffect(() => {
     fetchData();
+    fetchCompleteMonthData();
   }, []);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -105,7 +149,13 @@ const TimeTable = () => {
         </View>
       </View>
       <ScrollView style={styles.scroll}>
-        <MonthlyCalendar setEventDate={setEventDate} />
+        {allEventData.length > 0 && allEventData && (
+          <MonthlyCalendar
+            allEventData={allEventData}
+            attendance={false}
+            setEventDate={setEventDate}
+          />
+        )}
         {loading ? (
           <ActiveLoading />
         ) : (

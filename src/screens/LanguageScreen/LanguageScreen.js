@@ -47,7 +47,7 @@ const LanguageScreen = () => {
   const getProgramData = async () => {
     const data = await getProgramDetails();
 
-    console.log('################ getProgramData', JSON.stringify(data));
+    // console.log('################ getProgramData', JSON.stringify(data));
 
     await setDataInStorage('tenantDetails', JSON.stringify(data));
   };

@@ -266,7 +266,8 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
             <ActiveLoading />
           ) : (
             <ScrollView>
-              {resourceData ? (
+              {resourceData?.postrequisites?.length > 0 ||
+              resourceData?.prerequisites?.length > 0 ? (
                 <View
                   style={{
                     width: '100%',
@@ -321,7 +322,9 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
                   )}
                 </View>
               ) : (
-                <GlobalText style={[globalStyles.text, { marginLeft: 10 }]}>
+                <GlobalText
+                  style={[globalStyles.text, { marginLeft: 10, marginTop: 10 }]}
+                >
                   {t('no_topics')}
                 </GlobalText>
               )}

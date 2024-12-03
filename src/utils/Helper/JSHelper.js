@@ -65,3 +65,13 @@ export const loadFileAsBlob = async (filePath, mimetype) => {
     return null;
   }
 };
+
+export function convertDates(dates) {
+  return dates.map((date) => {
+    let formattedDate = new Date(date);
+    let year = formattedDate.getFullYear();
+    let month = (formattedDate.getMonth() + 1).toString().padStart(2, '0');
+    let day = formattedDate.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
+}

@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import MaterialCard from './MaterialCard';
 import { useTranslation } from '../../../../../context/LanguageContext';
 import {
+  getActiveCohortData,
   getDataFromStorage,
   getOptionsByCategory,
 } from '../../../../../utils/JsHelper/Helper';
@@ -20,16 +21,15 @@ const LearningMaterial = () => {
   const [loading, setLoading] = useState(true);
   const [subjects, setSubjects] = useState([]);
 
-  console.log({ selectedIds });
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       const boardData = await LearningMaterialAPI();
-      // console.log({ boardData });
 
       const cohort = JSON.parse(await getDataFromStorage('cohortData'));
-      const cohortData = cohort?.cohortData?.[0];
+      const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
+
+      const cohortData = getActiveCohort?.[0];
 
       const frameworks = boardData?.result?.framework;
       const state = cohortData.customField.find(
@@ -111,9 +111,6 @@ const LearningMaterial = () => {
 
     setSubjects(selectedCourse ? selectedCourse.subjects : []);
   }, [selectedIds]);
-
-  // console.log('DDDD', subjects);
-  // console.log('courseSubjectLists', JSON.stringify(courseSubjectList));
 
   return loading ? (
     <ActiveLoading />

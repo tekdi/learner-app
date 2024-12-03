@@ -625,3 +625,14 @@ export const getDeviceId = async () => {
   const token = await messaging().getToken();
   return token;
 };
+
+export const getActiveCohortIds = async (cohortData) => {
+  return cohortData
+    .filter((cohort) => cohort.cohortStatus === 'active')
+    .map((cohort) => cohort?.cohortId);
+};
+export const getActiveCohortData = async (cohortData) => {
+  return cohortData
+    .filter((cohort) => cohort.cohortStatus === 'active')
+    .map((cohort) => cohort);
+};

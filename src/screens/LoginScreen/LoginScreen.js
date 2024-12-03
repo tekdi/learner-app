@@ -22,6 +22,7 @@ import {
 } from '../../utils/API/AuthService';
 import {
   getAcademicYearId,
+  getActiveCohortIds,
   getDataFromStorage,
   getDeviceId,
   getuserDetails,
@@ -83,17 +84,16 @@ const LoginScreen = () => {
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
         await setDataInStorage('userId', user_id);
-        console.log({ user_id });
 
         const academicyear = await setAcademicYear({ tenantid });
         // console.log({ tenantData, user_id, tenantid });
         const academicYearId = academicyear?.[0]?.id;
         await setDataInStorage('academicYearId', academicYearId || '');
         const cohort = await getCohort({ user_id, tenantid, academicYearId });
-        // console.log('################### cohort', JSON.stringify({ cohort }));
+        const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
+        // console.log('################### cohort', getActiveCohortId?.[0]);
         await setDataInStorage('cohortData', JSON.stringify(cohort));
-        const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-        // console.log({ cohort_id });
+        const cohort_id = getActiveCohortId?.[0];
 
         const profileData = await getProfileDetails({
           userId: user_id,
