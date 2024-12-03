@@ -628,11 +628,11 @@ export const getDeviceId = async () => {
 
 export const getActiveCohortIds = async (cohortData) => {
   return cohortData
-    .filter((cohort) => cohort.cohortStatus === 'active')
-    .map((cohort) => cohort?.cohortId);
+    ?.filter((cohort) => cohort?.cohortStatus === 'active')
+    ?.map((cohort) => cohort?.cohortId);
 };
 export const getActiveCohortData = async (cohortData) => {
   return cohortData
-    .filter((cohort) => cohort.cohortStatus === 'active')
-    .map((cohort) => cohort);
+    ?.filter((cohort) => cohort?.cohortStatus === 'active')
+    ?.map((cohort) => cohort);
 };
