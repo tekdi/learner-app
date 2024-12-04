@@ -22,6 +22,7 @@ import {
 } from '../../utils/API/AuthService';
 import {
   getAcademicYearId,
+  getActiveCohortIds,
   getDataFromStorage,
   getDeviceId,
   getuserDetails,
@@ -66,7 +67,7 @@ const LoginScreen = () => {
   const handleLogin = async () => {
     if (isConnected) {
       setNetworkstatus(true);
-      // setLoading(true);
+      setLoading(true);
       const payload = {
         username: userName,
         password: password,
@@ -83,17 +84,16 @@ const LoginScreen = () => {
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
         await setDataInStorage('userId', user_id);
-        console.log({ user_id });
 
         const academicyear = await setAcademicYear({ tenantid });
         // console.log({ tenantData, user_id, tenantid });
         const academicYearId = academicyear?.[0]?.id;
         await setDataInStorage('academicYearId', academicYearId || '');
         const cohort = await getCohort({ user_id, tenantid, academicYearId });
-        // console.log('################### cohort', JSON.stringify({ cohort }));
+        const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
+        // console.log('################### cohort', getActiveCohortId?.[0]);
         await setDataInStorage('cohortData', JSON.stringify(cohort));
-        const cohort_id = cohort?.cohortData?.[0]?.cohortId;
-        // console.log({ cohort_id });
+        const cohort_id = getActiveCohortId?.[0];
 
         const profileData = await getProfileDetails({
           userId: user_id,
@@ -141,6 +141,7 @@ const LoginScreen = () => {
         }
         const deviceId = await getDeviceId();
         await notificationSubscribe({ deviceId, user_id });
+        setLoading(false);
       } else {
         setLoading(false);
         setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));
@@ -228,14 +229,16 @@ const LoginScreen = () => {
             </View>
 
             {errmsg !== '' && (
-              <GlobalText style={{ color: 'red', top: -10, left: 20 }}>
+              <GlobalText
+                style={{ color: 'red', top: -10, left: 20, width: '90%' }}
+              >
                 {t(errmsg || 'invalid_username_or_password')}
               </GlobalText>
             )}
           </View>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('ForgotPassword');
+              navigation.navigate('ForgotPassword', { enableLogin: true });
             }}
             style={{ paddingLeft: 20, marginBottom: 30 }}
           >
@@ -246,7 +249,7 @@ const LoginScreen = () => {
                 fontSize: 15,
               }}
             >
-              {t('forgot_password')}
+              {t('forgot_password')}?
             </GlobalText>
           </TouchableOpacity>
           {/* <View style={globalStyles.flexrow}>

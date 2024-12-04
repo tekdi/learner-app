@@ -54,6 +54,7 @@ const Profile = (props) => {
   const [conentView, setConentView] = useState(false);
   const [storageData, setStorageData] = useState();
   const [userType, setUserType] = useState();
+  const [cohortId, setCohortId] = useState();
 
   const createNewObject = (customFields, labels) => {
     const result = {};
@@ -72,8 +73,10 @@ const Profile = (props) => {
   const fetchData = async () => {
     const result = JSON.parse(await getDataFromStorage('profileData'));
     const userTypes = await getDataFromStorage('userType');
-    console.log('userType', userTypes);
-
+    const cohortId = await getDataFromStorage('cohortId');
+    // console.log('userType', userTypes);
+    console.log('cohortId', cohortId);
+    setCohortId(cohortId);
     setUserType(userTypes);
 
     const requiredLabels = [
@@ -175,7 +178,7 @@ const Profile = (props) => {
             <GlobalText style={globalStyles.heading}>
               {t('my_profile')}
             </GlobalText>
-            {userType !== 'scp' && (
+            {cohortId === '00000000-0000-0000-0000-000000000000' && (
               <TouchableOpacity
                 onPress={() => {
                   navigation.navigate('ProfileUpdateScreen');
@@ -302,17 +305,26 @@ const Profile = (props) => {
                   resizeMode={FastImage.resizeMode.contain}
                   priority={FastImage.priority.high}
                 />
-                <GlobalText
-                  style={[globalStyles.subHeading, { width: '85%' }]}
-                  numberOfLines={2}
-                  ellipsizeMode="tail"
-                >
-                  {t('remove_all_offline_content')} ( {storageData})
-                </GlobalText>
+                <View style={{ width: '85%' }}>
+                  <GlobalText
+                    style={[globalStyles.subHeading]}
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
+                  >
+                    {t('remove_all_offline_content')}
+                  </GlobalText>
+                  <GlobalText
+                    style={[globalStyles.subHeading]}
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
+                  >
+                    ( {storageData})
+                  </GlobalText>
+                </View>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={{ top: -2 }}
+                style={{ top: -2, right: 10 }}
                 onPress={() => {
                   setConentView(true);
                 }}
@@ -324,9 +336,9 @@ const Profile = (props) => {
                 />
               </TouchableOpacity>
             </View>
-            {userType !== 'scp' && (
+            {cohortId === '00000000-0000-0000-0000-000000000000' && (
               <TouchableOpacity
-                style={[globalStyles.flexrow, { marginVertical: 10 }]}
+                style={[globalStyles.flexrow, { marginVertical: 15 }]}
                 onPress={() => {
                   navigation.navigate('ResetPassword');
                 }}
@@ -349,7 +361,7 @@ const Profile = (props) => {
             <TouchableOpacity
               style={[
                 globalStyles.flexrow,
-                { marginBottom: 20, marginTop: 10 },
+                { marginBottom: 20, marginTop: 15 },
               ]}
               onPress={() => {
                 setShowExitModal(true);
@@ -413,7 +425,7 @@ const Profile = (props) => {
                   allowFontScaling={false}
                   style={[globalStyles.subHeading, { color: '#0D599E' }]}
                 >
-                  {t('yes')}
+                  {t('okay')}
                 </GlobalText>
               </TouchableOpacity>
             </View>

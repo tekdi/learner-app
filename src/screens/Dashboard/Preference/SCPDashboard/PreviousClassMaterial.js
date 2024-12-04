@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { eventList } from '../../../../utils/API/AuthService';
 import { categorizeEvents } from '../../../../utils/JsHelper/Helper';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const PreviousClassMaterial = () => {
   const navigation = useNavigation();
@@ -28,6 +28,9 @@ const PreviousClassMaterial = () => {
   const [eventDate, setEventDate] = useState();
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [track, setTrack] = useState([]);
+  const [allEventData, setAllEventData] = useState();
+
   const monthNames = [
     'January',
     'February',
@@ -47,7 +50,6 @@ const PreviousClassMaterial = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    // console.log('hi');
 
     const startDate = new Date();
     startDate.setUTCDate(startDate.getUTCDate() - 1); // Go to yesterday
@@ -55,7 +57,6 @@ const PreviousClassMaterial = () => {
 
     const endDate = new Date();
     endDate.setUTCHours(18, 29, 59, 999); // Set to 18:29:59.999
-    console.log(startDate, endDate, 'FirstTime');
 
     const data = await eventList({ startDate, endDate });
     const finalData = await categorizeEvents(data?.events);
@@ -70,16 +71,31 @@ const PreviousClassMaterial = () => {
 
     const endDate = new Date(eventDate); // Create endDate from startDate
     endDate.setUTCHours(18, 29, 59, 999); // Set to 18:29:59.999
-    console.log({ startDate, endDate });
-
     const data = await eventList({ startDate, endDate });
     const finalData = await categorizeEvents(data?.events);
     setEventData(finalData);
     setLoading(false);
   };
 
+  const fetchCompleteWeekData = async () => {
+    setLoading(true);
+
+    // Set start date to yesterday at 18:30:00 UTC
+    const startDate = new Date();
+    startDate.setUTCDate(startDate.getUTCDate() - 7); // Set to yesterday
+    startDate.setUTCHours(18, 30, 0, 0); // Set time to 18:30:00 UTC
+    const endDate = new Date();
+    endDate.setUTCHours(18, 29, 59, 999); // Set time to 18:29:59 UTC
+    // Fetch the data within the specified date range
+    const data = await eventList({ startDate, endDate });
+
+    setAllEventData(data?.events);
+    // setLoading(false);
+  };
+
   useEffect(() => {
     fetchData();
+    fetchCompleteWeekData();
   }, []);
 
   useEffect(() => {
@@ -87,8 +103,6 @@ const PreviousClassMaterial = () => {
       fetchPrevData();
     }
   }, [eventDate]);
-
-  console.log(eventData?.extraSessions?.length);
 
   return (
     <>
@@ -133,15 +147,23 @@ const PreviousClassMaterial = () => {
             />
           </TouchableOpacity>
           <View style={{ marginVertical: 20 }}>
-            <WeeklyCalendar setDate={setEventDate} />
+            <WeeklyCalendar
+              allEventData={allEventData}
+              setDate={setEventDate}
+            />
           </View>
           <GlobalText style={globalStyles.subHeading}>
             {t('planned_sessions')}
           </GlobalText>
 
           {eventData?.plannedSessions?.length > 0 ? (
-            eventData.plannedSessions.map((item, key) => (
-              <Accordion postrequisites key={key} item={item} />
+            eventData?.plannedSessions?.map((item, key) => (
+              <Accordion
+                postrequisites
+                setTrack={setTrack}
+                key={key}
+                item={item}
+              />
             ))
           ) : (
             <GlobalText style={globalStyles.text}>
@@ -153,8 +175,13 @@ const PreviousClassMaterial = () => {
             {t('extra_sessions')}
           </GlobalText>
           {eventData?.extraSessions?.length > 0 ? (
-            eventData.extraSessions.map((item, key) => (
-              <Accordion postrequisites key={key} item={item} />
+            eventData?.extraSessions?.map((item, key) => (
+              <Accordion
+                postrequisites
+                setTrack={setTrack}
+                key={key}
+                item={item}
+              />
             ))
           ) : (
             <GlobalText style={globalStyles.text}>

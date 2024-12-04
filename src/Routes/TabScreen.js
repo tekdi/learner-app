@@ -12,6 +12,8 @@ import AssessmentStack from './AssessmentStack';
 import Coursesfilled from '../assets/images/png/Coursesfilled.png';
 import profile from '../assets/images/png/profile.png';
 import profile_filled from '../assets/images/png/profile_filled.png';
+import content from '../assets/images/png/content.png';
+import content2 from '../assets/images/png/content2.png';
 import Coursesunfilled from '../assets/images/png/Coursesunfilled.png';
 import ProfileStack from './ProfileStack';
 import { getDataFromStorage, getTentantId } from '../utils/JsHelper/Helper';
@@ -49,13 +51,15 @@ const TabScreen = () => {
         headerShown: false,
         tabBarIcon: ({ focused }) => {
           if (route.name === 'content') {
-            return (
-              <Icon
-                name="my-library-books"
-                color={focused ? '#987100' : 'black'}
-                size={30}
-              />
-            );
+            if (focused) {
+              return (
+                <Image source={content2} style={{ width: 30, height: 30 }} />
+              );
+            } else {
+              return (
+                <Image source={content} style={{ width: 30, height: 30 }} />
+              );
+            }
           } else if (route.name === 'DashboardStack') {
             if (focused) {
               return (

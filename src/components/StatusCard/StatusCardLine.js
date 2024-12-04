@@ -42,10 +42,12 @@ const StatusCardLine = ({ status, trackCompleted, viewStyle }) => {
       <View style={[styles.view]}>
         <View style={styles.not_started} />
         <Text
+          numberOfLines={2}
+          ellipsizeMode="tail"
           allowFontScaling={false}
           style={[
             globalStyles.text,
-            { color: 'white', marginLeft: 10, fontSize: 12 },
+            { color: 'white', marginLeft: 10, fontSize: 12, width: '60%' },
           ]}
         >
           {t('not_started')}

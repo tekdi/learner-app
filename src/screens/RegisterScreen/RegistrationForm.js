@@ -35,6 +35,7 @@ import { useTranslation } from '../../context/LanguageContext';
 import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
 import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
 import {
+  getActiveCohortIds,
   getDataFromStorage,
   getDeviceId,
   getuserDetails,
@@ -330,15 +331,16 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
     await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
 
     await setDataInStorage('userId', user_id);
-    const cohort = await getCohort({ user_id, tenantid });
     const academicyear = await setAcademicYear({ tenantid });
-
+    const academicYearId = academicyear?.[0]?.id;
+    const cohort = await getCohort({ user_id, tenantid, academicYearId });
+    const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
     await setDataInStorage(
       'academicYearId',
-      JSON.stringify(academicyear?.[0]?.id || '')
+      JSON.stringify(academicYearId || '')
     );
     await setDataInStorage('cohortData', JSON.stringify(cohort));
-    const cohort_id = cohort?.cohortData?.[0]?.cohortId;
+    const cohort_id = getActiveCohortId?.[0];
     await setDataInStorage(
       'cohortId',
       cohort_id || '00000000-0000-0000-0000-000000000000'
@@ -353,14 +355,29 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
     );
 
     await storeUsername(profileData?.getUserDetails?.[0]?.username);
-    console.log({ cohort_id, tenantid, programValue });
+    // console.log({ cohort_id, tenantid, programValue });
 
-    if (cohort_id) {
+    const youthnetTenantIds = programData?.filter((item) => {
+      if (item?.name === 'YouthNet') {
+        return item;
+      }
+    });
+    const scp = programData?.filter((item) => {
+      if (item?.name === 'Second Chance Program') {
+        return item;
+      }
+    });
+
+    if (tenantid === scp?.[0]?.tenantId) {
       await setDataInStorage('userType', 'scp');
-      navigation.navigate('SCPUserTabScreen');
+      if (cohort_id) {
+        navigation.navigate('SCPUserTabScreen');
+      } else {
+        navigation.navigate('Dashboard');
+      }
     } else {
-      if (programValue?.name === 'YouthNet') {
-        await setDataInStorage('userType', 'YouthNet');
+      if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
+        await setDataInStorage('userType', 'youthnet');
       } else {
         await setDataInStorage('userType', 'public');
       }
@@ -390,10 +407,8 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
   };
 
   const onSubmit = async (data) => {
-    // console.log('hi');
-
     const payload = await transformPayload(data);
-    console.log(JSON.stringify(payload));
+    // console.log(JSON.stringify(payload));
 
     const token = await getAccessToken();
     const register = await registerUser(payload);
@@ -679,8 +694,6 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
   };
 
   const prevForm = () => {
-    console.log('hi');
-
     let prevFormNumber = currentForm - 1;
 
     if (currentForm === 5 && programValue?.name === 'Public') {

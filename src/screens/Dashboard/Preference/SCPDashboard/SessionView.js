@@ -15,14 +15,14 @@ import Accordion from '../../../../components/Accordion/Accordion';
 import ProgressBarCustom from '../../../../components/ProgressBarCustom/ProgressBarCustom';
 import FastImage from '@changwoolab/react-native-fast-image';
 import { eventList } from '../../../../utils/API/AuthService';
-import Loading from '../../../LoadingScreen/Loading';
+import ActiveLoading from '../../../LoadingScreen/ActiveLoading';
 import {
   categorizeEvents,
   setDataInStorage,
 } from '../../../../utils/JsHelper/Helper';
 import RocketImageClub from '../../../../components/rocketImageClub/RocketImageClub';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const SessionView = () => {
   const navigation = useNavigation();
@@ -101,7 +101,7 @@ const SessionView = () => {
   console.log({ percentage });
 
   return loading ? (
-    <Loading />
+    <ActiveLoading />
   ) : (
     <>
       <SecondaryHeader logo />
@@ -119,7 +119,11 @@ const SessionView = () => {
               size={30}
             />
           </TouchableOpacity>
-          <GlobalText style={[globalStyles.heading2]}>
+          <GlobalText
+            numberOfLines={2}
+            ellipsizeMode="tail"
+            style={[globalStyles.heading2, { width: '95%' }]}
+          >
             {t('prepare_for')} {getTomorrowDate()} {t('sessions')}
           </GlobalText>
         </View>
@@ -159,15 +163,24 @@ const SessionView = () => {
               {percentage <= 10
                 ? t('lets_get_started_dive_in')
                 : percentage === 100
-                ? t('mission_accomplished')
-                : t('great_start_keep_going')}
+                  ? t('mission_accomplished')
+                  : t('great_start_keep_going')}
             </GlobalText>
           </View>
         </View>
+        <GlobalText style={globalStyles.subHeading}>
+          {t('planned_sessions')}
+        </GlobalText>
         <ScrollView style={{ height: '80%' }}>
-          {eventData?.plannedSessions?.map((item, key) => {
-            return <Accordion setTrack={setTrack} key={key} item={item} />;
-          })}
+          {eventData?.plannedSessions?.length > 0 ? (
+            eventData?.plannedSessions.map((item, key) => (
+              <Accordion setTrack={setTrack} key={key} item={item} />
+            ))
+          ) : (
+            <GlobalText style={globalStyles.text}>
+              {t('no_sessions_scheduled')}
+            </GlobalText>
+          )}
 
           <GlobalText style={globalStyles.subHeading}>
             {t('extra_sessions')}

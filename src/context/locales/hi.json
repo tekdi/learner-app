@@ -279,5 +279,8 @@
   "consent_form": "सहमति पत्र",
   "select": "चुनें",
   "topic": "विषय",
-  "you_have_ongoing": "आपके पास {value} चल रहे पाठ्यक्रम हैं"
+  "you_have_ongoing": "आपके पास {value} चल रहे पाठ्यक्रम हैं",
+  "username_should_not_be_empty,password_should_not_be_empty": "उपयोगकर्ता नाम खाली नहीं होना चाहिए, पासवर्ड खाली नहीं होना चाहिए",
+  "username_should_not_be_empty": "उपयोगकर्ता नाम खाली नहीं होना चाहिए",
+  "password_should_not_be_empty": "पासवर्ड खाली नहीं होना चाहिए"
 }

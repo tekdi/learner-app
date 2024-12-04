@@ -18,18 +18,19 @@ import MonthlyCalendar from './MonthlyCalendar';
 import { getAttendance } from '../../../utils/API/AuthService';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import ActiveLoading from '../../LoadingScreen/ActiveLoading';
 
 const FullAttendance = () => {
   const [eventDate, setEventDate] = useState(null);
   const [learnerAttendance, setLearnerAttendance] = useState(null);
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
 
   // Sample data for the last 30 days
 
-  console.log({ eventDate });
-
   const fetchData = async () => {
+    setLoading(true);
     // Get today's date
     const todayDate = new Date();
 
@@ -43,6 +44,7 @@ const FullAttendance = () => {
 
     const response = await getAttendance({ todate, fromDate });
     setLearnerAttendance(response.attendanceList);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -74,15 +76,19 @@ const FullAttendance = () => {
           </GlobalText>
         </View>
       </View>
-      <ScrollView style={styles.scroll}>
-        {learnerAttendance && (
-          <MonthlyCalendar
-            learnerAttendance={learnerAttendance}
-            attendance
-            setEventDate={setEventDate}
-          />
-        )}
-      </ScrollView>
+      {loading ? (
+        <ActiveLoading />
+      ) : (
+        <ScrollView style={styles.scroll}>
+          {learnerAttendance && (
+            <MonthlyCalendar
+              learnerAttendance={learnerAttendance}
+              attendance
+              setEventDate={setEventDate}
+            />
+          )}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };

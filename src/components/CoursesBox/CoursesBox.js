@@ -54,11 +54,11 @@ const CoursesBox = ({
 
   return (
     <SafeAreaView style={[styles.container]}>
-      {title && (
+      {/* {title && (
         <GlobalText style={[styles.title, { color: style.titlecolor }]}>
           {t(title)}
         </GlobalText>
-      )}
+      )} */}
       <View style={styles.view}>
         <GlobalText style={[styles.description, { color: 'black' }]}>
           {t(description)}

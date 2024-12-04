@@ -17,7 +17,7 @@ const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
 
   if (status === 'completed') {
     return (
-      <View style={[styles.view, viewStyle]}>
+      <View style={[styles.view, viewStyle, { width: '80%' }]}>
         <Image style={styles.img} source={check_circle} resizeMode="contain" />
         <GlobalText
           style={[
@@ -37,7 +37,7 @@ const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
     );
   } else if (status === 'progress') {
     return (
-      <View style={[styles.view, viewStyle]}>
+      <View style={[styles.view, viewStyle, { width: '80%' }]}>
         <Image
           style={styles.img}
           source={arrow_upload_progress}
@@ -56,7 +56,7 @@ const StatusCardCourse = ({ status, trackCompleted, viewStyle }) => {
   } else {
     return (
       <View style={[styles.view, viewStyle]}>
-        <Icon name="circle" style={{ color: 'black' }} />
+        <Icon name="circle" style={{ color: 'white' }} />
         <GlobalText
           style={[
             globalStyles.text,

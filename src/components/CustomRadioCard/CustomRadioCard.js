@@ -86,7 +86,15 @@ const CustomRadioCard = ({
           {field?.map((option, index) => (
             <TouchableOpacity
               key={index}
-              style={styles.card}
+              style={[
+                styles.card,
+                {
+                  backgroundColor:
+                    selectedIds?.[name]?.value === option?.tenantId
+                      ? '#FFEFD5'
+                      : 'white',
+                },
+              ]}
               onPress={() => handlePress(index)}
             >
               <View style={styles.radioContainer}>
@@ -100,16 +108,12 @@ const CustomRadioCard = ({
               </View>
               {/* <Image style={styles.img} source={program} resizeMode="contain" /> */}
               <View style={styles.carocontainer}>
-                {/* <SwiperFlatList
-                  autoplay
-                  autoplayDelay={2}
-                  autoplayLoop
-                  index={2}
-                  showPagination
-                  data={images}
-                  renderItem={renderItem}
-                /> */}
-                <ImageCarousel images={option?.programImages || []} />
+                <ImageCarousel
+                  backgroundColor={
+                    selectedIds?.[name]?.value === option?.tenantId && true
+                  }
+                  images={option?.programImages || []}
+                />
               </View>
               {/* <GlobalText style={globalStyles.subHeading}>
                 {option.description}
@@ -172,7 +176,7 @@ const styles = StyleSheet.create({
   radioContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    // marginBottom: 10,
   },
   radio: {
     marginRight: 10,

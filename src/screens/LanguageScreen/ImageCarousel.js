@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, Text } from 'react-native';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import public_img from '../../assets/images/png/public.png';
 
-export const ImageCarousel = ({ images }) => {
+export const ImageCarousel = ({ images, backgroundColor }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +39,12 @@ export const ImageCarousel = ({ images }) => {
   return (
     <View style={styles.container}>
       {/* Carousel Image */}
-      <View style={styles.imageContainer}>
+      <View
+        style={[
+          styles.imageContainer,
+          { backgroundColor: backgroundColor ? '#FFEFD5' : 'white' },
+        ]}
+      >
         {loading ? (
           <ActiveLoading />
         ) : (
@@ -75,20 +80,22 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    height: 280,
-    marginBottom: 20,
+    height: 200,
+    // marginBottom: 20,
     overflow: 'hidden',
-    borderRadius: 10,
+    // borderRadius: 10,
+    // backgroundColor: 'red',
   },
   image: {
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
+    borderWidth: 1,
   },
   indicatorContainer: {
     flexDirection: 'row',
     position: 'absolute',
-    bottom: 40,
+    bottom: -5,
   },
   indicator: {
     width: 20,

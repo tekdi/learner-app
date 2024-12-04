@@ -35,6 +35,10 @@ import PDFnoimg from '../../assets/images/png/PDFnoimg.png';
 import Epubnoimg from '../../assets/images/png/Epubnoimg.png';
 import HtmlNoimg from '../../assets/images/png/HtmlNoimg.png';
 import MP4Noimg from '../../assets/images/png/MP4Noimg.png';
+import Question from '../../assets/images/png/Quest.png';
+import QuestionIcon from '../../assets/images/png/QuestionIcon.png';
+import GameIcon from '../../assets/images/png/GameIcon.png';
+import Game from '../../assets/images/png/Game.png';
 import DownloadModal from './DownloadModal';
 
 import GlobalText from '@components/GlobalText/GlobalText';
@@ -98,7 +102,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 
   const fetchDataTrack = async () => {
     try {
-      //console.log('########### TrackData', TrackData);
+      // console.log('########### TrackData', TrackData);
       if (TrackData && (item?.identifier || item?.id)) {
         for (let i = 0; i < TrackData.length; i++) {
           if (TrackData[i]?.courseId == course_id) {
@@ -183,7 +187,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
               status = 'completed';
             }
             setTrackStatus(status);
-            //console.log('########### trackStatus', status);
+            // console.log('########### trackStatus', status);
           }
         }
       }
@@ -238,16 +242,17 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
                 }
               : mimeType === 'pdf'
                 ? PDFnoimg
-                : mimeType === 'vnd.ekstep.html-archive' ||
-                    mimeType == 'vnd.ekstep.h5p-archive'
-                  ? HtmlNoimg
-                  : mimeType === 'mp4' || mimeType === 'webm'
-                    ? MP4Noimg
-                    : mimeType === 'epub'
-                      ? Epubnoimg
-                      : mimeType === 'x-youtube'
-                        ? YouTubeNoimg
-                        : mimeType === 'vnd.sunbird.questionset' && QmlNoimg
+                : mimeType === 'vnd.ekstep.html-archive'
+                  ? Game
+                  : mimeType == 'vnd.ekstep.h5p-archive'
+                    ? HtmlNoimg
+                    : mimeType === 'mp4' || mimeType === 'webm'
+                      ? MP4Noimg
+                      : mimeType === 'epub'
+                        ? Epubnoimg
+                        : mimeType === 'x-youtube'
+                          ? YouTubeNoimg
+                          : mimeType === 'vnd.sunbird.questionset' && Question
           }
           style={{ borderRadius: 50 }}
           resizeMode="cover"
@@ -261,8 +266,10 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
             <View
               style={{
                 alignSelf: 'flex-end',
-                padding: 5,
-                borderRadius: 5,
+                paddingLeft: 5,
+                paddingBottom: 5,
+                paddingRight: 5,
+                borderBottomLeftRadius: 5,
                 backgroundColor: '#1F1B1380',
               }}
             >
@@ -311,8 +318,9 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         <View style={[globalStyles.flexrow]}>
           {mimeType === 'pdf' ? (
             <Image style={styles.img} source={pdf} resizeMode="contain" />
-          ) : mimeType === 'vnd.ekstep.html-archive' ||
-            mimeType == 'vnd.ekstep.h5p-archive' ? (
+          ) : mimeType === 'vnd.ekstep.html-archive' ? (
+            <Image style={styles.img} source={GameIcon} resizeMode="contain" />
+          ) : mimeType == 'vnd.ekstep.h5p-archive' ? (
             <Image style={styles.img} source={html} resizeMode="contain" />
           ) : mimeType === 'mp4' || mimeType === 'webm' ? (
             <Image style={styles.img} source={mp4} resizeMode="contain" />
@@ -321,7 +329,11 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
           ) : mimeType === 'x-youtube' ? (
             <Image style={styles.img} source={youtube} resizeMode="contain" />
           ) : mimeType === 'vnd.sunbird.questionset' ? (
-            <Image style={styles.img} source={qml} resizeMode="contain" />
+            <Image
+              style={styles.img}
+              source={QuestionIcon}
+              resizeMode="contain"
+            />
           ) : (
             <></>
           )}
@@ -346,7 +358,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         </View>
         {mimeType !== 'x-youtube' && (
           <TouchableOpacity onPress={toggleDrawer} style={styles.threeDots}>
-            <Icon name="dots-three-vertical" size={20} color="#0D599E" />
+            <Icon name="dots-three-vertical" size={20} color="black" />
           </TouchableOpacity>
         )}
       </View>

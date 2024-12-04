@@ -386,14 +386,15 @@ export const getCohort = async ({ user_id, tenantid, academicYearId }) => {
     const url = `${EndUrls.cohort}/${user_id}`;
 
     // Log the curl command
-    console.log(
-      `curl -X GET '${url}' -H 'Content-Type: application/json'${
-        headers.Authorization
-          ? ` -H 'Authorization: ${headers.Authorization}'`
-          : ''
-      }
-      -H 'tenantid: ${headers.tenantid}'`
-    );
+    // console.log(
+    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${
+    //     headers.Authorization
+    //       ? ` -H 'Authorization: ${headers.Authorization}'`
+    //       : ''
+    //   }
+    //   -H 'tenantid: ${headers.tenantid}'
+    //   -H 'academicyearid: ${headers.academicyearid}'`
+    // );
 
     const result = await get(url, {
       headers: headers || {},
@@ -1172,7 +1173,7 @@ export const eventList = async ({ startDate, endDate }) => {
     const url = `${EndUrls.eventList}`; // Define the URL
     const headers = await getHeaders();
     const cohort = JSON.parse(await getDataFromStorage('cohortData'));
-    // console.log({ startDate, endDate, cohort });
+    console.log({ startDate, endDate, cohort });
     // console.log(cohort?.cohortData?.[0]?.cohortId);
 
     const payload = {
@@ -1234,7 +1235,7 @@ export const targetedSolutions = async ({ subjectName, type }) => {
       medium: data?.MEDIUM,
       class: data?.GRADE,
       board: data?.BOARD,
-      type: type,
+      courseType: type,
     };
 
     // console.log(
@@ -1272,11 +1273,11 @@ export const EventDetails = async ({ id }) => {
 
     const payload = {};
 
-    console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-        headers['x-auth-token']
-      }' -d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+    //     headers['x-auth-token']
+    //   }' -d '${JSON.stringify(payload)}'`
+    // );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1342,11 +1343,11 @@ export const SolutionEventDetails = async ({ templateId, solutionId }) => {
 
     const payload = { role: 'Teacher' };
 
-    console.log(
-      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-        headers['x-auth-token']
-      }' -d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+    //     headers['x-auth-token']
+    //   }' -d '${JSON.stringify(payload)}'`
+    // );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1421,7 +1422,7 @@ export const LearningMaterialAPI = async () => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
-    // console.log(curlCommand);
+    console.log({ curlCommand });
     // Make the actual request
     const result = await get(url, {
       headers: headers || {},
@@ -1439,8 +1440,6 @@ export const LearningMaterialAPI = async () => {
 
 export const notificationSubscribe = async ({ deviceId, user_id }) => {
   try {
-    console.log('api_called');
-
     const url = `${EndUrls.notificationSubscribe}/${user_id}`; // Define the URL
     const headers = await getHeaders(); // Ensure headers are awaited
     const payload = {
@@ -1464,7 +1463,6 @@ curl -X PATCH '${url}' \\
     const result = await patch(url, payload, {
       headers: headers || {},
     });
-    console.log({ result });
 
     if (result?.data) {
       return result?.data;

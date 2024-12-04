@@ -279,5 +279,8 @@
   "consent_form": "Consent Form",
   "select": "Select",
   "topic": "Topic",
-  "you_have_ongoing": "You have {value} Ongoing Courses"
+  "you_have_ongoing": "You have {value} Ongoing Courses",
+  "username_should_not_be_empty,password_should_not_be_empty": "Username should not be empty, Password should not be empty",
+  "username_should_not_be_empty": "Username should not be empty",
+  "password_should_not_be_empty": "Password should not be empty"
 }

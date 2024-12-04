@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const CustomTextInput = ({
   position = 'static',
@@ -46,7 +46,7 @@ const CustomTextInput = ({
             fontFamily: 'Poppins-Regular',
           }}
         >
-          {field} {t('is_required')}
+          {t(field)} {t('is_required')}
         </GlobalText>
       )}
     </View>

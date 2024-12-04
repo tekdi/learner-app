@@ -76,7 +76,7 @@ const StatusCard = ({ status, trackCompleted, viewStyle }) => {
   } else {
     return (
       <View style={[styles.view, viewStyle]}>
-        <Icon name="circle" />
+        <Icon name="circle" color={'white'} />
         <GlobalText
           style={[
             globalStyles.text,

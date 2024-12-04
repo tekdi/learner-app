@@ -33,13 +33,14 @@ import { eventList } from '../../../../utils/API/AuthService';
 import ActiveLoading from '../../../LoadingScreen/ActiveLoading';
 import BackButtonHandler from '../../../../components/BackNavigation/BackButtonHandler';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const SCPDashboard = (props) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [userInfo, setUserInfo] = useState();
   const [date, setDate] = useState();
+  const [allEventData, setAllEventData] = useState();
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
   const monthNames = [
@@ -115,6 +116,24 @@ const SCPDashboard = (props) => {
     setLoading(false);
   };
 
+  const fetchCompleteWeekData = async () => {
+    setLoading(true);
+
+    // Set start date to yesterday at 18:30:00 UTC
+    const startDate = new Date();
+    startDate.setUTCDate(startDate.getUTCDate() - 1); // Set to yesterday
+    startDate.setUTCHours(18, 30, 0, 0); // Set time to 18:30:00 UTC
+    const endDate = new Date();
+    endDate.setDate(startDate.getDate() + 6);
+    endDate.setUTCHours(18, 29, 59, 999); // Set time to 18:29:59 UTC
+
+    // Fetch the data within the specified date range
+    const data = await eventList({ startDate, endDate });
+
+    setAllEventData(data?.events);
+    // setLoading(false);
+  };
+
   useEffect(() => {
     if (date) {
       fetchUpcomingData();
@@ -123,6 +142,7 @@ const SCPDashboard = (props) => {
 
   useEffect(() => {
     fetchData();
+    fetchCompleteWeekData();
   }, []);
 
   const handleCancel = () => {
@@ -136,7 +156,6 @@ const SCPDashboard = (props) => {
 
   useFocusEffect(
     useCallback(() => {
-      // console.log('########## in focus course');
       const onBackPress = () => {
         if (routeName === 'Home') {
           setShowExitModal(true);
@@ -175,11 +194,13 @@ const SCPDashboard = (props) => {
           style={[styles.box]}
         >
           <View style={{ width: '90%' }}>
-            <GlobalText style={globalStyles.subHeading}>
+            <GlobalText
+              style={[globalStyles.subHeading, { fontWeight: 'bold' }]}
+            >
               {t('previous_class_materials')} {t('post_requisites')}
             </GlobalText>
             <GlobalText
-              style={globalStyles.text}
+              style={globalStyles.subHeading}
               numberOfLines={2}
               ellipsizeMode="tail"
             >
@@ -224,47 +245,53 @@ const SCPDashboard = (props) => {
           </View>
         </TouchableOpacity>
         <View style={{ marginVertical: 20 }}>
-          <WeeklyCalendar setDate={setDate} postdays={true} />
+          <WeeklyCalendar
+            allEventData={allEventData}
+            setDate={setDate}
+            postdays={true}
+          />
         </View>
-        {loading ? (
-          <ActiveLoading />
-        ) : (
-          <View
-            style={{
-              padding: 10,
-              backgroundColor: '#fafafa',
-              marginTop: 20,
-              marginBottom: 20,
-            }}
-          >
-            <GlobalText style={globalStyles.heading2}>
-              {t('planned_sessions')}
-            </GlobalText>
-
-            {eventData?.plannedSessions?.length > 0 ? (
-              eventData.plannedSessions.map((item, key) => (
-                <SubjectCard key={key} item={item} />
-              ))
-            ) : (
-              <GlobalText style={globalStyles.text}>
-                {t('no_sessions_scheduled')}
+        <View style={{ minHeight: 240 }}>
+          {loading ? (
+            <ActiveLoading />
+          ) : (
+            <View
+              style={{
+                padding: 10,
+                backgroundColor: '#fafafa',
+                marginTop: 20,
+                marginBottom: 20,
+              }}
+            >
+              <GlobalText style={globalStyles.heading2}>
+                {t('planned_sessions')}
               </GlobalText>
-            )}
 
-            <GlobalText style={globalStyles.heading2}>
-              {t('extra_sessions')}
-            </GlobalText>
-            {eventData?.extraSessions?.length > 0 ? (
-              eventData.extraSessions.map((item, key) => (
-                <SubjectCard key={key} item={item} />
-              ))
-            ) : (
-              <GlobalText style={globalStyles.text}>
-                {t('no_sessions_scheduled')}
+              {eventData?.plannedSessions?.length > 0 ? (
+                eventData.plannedSessions.map((item, key) => (
+                  <SubjectCard key={key} item={item} />
+                ))
+              ) : (
+                <GlobalText style={globalStyles.text}>
+                  {t('no_sessions_scheduled')}
+                </GlobalText>
+              )}
+
+              <GlobalText style={globalStyles.heading2}>
+                {t('extra_sessions')}
               </GlobalText>
-            )}
-          </View>
-        )}
+              {eventData?.extraSessions?.length > 0 ? (
+                eventData.extraSessions.map((item, key) => (
+                  <SubjectCard key={key} item={item} />
+                ))
+              ) : (
+                <GlobalText style={globalStyles.text}>
+                  {t('no_sessions_scheduled')}
+                </GlobalText>
+              )}
+            </View>
+          )}
+        </View>
       </ScrollView>
       {showExitModal && (
         <BackButtonHandler

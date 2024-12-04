@@ -20,10 +20,11 @@ import lock_open from '../../assets/images/png/lock_open.png';
 import { forgotPassword } from '../../utils/API/AuthService';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import SecondaryHeader from '../../components/Layout/SecondaryHeader';
+import GlobalText from '@components/GlobalText/GlobalText';
 
-import GlobalText from "@components/GlobalText/GlobalText";
-
-const ForgotPassword = () => {
+const ForgotPassword = ({ route }) => {
+  const { enableLogin } = route.params;
   const [value, setvalue] = useState('');
   const [username, setusename] = useState('');
   const [modalError, setmodalError] = useState('');
@@ -85,97 +86,108 @@ const ForgotPassword = () => {
   }
 
   return (
-    <KeyboardAvoidingView style={[globalStyles.container, { paddingTop: 50 }]}>
-      <View style={styles.view}>
-        <Image style={styles.image} source={Logo} resizeMode="contain" />
-        <Image style={styles.image2} source={lock_open} resizeMode="contain" />
+    <>
+      <SecondaryHeader />
+      <KeyboardAvoidingView
+        style={[globalStyles.container, { paddingTop: 50 }]}
+      >
+        <View style={styles.view}>
+          <Image style={styles.image} source={Logo} resizeMode="contain" />
+          <Image
+            style={styles.image2}
+            source={lock_open}
+            resizeMode="contain"
+          />
 
-        <GlobalText style={[globalStyles.heading, { marginBottom: 10 }]}>
-          {t('trouble_with_logging_in')}
-        </GlobalText>
-        {/* <GlobalText
+          <GlobalText style={[globalStyles.heading2, { marginBottom: 10 }]}>
+            {t('trouble_with_logging_in')}
+          </GlobalText>
+          {/* <GlobalText
           style={[globalStyles.text, { marginBottom: 20, textAlign: 'center' }]}
         >
           {t('forgot_password_desp')}
         </GlobalText> */}
-        <CustomTextInput
-          error={error}
-          field="username"
-          onChange={handleInput}
-          value={value}
-          autoCapitalize="none"
-        />
-        <PrimaryButton onPress={onPress} text={t('next')}></PrimaryButton>
-      </View>
-      <View style={{ width: '60%', alignSelf: 'center' }}></View>
-      <View
-        style={{
-          position: 'relative',
-          top: '20%',
-          alignSelf: 'center',
-          width: '100%',
-        }}
-      >
-        <HorizontalLine />
-        <GlobalText
-          style={[
-            globalStyles.text,
-            { textAlign: 'center', padding: 30, color: '#0D599E' },
-          ]}
-          onPress={() => {
-            navigation.navigate('LoginScreen');
+          <CustomTextInput
+            error={error}
+            field="username"
+            onChange={handleInput}
+            value={value}
+            autoCapitalize="none"
+          />
+          <PrimaryButton onPress={onPress} text={t('next')}></PrimaryButton>
+        </View>
+        <View style={{ width: '60%', alignSelf: 'center' }}></View>
+        <View
+          style={{
+            position: 'relative',
+            top: '20%',
+            alignSelf: 'center',
+            width: '100%',
           }}
         >
-          {t('back_to_login')}
-        </GlobalText>
-      </View>
-      <Modal visible={modal} transparent={true} animationType="slide" onclo>
-        <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
-          <View style={styles.alertBox}>
-            <TouchableOpacity
-              activeOpacity={1} // Prevent closing the modal when clicking inside the alert box
-              style={styles.alertSubBox}
+          <HorizontalLine />
+          {enableLogin && (
+            <GlobalText
+              style={[
+                globalStyles.text,
+                { textAlign: 'center', padding: 30, color: '#0D599E' },
+              ]}
+              onPress={() => {
+                navigation.navigate('LoginScreen');
+              }}
             >
-              {modalError ? (
-                <GlobalText
-                  style={[
-                    globalStyles.subHeading,
-                    { textAlign: 'center', marginVertical: 10 },
-                  ]}
-                >
-                  {t(modalError.toLowerCase().replace(/\s+/g, '_'))}
-                </GlobalText>
-              ) : (
-                <>
-                  <Icon
-                    name={'checkmark-circle-outline'}
-                    size={60}
-                    color="#1A8825"
-                  />
+              {t('back_to_login')}
+            </GlobalText>
+          )}
+        </View>
+        <Modal visible={modal} transparent={true} animationType="slide" onclo>
+          <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
+            <View style={styles.alertBox}>
+              <TouchableOpacity
+                activeOpacity={1} // Prevent closing the modal when clicking inside the alert box
+                style={styles.alertSubBox}
+              >
+                {modalError ? (
                   <GlobalText
                     style={[
                       globalStyles.subHeading,
                       { textAlign: 'center', marginVertical: 10 },
                     ]}
                   >
-                    {t('we_sent_an_email_to')} {encryptEmail(username)}{' '}
-                    {t('with_a_link_to_get_back_to_your_account')}
+                    {t(modalError.toLowerCase().replace(/\s+/g, '_'))}
                   </GlobalText>
-                </>
-              )}
-            </TouchableOpacity>
-            <View style={styles.btnbox}>
-              <PrimaryButton
-                onPress={() => {
-                  setmodal(false);
-                }}
-                text={t('ok')}
-              ></PrimaryButton>
+                ) : (
+                  <>
+                    <Icon
+                      name={'checkmark-circle-outline'}
+                      size={60}
+                      color="#1A8825"
+                    />
+                    <GlobalText
+                      style={[
+                        globalStyles.subHeading,
+                        { textAlign: 'center', marginVertical: 10 },
+                      ]}
+                    >
+                      {t('we_sent_an_email_to')} {encryptEmail(username)}{' '}
+                      {t('with_a_link_to_get_back_to_your_account')}
+                    </GlobalText>
+                  </>
+                )}
+              </TouchableOpacity>
+              <View style={styles.btnbox}>
+                <PrimaryButton
+                  onPress={() => {
+                    setmodal(false);
+                  }}
+                  text={t('ok')}
+                ></PrimaryButton>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
-      </Modal>
-    </KeyboardAvoidingView>
+          </TouchableOpacity>
+        </Modal>
+      </KeyboardAvoidingView>
+    </>
   );
 };
 
