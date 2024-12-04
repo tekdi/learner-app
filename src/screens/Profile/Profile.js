@@ -75,12 +75,13 @@ const Profile = (props) => {
     const userTypes = await getDataFromStorage('userType');
     const cohortId = await getDataFromStorage('cohortId');
     // console.log('userType', userTypes);
-    console.log('cohortId', cohortId);
+    // console.log('cohortId', cohortId);
     setCohortId(cohortId);
     setUserType(userTypes);
 
     const requiredLabels = [
       'WHATS_YOUR_GENDER',
+      'GENDER',
       'CLASS_OR_LAST_PASSED_GRADE',
       'STATES',
       'DISTRICTS',
@@ -99,7 +100,7 @@ const Profile = (props) => {
 
   const StorageSize = async () => {
     const data = await calculateTotalStorageSize();
-    console.log('size', data);
+    // console.log('size', data);
     setStorageData(data);
   };
 
@@ -109,6 +110,8 @@ const Profile = (props) => {
       StorageSize();
     }, [navigation])
   );
+
+  console.log(JSON.stringify(userData));
 
   const handleLogout = () => {
     const fetchData = async () => {
@@ -277,7 +280,7 @@ const Profile = (props) => {
                 <Label text={`${t('gender')} `} />
                 <TextField
                   text={`${capitalizeFirstLetter(
-                    userDetails?.WHATS_YOUR_GENDER
+                    userDetails?.WHATS_YOUR_GENDER || userDetails?.GENDER
                   )}`}
                 />
               </View>

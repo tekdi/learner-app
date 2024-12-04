@@ -32,7 +32,7 @@ import {
   useNavigationState,
 } from '@react-navigation/native';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const SyncCard = ({ doneSync }) => {
   const { t } = useTranslation();
@@ -58,7 +58,7 @@ const SyncCard = ({ doneSync }) => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('Screen is focused');
+      // console.log('Screen is focused');
 
       const fetchData = async () => {
         // console.log('internet changed ', isConnected);
@@ -68,7 +68,7 @@ const SyncCard = ({ doneSync }) => {
       // Perform any task when the screen is focused
 
       return () => {
-        console.log('Screen is unfocused');
+        // console.log('Screen is unfocused');
         // Perform any cleanup or task when screen is unfocused
       };
     }, [])
@@ -124,12 +124,10 @@ const SyncCard = ({ doneSync }) => {
         //get sync pending
         const user_id = await getDataFromStorage('userId');
         let result_sync_offline = await getSyncAsessmentOffline(user_id);
-        let result_sync_offline_telemetry = await getSyncTelemetryOffline(
-          user_id
-        );
-        let result_sync_offline_tracking = await getSyncTrackingOffline(
-          user_id
-        );
+        let result_sync_offline_telemetry =
+          await getSyncTelemetryOffline(user_id);
+        let result_sync_offline_tracking =
+          await getSyncTrackingOffline(user_id);
         // console.log('result_sync_offline', result_sync_offline);
         // console.log(
         //   'result_sync_offline_telemetry',
@@ -206,9 +204,8 @@ const SyncCard = ({ doneSync }) => {
                   telemetry_result?.telemetry_object
                 );
 
-                let create_telemetry = await telemetryTracking(
-                  telemetry_object
-                );
+                let create_telemetry =
+                  await telemetryTracking(telemetry_object);
                 if (
                   create_telemetry &&
                   create_telemetry?.response?.responseCode == 'SUCCESS'
@@ -320,6 +317,8 @@ const SyncCard = ({ doneSync }) => {
   };
 
   const stopSync = () => {};
+
+  console.log({ isSyncPending });
 
   return (
     <>

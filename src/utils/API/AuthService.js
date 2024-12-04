@@ -183,15 +183,15 @@ export const updateUser = async ({ payload, user_id }) => {
     const token = await getDataFromStorage('Accesstoken');
     const headers = await getHeaders();
 
-    //     const curlCommand = `
-    // curl -X PATCH '${url}' \\
-    // -H 'Content-Type: application/json' \\
-    // -H 'Accept: application/json' \\
-    // -H 'Authorization:  ${headers.Authorization}' \\
-    // -H 'tenantId: ${headers.tenantId}' \\
-    // -d '${JSON.stringify(payload)}'
-    //     `;
-    //     console.log('cURL Command:', curlCommand);
+    const curlCommand = `
+    curl -X PATCH '${url}' \\
+    -H 'Content-Type: application/json' \\
+    -H 'Accept: application/json' \\
+    -H 'Authorization:  ${headers.Authorization}' \\
+    -H 'tenantId: ${headers.tenantId}' \\
+    -d '${JSON.stringify(payload)}'
+        `;
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await patch(url, payload, {
@@ -1196,7 +1196,7 @@ export const eventList = async ({ startDate, endDate }) => {
     -H 'tenantId: ${headers.tenantId}' \\
     -d '${JSON.stringify(payload)}'
         `;
-    // console.log('cURL Command:', curlCommand);
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1395,7 +1395,7 @@ export const getAttendance = async ({ todate, fromDate }) => {
     -H 'tenantId: ${headers.tenantId}' \\
     -d '${JSON.stringify(payload)}'
         `;
-    // console.log('cURL Command:', curlCommand);
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
