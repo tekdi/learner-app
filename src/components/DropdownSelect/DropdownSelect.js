@@ -95,9 +95,7 @@ const DropdownSelect = ({
                 onPress={() => handleSelect(item)}
                 style={styles.dropdownOption}
               >
-                <GlobalText style={styles.optionText}>
-                  {t(item?.label)}
-                </GlobalText>
+                <GlobalText style={styles.optionText}>{item?.label}</GlobalText>
               </TouchableOpacity>
             ))}
           </ScrollView>

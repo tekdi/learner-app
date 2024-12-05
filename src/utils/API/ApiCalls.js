@@ -343,9 +343,8 @@ export const telemetryTracking = async (telemetryObject) => {
         api_response = { response: response.data };
       })
       .catch((error) => {
-        console.log('teleerror', error);
+        console.log('error', error);
       });
-
     return api_response;
   } catch (error) {
     throw new Error(
@@ -400,16 +399,16 @@ export const contentTracking = async (
         api_response = { response: response.data };
       })
       .catch((error) => {
-        console.log('errorsssss', error);
+        console.log('error', error);
       });
     // Construct the curl command for logging
-    const curlCommand = `curl -X POST "${url}" \\\n${Object.entries(
-      headers || {}
-    )
-      .map(([key, value]) => `-H "${key}: ${value}"`)
-      .join(' \\\n')} \\\n-d '${data}'`;
+    // const curlCommand = `curl -X POST "${url}" \\\n${Object.entries(
+    //   headers || {}
+    // )
+    //   .map(([key, value]) => `-H "${key}: ${value}"`)
+    //   .join(' \\\n')} \\\n-d '${data}'`;
 
-    console.log('Curl Command:', curlCommand);
+    // // console.log('Curl Command:', curlCommand);
     return api_response;
   } catch (error) {
     throw new Error(

@@ -11,8 +11,6 @@ import {
 } from '../../../../../utils/JsHelper/Helper';
 import { LearningMaterialAPI } from '../../../../../utils/API/AuthService';
 import ActiveLoading from '../../../../LoadingScreen/ActiveLoading';
-import GlobalText from '@components/GlobalText/GlobalText';
-import globalStyles from '@src/utils/Helper/Style';
 
 const LearningMaterial = () => {
   const { t } = useTranslation();
@@ -114,8 +112,6 @@ const LearningMaterial = () => {
     setSubjects(selectedCourse ? selectedCourse.subjects : []);
   }, [selectedIds]);
 
-  console.log('subjects', JSON.stringify(selectedIds));
-
   return loading ? (
     <ActiveLoading />
   ) : (
@@ -128,19 +124,13 @@ const LearningMaterial = () => {
         value={''}
       />
 
-      {selectedIds?.value && subjects.length > 0 ? (
+      {selectedIds?.value && subjects && (
         <View style={styles.viewbox}>
           {subjects.map((item, key) => {
             return (
               <MaterialCard key={key} selectedIds={selectedIds} title={item} />
             );
           })}
-        </View>
-      ) : (
-        <View style={{ padding: 20 }}>
-          <GlobalText style={globalStyles.subHeading}>
-            {t('no_data_found')}
-          </GlobalText>
         </View>
       )}
     </SafeAreaView>
