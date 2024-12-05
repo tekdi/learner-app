@@ -7,18 +7,21 @@ import {
   SolutionEventDetails,
   targetedSolutions,
 } from '../../../../../utils/API/AuthService';
-import { SafeAreaView, ScrollView, Text } from 'react-native';
+import { SafeAreaView, ScrollView, Text, View } from 'react-native';
 import SecondaryHeader from '../../../../../components/Layout/SecondaryHeader';
 import globalStyles from '../../../../../utils/Helper/Style';
 import { useTranslation } from '../../../../../context/LanguageContext';
 import ActiveLoading from '../../../../LoadingScreen/ActiveLoading';
-
+import CustomSearchBox from '../../../../../components/CustomSearchBox/CustomSearchBox';
 import GlobalText from '@components/GlobalText/GlobalText';
 
 const MaterialCardView = ({ route }) => {
   const { subjectName, type } = route.params;
   const [details, setDetails] = useState([]);
+  const [completeDetails, setCompleteDetails] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchText, setSearchText] = useState('');
+
   const { t } = useTranslation();
 
   const callProgramIfempty = async ({ solutionId, id }) => {
@@ -41,7 +44,9 @@ const MaterialCardView = ({ route }) => {
     } else {
       // console.log('reachedElse');
       const result = await EventDetails({ id });
+
       setDetails(result?.tasks || []);
+      setCompleteDetails(result?.tasks || []);
     }
     setLoading(false);
   };
@@ -50,7 +55,18 @@ const MaterialCardView = ({ route }) => {
     fetchData();
   }, []);
 
-  // console.log('sdasds', details);
+  const handleSearch = async () => {
+    const results = details?.filter((item) =>
+      item?.name?.toLowerCase().includes(searchText?.toLowerCase())
+    );
+
+    // Update the filtered data
+    if (searchText === '') {
+      setDetails(completeDetails);
+    } else {
+      setDetails(results || []);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -58,7 +74,19 @@ const MaterialCardView = ({ route }) => {
       {loading ? (
         <ActiveLoading />
       ) : (
-        <ScrollView style={{ maxHeight: '85%', padding: 20 }}>
+        <ScrollView style={{ maxHeight: '85%' }}>
+          <View style={{ padding: 20 }}>
+            <GlobalText style={globalStyles.heading}>{subjectName}</GlobalText>
+            <GlobalText style={globalStyles.text}>{type}</GlobalText>
+          </View>
+
+          <CustomSearchBox
+            setSearchText={setSearchText}
+            searchText={searchText}
+            handleSearch={handleSearch}
+            placeholder={t('Search Content')}
+          />
+
           {details.length > 0 ? (
             details?.map((item, i) => {
               return (

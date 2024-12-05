@@ -156,6 +156,13 @@ const TimeTable = () => {
             setEventDate={setEventDate}
           />
         )}
+        {allEventData?.length === 0 && (
+          <MonthlyCalendar
+            allEventData={allEventData}
+            attendance={false}
+            setEventDate={setEventDate}
+          />
+        )}
         {loading ? (
           <ActiveLoading />
         ) : (

@@ -159,6 +159,7 @@ const PreviousClassMaterial = () => {
           {eventData?.plannedSessions?.length > 0 ? (
             eventData?.plannedSessions?.map((item, key) => (
               <Accordion
+                subTopic={item?.erMetaData?.subTopic}
                 postrequisites
                 setTrack={setTrack}
                 key={key}
@@ -177,6 +178,7 @@ const PreviousClassMaterial = () => {
           {eventData?.extraSessions?.length > 0 ? (
             eventData?.extraSessions?.map((item, key) => (
               <Accordion
+                subTopic={item?.erMetaData?.subTopic}
                 postrequisites
                 setTrack={setTrack}
                 key={key}

@@ -18,8 +18,8 @@ const Accordion2 = ({ title, children, index, openDropDown }) => {
   return (
     <View
       style={{
-        backgroundColor: '#F7ECDF',
-        padding: 10,
+        // backgroundColor: '#F7ECDF',
+        // padding: 10,
         marginVertical: 5,
         borderRadius: 10,
       }}
@@ -31,13 +31,19 @@ const Accordion2 = ({ title, children, index, openDropDown }) => {
             {
               justifyContent: 'space-between',
               padding: 10,
+              backgroundColor: '#F7ECDF',
             },
           ]}
           onPress={() => setAccordionOpen(!isAccordionOpen)}
         >
-          <GlobalText style={[globalStyles.text, { color: '#7C766F' }]}>
-            {t('topic')} {index + 1}: {title}
-          </GlobalText>
+          <View style={globalStyles.flexrow}>
+            <Icon name="circle" color={'black'} />
+            <GlobalText
+              style={[globalStyles.text, { color: '#7C766F', marginLeft: 10 }]}
+            >
+              {t('topic')} {index + 1} - {title}
+            </GlobalText>
+          </View>
 
           <Icon
             name={isAccordionOpen ? 'angle-up' : 'angle-down'}
