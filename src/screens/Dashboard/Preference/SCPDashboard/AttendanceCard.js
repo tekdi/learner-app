@@ -36,10 +36,10 @@ const AttendanceCard = ({ attendance }) => {
     });
 
     // Calculate counts for 'present' and 'absent'
-    const present = filteredData.filter(
+    const present = filteredData?.filter(
       (item) => item.attendance === 'present'
     ).length;
-    const absent = filteredData.filter(
+    const absent = filteredData?.filter(
       (item) => item.attendance === 'absent'
     ).length;
 
