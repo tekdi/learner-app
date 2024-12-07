@@ -26,16 +26,13 @@ const LearningMaterial = () => {
       setLoading(true);
       const boardData = await LearningMaterialAPI();
 
-      const cohort = JSON.parse(await getDataFromStorage('cohortData'));
-      const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
-
-      const cohortData = getActiveCohort?.[0];
+      const cohortData = JSON.parse(await getDataFromStorage('cohortData'));
 
       const frameworks = boardData?.result?.framework;
       const state = cohortData.customField.find(
         (item) => item.label === 'STATES'
       );
-      const board = cohortData.customField.find(
+      const board = cohortData?.customField.find(
         (item) => item.label === 'BOARD'
       );
       const medium = cohortData.customField.find(

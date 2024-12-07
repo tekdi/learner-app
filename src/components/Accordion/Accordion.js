@@ -29,13 +29,25 @@ import { courseTrackingStatus } from '../../utils/API/ApiCalls';
 import GlobalText from '@components/GlobalText/GlobalText';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 
-function getFilteredData(data) {
+function getFilteredData(data, subTopic) {
   return data
     .map((item) => {
+      // Check if any child has a name matching the subTopic
+      const filteredChildren = item?.children?.filter((child) =>
+        subTopic?.includes(child?.name)
+      );
+
+      console.log('gefdfd', JSON.stringify(subTopic));
+
+      if (!filteredChildren || filteredChildren.length === 0) {
+        return null; // Skip items with no matching children
+      }
+
       const prerequisites = [];
       const postrequisites = [];
 
-      item?.children?.forEach((child) => {
+      // Process filtered children
+      filteredChildren?.forEach((child) => {
         const learningResources = child?.learningResources || [];
 
         prerequisites.push(
@@ -52,24 +64,22 @@ function getFilteredData(data) {
       });
 
       return {
-        // name: item.name,
+        name: item.name, // Include the name of the item for reference
         prerequisites: prerequisites,
         postrequisites: postrequisites,
         contentIdList: [...prerequisites, ...postrequisites],
       };
-
-      // Return null if the item name doesn't match the topic
-      return null;
     })
     .filter((result) => result !== null); // Filter out null values
 }
-
-const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
+const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [resourceData, setResourceData] = useState([]);
   const [trackData, setTrackData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  console.log('item', JSON.stringify(subTopic));
 
   const { t } = useTranslation();
 
@@ -126,7 +136,9 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
       callProgramIfempty({ solutionId, id });
     } else {
       result = await EventDetails({ id });
-      const filterData = getFilteredData(result?.tasks || []);
+      const filterData = getFilteredData(result?.tasks || [], subTopic);
+      console.log({ filterData });
+
       let userId = await getDataFromStorage('userId');
       let course_track_data;
       if (postrequisites) {
@@ -212,7 +224,7 @@ const Accordion = ({ item, postrequisites, title, setTrack, topic }) => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [subTopic]);
 
   return (
     <View

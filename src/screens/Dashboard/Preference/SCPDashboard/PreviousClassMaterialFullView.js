@@ -167,6 +167,13 @@ const PreviousClassMaterialFullView = () => {
                 setEventDate={setEventDate}
               />
             )}
+            {allEventData?.length === 0 && (
+              <MonthlyCalendar
+                allEventData={allEventData}
+                attendance={false}
+                setEventDate={setEventDate}
+              />
+            )}
           </View>
           <GlobalText style={[globalStyles.subHeading]}>
             {t('planned_sessions')}
@@ -175,6 +182,7 @@ const PreviousClassMaterialFullView = () => {
           {eventData?.plannedSessions?.length > 0 ? (
             eventData.plannedSessions.map((item, key) => (
               <Accordion
+                subTopic={item?.erMetaData?.subTopic}
                 setTrack={setTrack}
                 postrequisites
                 key={key}
@@ -193,6 +201,7 @@ const PreviousClassMaterialFullView = () => {
           {eventData?.extraSessions?.length > 0 ? (
             eventData.extraSessions.map((item, key) => (
               <Accordion
+                subTopic={item?.erMetaData?.subTopic}
                 setTrack={setTrack}
                 postrequisites
                 key={key}

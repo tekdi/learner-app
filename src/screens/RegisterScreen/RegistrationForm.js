@@ -334,12 +334,13 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
     const academicyear = await setAcademicYear({ tenantid });
     const academicYearId = academicyear?.[0]?.id;
     const cohort = await getCohort({ user_id, tenantid, academicYearId });
+    const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
     const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
     await setDataInStorage(
       'academicYearId',
       JSON.stringify(academicYearId || '')
     );
-    await setDataInStorage('cohortData', JSON.stringify(cohort));
+    await setDataInStorage('cohortData', JSON.stringify(getActiveCohort?.[0]));
     const cohort_id = getActiveCohortId?.[0];
     await setDataInStorage(
       'cohortId',

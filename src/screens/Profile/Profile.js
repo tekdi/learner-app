@@ -81,6 +81,7 @@ const Profile = (props) => {
 
     const requiredLabels = [
       'WHATS_YOUR_GENDER',
+      'GENDER',
       'CLASS_OR_LAST_PASSED_GRADE',
       'STATES',
       'DISTRICTS',
@@ -277,7 +278,7 @@ const Profile = (props) => {
                 <Label text={`${t('gender')} `} />
                 <TextField
                   text={`${capitalizeFirstLetter(
-                    userDetails?.WHATS_YOUR_GENDER
+                    userDetails?.WHATS_YOUR_GENDER || userDetails?.GENDER
                   )}`}
                 />
               </View>

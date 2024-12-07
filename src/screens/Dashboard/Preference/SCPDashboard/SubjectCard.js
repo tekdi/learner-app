@@ -27,7 +27,7 @@ const SubjectCard = ({ item }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  const handleCopyLink = () => {
+  const handleCopyLink = (zoomLink) => {
     Clipboard.setString(zoomLink); // Copy the Zoom link to the clipboard
     setShowToast(true); // Show toast message
   };
@@ -73,7 +73,9 @@ const SubjectCard = ({ item }) => {
                   {item?.onlineDetails?.url}
                 </GlobalText>
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleCopyLink}>
+              <TouchableOpacity
+                onPress={() => handleCopyLink(item?.onlineDetails?.url)}
+              >
                 <Icon
                   name={showToast ? 'clipboard-check' : 'copy'}
                   color={showToast ? '#1A8825' : '#0D599E'}

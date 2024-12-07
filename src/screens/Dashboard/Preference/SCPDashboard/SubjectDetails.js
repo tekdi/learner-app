@@ -79,8 +79,6 @@ const SubjectDetails = ({ route }) => {
   const [track, setTrack] = useState();
   const [resourceData, setResourceData] = useState();
 
-  console.log({ subTopic });
-
   const callProgramIfempty = async ({ solutionId, id }) => {
     const data = await SolutionEvent({ solutionId });
     const templateId = data?.externalId;

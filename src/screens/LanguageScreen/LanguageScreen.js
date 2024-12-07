@@ -20,13 +20,19 @@ import { useTranslation } from '../../context/LanguageContext';
 import FastImage from '@changwoolab/react-native-fast-image';
 
 import {
+  getActiveCohortData,
+  getActiveCohortIds,
   getDataFromStorage,
   getRefreshToken,
   saveAccessToken,
   saveRefreshToken,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
-import { getProgramDetails, refreshToken } from '../../utils/API/AuthService';
+import {
+  getCohort,
+  getProgramDetails,
+  refreshToken,
+} from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { useInternet } from '../../context/NetworkContext';
 import {
@@ -50,6 +56,29 @@ const LanguageScreen = () => {
     // console.log('################ getProgramData', JSON.stringify(data));
 
     await setDataInStorage('tenantDetails', JSON.stringify(data));
+  };
+
+  const setCurrentCohort = async (id) => {
+    const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+    const tenantid = tenantData?.[0]?.tenantId;
+    const user_id = await getDataFromStorage('userId');
+    const academicYearId = await getDataFromStorage('academicYearId');
+    console.log({ tenantid });
+    const cohort = await getCohort({
+      user_id,
+      tenantid,
+      academicYearId,
+    });
+    const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
+    const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
+    const cohort_id = getActiveCohortId?.[0];
+    console.log({ cohort_id });
+
+    await setDataInStorage('cohortData', JSON.stringify(getActiveCohort?.[0]));
+    await setDataInStorage(
+      'cohortId',
+      cohort_id || '00000000-0000-0000-0000-000000000000'
+    );
   };
 
   useEffect(() => {
@@ -121,12 +150,14 @@ const LanguageScreen = () => {
             await saveAccessToken(data?.access_token);
             await saveRefreshToken(data?.refresh_token);
             if (cohort_id !== '00000000-0000-0000-0000-000000000000') {
+              await setCurrentCohort(cohort_id);
               navigation.navigate('SCPUserTabScreen');
             } else {
               navigation.navigate('Dashboard');
             }
           } else if (token) {
             if (cohort_id !== '00000000-0000-0000-0000-000000000000') {
+              await setCurrentCohort(cohort_id);
               navigation.navigate('SCPUserTabScreen');
             } else {
               navigation.navigate('Dashboard');
@@ -136,6 +167,7 @@ const LanguageScreen = () => {
           }
         } else {
           if (cohort_id !== '00000000-0000-0000-0000-000000000000') {
+            await setCurrentCohort(cohort_id);
             navigation.navigate('SCPUserTabScreen');
           } else {
             navigation.navigate('Dashboard');

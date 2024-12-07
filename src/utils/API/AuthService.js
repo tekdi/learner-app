@@ -37,11 +37,11 @@ export const login = async (params = {}) => {
         Accept: 'application/json',
       },
     });
-    console.log(`curl -X POST '${EndUrls.login}' \
-    -H 'Content-Type: application/json' \
-    -H 'Accept: application/json' \
-    -d '${params}'
-    `);
+    // console.log(`curl -X POST '${EndUrls.login}' \
+    // -H 'Content-Type: application/json' \
+    // -H 'Accept: application/json' \
+    // -d '${params}'
+    // `);
     if (result?.data) {
       return result?.data?.result;
     } else {
@@ -110,8 +110,6 @@ ${Object.entries(headers || {})
   .map(([key, value]) => `-H '${key}: ${value}' \\`)
   .join('\n')}`;
 
-    // Log the curl command to the console
-    // console.log('Generated curl command:');
     // console.log(curlCommand);
 
     // Make the API request
@@ -156,11 +154,11 @@ export const registerUser = async (params = {}) => {
       Accept: 'application/json',
     };
     // Log the cURL command
-    console.log(
-      `curl -X ${method} ${url} -H 'Content-Type: application/json' -d '${JSON.stringify(
-        params
-      )}'`
-    );
+    // console.log(
+    //   `curl -X ${method} ${url} -H 'Content-Type: application/json' -d '${JSON.stringify(
+    //     params
+    //   )}'`
+    // );
 
     // Make the actual request
     const result = await post(url, params, {
@@ -212,7 +210,6 @@ export const courseListApi_testing = async ({
   searchText,
   inprogress_do_ids,
 }) => {
-  console.log('######## inprogress_do_ids in api', inprogress_do_ids);
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList_testing}`; // Define the URL
   const headers = {
@@ -260,13 +257,11 @@ export const courseListApi_testing = async ({
       offset: 0,
     },
   };
-  console.log('############## payload', JSON.stringify(payload));
   try {
     // Make the actual request
     const result = await post(url, payload, {
       headers: headers || {},
     });
-    console.loh = ('####### result ', JSON.stringify(result));
 
     if (result) {
       // store result
@@ -283,7 +278,6 @@ export const courseListApi_testing = async ({
       return result_offline;
     }
   } catch (e) {
-    console.log('no internet available');
     let result_offline = await getApiResponse(user_id, url, 'post', payload);
     return result_offline;
   }
@@ -345,7 +339,6 @@ export const contentListApi_Pratham = async ({ searchText }) => {
     let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
     payload.request.filters['se_mediums'] = language;
   }*/
-  console.log('######## payload ', JSON.stringify(payload));
 
   try {
     // Make the actual request
@@ -367,7 +360,6 @@ export const contentListApi_Pratham = async ({ searchText }) => {
       return result_offline;
     }
   } catch (e) {
-    console.log('no internet available', e);
     let result_offline = await getApiResponse(user_id, url, 'post', payload);
     return result_offline;
   }
@@ -457,14 +449,14 @@ export const setAcademicYear = async ({ tenantid }) => {
 
     // Log the curl command
 
-    console.log(
-      `curl -X POST '${url}' \\\n` +
-        `-H 'Content-Type: application/json' \\\n` +
-        `-H 'Accept: application/json' \\\n` +
-        `-H 'Authorization: ${headers.Authorization}' \\\n` +
-        `-H 'tenantid: ${headers.tenantid}' \\\n` +
-        `-d '${JSON.stringify(payload)}'`
-    );
+    // console.log(
+    //   `curl -X POST '${url}' \\\n` +
+    //     `-H 'Content-Type: application/json' \\\n` +
+    //     `-H 'Accept: application/json' \\\n` +
+    //     `-H 'Authorization: ${headers.Authorization}' \\\n` +
+    //     `-H 'tenantid: ${headers.tenantid}' \\\n` +
+    //     `-d '${JSON.stringify(payload)}'`
+    // );
 
     const result = await post(url, payload, {
       headers: headers || {},
@@ -535,7 +527,6 @@ export const assessmentListApi = async (params = {}) => {
       return result_offline;
     }
   } catch (e) {
-    console.log('no internet available');
     let result_offline = await getApiResponse(user_id, url, 'post', payload);
     return result_offline;
   }
@@ -552,7 +543,7 @@ export const getDoits = async ({ payload }) => {
   const curlCommand = `curl -X POST '${url}' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '${JSON.stringify(
     payload
   )}'`;
-  console.log('Curl Command:', curlCommand);
+  // console.log('Curl Command:', curlCommand);
 
   try {
     // Make the actual request
@@ -574,7 +565,6 @@ export const getDoits = async ({ payload }) => {
       return result_offline;
     }
   } catch (e) {
-    console.log('No internet available');
     let result_offline = await getApiResponse(user_id, url, 'post', payload);
     return result_offline;
   }
@@ -615,8 +605,6 @@ export const trackAssessment = async (params = {}) => {
 };
 export const getProfileDetails = async (params = {}) => {
   try {
-    console.log('CALLED');
-
     const url = `${EndUrls.profileDetails}`; // Define the URL
     const headers = await getHeaders();
     const payload = {
@@ -661,7 +649,7 @@ export const getAssessmentStatus = async (params = {}) => {
       .join('\n')} 
       -d '${JSON.stringify(payload)}'`;
 
-    console.log('cURL Command:', curlCommand);
+    // console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -725,13 +713,12 @@ export const storeApiResponse = async (
       api_type: api_type,
       payload: JSON.stringify(payload),
     };
-    // console.log('data_delete', data_delete);
     await deleteData({
       tableName: 'APIResponses',
       where: data_delete,
     })
-      .then((msg) => console.log('msg', msg))
-      .catch((err) => console.error('err', err));
+      .then((msg) => console.log())
+      .catch((err) => console.error());
     //store or overwrite
     const data_insert = {
       user_id: user_id,
@@ -744,8 +731,8 @@ export const storeApiResponse = async (
       tableName: 'APIResponses',
       data: data_insert,
     })
-      .then((msg) => console.log('msg', msg))
-      .catch((err) => console.error('err', err));
+      .then((msg) => console.log())
+      .catch((err) => console.error());
   } catch (e) {
     console.log(e);
   }
@@ -790,13 +777,12 @@ export const storeAsessmentOffline = async (user_id, content_id, payload) => {
       user_id: user_id,
       content_id: content_id,
     };
-    // console.log('data_delete', data_delete);
     await deleteData({
       tableName: 'Asessment_Offline_2',
       where: data_delete,
     })
-      .then((msg) => console.log('msg', msg))
-      .catch((err) => console.error('err', err));
+      .then((msg) => console.log())
+      .catch((err) => console.error());
     //store or overwrite
     const data_insert = {
       user_id: user_id,
@@ -807,8 +793,8 @@ export const storeAsessmentOffline = async (user_id, content_id, payload) => {
       tableName: 'Asessment_Offline_2',
       data: data_insert,
     })
-      .then((msg) => console.log('msg', msg))
-      .catch((err) => console.error('err', err));
+      .then((msg) => console.log())
+      .catch((err) => console.error());
   } catch (e) {
     console.log(e);
   }
@@ -824,8 +810,8 @@ export const deleteAsessmentOffline = async (user_id, content_id) => {
       tableName: 'Asessment_Offline_2',
       where: data_delete,
     })
-      .then((msg) => console.log('msg', msg))
-      .catch((err) => console.error('err', err));
+      .then((msg) => console.log())
+      .catch((err) => console.error());
   } catch (e) {
     console.log(e);
   }
@@ -898,8 +884,8 @@ export const storeTelemetryOffline = async (user_id, telemetry_object) => {
       tableName: 'Telemetry_Offline',
       data: data_insert,
     })
-      .then((msg) => console.log('msg', msg))
-      .catch((err) => console.error('err', err));
+      .then((msg) => console.log())
+      .catch((err) => console.error());
   } catch (e) {
     console.log(e);
   }
@@ -916,7 +902,6 @@ export const getSyncTelemetryOffline = async (user_id) => {
       where: data_get,
     })
       .then((rows) => {
-        //console.log('rows', rows);
         if (rows.length > 0) {
           try {
             result_data = rows;
@@ -928,7 +913,6 @@ export const getSyncTelemetryOffline = async (user_id) => {
       });
     return result_data;
   } catch (e) {
-    console.log(e);
     return null;
   }
 };
@@ -943,8 +927,8 @@ export const deleteTelemetryOffline = async (id) => {
       tableName: 'Telemetry_Offline',
       where: data_delete,
     })
-      .then((msg) => console.log('msg', msg))
-      .catch((err) => console.error('err', err));
+      .then((msg) => console.log())
+      .catch((err) => console.error());
   } catch (e) {
     console.log(e);
   }
@@ -977,8 +961,8 @@ export const storeTrackingOffline = async (
       tableName: 'Tracking_Offline_2',
       data: data_insert,
     })
-      .then((msg) => console.log('msg', msg))
-      .catch((err) => console.error('err', err));
+      .then((msg) => console.log())
+      .catch((err) => console.error());
   } catch (e) {
     console.log(e);
   }
@@ -1017,13 +1001,12 @@ export const deleteTrackingOffline = async (id) => {
     const data_delete = {
       id: id,
     };
-    //console.log('data_delete', data_delete);
     await deleteData({
       tableName: 'Tracking_Offline_2',
       where: data_delete,
     })
-      .then((msg) => console.log('msg', msg))
-      .catch((err) => console.error('err', err));
+      .then((msg) => console.log())
+      .catch((err) => console.error());
   } catch (e) {
     console.log(e);
   }
@@ -1041,7 +1024,6 @@ export const getSyncTrackingOfflineCourse = async (user_id, course_id) => {
       where: data_get,
     })
       .then((rows) => {
-        //console.log('rows', rows);
         if (rows.length > 0) {
           try {
             result_data = rows;
@@ -1125,7 +1107,7 @@ export const resetPassword = async ({ payload }) => {
     -H 'tenantId: ${headers.tenantId}' \\
     -d '${JSON.stringify(payload)}'
         `;
-    console.log('cURL Command:', curlCommand);
+    // console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1150,7 +1132,6 @@ export async function reverseGeocode(latitude, longitude) {
   );
 
   const data = await response.json();
-  // console.log(JSON.stringify(data));
   if (data.results.length > 0) {
     const addressComponents = data.results[0].address_components;
     const state = addressComponents.find((comp) =>
@@ -1162,7 +1143,6 @@ export async function reverseGeocode(latitude, longitude) {
     const block = addressComponents.find((comp) =>
       comp.types.includes('sublocality')
     )?.long_name;
-    // console.log({ state, district, block });
     return { state, district, block };
   }
   return { state: null, district: null, block: null };
@@ -1173,9 +1153,6 @@ export const eventList = async ({ startDate, endDate }) => {
     const url = `${EndUrls.eventList}`; // Define the URL
     const headers = await getHeaders();
     const cohort = JSON.parse(await getDataFromStorage('cohortData'));
-    console.log({ startDate, endDate, cohort });
-    // console.log(cohort?.cohortData?.[0]?.cohortId);
-
     const payload = {
       limit: 0,
       offset: 0,
@@ -1184,7 +1161,7 @@ export const eventList = async ({ startDate, endDate }) => {
           after: startDate,
           before: endDate,
         },
-        cohortId: cohort?.cohortData?.[0]?.cohortId,
+        cohortId: cohort?.cohortId,
         status: ['live'],
       },
     };
@@ -1196,7 +1173,7 @@ export const eventList = async ({ startDate, endDate }) => {
     -H 'tenantId: ${headers.tenantId}' \\
     -d '${JSON.stringify(payload)}'
         `;
-    // console.log('cURL Command:', curlCommand);
+    console.log('cURL Command_Event:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1226,7 +1203,7 @@ export const targetedSolutions = async ({ subjectName, type }) => {
     };
     const cohort = JSON.parse(await getDataFromStorage('cohortData'));
     const requiredLabels = ['GRADE', 'STATES', 'MEDIUM', 'BOARD'];
-    const customFields = cohort?.cohortData?.[0]?.customField;
+    const customFields = cohort?.customField;
     const data = createNewObject(customFields, requiredLabels);
 
     const payload = {
@@ -1422,7 +1399,7 @@ export const LearningMaterialAPI = async () => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
-    console.log({ curlCommand });
+    // console.log({ curlCommand });
     // Make the actual request
     const result = await get(url, {
       headers: headers || {},

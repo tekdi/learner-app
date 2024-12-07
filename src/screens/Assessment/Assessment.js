@@ -51,12 +51,8 @@ const Assessment = ({ header, background }) => {
     let board = null;
     let state = null;
     try {
-      board = cohort?.cohortData?.[0]?.customField?.find(
-        (field) => field.label === 'BOARD'
-      );
-      state = cohort?.cohortData?.[0]?.customField?.find(
-        (field) => field.label === 'STATES'
-      );
+      board = cohort?.customField?.find((field) => field.label === 'BOARD');
+      state = cohort?.customField?.find((field) => field.label === 'STATES');
     } catch (e) {
       console.log('e', e);
     }

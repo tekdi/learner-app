@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   ImageBackground,
@@ -11,7 +11,7 @@ import {
 import globalStyles from '../../../../utils/Helper/Style';
 import { useTranslation } from '../../../../context/LanguageContext';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import BG from '../../../../assets/images/png/BG.png';
 import FastImage from '@changwoolab/react-native-fast-image';
 import { getAttendance } from '../../../../utils/API/AuthService';
@@ -36,10 +36,10 @@ const AttendanceCard = ({ attendance }) => {
     });
 
     // Calculate counts for 'present' and 'absent'
-    const present = filteredData.filter(
+    const present = filteredData?.filter(
       (item) => item.attendance === 'present'
     ).length;
-    const absent = filteredData.filter(
+    const absent = filteredData?.filter(
       (item) => item.attendance === 'absent'
     ).length;
 
@@ -67,9 +67,11 @@ const AttendanceCard = ({ attendance }) => {
     calculateAttendance(response.attendanceList);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   return (
     <ImageBackground

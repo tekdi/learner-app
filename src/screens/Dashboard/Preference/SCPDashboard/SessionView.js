@@ -174,7 +174,12 @@ const SessionView = () => {
         <ScrollView style={{ height: '80%' }}>
           {eventData?.plannedSessions?.length > 0 ? (
             eventData?.plannedSessions.map((item, key) => (
-              <Accordion setTrack={setTrack} key={key} item={item} />
+              <Accordion
+                subTopic={item?.erMetaData?.subTopic}
+                setTrack={setTrack}
+                key={key}
+                item={item}
+              />
             ))
           ) : (
             <GlobalText style={globalStyles.text}>
@@ -188,7 +193,12 @@ const SessionView = () => {
 
           {eventData?.extraSessions?.length > 0 ? (
             eventData.extraSessions.map((item, key) => (
-              <Accordion setTrack={setTrack} key={key} item={item} />
+              <Accordion
+                subTopic={item?.erMetaData?.subTopic}
+                setTrack={setTrack}
+                key={key}
+                item={item}
+              />
             ))
           ) : (
             <GlobalText style={globalStyles.text}>

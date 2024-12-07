@@ -4,8 +4,8 @@ import { BASE_URL_PROD } from './index';
 import Config from 'react-native-config';
 
 const API_URL = Config.API_URL;
-const CONTENT_URL = Config.CONTENT_URL;
-const TRACKING_MICROSERVICE = Config.TRACKING_MICROSERVICE;
+// const CONTENT_URL = Config.CONTENT_URL;
+// const TRACKING_MICROSERVICE = Config.TRACKING_MICROSERVICE;
 const TELEMETRY_URL = Config.TELEMETRY_URL;
 const NEXT_PUBLIC_EVENT_BASE_URL = Config.NEXT_PUBLIC_EVENT_BASE_URL;
 const EVENT_DETAILS = Config.EVENT_DETAILS;
@@ -23,20 +23,20 @@ const EndUrls = {
   programDetails: API_URL + `/user/v1/tenant/read`,
   cohort: API_URL + `/user/v1/cohort/mycohorts`,
   academicyears: API_URL + `/user/v1/academicyears/list`,
-  trackAssessment: `${TRACKING_MICROSERVICE}/v1/tracking/assessment/list`,
-  AssessmentCreate: `${TRACKING_MICROSERVICE}/v1/tracking/assessment/create`,
-  AssessmentStatus: `${TRACKING_MICROSERVICE}/v1/tracking/assessment/search/status`,
-  AssessmentSearch: `${TRACKING_MICROSERVICE}/v1/tracking/assessment/search`,
+  trackAssessment: `${API_URL}/v1/tracking/assessment/list`,
+  AssessmentCreate: `${API_URL}/v1/tracking/assessment/create`,
+  AssessmentStatus: `${API_URL}/v1/tracking/assessment/search/status`,
+  AssessmentSearch: `${API_URL}/v1/tracking/assessment/search`,
   profileDetails: `${API_URL}/user/v1/list`,
   telemetryTracking: TELEMETRY_URL,
-  ContentCreate: `${TRACKING_MICROSERVICE}/v1/tracking/content/create`,
-  ContentTrackingStatus: `${TRACKING_MICROSERVICE}/v1/tracking/content/search/status`,
-  CourseTrackingStatus: `${TRACKING_MICROSERVICE}/v1/tracking/content/course/status`,
-  CourseInProgress: `${TRACKING_MICROSERVICE}/v1/tracking/content/course/inprogress`,
+  ContentCreate: `${API_URL}/v1/tracking/content/create`,
+  ContentTrackingStatus: `${API_URL}/v1/tracking/content/search/status`,
+  CourseTrackingStatus: `${API_URL}/v1/tracking/content/course/status`,
+  CourseInProgress: `${API_URL}/v1/tracking/content/course/inprogress`,
   geolocation: `${API_URL}/user/v1/fields/options/read`,
   forgotPassword: `${API_URL}/user/v1/password-reset-link`,
   resetPassword: `${API_URL}/user/v1/reset-password`,
-  eventList: `${NEXT_PUBLIC_EVENT_BASE_URL}/event-service/event/v1/list`,
+  eventList: `${API_URL}/event-service/event/v1/list`,
   targetedSolutions: `${EVENT_DETAILS}/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
   EventDetails: `${EVENT_DETAILS}/userProjects/details`,
   SolutionEvent: `${EVENT_DETAILS}/solutions/details`,
@@ -54,15 +54,15 @@ const EndUrls = {
   // framework: `${CONTENT_URL}/api/framework/v1/read/gujaratboardfw`,
 
   //CMS pratham CMS
-  hierarchy_content: `${CONTENT_URL}/action/questionset/v2/hierarchy/`, //pass do id at end
-  course_details: `${CONTENT_URL}/api/course/v1/hierarchy/`, //pass do id at end
-  quml_question_list: `${CONTENT_URL}/api/question/v2/list`,
-  read_content: `${CONTENT_URL}/api/content/v1/read/`, //pass do id at end
-  contentList: `${CONTENT_URL}/action/composite/v3/search?orgdetails=orgName,email&framework=${FRAMEWORK_ID}`,
-  contentList_testing: `${CONTENT_URL}/action/composite/v3/search?orgdetails=orgName,email&framework=${FRAMEWORK_ID}`,
-  contentSearch: `${CONTENT_URL}/action/composite/v3/search`,
-  framework: `${CONTENT_URL}/api/framework/v1/read/${FRAMEWORK_ID}`,
-  question_set_read: `${CONTENT_URL}/action/questionset/v2/read/`, //pass do id at end ?fields=instructions,outcomeDeclaration
+  hierarchy_content: `${API_URL}/action/questionset/v2/hierarchy/`, //pass do id at end
+  course_details: `${API_URL}/api/course/v1/hierarchy/`, //pass do id at end
+  quml_question_list: `${API_URL}/api/question/v2/list`,
+  read_content: `${API_URL}/api/content/v1/read/`, //pass do id at end
+  contentList: `${API_URL}/action/composite/v3/search?orgdetails=orgName,email&framework=${FRAMEWORK_ID}`,
+  contentList_testing: `${API_URL}/action/composite/v3/search?orgdetails=orgName,email&framework=${FRAMEWORK_ID}`,
+  contentSearch: `${API_URL}/action/composite/v3/search`,
+  framework: `${API_URL}/api/framework/v1/read/${FRAMEWORK_ID}`,
+  question_set_read: `${API_URL}/action/questionset/v2/read/`, //pass do id at end ?fields=instructions,outcomeDeclaration
 };
 
 export default EndUrls;
