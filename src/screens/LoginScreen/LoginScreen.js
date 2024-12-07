@@ -16,12 +16,14 @@ import { useNavigation } from '@react-navigation/native';
 import {
   getCohort,
   getProfileDetails,
+  getProgramDetails,
   login,
   notificationSubscribe,
   setAcademicYear,
 } from '../../utils/API/AuthService';
 import {
   getAcademicYearId,
+  getActiveCohortData,
   getActiveCohortIds,
   getDataFromStorage,
   getDeviceId,
@@ -78,7 +80,6 @@ const LoginScreen = () => {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
         const userDetails = await getuserDetails();
-        // console.log(JSON.stringify(userDetails));
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
@@ -86,13 +87,15 @@ const LoginScreen = () => {
         await setDataInStorage('userId', user_id);
 
         const academicyear = await setAcademicYear({ tenantid });
-        // console.log({ tenantData, user_id, tenantid });
         const academicYearId = academicyear?.[0]?.id;
         await setDataInStorage('academicYearId', academicYearId || '');
         const cohort = await getCohort({ user_id, tenantid, academicYearId });
+        const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
         const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
-        // console.log('################### cohort', getActiveCohortId?.[0]);
-        await setDataInStorage('cohortData', JSON.stringify(cohort));
+        await setDataInStorage(
+          'cohortData',
+          JSON.stringify(getActiveCohort?.[0])
+        );
         const cohort_id = getActiveCohortId?.[0];
 
         const profileData = await getProfileDetails({
@@ -109,9 +112,7 @@ const LoginScreen = () => {
           'cohortId',
           cohort_id || '00000000-0000-0000-0000-000000000000'
         );
-        const tenantDetails = JSON.parse(
-          await getDataFromStorage('tenantDetails')
-        );
+        const tenantDetails = await getProgramDetails();
 
         const youthnetTenantIds = tenantDetails?.filter((item) => {
           if (item?.name === 'YouthNet') {
