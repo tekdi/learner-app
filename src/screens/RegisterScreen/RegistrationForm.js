@@ -35,6 +35,7 @@ import { useTranslation } from '../../context/LanguageContext';
 import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
 import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
 import {
+  getActiveCohortData,
   getActiveCohortIds,
   getDataFromStorage,
   getDeviceId,
@@ -77,6 +78,7 @@ import GlobalText from '@components/GlobalText/GlobalText';
 import ParentText from '../../components/PlainText/ParentText';
 import { registerSchema } from './RegisterSchemaUpdate';
 import FullPagePdfModal from './FullPagePdfModal';
+import ActiveLoading from '../LoadingScreen/ActiveLoading';
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -407,7 +409,9 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
     // Handle your registration logic here
   };
 
+  const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
+    setLoading(true);
     const payload = await transformPayload(data);
     // console.log(JSON.stringify(payload));
 
@@ -416,12 +420,15 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
 
     if (!isConnected) {
       setNetworkError(true);
+      setLoading(false);
     } else if (register?.params?.status === 'failed') {
+      setLoading(false);
       setModal(true);
       setErr(register?.params?.err);
     } else {
       logRegistrationComplete();
       await RegisterLogin(data);
+      setLoading(false);
     }
   };
 
@@ -875,19 +882,23 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
         )}
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <RenderBtn
-          currentForm={currentForm}
-          schema={schema}
-          handleSubmit={handleSubmit}
-          nextForm={nextForm}
-          onSubmit={onSubmit}
-          isDisable={isDisable}
-          networkError={networkError}
-          isModalVisible={isModalVisible}
-          secondChecked={secondChecked}
-          checked={checked}
-          age={age}
-        />
+        {loading ? (
+          <ActiveLoading />
+        ) : (
+          <RenderBtn
+            currentForm={currentForm}
+            schema={schema}
+            handleSubmit={handleSubmit}
+            nextForm={nextForm}
+            onSubmit={onSubmit}
+            isDisable={isDisable}
+            networkError={networkError}
+            isModalVisible={isModalVisible}
+            secondChecked={secondChecked}
+            checked={checked}
+            age={age}
+          />
+        )}
       </View>
       {modal && (
         <Modal transparent={true} animationType="slide">
