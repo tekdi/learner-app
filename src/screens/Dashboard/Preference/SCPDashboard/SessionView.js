@@ -151,11 +151,11 @@ const SessionView = () => {
               />
             )}
           </View>
-          <View style={{ marginLeft: 20 }}>
+          <View style={{ marginLeft: 10, width: '70%' }}>
             <ProgressBarCustom
               progress={percentage || 0}
               language={language}
-              width={'80%'}
+              width={'100%'}
               color={'#000'}
               horizontal
             />

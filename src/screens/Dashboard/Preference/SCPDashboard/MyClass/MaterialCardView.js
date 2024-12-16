@@ -37,13 +37,15 @@ const MaterialCardView = ({ route }) => {
 
   const fetchData = async () => {
     const data = await targetedSolutions({ subjectName, type });
-    const id = data?.data?.[0]?._id;
+    const id = data?.data?.[0]?._id || null;
     const solutionId = data?.data?.[0]?.solutionId;
     if (data?.data?.[0]?._id == '') {
       callProgramIfempty({ solutionId, id });
     } else {
       // console.log('reachedElse');
       const result = await EventDetails({ id });
+
+      console.log('result', JSON.stringify(result));
 
       setDetails(result?.tasks || []);
       setCompleteDetails(result?.tasks || []);
