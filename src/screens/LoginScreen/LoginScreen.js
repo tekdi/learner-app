@@ -94,7 +94,7 @@ const LoginScreen = () => {
         const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
         await setDataInStorage(
           'cohortData',
-          JSON.stringify(getActiveCohort?.[0])
+          JSON.stringify(getActiveCohort?.[0]) || ''
         );
         const cohort_id = getActiveCohortId?.[0];
 
