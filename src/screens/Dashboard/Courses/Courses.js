@@ -42,6 +42,7 @@ import CustomSearchBox from '../../../components/CustomSearchBox/CustomSearchBox
 import globalStyles from '../../../utils/Helper/Style';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import AppUpdatePopup from '../../../components/AppUpdate/AppUpdatePopup';
 
 const Courses = () => {
   const navigation = useNavigation();
@@ -187,6 +188,7 @@ const Courses = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
+      <AppUpdatePopup />
       <ScrollView nestedScrollEnabled>
         <View style={styles.view}>
           {loading ? (

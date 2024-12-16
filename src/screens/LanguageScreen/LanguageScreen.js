@@ -13,6 +13,7 @@ import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 import CustomCardLanguage from '../../components/CustomCardLanguage/CustomCardLanguage';
+import AppUpdatePopup from '../../components/AppUpdate/AppUpdatePopup';
 import { languages } from '@context/Languages';
 // Multi-language context
 import { useTranslation } from '../../context/LanguageContext';
@@ -208,6 +209,7 @@ const LanguageScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <AppUpdatePopup />
       <StatusBar
         barStyle="dark-content"
         translucent={true}

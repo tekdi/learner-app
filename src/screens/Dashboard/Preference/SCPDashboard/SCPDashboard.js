@@ -34,6 +34,7 @@ import ActiveLoading from '../../../LoadingScreen/ActiveLoading';
 import BackButtonHandler from '../../../../components/BackNavigation/BackButtonHandler';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import AppUpdatePopup from '../../../../components/AppUpdate/AppUpdatePopup';
 
 const SCPDashboard = (props) => {
   const { t } = useTranslation();
@@ -177,6 +178,7 @@ const SCPDashboard = (props) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
+      <AppUpdatePopup />
       <ScrollView style={styles.view2}>
         <View style={globalStyles.flexrow}>
           <Image source={wave} resizeMode="contain" />
