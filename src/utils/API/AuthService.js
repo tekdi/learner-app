@@ -727,7 +727,7 @@ export const storeApiResponse = async (
       payload: JSON.stringify(payload),
       response: JSON.stringify(response),
     };
-    console.log('data_insert===>', JSON.stringify(data_insert));
+    // console.log('data_insert===>', JSON.stringify(data_insert));
 
     await insertData({
       tableName: 'APIResponses',
@@ -750,7 +750,7 @@ export const getApiResponse = async (user_id, api_url, api_type, payload) => {
       payload: JSON.stringify(payload),
     };
     let result_data = null;
-    console.log('data_get===>', JSON.stringify(data_get));
+    // console.log('data_get===>', JSON.stringify(data_get));
 
     await getData({
       tableName: 'APIResponses',

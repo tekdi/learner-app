@@ -37,7 +37,7 @@ const MaterialCardView = ({ route }) => {
 
   const fetchData = async () => {
     const data = await targetedSolutions({ subjectName, type });
-    const id = data?.data?.[0]?._id || null;
+    const id = data?.data?.[0]?._id;
     const solutionId = data?.data?.[0]?.solutionId;
     if (data?.data?.[0]?._id == '') {
       callProgramIfempty({ solutionId, id });
