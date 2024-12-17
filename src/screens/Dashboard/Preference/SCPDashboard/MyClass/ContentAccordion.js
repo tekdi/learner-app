@@ -19,9 +19,6 @@ const ContentAccordion = ({ title, resourceData, trackData, openDropDown }) => {
   const navigation = useNavigation();
 
   const handlePress = (item) => {
-    // console.log('Card pressed!', item);
-    // console.log('identifier', item?.identifier);
-    // console.log('item', item?.leafNodes);
     navigation.navigate('CourseContentList', {
       do_id: item?.identifier,
       course_id: item?.identifier,

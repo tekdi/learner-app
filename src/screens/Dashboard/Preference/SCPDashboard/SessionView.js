@@ -213,6 +213,7 @@ const SessionView = () => {
 
 const styles = StyleSheet.create({
   card: {
+    flex: 1,
     padding: 20,
     backgroundColor: 'white',
   },

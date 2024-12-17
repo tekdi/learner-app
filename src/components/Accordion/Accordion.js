@@ -79,7 +79,7 @@ const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
   const [trackData, setTrackData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  console.log('item', JSON.stringify(subTopic));
+  // console.log('item', JSON.stringify(subTopic));
 
   const { t } = useTranslation();
 
@@ -308,18 +308,18 @@ const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
                         );
                       })}
                     </View>
-                  ) : (
-                    <View
-                      style={{
-                        // backgroundColor: '#F7ECDF',
-                        justifyContent: 'space-between',
-                        flexWrap: 'wrap',
-                        flexDirection: 'row',
-                        paddingBottom: 50,
-                      }}
-                    >
-                      {resourceData?.postrequisites?.map((data, index) => {
-                        return (
+                  ) : resourceData?.postrequisites?.length > 0 ? (
+                    resourceData?.postrequisites?.map((data, index) => {
+                      return (
+                        <View
+                          style={{
+                            // backgroundColor: '#F7ECDF',
+                            justifyContent: 'space-between',
+                            flexWrap: 'wrap',
+                            flexDirection: 'row',
+                            paddingBottom: 50,
+                          }}
+                        >
                           <ContentCard
                             key={index}
                             item={data}
@@ -328,9 +328,18 @@ const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
                             unit_id={data?.identifier}
                             TrackData={trackData}
                           />
-                        );
-                      })}
-                    </View>
+                        </View>
+                      );
+                    })
+                  ) : (
+                    <GlobalText
+                      style={[
+                        globalStyles.text,
+                        { marginLeft: 10, marginTop: 10 },
+                      ]}
+                    >
+                      {t('no_topics')}
+                    </GlobalText>
                   )}
                 </View>
               ) : (
