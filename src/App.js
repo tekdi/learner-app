@@ -11,7 +11,7 @@ import { LanguageProvider } from './context/LanguageContext'; // Adjust path as 
 import { NetworkProvider } from './context/NetworkContext'; // Adjust path as needed
 import { ConfirmationProvider } from '@context/Confirmation/ConfirmationContext';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import StackScreen from './Routes/StackScreen';
+import StackScreen from './Routes/Public/StackScreen';
 import { BackHandler, Text, View } from 'react-native';
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
 import {

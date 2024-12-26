@@ -283,5 +283,15 @@
   "username_should_not_be_empty,password_should_not_be_empty": "Username should not be empty, Password should not be empty",
   "username_should_not_be_empty": "Username should not be empty",
   "password_should_not_be_empty": "Password should not be empty",
-  "update_now": "Update now"
+  "update_now": "Update now",
+  "get_started_with_l1_courses": "Get Started with L1 Courses",
+  "explore": "Explore",
+  "location": "Location",
+  "joined_on": "Joined on",
+  "need_help_reach_out_to_your_mentor": "Need help? Reach Out to Your Mentor!",
+  "if_you_stuck_or_need_guidance_your_mentor_is_just_a_message_away": "If you're stuck or need guidance, your mentor is just a message away.",
+  "explore_additional_resources_and_nearby_skilling_centers": "Explore additional resources and nearby skilling centers",
+  "explore_additional_courses": "Explore Additional Courses",
+  "skilling_center_near_you": "Skilling Center Near You",
+  "open_on_maps": "Open on Maps"
 }

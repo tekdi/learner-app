@@ -1,10 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Courses from '../screens/Dashboard/Courses/Courses';
-import Preference from '../screens/Dashboard/Preference/Preference';
-import ViewAllContent from '../screens/Dashboard/ViewAllContent';
-import CourseContentList from '../screens/Dashboard/Courses/CourseContentList';
-import UnitList from '../screens/Dashboard/Courses/UnitList';
+import Courses from '../../screens/Dashboard/Courses/Courses';
+import ViewAllContent from '../../screens/Dashboard/ViewAllContent';
+import CourseContentList from '../../screens/Dashboard/Courses/CourseContentList';
+import UnitList from '../../screens/Dashboard/Courses/UnitList';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,11 +23,6 @@ const DashboardStack = () => {
       <Stack.Screen
         name="UnitList"
         component={UnitList}
-        options={{ lazy: true }} // Lazily load LoadingScreen
-      />
-      <Stack.Screen
-        name="Preference"
-        component={Preference}
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
       <Stack.Screen

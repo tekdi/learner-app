@@ -217,9 +217,7 @@ const Courses = () => {
                 placeholder={t('Search Courses')}
               />
 
-              <SyncCard
-              //doneSync={fetchData}
-              />
+              <SyncCard doneSync={fetchData} />
               {data.length > 0 ? (
                 <CoursesBox
                   // title={'Continue_Learning'}

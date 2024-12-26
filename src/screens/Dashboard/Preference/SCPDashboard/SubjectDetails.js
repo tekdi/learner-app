@@ -91,9 +91,6 @@ const SubjectDetails = ({ route }) => {
   };
 
   const getDoidsDetails = async (contentList) => {
-    // console.log('#####');
-    // console.log({ contentList });
-
     const payload = {
       request: {
         filters: {
@@ -128,21 +125,30 @@ const SubjectDetails = ({ route }) => {
 
     const id = data?.data?.[0]?._id;
     const solutionId = data?.data?.[0]?.solutionId;
-    // console.log({ data, id });
 
     if (id == '') {
       callProgramIfempty({ solutionId, id });
     } else {
       result = await EventDetails({ id });
-      // console.log('result', JSON.stringify(result));
 
       const filterData = getFilteredData(result?.tasks || [], subTopic);
       // setTasks(filterData);
+      const combinedData = {
+        prerequisites: [
+          ...new Set(filterData?.flatMap((item) => item?.prerequisites)),
+        ],
+        postrequisites: [
+          ...new Set(filterData?.flatMap((item) => item?.postrequisites)),
+        ],
+        contentIdList: [
+          ...new Set(filterData?.flatMap((item) => item?.contentIdList)),
+        ],
+      };
 
       let userId = await getDataFromStorage('userId');
       let course_track_data = await courseTrackingStatus(
         userId,
-        filterData?.[0]?.contentIdList
+        combinedData?.contentIdList
       );
 
       let courseTrackData = [];
@@ -151,24 +157,12 @@ const SubjectDetails = ({ route }) => {
           course_track_data?.data?.find((course) => course.userId === userId)
             ?.course || [];
       }
-      // console.log('sssss', JSON.stringify(course_track_data));
 
       setTrackData(courseTrackData || []);
       setTrack(courseTrackData || []);
 
-      // console.log('filterData', JSON.stringify(filterData?.[0].prerequisites));
-      // console.log(
-      //   'postrequisites',
-      //   JSON.stringify(filterData?.[0].postrequisites)
-      // );
-
-      if (filterData) {
-        const result = await getDoidsDetails(filterData?.[0]?.contentIdList);
-        console.log('result', JSON.stringify(result?.content));
-        console.log(
-          'filterData?.[0]?.prerequisites',
-          JSON.stringify(filterData?.[0]?.prerequisites)
-        );
+      if (combinedData) {
+        const result = await getDoidsDetails(combinedData?.contentIdList);
 
         // Initialize arrays for prerequisites and postrequisites
         const prerequisites = [];
@@ -177,14 +171,14 @@ const SubjectDetails = ({ route }) => {
         // Filter prerequisites
         result?.content?.forEach((item) => {
           if (
-            filterData?.[0]?.prerequisites?.includes(
+            combinedData?.prerequisites?.includes(
               item?.identifier?.toLowerCase()
             )
           ) {
             prerequisites.push(item); // Push filtered items
           }
           if (
-            filterData?.[0]?.postrequisites?.includes(
+            combinedData?.postrequisites?.includes(
               item?.identifier?.toLowerCase()
             )
           ) {
@@ -195,25 +189,20 @@ const SubjectDetails = ({ route }) => {
         // Filter postrequisites
         result?.QuestionSet?.forEach((item) => {
           if (
-            filterData?.[0]?.prerequisites?.includes(
+            combinedData?.prerequisites?.includes(
               item?.identifier?.toLowerCase()
             )
           ) {
             prerequisites.push(item); // Push filtered items
           }
           if (
-            filterData?.[0]?.postrequisites?.includes(
+            combinedData?.postrequisites?.includes(
               item?.identifier?.toLowerCase()
             )
           ) {
             postrequisites.push(item); // Push filtered items
           }
         });
-
-        console.log(
-          '{ prerequisites, postrequisites }',
-          JSON.stringify({ prerequisites })
-        );
 
         setResourceData({ prerequisites, postrequisites });
       }

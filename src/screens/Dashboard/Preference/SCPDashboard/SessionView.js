@@ -98,8 +98,6 @@ const SessionView = () => {
     }
   }, [track]);
 
-  console.log({ percentage });
-
   return loading ? (
     <ActiveLoading />
   ) : (

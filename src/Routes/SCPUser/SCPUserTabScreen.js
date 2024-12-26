@@ -1,23 +1,17 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet } from 'react-native';
-import { useTranslation } from '../context/LanguageContext';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import { useTranslation } from '../../context/LanguageContext';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
-
 import SCPUserStack from './SCPUserStack';
 import MyClassStack from './MyClassStack';
-import homeoutline from '../assets/images/png/homeoutline.png';
-import bookoutline from '../assets/images/png/bookoutline.png';
-import homefilled from '../assets/images/png/homefilled.png';
-import bookfillednew from '../assets/images/png/bookfillednew.png';
-import ProfileStack from './ProfileStack';
-import profile from '../assets/images/png/profile.png';
-import profile_filled from '../assets/images/png/profile_filled.png';
-import home from '../assets/images/png/home.png';
-import home_filled from '../assets/images/png/home_filled.png';
-import book_filled from '../assets/images/png/book_filled.png';
-import book from '../assets/images/png/book.png';
+import ProfileStack from '../Public/ProfileStack';
+import profile from '../../assets/images/png/profile.png';
+import profile_filled from '../../assets/images/png/profile_filled.png';
+import home from '../../assets/images/png/home.png';
+import home_filled from '../../assets/images/png/home_filled.png';
+import book_filled from '../../assets/images/png/book_filled.png';
+import book from '../../assets/images/png/book.png';
 
 const Tab = createBottomTabNavigator();
 
