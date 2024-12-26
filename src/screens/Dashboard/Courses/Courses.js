@@ -223,12 +223,13 @@ const Courses = () => {
                   // title={'Continue_Learning'}
                   // description={'Food_Production'}
                   style={{ titlecolor: '#06A816' }}
-                  viewAllLink={() =>
-                    navigation.navigate('ViewAll', {
-                      title: 'Continue_Learning',
-                      data: data,
-                    })
-                  }
+                  // viewAllLink={() =>
+                  //   navigation.navigate('ViewAll', {
+                  //     title: 'Continue_Learning',
+                  //     data: data,
+                  //   }
+                  // )
+                  // }
                   ContentData={data}
                   TrackData={trackData}
                   isHorizontal={false}

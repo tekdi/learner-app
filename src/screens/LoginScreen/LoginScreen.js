@@ -124,24 +124,29 @@ const LoginScreen = () => {
             return item;
           }
         });
+        const role = tenantData?.[0]?.roleName;
 
-        if (tenantid === scp?.[0]?.tenantId) {
-          await setDataInStorage('userType', 'scp');
-          if (cohort_id) {
-            navigation.navigate('SCPUserTabScreen');
+        if (role == 'Learner' || role == 'Student') {
+          if (tenantid === scp?.[0]?.tenantId) {
+            await setDataInStorage('userType', 'scp');
+            if (cohort_id) {
+              navigation.navigate('SCPUserTabScreen');
+            } else {
+              navigation.navigate('Dashboard');
+            }
           } else {
+            if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
+              await setDataInStorage('userType', 'youthnet');
+            } else {
+              await setDataInStorage('userType', 'public');
+            }
             navigation.navigate('Dashboard');
           }
+          const deviceId = await getDeviceId();
+          await notificationSubscribe({ deviceId, user_id });
         } else {
-          if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
-            await setDataInStorage('userType', 'youthnet');
-          } else {
-            await setDataInStorage('userType', 'public');
-          }
-          navigation.navigate('Dashboard');
+          setErrmsg('invalid_username_or_password');
         }
-        const deviceId = await getDeviceId();
-        await notificationSubscribe({ deviceId, user_id });
         setLoading(false);
       } else {
         setLoading(false);
