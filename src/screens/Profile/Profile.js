@@ -44,7 +44,7 @@ import FastImage from '@changwoolab/react-native-fast-image';
 import GlobalText from '@components/GlobalText/GlobalText';
 
 const Profile = (props) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [userData, setUserData] = useState();
   const [userDetails, setUserDetails] = useState();
   const [loading, setLoading] = useState(true);
@@ -72,10 +72,10 @@ const Profile = (props) => {
 
   const fetchData = async () => {
     const result = JSON.parse(await getDataFromStorage('profileData'));
+    console.log(JSON.stringify(result));
+
     const userTypes = await getDataFromStorage('userType');
     const cohortId = await getDataFromStorage('cohortId');
-    // console.log('userType', userTypes);
-    console.log('cohortId', cohortId);
     setCohortId(cohortId);
     setUserType(userTypes);
 
@@ -93,14 +93,12 @@ const Profile = (props) => {
     createNewObject(customFields, requiredLabels);
     setUserData(result?.getUserDetails?.[0]);
     const tenantData = await getTentantId();
-    // console.log({ tenantData });
 
     setLoading(false);
   };
 
   const StorageSize = async () => {
     const data = await calculateTotalStorageSize();
-    console.log('size', data);
     setStorageData(data);
   };
 
@@ -168,6 +166,21 @@ const Profile = (props) => {
     logEvent();
   }, []);
 
+  const getDate = () => {
+    const date = new Date(userData?.createdAt);
+    const day = date?.toLocaleDateString(language, {
+      day: 'numeric',
+    });
+    const month = date?.toLocaleDateString(language, {
+      month: 'long',
+    });
+    const year = date?.toLocaleDateString(language, {
+      year: 'numeric',
+    });
+
+    return ` ${month} ${day}, ${year}`; // Format as "26 October 2024"
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <SecondaryHeader logo />
@@ -185,57 +198,10 @@ const Profile = (props) => {
                   navigation.navigate('ProfileUpdateScreen');
                 }}
               >
-                <Icon name="edit" size={30} color={'#000'} />
+                <Ionicons name="settings-outline" size={30} color={'#000'} />
               </TouchableOpacity>
             )}
           </View>
-          {/* {storageData !== '0.00 KB' && (
-            <View style={[styles.viewBox, { backgroundColor: '#F7ECDF' }]}>
-              <View
-                style={[globalStyles.flexrow, { justifyContent: 'center' }]}
-              >
-                <Image
-                  style={styles.img}
-                  source={cloud_done}
-                  resizeMode="contain"
-                />
-
-                <GlobalText
-                  numberOfLines={2}
-                  ellipsizeMode="tail"
-                  style={[globalStyles.heading2, { width: 250 }]}
-                >
-                  {t('you_have')} {storageData} {t('of_offline_content')}
-                </GlobalText>
-              </View>
-
-              <TouchableOpacity
-                onPress={() => {
-                  setShowContentModal(true);
-                }}
-              >
-                <View
-                  style={{
-                    borderWidth: 1,
-                    borderRadius: 20,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <GlobalText style={[globalStyles.heading2, { padding: 10 }]}>
-                    {t('clear_all_offline_content')}
-                  </GlobalText>
-                  <Octicons
-                    name="arrow-right"
-                    color="black"
-                    size={20}
-                    style={styles.icon}
-                  />
-                </View>
-              </TouchableOpacity>
-            </View>
-          )} */}
           <LinearGradient
             colors={['#FFFDF6', '#F8EFDA']} // Gradient colors
             start={{ x: 1, y: 0 }} // Gradient starting point
@@ -245,18 +211,33 @@ const Profile = (props) => {
             <GlobalText style={[globalStyles.subHeading, { fontWeight: 700 }]}>
               {capitalizeName(userData?.name)}
             </GlobalText>
-            <TextField text={userData?.username} />
+            <View
+              style={[
+                globalStyles.flexrow,
+                { justifyContent: 'space-between' },
+              ]}
+            >
+              <GlobalText style={globalStyles.text}>
+                {userData?.username}
+              </GlobalText>
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 20,
+                  backgroundColor: '#CDC5BD',
+                }}
+              />
+              <View style={[globalStyles.flexrow]}>
+                <GlobalText style={globalStyles.text}>
+                  {t('joined_on')}
+                </GlobalText>
+                <GlobalText style={globalStyles.text}> {getDate()}</GlobalText>
+              </View>
+            </View>
           </LinearGradient>
           <View>
             <View style={styles.viewBox}>
-              {/* <View>
-                <Label
-                  text={`${t('state')}, ${t('district')}, ${t('block')}, ${t('unit')}`}
-                />
-                <TextField
-                  text={`${userDetails?.STATES || '-'}  ${userDetails?.DISTRICTS || ''} ${userDetails?.BLOCKS || ''}`}
-                />
-              </View> */}
               <View>
                 <Label text={`${t('contact_number')}`} />
                 <TextField text={userData?.mobile} />
@@ -281,6 +262,16 @@ const Profile = (props) => {
                     userDetails?.WHATS_YOUR_GENDER || userDetails?.GENDER
                   )}`}
                 />
+              </View>
+              <View>
+                <Label text={`${t('location')}`} />
+                {userDetails?.STATES ? (
+                  <TextField
+                    text={`${userDetails?.STATES || '-'},  ${userDetails?.DISTRICTS || ''}, ${userDetails?.BLOCKS || ''}`}
+                  />
+                ) : (
+                  <TextField text={'-'} />
+                )}
               </View>
             </View>
           </View>
