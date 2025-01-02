@@ -11,30 +11,30 @@ export const languages = [
     title: 'marathi',
     value: 'ma',
   },
-  {
-    title: 'bengali',
-    value: 'ba',
-  },
-  {
-    title: 'telugu',
-    value: 'te',
-  },
-  {
-    title: 'kannada',
-    value: 'ka',
-  },
-  {
-    title: 'tamil',
-    value: 'ta',
-  },
   // {
-  //   title: 'gujarati',
-  //   value: 'gu',
+  //   title: 'bengali',
+  //   value: 'ba',
   // },
-  {
-    title: 'urdu',
-    value: 'ur',
-  },
+  // {
+  //   title: 'telugu',
+  //   value: 'te',
+  // },
+  // {
+  //   title: 'kannada',
+  //   value: 'ka',
+  // },
+  // {
+  //   title: 'tamil',
+  //   value: 'ta',
+  // },
+  // // {
+  // //   title: 'gujarati',
+  // //   value: 'gu',
+  // // },
+  // {
+  //   title: 'urdu',
+  //   value: 'ur',
+  // },
 ];
 
 // Function to get title from value

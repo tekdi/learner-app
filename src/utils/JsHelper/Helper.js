@@ -396,21 +396,15 @@ export const translateDate = (dateStr, lang) => {
   // Split the date string into components
   try {
     const [day, monthAbbr, year] = dateStr.split(' ');
-    console.log('###### dateStr', dateStr);
-    console.log('###### day', day);
-    console.log('###### monthAbbr', monthAbbr);
-    console.log('###### year', year);
+
     // Translate the day
     const translatedDay = translateDigits(day, lang).toString();
 
     const translatedYear = translateDigits(year, lang).toString();
 
-    console.log('###### translatedDay', translatedDay);
-    console.log('###### translatedYear', translatedYear);
     // Translate the month
     const monthIndex = monthAbbrToIndex[monthAbbr];
 
-    console.log('###### monthIndex', monthIndex);
     const translatedMonth = monthNames[lang][monthIndex];
     const translatedDate = `${translatedDay} ${translatedMonth} ${translatedYear}`;
     /*const translatedDate = {
@@ -418,7 +412,6 @@ export const translateDate = (dateStr, lang) => {
     translatedMonth: translatedMonth,
     translatedYear: translatedYear,
   };*/
-    console.log('###### translatedDate', JSON.stringify(translatedDate));
     // Combine translated components
     return translatedDate;
   } catch (error) {
@@ -472,7 +465,6 @@ export const formatDateTimeRange = (startDateTime) => {
 
 export const getOptionsByCategory = (frameworks, categoryCode) => {
   // Find the category by code
-  // console.log({ frameworks });
 
   const category = frameworks.categories.find(
     (category) => category.code === categoryCode
@@ -546,7 +538,6 @@ export const calculateTotalStorageSize = async () => {
     const documentDirectorySizeBytes = await getDocumentDirectorySize(
       RNFS.DocumentDirectoryPath
     );
-    console.log({ asyncStorageSizeBytes, documentDirectorySizeBytes });
 
     // Sum both sizes in bytes
     const totalSizeInBytes = asyncStorageSizeBytes + documentDirectorySizeBytes;
@@ -577,7 +568,6 @@ export const clearDoKeys = async () => {
   try {
     // Retrieve all keys
     const keys = await AsyncStorage.getAllKeys();
-    console.log({ keys });
 
     // Filter keys that start with "do_"
     const doKeys = keys.filter((key) => key.startsWith('do_'));

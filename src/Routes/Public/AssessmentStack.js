@@ -1,10 +1,10 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Assessment from '../screens/Assessment/Assessment';
-import TestView from '../screens/Assessment/TestView';
-import AnswerKeyView from '../screens/Assessment/AnswerKeyView';
-import TestDetailView from '../screens/Assessment/TestDetailView';
-import Profile from '../screens/Profile/Profile';
+import Assessment from '../../screens/Assessment/Assessment';
+import TestView from '../../screens/Assessment/TestView';
+import AnswerKeyView from '../../screens/Assessment/AnswerKeyView';
+import TestDetailView from '../../screens/Assessment/TestDetailView';
+import Profile from '../../screens/Profile/Profile';
 
 const Stack = createNativeStackNavigator();
 

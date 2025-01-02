@@ -13,6 +13,7 @@ import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
 import CustomCardLanguage from '../../components/CustomCardLanguage/CustomCardLanguage';
+import AppUpdatePopup from '../../components/AppUpdate/AppUpdatePopup';
 import { languages } from '@context/Languages';
 // Multi-language context
 import { useTranslation } from '../../context/LanguageContext';
@@ -63,7 +64,7 @@ const LanguageScreen = () => {
     const tenantid = tenantData?.[0]?.tenantId;
     const user_id = await getDataFromStorage('userId');
     const academicYearId = await getDataFromStorage('academicYearId');
-    console.log({ tenantid });
+    // console.log({ tenantid });
     const cohort = await getCohort({
       user_id,
       tenantid,
@@ -72,9 +73,12 @@ const LanguageScreen = () => {
     const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
     const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
     const cohort_id = getActiveCohortId?.[0];
-    console.log({ cohort_id });
+    // console.log({ cohort_id });
 
-    await setDataInStorage('cohortData', JSON.stringify(getActiveCohort?.[0]));
+    await setDataInStorage(
+      'cohortData',
+      JSON.stringify(getActiveCohort?.[0]) || ''
+    );
     await setDataInStorage(
       'cohortId',
       cohort_id || '00000000-0000-0000-0000-000000000000'
@@ -140,6 +144,8 @@ const LanguageScreen = () => {
       });
       const cohort_id = await getDataFromStorage('cohortId');
       const token = await getDataFromStorage('Accesstoken');
+      console.log('cohort_id_lang', cohort_id);
+
       if (token) {
         if (isConnected) {
           const refresh_token = await getRefreshToken();
@@ -167,7 +173,7 @@ const LanguageScreen = () => {
           }
         } else {
           if (cohort_id !== '00000000-0000-0000-0000-000000000000') {
-            await setCurrentCohort(cohort_id);
+            // await setCurrentCohort(cohort_id);
             navigation.navigate('SCPUserTabScreen');
           } else {
             navigation.navigate('Dashboard');
@@ -208,6 +214,7 @@ const LanguageScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <AppUpdatePopup />
       <StatusBar
         barStyle="dark-content"
         translucent={true}

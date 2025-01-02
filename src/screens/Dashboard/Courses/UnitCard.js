@@ -210,6 +210,16 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
             >
               {item?.name}
             </GlobalText>
+            <GlobalText
+              style={[
+                globalStyles.subHeading,
+                { color: 'white', marginLeft: 5 },
+              ]}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
+              {item?.description}
+            </GlobalText>
             <StatusCardLine
               status={
                 trackCompleted >= 100

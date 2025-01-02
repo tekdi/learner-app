@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet } from 'react-native';
-import { useTranslation } from '../context/LanguageContext';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useTranslation } from '../../context/LanguageContext';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DashboardStack from './DashboardStack';
-import Contents from '../screens/Dashboard/Contents';
-import Profile from '../screens/Profile/Profile';
-import AssessmentStack from './AssessmentStack';
-import Coursesfilled from '../assets/images/png/Coursesfilled.png';
-import profile from '../assets/images/png/profile.png';
-import profile_filled from '../assets/images/png/profile_filled.png';
-import content from '../assets/images/png/content.png';
-import content2 from '../assets/images/png/content2.png';
-import Coursesunfilled from '../assets/images/png/Coursesunfilled.png';
+import Contents from '../../screens/Dashboard/Contents';
+import Coursesfilled from '../../assets/images/png/Coursesfilled.png';
+import profile from '../../assets/images/png/profile.png';
+import profile_filled from '../../assets/images/png/profile_filled.png';
+import content from '../../assets/images/png/content.png';
+import content2 from '../../assets/images/png/content2.png';
+import Coursesunfilled from '../../assets/images/png/Coursesunfilled.png';
 import ProfileStack from './ProfileStack';
-import { getDataFromStorage, getTentantId } from '../utils/JsHelper/Helper';
+import { getDataFromStorage, getTentantId } from '../../utils/JsHelper/Helper';
 
 const Tab = createBottomTabNavigator();
 

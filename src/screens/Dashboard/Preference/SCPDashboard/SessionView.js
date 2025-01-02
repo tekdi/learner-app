@@ -98,8 +98,6 @@ const SessionView = () => {
     }
   }, [track]);
 
-  console.log({ percentage });
-
   return loading ? (
     <ActiveLoading />
   ) : (
@@ -151,11 +149,11 @@ const SessionView = () => {
               />
             )}
           </View>
-          <View style={{ marginLeft: 20 }}>
+          <View style={{ marginLeft: 10, width: '70%' }}>
             <ProgressBarCustom
               progress={percentage || 0}
               language={language}
-              width={'80%'}
+              width={'100%'}
               color={'#000'}
               horizontal
             />
@@ -213,6 +211,7 @@ const SessionView = () => {
 
 const styles = StyleSheet.create({
   card: {
+    flex: 1,
     padding: 20,
     backgroundColor: 'white',
   },

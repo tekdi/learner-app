@@ -42,6 +42,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import FastImage from '@changwoolab/react-native-fast-image';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import DeviceInfo from 'react-native-device-info';
+import Config from 'react-native-config';
 
 const Profile = (props) => {
   const { t } = useTranslation();
@@ -55,6 +57,8 @@ const Profile = (props) => {
   const [storageData, setStorageData] = useState();
   const [userType, setUserType] = useState();
   const [cohortId, setCohortId] = useState();
+  const version = DeviceInfo.getVersion(); // e.g., "1.0.1"
+  const buildNumber = DeviceInfo.getBuildNumber(); // e.g., "2"
 
   const createNewObject = (customFields, labels) => {
     const result = {};
@@ -374,6 +378,15 @@ const Profile = (props) => {
                 {t('logout')}
               </GlobalText>
             </TouchableOpacity>
+            <GlobalText
+              style={[
+                globalStyles.text,
+                { textAlign: 'center', paddingVertical: 10 },
+              ]}
+            >
+              Version {version} (Build {buildNumber}){' '}
+              {Config.ENV != 'PROD' ? Config.ENV : ''}
+            </GlobalText>
           </View>
         </ScrollView>
       )}

@@ -142,15 +142,12 @@ const buildYupSchema = (form, currentForm, t) => {
           }
           break;
         case 'select_drop_down':
-          validator = yup.lazy((value) =>
-            typeof value === 'object'
-              ? yup.object({
-                  value: yup
-                    .string()
-                    .required(`${t(field.name)} ${t('is_required')}`),
-                })
-              : yup.string().required(`${t(field.name)} ${t('is_required')}`)
-          );
+          validator = yup.object(); // Change from yup.number() to yup.string()
+          if (field.validation.required) {
+            validator = validator.required(
+              `${t(field.name)} ${t('is_required')}`
+            );
+          }
           break;
         case 'select':
           validator = yup.lazy((value) =>
@@ -358,7 +355,6 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
     );
 
     await storeUsername(profileData?.getUserDetails?.[0]?.username);
-    // console.log({ cohort_id, tenantid, programValue });
 
     const youthnetTenantIds = programData?.filter((item) => {
       if (item?.name === 'YouthNet') {
@@ -413,7 +409,6 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
   const onSubmit = async (data) => {
     setLoading(true);
     const payload = await transformPayload(data);
-    // console.log(JSON.stringify(payload));
 
     const token = await getAccessToken();
     const register = await registerUser(payload);
@@ -469,9 +464,9 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
       value: foundDistrict?.value,
     };
 
-    if (districtValue?.label == undefined) {
-      setValue('district', district);
-    }
+    // if (districtValue?.label == undefined) {
+    //   setValue('district', district);
+    // }
     const newSchema = addOptionsToField(
       currentSchema,
       'district',
@@ -522,10 +517,19 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
   }, [stateValue]);
 
   useEffect(() => {
-    if (districtValue) {
+    if (districtValue?.value) {
       fetchBlock();
     }
   }, [districtValue]);
+
+  useEffect(() => {
+    if (currentForm === 4) {
+      fetchDistricts();
+    }
+    if (districtValue?.value) {
+      fetchBlock();
+    }
+  }, [currentForm]);
 
   const renderFields = (fields) => {
     return fields?.map((field) => {
@@ -691,12 +695,33 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
         (item) => item?.label === geoData?.state
       );
 
+      const payload = {
+        // limit: 10,
+        offset: 0,
+        fieldName: 'districts',
+        controllingfieldfk: stateValue?.value || stateValue,
+      };
+
+      const data = await getGeoLocation({ payload });
+      const foundDistrict = data?.values?.find(
+        (item) => item?.label === geoData?.district
+      );
+
+      const district = {
+        label: foundDistrict?.label,
+        value: foundDistrict?.value,
+      };
+
       const state = {
         label: foundState?.label,
         value: foundState?.value,
       };
 
-      setValue('state', state);
+      if (foundState?.label !== undefined) {
+        setValue('state', state);
+        setValue('district', district);
+      }
+
       fetchDistricts();
     }
   };
