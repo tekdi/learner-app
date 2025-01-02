@@ -143,7 +143,9 @@ const LoginScreen = () => {
             navigation.navigate('Dashboard');
           }
           const deviceId = await getDeviceId();
-          await notificationSubscribe({ deviceId, user_id });
+          const action = 'add';
+
+          await notificationSubscribe({ deviceId, user_id, action });
         } else {
           setErrmsg('invalid_username_or_password');
         }

@@ -1445,25 +1445,26 @@ export const LearningMaterialAPI = async () => {
   }
 };
 
-export const notificationSubscribe = async ({ deviceId, user_id }) => {
+export const notificationSubscribe = async ({ deviceId, user_id, action }) => {
   try {
     const url = `${EndUrls.notificationSubscribe}/${user_id}`; // Define the URL
     const headers = await getHeaders(); // Ensure headers are awaited
     const payload = {
       userData: {
         deviceId: deviceId,
+        action: action,
       },
     };
 
     // Construct cURL command
-    const curlCommand = `
-curl -X PATCH '${url}' \\
--H 'Content-Type: application/json' \\
--H 'Accept: application/json' \\
--H 'Authorization:  ${headers.Authorization}' \\
--H 'tenantId: ${headers.tenantId}' \\
--d '${JSON.stringify(payload)}'
-    `;
+    // const curlCommand = `
+    // curl -X PATCH '${url}' \\
+    // -H 'Content-Type: application/json' \\
+    // -H 'Accept: application/json' \\
+    // -H 'Authorization:  ${headers.Authorization}' \\
+    // -H 'tenantId: ${headers.tenantId}' \\
+    // -d '${JSON.stringify(payload)}'
+    //     `;
     // console.log('cURL Command:', curlCommand);
 
     // Make the actual request

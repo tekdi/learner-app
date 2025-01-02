@@ -33,6 +33,7 @@ import {
   getDataFromStorage,
   getTentantId,
   logEventFunction,
+  getDeviceId,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
@@ -40,6 +41,7 @@ import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler
 import cloud_done from '../../assets/images/png/cloud_done.png';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from '@changwoolab/react-native-fast-image';
+import { notificationSubscribe } from '../../utils/API/AuthService';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import DeviceInfo from 'react-native-device-info';
@@ -115,8 +117,19 @@ const Profile = (props) => {
     }, [navigation])
   );
 
+  const NotificationUnsubscribe = async () => {
+    const user_id = await getDataFromStorage('userId');
+    const deviceId = await getDeviceId();
+    const action = 'remove';
+
+    if (user_id) {
+      await notificationSubscribe({ deviceId, user_id, action });
+    }
+  };
+
   const handleLogout = () => {
     const fetchData = async () => {
+      await NotificationUnsubscribe();
       await deleteSavedItem('refreshToken');
       await deleteSavedItem('Accesstoken');
       await deleteSavedItem('userId');

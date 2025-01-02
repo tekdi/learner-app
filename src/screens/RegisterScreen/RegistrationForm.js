@@ -389,8 +389,8 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
       screenName: 'Registration',
     };
     await logEventFunction(obj);
-    const deviceId = await getDeviceId();
-    await notificationSubscribe({ deviceId, user_id });
+    // const deviceId = await getDeviceId();
+    // await notificationSubscribe({ deviceId, user_id });
   };
 
   const logRegistrationComplete = async () => {

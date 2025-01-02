@@ -37,10 +37,10 @@ const linking = {
 const fetchData = async () => {
   const user_id = await getDataFromStorage('userId');
   const deviceId = await getDeviceId();
-  console.log({ deviceId });
+  const action = 'add';
 
   if (user_id) {
-    await notificationSubscribe({ deviceId, user_id });
+    await notificationSubscribe({ deviceId, user_id, action });
   }
 };
 
