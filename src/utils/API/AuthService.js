@@ -727,12 +727,14 @@ export const storeApiResponse = async (
       payload: JSON.stringify(payload),
       response: JSON.stringify(response),
     };
+    // console.log('data_insert===>', JSON.stringify(data_insert));
+
     await insertData({
       tableName: 'APIResponses',
       data: data_insert,
     })
-      .then((msg) => console.log())
-      .catch((err) => console.error());
+      .then((msg) => console.log('msg', msg))
+      .catch((err) => console.error('err', err));
   } catch (e) {
     console.log(e);
   }
@@ -748,6 +750,8 @@ export const getApiResponse = async (user_id, api_url, api_type, payload) => {
       payload: JSON.stringify(payload),
     };
     let result_data = null;
+    // console.log('data_get===>', JSON.stringify(data_get));
+
     await getData({
       tableName: 'APIResponses',
       where: data_get,
@@ -756,7 +760,9 @@ export const getApiResponse = async (user_id, api_url, api_type, payload) => {
         if (rows.length > 0) {
           try {
             result_data = JSON.parse(rows[0]?.response);
-          } catch (e) {}
+          } catch (e) {
+            console.log('e', e);
+          }
         }
       })
       .catch((err) => {
@@ -1173,7 +1179,7 @@ export const eventList = async ({ startDate, endDate }) => {
     -H 'tenantId: ${headers.tenantId}' \\
     -d '${JSON.stringify(payload)}'
         `;
-    console.log('cURL Command_Event:', curlCommand);
+    // console.log('cURL Command_Event:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1190,31 +1196,31 @@ export const eventList = async ({ startDate, endDate }) => {
   }
 };
 export const targetedSolutions = async ({ subjectName, type }) => {
+  const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+  const url = `${EndUrls.targetedSolutions}`; // Define the URL
+  const method = 'POST'; // Define the HTTP method
+  const token = await getDataFromStorage('Accesstoken');
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Cookie:
+      'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+    'x-auth-token': token,
+  };
+  const cohort = JSON.parse(await getDataFromStorage('cohortData'));
+  const requiredLabels = ['GRADE', 'STATES', 'MEDIUM', 'BOARD'];
+  const customFields = cohort?.customField;
+  const data = createNewObject(customFields, requiredLabels);
+
+  const payload = {
+    subject: subjectName,
+    state: data?.STATES,
+    medium: data?.MEDIUM,
+    class: data?.GRADE,
+    board: data?.BOARD,
+    courseType: type,
+  };
   try {
-    const method = 'POST'; // Define the HTTP method
-    const url = `${EndUrls.targetedSolutions}`; // Define the URL
-    const token = await getDataFromStorage('Accesstoken');
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Cookie:
-        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
-      'x-auth-token': token,
-    };
-    const cohort = JSON.parse(await getDataFromStorage('cohortData'));
-    const requiredLabels = ['GRADE', 'STATES', 'MEDIUM', 'BOARD'];
-    const customFields = cohort?.customField;
-    const data = createNewObject(customFields, requiredLabels);
-
-    const payload = {
-      subject: subjectName,
-      state: data?.STATES,
-      medium: data?.MEDIUM,
-      class: data?.GRADE,
-      board: data?.BOARD,
-      courseType: type,
-    };
-
     // console.log(
     //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
     //     headers['x-auth-token']
@@ -1227,29 +1233,40 @@ export const targetedSolutions = async ({ subjectName, type }) => {
     });
 
     if (result) {
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
       return result?.data?.result;
     } else {
-      return {};
+      let result_offline = await getApiResponse(user_id, url, 'post', payload);
+
+      return result_offline;
     }
   } catch (e) {
-    return handleResponseException(e);
+    let result_offline = await getApiResponse(user_id, url, 'post', payload);
+
+    return result_offline;
   }
 };
 export const EventDetails = async ({ id }) => {
+  const url = `${EndUrls.EventDetails}/${id}`; // Define the URL
+  const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+  const payload = {};
+  const method = 'POST'; // Define the HTTP method
+  const token = await getDataFromStorage('Accesstoken');
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Cookie:
+      'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
+    'x-auth-token': token,
+  };
+
   try {
-    const method = 'POST'; // Define the HTTP method
-    const url = `${EndUrls.EventDetails}/${id}`; // Define the URL
-    const token = await getDataFromStorage('Accesstoken');
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Cookie:
-        'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
-      'x-auth-token': token,
-    };
-
-    const payload = {};
-
     // console.log(
     //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
     //     headers['x-auth-token']
@@ -1262,12 +1279,21 @@ export const EventDetails = async ({ id }) => {
     });
 
     if (result) {
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
       return result?.data?.result;
     } else {
-      return {};
+      let result_offline = await getApiResponse(user_id, url, 'post', payload);
+      return result_offline;
     }
   } catch (e) {
-    return handleResponseException(e);
+    let result_offline = await getApiResponse(user_id, url, 'post', payload);
+    return result_offline;
   }
 };
 export const SolutionEvent = async ({ solutionId }) => {
@@ -1389,9 +1415,10 @@ export const getAttendance = async ({ todate, fromDate }) => {
   }
 };
 export const LearningMaterialAPI = async () => {
+  const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+  const url = `${EndUrls.framework}`; // Define the URL
   try {
     const method = 'get'; // Define the HTTP method
-    const url = `${EndUrls.framework}`; // Define the URL
     const headers = await getHeaders();
 
     // Construct the curl command
@@ -1399,41 +1426,45 @@ export const LearningMaterialAPI = async () => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
-    // console.log({ curlCommand });
     // Make the actual request
     const result = await get(url, {
       headers: headers || {},
     });
 
     if (result) {
+      await storeApiResponse(user_id, url, 'get', null, result?.data);
       return result?.data;
     } else {
-      return {};
+      const result_offline = await getApiResponse(user_id, url, 'get', null);
+      return result_offline;
     }
   } catch (e) {
-    return handleResponseException(e);
+    console.log('No internet available, retrieving offline data...');
+    const result_offline = await getApiResponse(user_id, url, 'get', null);
+    return result_offline;
   }
 };
 
-export const notificationSubscribe = async ({ deviceId, user_id }) => {
+export const notificationSubscribe = async ({ deviceId, user_id, action }) => {
   try {
     const url = `${EndUrls.notificationSubscribe}/${user_id}`; // Define the URL
     const headers = await getHeaders(); // Ensure headers are awaited
     const payload = {
       userData: {
         deviceId: deviceId,
+        action: action,
       },
     };
 
     // Construct cURL command
-    const curlCommand = `
-curl -X PATCH '${url}' \\
--H 'Content-Type: application/json' \\
--H 'Accept: application/json' \\
--H 'Authorization:  ${headers.Authorization}' \\
--H 'tenantId: ${headers.tenantId}' \\
--d '${JSON.stringify(payload)}'
-    `;
+    // const curlCommand = `
+    // curl -X PATCH '${url}' \\
+    // -H 'Content-Type: application/json' \\
+    // -H 'Accept: application/json' \\
+    // -H 'Authorization:  ${headers.Authorization}' \\
+    // -H 'tenantId: ${headers.tenantId}' \\
+    // -d '${JSON.stringify(payload)}'
+    //     `;
     // console.log('cURL Command:', curlCommand);
 
     // Make the actual request

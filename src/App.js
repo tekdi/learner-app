@@ -11,7 +11,7 @@ import { LanguageProvider } from './context/LanguageContext'; // Adjust path as 
 import { NetworkProvider } from './context/NetworkContext'; // Adjust path as needed
 import { ConfirmationProvider } from '@context/Confirmation/ConfirmationContext';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
-import StackScreen from './Routes/StackScreen';
+import StackScreen from './Routes/Public/StackScreen';
 import { BackHandler, Text, View } from 'react-native';
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
 import {
@@ -37,10 +37,10 @@ const linking = {
 const fetchData = async () => {
   const user_id = await getDataFromStorage('userId');
   const deviceId = await getDeviceId();
-  console.log({ deviceId });
+  const action = 'add';
 
   if (user_id) {
-    await notificationSubscribe({ deviceId, user_id });
+    await notificationSubscribe({ deviceId, user_id, action });
   }
 };
 

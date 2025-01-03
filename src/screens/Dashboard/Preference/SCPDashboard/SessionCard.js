@@ -120,15 +120,14 @@ const SessionCard = ({ percentage }) => {
               )}
             </View>
 
-            <View style={{ opacity: 1 }}>
+            <View style={{ opacity: 1, width: '82%' }}>
               <ProgressBarCustom
                 progress={percent || 0}
                 language={language}
-                width={'90%'}
+                width={'100%'}
                 color={'#000'}
                 horizontal
               />
-
               <GlobalText style={[globalStyles.text, { color: '#1A8825' }]}>
                 {percent <= 10
                   ? t('lets_get_started_dive_in')

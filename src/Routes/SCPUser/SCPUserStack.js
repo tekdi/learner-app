@@ -1,18 +1,12 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-import MonthlyCalendar from '../screens/Dashboard/Calendar/MonthlyCalendar';
-import SCPDashboard from '../screens/Dashboard/Preference/SCPDashboard/SCPDashboard';
-import SessionView from '../screens/Dashboard/Preference/SCPDashboard/SessionView';
-import PreviousClassMaterial from '../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterial';
-import FullAttendance from '../screens/Dashboard/Calendar/FullAttendance';
-import TimeTable from '../screens/Dashboard/Calendar/TimeTable';
-import PreviousClassMaterialFullView from '../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterialFullView';
-import SubjectDetails from '../screens/Dashboard/Preference/SCPDashboard/SubjectDetails';
-import Assessment from '../screens/Assessment/Assessment';
-import TestView from '../screens/Assessment/TestView';
-import AnswerKeyView from '../screens/Assessment/AnswerKeyView';
-import TestDetailView from '../screens/Assessment/TestDetailView';
+import SCPDashboard from '../../screens/Dashboard/Preference/SCPDashboard/SCPDashboard';
+import SessionView from '../../screens/Dashboard/Preference/SCPDashboard/SessionView';
+import PreviousClassMaterial from '../../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterial';
+import FullAttendance from '../../screens/Dashboard/Calendar/FullAttendance';
+import TimeTable from '../../screens/Dashboard/Calendar/TimeTable';
+import PreviousClassMaterialFullView from '../../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterialFullView';
+import SubjectDetails from '../../screens/Dashboard/Preference/SCPDashboard/SubjectDetails';
 
 const Stack = createNativeStackNavigator();
 

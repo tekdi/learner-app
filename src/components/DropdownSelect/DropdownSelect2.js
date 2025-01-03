@@ -40,17 +40,19 @@ const DropdownSelect = ({
   };
 
   const handleSelect = (item) => {
+    console.log({ item });
+
     // setSelectedValue({ name: item?.label, value: item?.value });
     setSelectedIds((prevSelectedIds) => ({
       ...prevSelectedIds,
-      label: item,
-      value: item,
+      label: item?.label,
+      value: item?.value,
     }));
 
     setIsDropdownOpen(false);
   };
 
-  // console.log('errors', errors[name]);
+  console.log('field', JSON.stringify(field));
 
   return (
     <View style={styles.dropdownContainer}>
@@ -72,7 +74,7 @@ const DropdownSelect = ({
                 onPress={() => handleSelect(item)}
                 style={styles.dropdownOption}
               >
-                <GlobalText style={styles.optionText}>{item}</GlobalText>
+                <GlobalText style={styles.optionText}>{item?.label}</GlobalText>
               </TouchableOpacity>
             ))}
           </ScrollView>

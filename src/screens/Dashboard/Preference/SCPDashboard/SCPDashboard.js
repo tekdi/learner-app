@@ -29,11 +29,15 @@ import WeeklyCalendar from '../../Calendar/WeeklyCalendar';
 import AttendanceCard from './AttendanceCard';
 import SessionCard from './SessionCard';
 import SubjectCard from './SubjectCard';
-import { eventList } from '../../../../utils/API/AuthService';
+import {
+  eventList,
+  LearningMaterialAPI,
+} from '../../../../utils/API/AuthService';
 import ActiveLoading from '../../../LoadingScreen/ActiveLoading';
 import BackButtonHandler from '../../../../components/BackNavigation/BackButtonHandler';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import AppUpdatePopup from '../../../../components/AppUpdate/AppUpdatePopup';
 
 const SCPDashboard = (props) => {
   const { t } = useTranslation();
@@ -91,6 +95,8 @@ const SCPDashboard = (props) => {
 
     // Fetch the data within the specified date range
     const data = await eventList({ startDate, endDate });
+    const boardData = await LearningMaterialAPI();
+
     const finalData = await categorizeEvents(data?.events);
 
     setEventData(finalData);
@@ -177,6 +183,7 @@ const SCPDashboard = (props) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
+      <AppUpdatePopup />
       <ScrollView style={styles.view2}>
         <View style={globalStyles.flexrow}>
           <Image source={wave} resizeMode="contain" />

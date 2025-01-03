@@ -28,22 +28,22 @@ const DropdownSelect = ({
     field: { onChange, value },
   } = useController({ name, control });
 
-  useEffect(() => {
-    // setSelectedValue({ value: value?.value, fieldId: field?.fieldId });
-    setSelectedIds((prevSelectedIds) => ({
-      ...prevSelectedIds,
-      [name]: {
-        label: value?.label,
-        value: value?.value,
-        fieldId: field?.fieldId,
-      },
-    }));
-    onChange({
-      label: value?.label,
-      value: value?.value,
-      fieldId: field?.fieldId,
-    });
-  }, []);
+  // useEffect(() => {
+  //   // setSelectedValue({ value: value?.value, fieldId: field?.fieldId });
+  //   setSelectedIds((prevSelectedIds) => ({
+  //     ...prevSelectedIds,
+  //     [name]: {
+  //       label: value?.label,
+  //       value: value?.value,
+  //       fieldId: field?.fieldId,
+  //     },
+  //   }));
+  //   onChange({
+  //     label: value?.label,
+  //     value: value?.value,
+  //     fieldId: field?.fieldId,
+  //   });
+  // }, []);
 
   const toggleDropdown = () => {
     if (field.options && field.options.length > 0) {
@@ -58,23 +58,23 @@ const DropdownSelect = ({
       [name]: {
         label: item?.label,
         value: item?.value,
-        fieldId: field?.fieldId,
       },
     }));
     onChange({
       label: item?.label,
       value: item?.value,
-      fieldId: field?.fieldId,
     });
 
     if (name === 'state') {
-      setValue('district', '');
-      setValue('block', '');
+      setValue('district', null);
+      setValue('block', null);
+    }
+    if (name === 'district') {
+      // setValue('district', '');
+      setValue('block', null);
     }
     setIsDropdownOpen(false);
   };
-
-  // console.log('errors', errors[name]);
 
   return (
     <View style={styles.dropdownContainer}>
@@ -83,7 +83,7 @@ const DropdownSelect = ({
       </View>
 
       <TouchableOpacity onPress={toggleDropdown} style={styles.dropdownButton}>
-        <GlobalText style={[globalStyles.text]}>{value?.label}</GlobalText>
+        <GlobalText style={[globalStyles.text]}>{t(value?.label)}</GlobalText>
         <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
       </TouchableOpacity>
       {isDropdownOpen && (
@@ -104,16 +104,7 @@ const DropdownSelect = ({
         </View>
       )}
       {errors[name] && (
-        <GlobalText
-          style={{
-            color: 'red',
-            alignSelf: 'flex-start',
-            marginTop: 10,
-            fontFamily: 'Poppins-Regular',
-          }}
-        >
-          {errors[name]?.value?.message}
-        </GlobalText>
+        <GlobalText style={styles.error}>{errors[name]?.message}</GlobalText>
       )}
     </View>
   );
@@ -161,6 +152,14 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 14,
     color: '#000',
+  },
+  error: {
+    textAlign: 'left',
+    color: 'red',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 15,
+    marginTop: 20,
+    marginLeft: 20,
   },
 });
 

@@ -45,6 +45,8 @@ const MaterialCardView = ({ route }) => {
       // console.log('reachedElse');
       const result = await EventDetails({ id });
 
+      console.log('result', JSON.stringify(result));
+
       setDetails(result?.tasks || []);
       setCompleteDetails(result?.tasks || []);
     }

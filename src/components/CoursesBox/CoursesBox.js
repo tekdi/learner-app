@@ -45,7 +45,7 @@ const CoursesBox = ({
       onPress={() => handlePress(item)}
       appIcon={item?.appIcon}
       index={index}
-      cardWidth={'44%'}
+      cardWidth={isHorizontal ? 200 : '44%'}
       item={item}
       TrackData={TrackData}
       navigation={navigation}
@@ -63,19 +63,21 @@ const CoursesBox = ({
         <GlobalText style={[styles.description, { color: 'black' }]}>
           {t(description)}
         </GlobalText>
-        {/* <View style={styles.view}>
-          <TouchableOpacity onPress={viewAllLink}>
-            <GlobalText  style={[styles.description, { color: '#0D599E' }]}>
-              {t('view_all')}
-            </GlobalText>
-          </TouchableOpacity>
-          <Icon
-            name="arrow-right"
-            style={{ marginHorizontal: 10 }}
-            color={'#0D599E'}
-            size={20}
-          />
-        </View> */}
+        {viewAllLink && (
+          <View style={styles.view}>
+            <TouchableOpacity onPress={viewAllLink}>
+              <GlobalText style={[styles.description, { color: '#0D599E' }]}>
+                {t('view_all')}
+              </GlobalText>
+            </TouchableOpacity>
+            <Icon
+              name="arrow-right"
+              style={{ marginHorizontal: 10 }}
+              color={'#0D599E'}
+              size={20}
+            />
+          </View>
+        )}
       </View>
       <View>
         {isHorizontal ? (

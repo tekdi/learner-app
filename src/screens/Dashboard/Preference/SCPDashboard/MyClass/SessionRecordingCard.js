@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import globalStyles from '../../../../../utils/Helper/Style';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const SessionRecordingCard = () => {
   return (

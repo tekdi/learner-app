@@ -33,6 +33,7 @@ import {
   getDataFromStorage,
   getTentantId,
   logEventFunction,
+  getDeviceId,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
@@ -40,8 +41,11 @@ import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler
 import cloud_done from '../../assets/images/png/cloud_done.png';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from '@changwoolab/react-native-fast-image';
+import { notificationSubscribe } from '../../utils/API/AuthService';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import DeviceInfo from 'react-native-device-info';
+import Config from 'react-native-config';
 
 const Profile = (props) => {
   const { t } = useTranslation();
@@ -55,6 +59,8 @@ const Profile = (props) => {
   const [storageData, setStorageData] = useState();
   const [userType, setUserType] = useState();
   const [cohortId, setCohortId] = useState();
+  const version = DeviceInfo.getVersion(); // e.g., "1.0.1"
+  const buildNumber = DeviceInfo.getBuildNumber(); // e.g., "2"
 
   const createNewObject = (customFields, labels) => {
     const result = {};
@@ -111,8 +117,19 @@ const Profile = (props) => {
     }, [navigation])
   );
 
+  const NotificationUnsubscribe = async () => {
+    const user_id = await getDataFromStorage('userId');
+    const deviceId = await getDeviceId();
+    const action = 'remove';
+
+    if (user_id) {
+      await notificationSubscribe({ deviceId, user_id, action });
+    }
+  };
+
   const handleLogout = () => {
     const fetchData = async () => {
+      await NotificationUnsubscribe();
       await deleteSavedItem('refreshToken');
       await deleteSavedItem('Accesstoken');
       await deleteSavedItem('userId');
@@ -374,6 +391,15 @@ const Profile = (props) => {
                 {t('logout')}
               </GlobalText>
             </TouchableOpacity>
+            <GlobalText
+              style={[
+                globalStyles.text,
+                { textAlign: 'center', paddingVertical: 10 },
+              ]}
+            >
+              Version {version} (Build {buildNumber}){' '}
+              {Config.ENV != 'PROD' ? Config.ENV : ''}
+            </GlobalText>
           </View>
         </ScrollView>
       )}

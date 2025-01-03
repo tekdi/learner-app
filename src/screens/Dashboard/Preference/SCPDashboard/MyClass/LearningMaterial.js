@@ -61,7 +61,11 @@ const LearningMaterial = () => {
       );
 
       const getCourseTypes = getOptionsByCategory(frameworks, 'courseType');
-      const courseType = getCourseTypes?.map((type) => type.name);
+
+      const courseType = getCourseTypes?.map((type) => ({
+        label: type.name,
+        value: type.name,
+      }));
       const courseTypesAssociations = getCourseTypes?.map((type) => {
         return {
           code: type.code,
