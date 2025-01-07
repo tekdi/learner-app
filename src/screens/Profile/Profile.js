@@ -1,62 +1,40 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  Image,
-  Modal,
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import Header from '../../components/Layout/Header';
 import { useTranslation } from '../../context/LanguageContext';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Octicons from 'react-native-vector-icons/Octicons';
-import {
-  CommonActions,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Label from '../../components/Label/Label';
 import TextField from '../../components/TextField/TextField';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 import {
-  calculateStorageSize,
-  calculateTotalStorageSize,
   capitalizeFirstLetter,
   capitalizeName,
-  clearDoKeys,
-  deleteFilesInDirectory,
-  deleteSavedItem,
   getDataFromStorage,
   getTentantId,
   logEventFunction,
-  getDeviceId,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
-import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
-import cloud_done from '../../assets/images/png/cloud_done.png';
-import LinearGradient from 'react-native-linear-gradient';
-import FastImage from '@changwoolab/react-native-fast-image';
-import { notificationSubscribe } from '../../utils/API/AuthService';
 
+import LinearGradient from 'react-native-linear-gradient';
+import NoCertificateBox from './NoCertificateBox';
 import GlobalText from '@components/GlobalText/GlobalText';
 import DeviceInfo from 'react-native-device-info';
 import Config from 'react-native-config';
 
-const Profile = (props) => {
-  const { t } = useTranslation();
+const Profile = () => {
+  const { t, language } = useTranslation();
   const [userData, setUserData] = useState();
   const [userDetails, setUserDetails] = useState();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
-  const [showExitModal, setShowExitModal] = useState(false);
-  const [showContentModal, setShowContentModal] = useState(false);
-  const [conentView, setConentView] = useState(false);
-  const [storageData, setStorageData] = useState();
+
   const [userType, setUserType] = useState();
   const [cohortId, setCohortId] = useState();
   const version = DeviceInfo.getVersion(); // e.g., "1.0.1"
@@ -78,10 +56,9 @@ const Profile = (props) => {
 
   const fetchData = async () => {
     const result = JSON.parse(await getDataFromStorage('profileData'));
+
     const userTypes = await getDataFromStorage('userType');
     const cohortId = await getDataFromStorage('cohortId');
-    // console.log('userType', userTypes);
-    console.log('cohortId', cohortId);
     setCohortId(cohortId);
     setUserType(userTypes);
 
@@ -99,79 +76,15 @@ const Profile = (props) => {
     createNewObject(customFields, requiredLabels);
     setUserData(result?.getUserDetails?.[0]);
     const tenantData = await getTentantId();
-    // console.log({ tenantData });
 
     setLoading(false);
-  };
-
-  const StorageSize = async () => {
-    const data = await calculateTotalStorageSize();
-    console.log('size', data);
-    setStorageData(data);
   };
 
   useFocusEffect(
     useCallback(() => {
       fetchData();
-      StorageSize();
     }, [navigation])
   );
-
-  const NotificationUnsubscribe = async () => {
-    const user_id = await getDataFromStorage('userId');
-    const deviceId = await getDeviceId();
-    const action = 'remove';
-
-    if (user_id) {
-      await notificationSubscribe({ deviceId, user_id, action });
-    }
-  };
-
-  const handleLogout = () => {
-    const fetchData = async () => {
-      await NotificationUnsubscribe();
-      await deleteSavedItem('refreshToken');
-      await deleteSavedItem('Accesstoken');
-      await deleteSavedItem('userId');
-      await deleteSavedItem('cohortId');
-      await deleteSavedItem('cohortData');
-      await deleteSavedItem('weightedProgress');
-      await deleteSavedItem('courseTrackData');
-      await deleteSavedItem('profileData');
-      await deleteSavedItem('tenantData');
-      await deleteSavedItem('academicYearId');
-      logoutEvent();
-      // Reset the navigation stack and navigate to LoginSignUpScreen
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{ name: 'LoginScreen' }],
-        })
-      );
-    };
-
-    fetchData();
-  };
-
-  const logoutEvent = async () => {
-    const obj = {
-      eventName: 'logout_Event',
-      method: 'button-click',
-      screenName: 'Profile',
-    };
-    await logEventFunction(obj);
-  };
-
-  const handleCancel = () => {
-    setShowExitModal(false); // Close the modal
-    setShowContentModal(false); // Close the modal
-  };
-  const handleContentDelete = async () => {
-    await clearDoKeys();
-    await deleteFilesInDirectory();
-    StorageSize();
-    setShowContentModal(false); // Close the modal
-  };
 
   useEffect(() => {
     const logEvent = async () => {
@@ -184,6 +97,21 @@ const Profile = (props) => {
     };
     logEvent();
   }, []);
+
+  const getDate = () => {
+    const date = new Date(userData?.createdAt);
+    const day = date?.toLocaleDateString(language, {
+      day: 'numeric',
+    });
+    const month = date?.toLocaleDateString(language, {
+      month: 'long',
+    });
+    const year = date?.toLocaleDateString(language, {
+      year: 'numeric',
+    });
+
+    return ` ${month} ${day}, ${year}`; // Format as "26 October 2024"
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -199,60 +127,15 @@ const Profile = (props) => {
             {cohortId === '00000000-0000-0000-0000-000000000000' && (
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('ProfileUpdateScreen');
+                  navigation.navigate('OtherSettings', {
+                    age: userDetails?.AGE,
+                  });
                 }}
               >
-                <Icon name="edit" size={30} color={'#000'} />
+                <Ionicons name="settings-outline" size={30} color={'#000'} />
               </TouchableOpacity>
             )}
           </View>
-          {/* {storageData !== '0.00 KB' && (
-            <View style={[styles.viewBox, { backgroundColor: '#F7ECDF' }]}>
-              <View
-                style={[globalStyles.flexrow, { justifyContent: 'center' }]}
-              >
-                <Image
-                  style={styles.img}
-                  source={cloud_done}
-                  resizeMode="contain"
-                />
-
-                <GlobalText
-                  numberOfLines={2}
-                  ellipsizeMode="tail"
-                  style={[globalStyles.heading2, { width: 250 }]}
-                >
-                  {t('you_have')} {storageData} {t('of_offline_content')}
-                </GlobalText>
-              </View>
-
-              <TouchableOpacity
-                onPress={() => {
-                  setShowContentModal(true);
-                }}
-              >
-                <View
-                  style={{
-                    borderWidth: 1,
-                    borderRadius: 20,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <GlobalText style={[globalStyles.heading2, { padding: 10 }]}>
-                    {t('clear_all_offline_content')}
-                  </GlobalText>
-                  <Octicons
-                    name="arrow-right"
-                    color="black"
-                    size={20}
-                    style={styles.icon}
-                  />
-                </View>
-              </TouchableOpacity>
-            </View>
-          )} */}
           <LinearGradient
             colors={['#FFFDF6', '#F8EFDA']} // Gradient colors
             start={{ x: 1, y: 0 }} // Gradient starting point
@@ -262,18 +145,34 @@ const Profile = (props) => {
             <GlobalText style={[globalStyles.subHeading, { fontWeight: 700 }]}>
               {capitalizeName(userData?.name)}
             </GlobalText>
-            <TextField text={userData?.username} />
+            <View
+              style={[
+                globalStyles.flexrow,
+                { justifyContent: 'space-between' },
+              ]}
+            >
+              <GlobalText style={globalStyles.text}>
+                {userData?.username}
+              </GlobalText>
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 20,
+                  backgroundColor: '#CDC5BD',
+                }}
+              />
+              <View style={[globalStyles.flexrow]}>
+                <GlobalText style={globalStyles.text}>
+                  {t('joined_on')}
+                </GlobalText>
+                <GlobalText style={globalStyles.text}> {getDate()}</GlobalText>
+              </View>
+            </View>
           </LinearGradient>
-          <View>
+          <NoCertificateBox userType={userType} />
+          <View style={{ backgroundColor: '#FFF8F2', paddingVertical: 20 }}>
             <View style={styles.viewBox}>
-              {/* <View>
-                <Label
-                  text={`${t('state')}, ${t('district')}, ${t('block')}, ${t('unit')}`}
-                />
-                <TextField
-                  text={`${userDetails?.STATES || '-'}  ${userDetails?.DISTRICTS || ''} ${userDetails?.BLOCKS || ''}`}
-                />
-              </View> */}
               <View>
                 <Label text={`${t('contact_number')}`} />
                 <TextField text={userData?.mobile} />
@@ -299,166 +198,30 @@ const Profile = (props) => {
                   )}`}
                 />
               </View>
+              <View>
+                <Label text={`${t('location')}`} />
+                {userDetails?.STATES ? (
+                  <TextField
+                    text={`${userDetails?.STATES || '-'},  ${userDetails?.DISTRICTS || ''}, ${userDetails?.BLOCKS || ''}`}
+                  />
+                ) : (
+                  <TextField text={'-'} />
+                )}
+              </View>
             </View>
           </View>
-          <View style={{ marginHorizontal: 20 }}>
-            <GlobalText
-              style={[
-                globalStyles.text,
-                { color: '#7C766F', marginBottom: 20 },
-              ]}
-            >
-              {t('other_settings')}
-            </GlobalText>
-            <View style={[globalStyles.flexrow]}>
-              <TouchableOpacity
-                style={[globalStyles.flexrow, { flexWrap: 'wrap' }]}
-                onPress={() => {
-                  setShowContentModal(true);
-                }}
-              >
-                <FastImage
-                  style={{ width: 25, height: 25, marginRight: 10 }}
-                  source={require('../../assets/images/png/cloud_done.png')}
-                  resizeMode={FastImage.resizeMode.contain}
-                  priority={FastImage.priority.high}
-                />
-                <View style={{ width: '85%' }}>
-                  <GlobalText
-                    style={[globalStyles.subHeading]}
-                    numberOfLines={2}
-                    ellipsizeMode="tail"
-                  >
-                    {t('remove_all_offline_content')}
-                  </GlobalText>
-                  <GlobalText
-                    style={[globalStyles.subHeading]}
-                    numberOfLines={2}
-                    ellipsizeMode="tail"
-                  >
-                    ( {storageData})
-                  </GlobalText>
-                </View>
-              </TouchableOpacity>
 
-              <TouchableOpacity
-                style={{ top: -2, right: 10 }}
-                onPress={() => {
-                  setConentView(true);
-                }}
-              >
-                <Ionicons
-                  name="information-circle-outline"
-                  size={25}
-                  color={'#1170DC'}
-                />
-              </TouchableOpacity>
-            </View>
-            {cohortId === '00000000-0000-0000-0000-000000000000' && (
-              <TouchableOpacity
-                style={[globalStyles.flexrow, { marginVertical: 15 }]}
-                onPress={() => {
-                  navigation.navigate('ResetPassword');
-                }}
-              >
-                <Icon
-                  name="lock-reset"
-                  color="black"
-                  size={25}
-                  style={styles.icon}
-                />
-
-                <GlobalText
-                  style={[globalStyles.subHeading, { marginLeft: 15 }]}
-                >
-                  {t('reset_password')}
-                </GlobalText>
-              </TouchableOpacity>
-            )}
-
-            <TouchableOpacity
-              style={[
-                globalStyles.flexrow,
-                { marginBottom: 20, marginTop: 15 },
-              ]}
-              onPress={() => {
-                setShowExitModal(true);
-              }}
-            >
-              <Icon name="logout" color="black" size={25} style={styles.icon} />
-
-              <GlobalText style={[globalStyles.subHeading, { marginLeft: 15 }]}>
-                {t('logout')}
-              </GlobalText>
-            </TouchableOpacity>
-            <GlobalText
-              style={[
-                globalStyles.text,
-                { textAlign: 'center', paddingVertical: 10 },
-              ]}
-            >
-              Version {version} (Build {buildNumber}){' '}
-              {Config.ENV != 'PROD' ? Config.ENV : ''}
-            </GlobalText>
-          </View>
+          <GlobalText
+            style={[
+              globalStyles.text,
+              { textAlign: 'center', paddingVertical: 10 },
+            ]}
+          >
+            Version {version} (Build {buildNumber}){' '}
+            {Config.ENV != 'PROD' ? Config.ENV : ''}
+          </GlobalText>
         </ScrollView>
       )}
-      {showExitModal && (
-        <BackButtonHandler
-          logout
-          exitRoute={true} // You can pass any props needed by the modal here
-          onCancel={handleCancel}
-          onExit={handleLogout}
-        />
-      )}
-      {showContentModal && (
-        <BackButtonHandler
-          content_delete
-          exitRoute={true} // You can pass any props needed by the modal here
-          onCancel={handleCancel}
-          onExit={handleContentDelete}
-        />
-      )}
-      <Modal transparent={true} animationType="fade" visible={conentView}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <View style={styles.alertBox}>
-              <Ionicons
-                name="information-circle-outline"
-                size={25}
-                color={'#1170DC'}
-              />
-              <GlobalText
-                allowFontScaling={false}
-                style={[
-                  globalStyles.subHeading,
-                  {
-                    textAlign: 'center',
-                    marginVertical: 20,
-                  },
-                ]}
-              >
-                {t('content_delete_desp')}
-              </GlobalText>
-            </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => {
-                  setConentView(false);
-                }}
-              >
-                <GlobalText
-                  allowFontScaling={false}
-                  style={[globalStyles.subHeading, { color: '#0D599E' }]}
-                >
-                  {t('okay')}
-                </GlobalText>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 };
@@ -491,7 +254,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     padding: 20,
-    marginBottom: 20,
+    // marginBottom: 20,
   },
 
   modalContainer: {

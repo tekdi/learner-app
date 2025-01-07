@@ -137,10 +137,11 @@ const LoginScreen = () => {
           } else {
             if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
               await setDataInStorage('userType', 'youthnet');
+              navigation.navigate('YouthNetTabScreen');
             } else {
               await setDataInStorage('userType', 'public');
+              navigation.navigate('Dashboard');
             }
-            navigation.navigate('Dashboard');
           }
           const deviceId = await getDeviceId();
           const action = 'add';

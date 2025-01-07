@@ -293,5 +293,11 @@
   "explore_additional_resources_and_nearby_skilling_centers": "Explore additional resources and nearby skilling centers",
   "explore_additional_courses": "Explore Additional Courses",
   "skilling_center_near_you": "Skilling Center Near You",
-  "open_on_maps": "Open on Maps"
+  "open_on_maps": "Open on Maps",
+  "edit_profile": "Edit Profile",
+  "change_username": "Change Username",
+  "change_password": "Change Password",
+  "completed_courses_certificates": "Completed Courses & Certificates",
+  "you_havent_completed_any_courses_yet": "Your haven’t Completed any Courses yet",
+  "your_username_has_been_successfully_changed": "Your username has been successfully changed"
 }

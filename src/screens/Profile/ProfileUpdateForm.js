@@ -1,26 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  Image,
   StyleSheet,
-  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Alert,
-  SafeAreaView,
-  Text,
   ScrollView,
-  BackHandler,
-  Button,
 } from 'react-native';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
-import HeaderComponent from '../../components/CustomHeaderComponent/customheadercomponent';
 import CustomCards from '../../components/CustomCard/CustomCard';
-import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
-import backIcon from '../../assets/images/png/arrow-back-outline.png';
+
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 // import Geolocation from 'react-native-geolocation-service';
@@ -32,41 +23,22 @@ import InterestedCardsComponent from '../../components/InterestedComponents/Inte
 import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
 import {
   getDataFromStorage,
-  getUserId,
   logEventFunction,
-  saveAccessToken,
-  saveRefreshToken,
-  saveToken,
   setDataInStorage,
-  storeUsername,
   translateLanguage,
 } from '../../utils/JsHelper/Helper';
 import PlainText from '../../components/PlainText/PlainText';
 import PlainTcText from '../../components/PlainText/PlainTcText';
 import { transformPayload } from './TransformPayload';
 import {
-  getCohort,
-  getGeoLocation,
   getProfileDetails,
-  login,
-  registerUser,
   updateUser,
   userExist,
 } from '../../utils/API/AuthService';
-import { getAccessToken } from '../../utils/API/ApiCalls';
-import globalStyles from '../../utils/Helper/Style';
 import CustomRadioCard from '../../components/CustomRadioCard/CustomRadioCard';
 import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
-import Config from 'react-native-config';
-import FastImage from '@changwoolab/react-native-fast-image';
-import { CheckBox } from '@ui-kitten/components';
-import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
-import NetworkAlert from '../../components/NetworkError/NetworkAlert';
-import { useInternet } from '../../context/NetworkContext';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import ProfileHeader from './ProfileHeader';
-
-import GlobalText from "@components/GlobalText/GlobalText";
 
 const buildYupSchema = (form, currentForm, t) => {
   const shape = {};
@@ -297,16 +269,14 @@ const ProfileUpdateForm = ({ schema }) => {
 
     // await saveToken(token);
     const register = await updateUser({ payload, user_id });
-    console.log({ register });
 
     if (register?.params?.status === 'failed') {
+      console.log('failed');
     } else {
       logRegistrationComplete();
       const profileData = await getProfileDetails({
         userId: user_id,
       });
-
-      console.log(JSON.stringify(profileData));
 
       await setDataInStorage('profileData', JSON.stringify(profileData));
       navigation.navigate('MyProfile');
@@ -391,7 +361,7 @@ const ProfileUpdateForm = ({ schema }) => {
           return (
             <View key={field.name} style={styles.inputContainer}>
               <DropdownSelect
-                field={field || districts}
+                field={field}
                 name={field.name}
                 errors={errors}
                 control={control}
@@ -486,8 +456,6 @@ const ProfileUpdateForm = ({ schema }) => {
     fetchData();
     logRegistrationInProgress();
   }, []);
-
-  let currentSchema = schema?.find((form) => form.formNumber === currentForm);
 
   return (
     <>

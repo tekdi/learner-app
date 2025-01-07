@@ -144,7 +144,8 @@ const LanguageScreen = () => {
       });
       const cohort_id = await getDataFromStorage('cohortId');
       const token = await getDataFromStorage('Accesstoken');
-      console.log('cohort_id_lang', cohort_id);
+      const userType = await getDataFromStorage('userType');
+      console.log('userType', userType);
 
       if (token) {
         if (isConnected) {
@@ -155,28 +156,49 @@ const LanguageScreen = () => {
           if (token && data?.access_token) {
             await saveAccessToken(data?.access_token);
             await saveRefreshToken(data?.refresh_token);
-            if (cohort_id !== '00000000-0000-0000-0000-000000000000') {
+            if (
+              cohort_id !== '00000000-0000-0000-0000-000000000000' ||
+              userType === 'scp'
+            ) {
               await setCurrentCohort(cohort_id);
               navigation.navigate('SCPUserTabScreen');
             } else {
-              navigation.navigate('Dashboard');
+              if (userType === 'youthnet') {
+                navigation.navigate('YouthNetTabScreen');
+              } else {
+                navigation.navigate('Dashboard');
+              }
             }
           } else if (token) {
-            if (cohort_id !== '00000000-0000-0000-0000-000000000000') {
+            if (
+              cohort_id !== '00000000-0000-0000-0000-000000000000' ||
+              userType === 'scp'
+            ) {
               await setCurrentCohort(cohort_id);
               navigation.navigate('SCPUserTabScreen');
             } else {
-              navigation.navigate('Dashboard');
+              if (userType === 'youthnet') {
+                navigation.navigate('YouthNetTabScreen');
+              } else {
+                navigation.navigate('Dashboard');
+              }
             }
           } else {
             setLoading(false);
           }
         } else {
-          if (cohort_id !== '00000000-0000-0000-0000-000000000000') {
+          if (
+            cohort_id !== '00000000-0000-0000-0000-000000000000' ||
+            userType === 'scp'
+          ) {
             // await setCurrentCohort(cohort_id);
             navigation.navigate('SCPUserTabScreen');
           } else {
-            navigation.navigate('Dashboard');
+            if (userType === 'youthnet') {
+              navigation.navigate('YouthNetTabScreen');
+            } else {
+              navigation.navigate('Dashboard');
+            }
           }
         }
       } else {

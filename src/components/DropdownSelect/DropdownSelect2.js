@@ -40,8 +40,6 @@ const DropdownSelect = ({
   };
 
   const handleSelect = (item) => {
-    console.log({ item });
-
     // setSelectedValue({ name: item?.label, value: item?.value });
     setSelectedIds((prevSelectedIds) => ({
       ...prevSelectedIds,
@@ -51,8 +49,6 @@ const DropdownSelect = ({
 
     setIsDropdownOpen(false);
   };
-
-  console.log('field', JSON.stringify(field));
 
   return (
     <View style={styles.dropdownContainer}>

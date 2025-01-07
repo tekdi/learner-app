@@ -37,11 +37,11 @@ export const login = async (params = {}) => {
         Accept: 'application/json',
       },
     });
-    // console.log(`curl -X POST '${EndUrls.login}' \
-    // -H 'Content-Type: application/json' \
-    // -H 'Accept: application/json' \
-    // -d '${params}'
-    // `);
+    console.log(`curl -X POST '${EndUrls.login}' \
+    -H 'Content-Type: application/json' \
+    -H 'Accept: application/json' \
+    -d '${params}'
+    `);
     if (result?.data) {
       return result?.data?.result;
     } else {
@@ -83,9 +83,23 @@ export const refreshToken = async (params = {}) => {
 export const getAccessToken = async () => {
   try {
     const headers = await getHeaderswithoutTenant();
-    const result = await get(`${EndUrls.get_current_token}`, {
+    const url = `${EndUrls.get_current_token}`;
+
+    // Generate the `curl` command
+    const curlCommand = [
+      `curl -X GET '${url}'`,
+      ...Object.entries(headers || {}).map(
+        ([key, value]) => `-H '${key}: ${value}'`
+      ),
+    ].join(' ');
+
+    // Log the `curl` command
+    console.log('CURL Command:', curlCommand);
+
+    const result = await get(url, {
       headers: headers || {},
     });
+
     if (result) {
       return result?.data;
     } else {
@@ -181,15 +195,15 @@ export const updateUser = async ({ payload, user_id }) => {
     const token = await getDataFromStorage('Accesstoken');
     const headers = await getHeaders();
 
-    //     const curlCommand = `
-    // curl -X PATCH '${url}' \\
-    // -H 'Content-Type: application/json' \\
-    // -H 'Accept: application/json' \\
-    // -H 'Authorization:  ${headers.Authorization}' \\
-    // -H 'tenantId: ${headers.tenantId}' \\
-    // -d '${JSON.stringify(payload)}'
-    //     `;
-    //     console.log('cURL Command:', curlCommand);
+    const curlCommand = `
+    curl -X PATCH '${url}' \\
+    -H 'Content-Type: application/json' \\
+    -H 'Accept: application/json' \\
+    -H 'Authorization:  ${headers.Authorization}' \\
+    -H 'tenantId: ${headers.tenantId}' \\
+    -d '${JSON.stringify(payload)}'
+        `;
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await patch(url, payload, {
@@ -411,13 +425,13 @@ export const getProgramDetails = async () => {
     const url = `${EndUrls.programDetails}`;
 
     // Log the curl command
-    // console.log(
-    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${
-    //     headers.Authorization
-    //       ? ` -H 'Authorization: ${headers.Authorization}'`
-    //       : ''
-    //   }`
-    // );
+    console.log(
+      `curl -X GET '${url}' -H 'Content-Type: application/json'${
+        headers.Authorization
+          ? ` -H 'Authorization: ${headers.Authorization}'`
+          : ''
+      }`
+    );
 
     const result = await get(url, {
       headers: headers || {},
@@ -1053,11 +1067,11 @@ export const getGeoLocation = async ({ payload }) => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
-    // console.log(
-    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
-    //     payload
-    //   )}'`
-    // );
+    console.log(
+      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
+        payload
+      )}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {

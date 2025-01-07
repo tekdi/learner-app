@@ -283,5 +283,10 @@
   "username_should_not_be_empty,password_should_not_be_empty": "उपयोगकर्ता नाम खाली नहीं होना चाहिए, पासवर्ड खाली नहीं होना चाहिए",
   "username_should_not_be_empty": "उपयोगकर्ता नाम खाली नहीं होना चाहिए",
   "password_should_not_be_empty": "पासवर्ड खाली नहीं होना चाहिए",
-  "update_now": "अभी अपडेट करें"
+  "update_now": "अभी अपडेट करें",
+  "edit_profile": "प्रोफ़ाइल संपादित करें",
+  "change_username": "यूज़रनेम बदलें",
+  "change_password": "पासवर्ड बदलें",
+  "completed_courses_certificates": "पूर्ण किए गए पाठ्यक्रम और प्रमाणपत्र",
+  "you_havent_completed_any_courses_yet": "आपने अभी तक कोई पाठ्यक्रम पूरा नहीं किया है"
 }

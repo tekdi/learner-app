@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Image,
   KeyboardAvoidingView,
   Modal,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -13,14 +11,8 @@ import {
 import globalStyles from '../../utils/Helper/Style';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
-import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
-import Logo from '../../assets/images/png/logo.png';
-import lock_open from '../../assets/images/png/lock_open.png';
-import {
-  forgotPassword,
-  login,
-  resetPassword,
-} from '../../utils/API/AuthService';
+
+import { login, resetPassword } from '../../utils/API/AuthService';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import PasswordField from '../../components/CustomPasswordComponent/PasswordField';
@@ -124,7 +116,7 @@ const ResetPassword = () => {
     // Split the email into username and domain
     console.log({ email });
 
-    const [emailUsername, domain] = email?.split('@');
+    const [emailUsername, domain] = email.split('@');
 
     // Check if emailUsername is valid
     if (!emailUsername || emailUsername?.length < 2) {
