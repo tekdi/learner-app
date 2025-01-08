@@ -124,17 +124,16 @@ const Profile = () => {
             <GlobalText style={globalStyles.heading}>
               {t('my_profile')}
             </GlobalText>
-            {cohortId === '00000000-0000-0000-0000-000000000000' && (
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('OtherSettings', {
-                    age: userDetails?.AGE,
-                  });
-                }}
-              >
-                <Ionicons name="settings-outline" size={30} color={'#000'} />
-              </TouchableOpacity>
-            )}
+
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('OtherSettings', {
+                  age: userDetails?.AGE,
+                });
+              }}
+            >
+              <Ionicons name="settings-outline" size={30} color={'#000'} />
+            </TouchableOpacity>
           </View>
           <LinearGradient
             colors={['#FFFDF6', '#F8EFDA']} // Gradient colors

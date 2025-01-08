@@ -356,16 +356,12 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
 
     await storeUsername(profileData?.getUserDetails?.[0]?.username);
 
-    const youthnetTenantIds = programData?.filter((item) => {
-      if (item?.name === 'YouthNet') {
-        return item;
-      }
-    });
-    const scp = programData?.filter((item) => {
-      if (item?.name === 'Second Chance Program') {
-        return item;
-      }
-    });
+    const youthnetTenantIds = programData?.filter(
+      (item) => item.name === 'YouthNet'
+    );
+    const scp = programData?.filter(
+      (item) => item.name === 'Second Chance Program'
+    );
 
     if (tenantid === scp?.[0]?.tenantId) {
       await setDataInStorage('userType', 'scp');

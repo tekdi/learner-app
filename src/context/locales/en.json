@@ -299,5 +299,6 @@
   "change_password": "Change Password",
   "completed_courses_certificates": "Completed Courses & Certificates",
   "you_havent_completed_any_courses_yet": "Your haven’t Completed any Courses yet",
-  "your_username_has_been_successfully_changed": "Your username has been successfully changed"
+  "your_username_has_been_successfully_changed": "Your username has been successfully changed",
+  "explore_courses": "Explore Courses"
 }

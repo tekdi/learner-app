@@ -288,5 +288,7 @@
   "change_username": "वापरकर्तानाव बदला",
   "change_password": "संकेतशब्द बदला",
   "completed_courses_certificates": "पूर्ण केलेले अभ्यासक्रम आणि प्रमाणपत्रे",
-  "you_havent_completed_any_courses_yet": "तुम्ही अजून कोणताही अभ्यासक्रम पूर्ण केलेला नाही"
+  "you_havent_completed_any_courses_yet": "तुम्ही अजून कोणताही अभ्यासक्रम पूर्ण केलेला नाही",
+  "your_username_has_been_successfully_changed": "तुमचे वापरकर्ता नाव यशस्वीरित्या बदलले गेले आहे",
+  "explore_courses": "कोर्स शोधा"
 }

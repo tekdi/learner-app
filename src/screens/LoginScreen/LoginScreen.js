@@ -114,16 +114,13 @@ const LoginScreen = () => {
         );
         const tenantDetails = await getProgramDetails();
 
-        const youthnetTenantIds = tenantDetails?.filter((item) => {
-          if (item?.name === 'YouthNet') {
-            return item;
-          }
-        });
-        const scp = tenantDetails?.filter((item) => {
-          if (item?.name === 'Second Chance Program') {
-            return item;
-          }
-        });
+        const youthnetTenantIds = tenantDetails.filter(
+          (item) => item.name === 'YouthNet'
+        );
+        const scp = tenantDetails.filter(
+          (item) => item.name === 'Second Chance Program'
+        );
+
         const role = tenantData?.[0]?.roleName;
 
         if (role == 'Learner' || role == 'Student') {
