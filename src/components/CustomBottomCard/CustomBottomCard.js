@@ -2,12 +2,20 @@ import PropTypes from 'prop-types';
 import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import PrimaryButton from '../PrimaryButton/PrimaryButton';
-import { Layout, Text } from '@ui-kitten/components';
+import { Layout } from '@ui-kitten/components';
 import { useTranslation } from '../../context/LanguageContext';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import { CopilotStep, walkthroughable } from 'react-native-copilot';
 
-const CustomBottomCard = ({ onPress }) => {
+const CopilotView = walkthroughable(View);
+
+const CustomBottomCard = ({
+  onPress,
+  copilotStepText,
+  copilotStepOrder,
+  copilotStepName,
+}) => {
   //multi language setup
   const { t } = useTranslation();
 
@@ -25,13 +33,24 @@ const CustomBottomCard = ({ onPress }) => {
         >
           {t('language_help')}
         </GlobalText>
-        <PrimaryButton onPress={onPress} text={t('continue')}></PrimaryButton>
+        <CopilotStep
+          text={t(copilotStepText)}
+          order={copilotStepOrder}
+          name={copilotStepName}
+        >
+          <CopilotView>
+            <PrimaryButton onPress={onPress} text="Continue" />
+          </CopilotView>
+        </CopilotStep>
       </Layout>
     </View>
   );
 };
 CustomBottomCard.propTypes = {
   onPress: PropTypes.func,
+  copilotStepText: PropTypes.string.isRequired,
+  copilotStepOrder: PropTypes.number.isRequired,
+  copilotStepName: PropTypes.string.isRequired,
 };
 const styles = StyleSheet.create({
   overlap: {

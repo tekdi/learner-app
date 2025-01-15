@@ -66,95 +66,100 @@ const LoginScreen = () => {
     setPassword(e.trim());
   };
 
+  // const handleLogin = async () => {
+  //   if (isConnected) {
+  //     setNetworkstatus(true);
+  //     setLoading(true);
+  //     const payload = {
+  //       username: userName,
+  //       password: password,
+  //     };
+  //     const data = await login(payload);
+
+  //     if (data?.params?.status !== 'failed' && !data?.error) {
+  //       await saveRefreshToken(data?.refresh_token || '');
+  //       await saveAccessToken(data?.access_token || '');
+  //       const userDetails = await getuserDetails();
+  //       const user_id = userDetails?.userId;
+  //       const tenantData = userDetails?.tenantData;
+  //       const tenantid = userDetails?.tenantData?.[0]?.tenantId;
+  //       await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
+  //       await setDataInStorage('userId', user_id);
+
+  //       const academicyear = await setAcademicYear({ tenantid });
+  //       const academicYearId = academicyear?.[0]?.id;
+  //       await setDataInStorage('academicYearId', academicYearId || '');
+  //       const cohort = await getCohort({ user_id, tenantid, academicYearId });
+  //       const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
+  //       const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
+  //       await setDataInStorage(
+  //         'cohortData',
+  //         JSON.stringify(getActiveCohort?.[0]) || ''
+  //       );
+  //       const cohort_id = getActiveCohortId?.[0];
+
+  //       const profileData = await getProfileDetails({
+  //         userId: user_id,
+  //       });
+  //       await setDataInStorage('profileData', JSON.stringify(profileData));
+  //       await setDataInStorage(
+  //         'Username',
+  //         profileData?.getUserDetails?.[0]?.username
+  //       );
+  //       await storeUsername(profileData?.getUserDetails?.[0]?.username);
+
+  //       await setDataInStorage(
+  //         'cohortId',
+  //         cohort_id || '00000000-0000-0000-0000-000000000000'
+  //       );
+  //       const tenantDetails = (await getProgramDetails()) || [];
+
+  //       const youthnetTenantIds = tenantDetails?.filter(
+  //         (item) => item.name === 'YouthNet' || 'public'
+  //       );
+  //       const scp = tenantDetails?.filter(
+  //         (item) => item.name === 'Second Chance Program' || 'public'
+  //       );
+
+  //       const role = tenantData?.[0]?.roleName;
+
+  //       if (role == 'Learner' || role == 'Student') {
+  //         if (tenantid === scp?.[0]?.tenantId) {
+  //           await setDataInStorage('userType', 'scp');
+  //           if (cohort_id) {
+  //             navigation.navigate('SCPUserTabScreen');
+  //           } else {
+  //             navigation.navigate('Dashboard');
+  //           }
+  //         } else {
+  //           if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
+  //             await setDataInStorage('userType', 'youthnet');
+  //             // navigation.navigate('YouthNetTabScreen');
+  //             navigation.navigate('Dashboard');
+  //           } else {
+  //             await setDataInStorage('userType', 'public');
+  //             navigation.navigate('Dashboard');
+  //           }
+  //         }
+  //         const deviceId = await getDeviceId();
+  //         const action = 'add';
+
+  //         await notificationSubscribe({ deviceId, user_id, action });
+  //       } else {
+  //         setErrmsg('invalid_username_or_password');
+  //       }
+  //       setLoading(false);
+  //     } else {
+  //       setLoading(false);
+  //       setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));
+  //     }
+  //   } else {
+  //     setNetworkstatus(false);
+  //   }
+  // };
+
   const handleLogin = async () => {
-    if (isConnected) {
-      setNetworkstatus(true);
-      setLoading(true);
-      const payload = {
-        username: userName,
-        password: password,
-      };
-      const data = await login(payload);
-
-      if (data?.params?.status !== 'failed' && !data?.error) {
-        await saveRefreshToken(data?.refresh_token || '');
-        await saveAccessToken(data?.access_token || '');
-        const userDetails = await getuserDetails();
-        const user_id = userDetails?.userId;
-        const tenantData = userDetails?.tenantData;
-        const tenantid = userDetails?.tenantData?.[0]?.tenantId;
-        await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
-        await setDataInStorage('userId', user_id);
-
-        const academicyear = await setAcademicYear({ tenantid });
-        const academicYearId = academicyear?.[0]?.id;
-        await setDataInStorage('academicYearId', academicYearId || '');
-        const cohort = await getCohort({ user_id, tenantid, academicYearId });
-        const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
-        const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
-        await setDataInStorage(
-          'cohortData',
-          JSON.stringify(getActiveCohort?.[0]) || ''
-        );
-        const cohort_id = getActiveCohortId?.[0];
-
-        const profileData = await getProfileDetails({
-          userId: user_id,
-        });
-        await setDataInStorage('profileData', JSON.stringify(profileData));
-        await setDataInStorage(
-          'Username',
-          profileData?.getUserDetails?.[0]?.username
-        );
-        await storeUsername(profileData?.getUserDetails?.[0]?.username);
-
-        await setDataInStorage(
-          'cohortId',
-          cohort_id || '00000000-0000-0000-0000-000000000000'
-        );
-        const tenantDetails = await getProgramDetails();
-
-        const youthnetTenantIds = tenantDetails.filter(
-          (item) => item.name === 'YouthNet'
-        );
-        const scp = tenantDetails.filter(
-          (item) => item.name === 'Second Chance Program'
-        );
-
-        const role = tenantData?.[0]?.roleName;
-
-        if (role == 'Learner' || role == 'Student') {
-          if (tenantid === scp?.[0]?.tenantId) {
-            await setDataInStorage('userType', 'scp');
-            if (cohort_id) {
-              navigation.navigate('SCPUserTabScreen');
-            } else {
-              navigation.navigate('Dashboard');
-            }
-          } else {
-            if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
-              await setDataInStorage('userType', 'youthnet');
-              navigation.navigate('YouthNetTabScreen');
-            } else {
-              await setDataInStorage('userType', 'public');
-              navigation.navigate('Dashboard');
-            }
-          }
-          const deviceId = await getDeviceId();
-          const action = 'add';
-
-          await notificationSubscribe({ deviceId, user_id, action });
-        } else {
-          setErrmsg('invalid_username_or_password');
-        }
-        setLoading(false);
-      } else {
-        setLoading(false);
-        setErrmsg(data?.params?.errmsg.toLowerCase().replace(/ /g, '_'));
-      }
-    } else {
-      setNetworkstatus(false);
-    }
+    navigation.navigate('Dashboard');
   };
 
   useEffect(() => {
@@ -183,7 +188,7 @@ const LoginScreen = () => {
         <ScrollView style={styles.scrollView} nestedScrollEnabled={true}>
           <StatusBar
             barStyle="dark-content"
-            translucent={true}
+            // translucent={true}
             backgroundColor="transparent"
           />
           <Image style={globalStyles.logo} source={Logo} resizeMode="contain" />

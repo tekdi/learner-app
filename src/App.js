@@ -12,7 +12,7 @@ import { NetworkProvider } from './context/NetworkContext'; // Adjust path as ne
 import { ConfirmationProvider } from '@context/Confirmation/ConfirmationContext';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/Public/StackScreen';
-import { BackHandler, Text, View } from 'react-native';
+import { BackHandler, Dimensions, Text, View } from 'react-native';
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
 import {
   getDataFromStorage,
@@ -24,6 +24,7 @@ import PushNotification from 'react-native-push-notification';
 import { notificationSubscribe } from './utils/API/AuthService';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import { CopilotProvider } from 'react-native-copilot';
 
 const linking = {
   prefixes: ['pratham://'],
@@ -198,11 +199,16 @@ const App = () => {
           {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
       work */}
           <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
-            <NavigationContainer linking={linking}>
-              <Suspense fallback={<GlobalText>Loading Screen...</GlobalText>}>
-                <StackScreen />
-              </Suspense>
-            </NavigationContainer>
+            <CopilotProvider
+              tooltipStyle={{ backgroundColor: 'black' }}
+              androidStatusBarVisible={true}
+            >
+              <NavigationContainer linking={linking}>
+                <Suspense fallback={<GlobalText>Loading Screen...</GlobalText>}>
+                  <StackScreen />
+                </Suspense>
+              </NavigationContainer>
+            </CopilotProvider>
           </ApplicationProvider>
         </LanguageProvider>
       </ConfirmationProvider>

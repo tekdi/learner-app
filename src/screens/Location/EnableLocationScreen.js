@@ -18,7 +18,7 @@ import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { reverseGeocode } from '../../utils/API/AuthService';
 import { setDataInStorage } from '../../utils/JsHelper/Helper';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const EnableLocationScreen = () => {
   const navigation = useNavigation();
@@ -74,7 +74,7 @@ const EnableLocationScreen = () => {
     <View style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
       <StatusBar
         barStyle="dark-content"
-        translucent={true}
+        // translucent={true}
         backgroundColor="transparent"
       />
       <Image style={{ width: '100%' }} source={location} resizeMode="cover" />

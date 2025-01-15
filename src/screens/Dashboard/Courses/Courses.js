@@ -1,4 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
+import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
+
 import {
   ActivityIndicator,
   BackHandler,
@@ -44,10 +46,11 @@ import globalStyles from '../../../utils/Helper/Style';
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../components/AppUpdate/AppUpdatePopup';
 
+const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
+
 const Courses = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
-
   const [data, setData] = useState([]);
   const [trackData, setTrackData] = useState([]);
   const [userInfo, setUserInfo] = useState('');
@@ -194,52 +197,68 @@ const Courses = () => {
           {loading ? (
             <ActiveLoading />
           ) : (
-            <SafeAreaView>
-              <StatusBar
-                barStyle="dark-content"
-                translucent={true}
-                backgroundColor="transparent"
-              />
+            <>
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
                 <GlobalText style={styles.text2}>
                   {t('welcome')}, {capitalizeName(userInfo?.[0]?.name)} !
                 </GlobalText>
               </View>
+
               <GlobalText style={styles.text}>
                 {youthnet ? t('l1_courses') : t('courses')}
               </GlobalText>
               <ContinueLearning youthnet={youthnet} t={t} userId={userId} />
-              <CustomSearchBox
-                setSearchText={setSearchText}
-                searchText={searchText}
-                handleSearch={handleSearch}
-                placeholder={t('Search Courses')}
-              />
+              <CopilotStep
+                text="You can search courses from here"
+                order={6}
+                name="start"
+              >
+                <CopilotView style={{ width: '100%' }}>
+                  <View>
+                    <CustomSearchBox
+                      setSearchText={setSearchText}
+                      searchText={searchText}
+                      handleSearch={handleSearch}
+                      placeholder={t('Search Courses')}
+                    />
+                  </View>
+                </CopilotView>
+              </CopilotStep>
 
               <SyncCard doneSync={fetchData} />
-              {data.length > 0 ? (
-                <CoursesBox
-                  // title={'Continue_Learning'}
-                  // description={'Food_Production'}
-                  style={{ titlecolor: '#06A816' }}
-                  // viewAllLink={() =>
-                  //   navigation.navigate('ViewAll', {
-                  //     title: 'Continue_Learning',
-                  //     data: data,
-                  //   }
-                  // )
-                  // }
-                  ContentData={data}
-                  TrackData={trackData}
-                  isHorizontal={false}
-                />
-              ) : (
-                <GlobalText style={globalStyles.heading2}>
-                  {t('no_data_found')}
-                </GlobalText>
-              )}
-            </SafeAreaView>
+              <CopilotStep
+                text="You can explore courses from here!"
+                order={7}
+                name="end"
+              >
+                <CopilotView style={{ width: '100%' }}>
+                  <View>
+                    {data.length > 0 ? (
+                      <CoursesBox
+                        // title={'Continue_Learning'}
+                        // description={'Food_Production'}
+                        style={{ titlecolor: '#06A816' }}
+                        // viewAllLink={() =>
+                        //   navigation.navigate('ViewAll', {
+                        //     title: 'Continue_Learning',
+                        //     data: data,
+                        //   }
+                        // )
+                        // }
+                        ContentData={data}
+                        TrackData={trackData}
+                        isHorizontal={false}
+                      />
+                    ) : (
+                      <GlobalText style={globalStyles.heading2}>
+                        {t('no_data_found')}
+                      </GlobalText>
+                    )}
+                  </View>
+                </CopilotView>
+              </CopilotStep>
+            </>
           )}
           {showExitModal && (
             <BackButtonHandler

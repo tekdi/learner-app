@@ -47,7 +47,7 @@ const Header = () => {
     <SafeAreaView style={styles.layout}>
       <StatusBar
         barStyle="dark-content"
-        translucent={true}
+        // translucent={true}
         backgroundColor="transparent"
       />
       <View style={styles.container}>

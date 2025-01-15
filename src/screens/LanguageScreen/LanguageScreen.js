@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
 import {
   FlatList,
   SafeAreaView,
@@ -7,7 +8,7 @@ import {
   Image,
   View,
 } from 'react-native';
-import { Layout, Text } from '@ui-kitten/components';
+import { Layout } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/native';
 import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
@@ -36,20 +37,28 @@ import {
 } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { useInternet } from '../../context/NetworkContext';
-import {
-  alterTable,
-  createTable,
-  getData,
-} from '../../utils/JsHelper/SqliteHelper';
-import messaging from '@react-native-firebase/messaging';
+import { alterTable, createTable } from '../../utils/JsHelper/SqliteHelper';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 
+const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
+
+// Make the Text component walkthroughable for the copilot tutorial
 const LanguageScreen = () => {
+  const { start, copilotEvents } = useCopilot();
   const navigation = useNavigation();
   const { t, setLanguage, language } = useTranslation();
   const [loading, setLoading] = useState(true);
+  const [CopilotStarted, setCopilotStarted] = useState(false);
   const { isConnected } = useInternet();
+
+  // Listen to tutorial start and stop events
+  useEffect(() => {
+    if (!CopilotStarted) {
+      start();
+      copilotEvents.on('start', () => setCopilotStarted(true));
+    }
+  }, [start]);
 
   const getProgramData = async () => {
     const data = await getProgramDetails();
@@ -59,7 +68,7 @@ const LanguageScreen = () => {
     await setDataInStorage('tenantDetails', JSON.stringify(data));
   };
 
-  const setCurrentCohort = async (id) => {
+  const setCurrentCohort = async () => {
     const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
     const tenantid = tenantData?.[0]?.tenantId;
     const user_id = await getDataFromStorage('userId');
@@ -99,7 +108,7 @@ const LanguageScreen = () => {
         'payload TEXT',
         'response TEXT',
       ];
-      const query_APIResponses = await createTable({ tableName, columns });
+      await createTable({ tableName, columns });
       //asessment_offline_2
       tableName = 'Asessment_Offline_2';
       columns = [
@@ -108,7 +117,7 @@ const LanguageScreen = () => {
         'content_id TEXT',
         'payload TEXT',
       ];
-      const query_Asessment_Offline_2 = await createTable({
+      await createTable({
         tableName,
         columns,
       });
@@ -119,7 +128,7 @@ const LanguageScreen = () => {
         'user_id TEXT',
         'telemetry_object TEXT',
       ];
-      const query_Telemetry_Offline = await createTable({ tableName, columns });
+      await createTable({ tableName, columns });
       //Tracking_Offline_2
       tableName = 'Tracking_Offline_2';
       columns = [
@@ -132,13 +141,13 @@ const LanguageScreen = () => {
         'lastAccessOn TEXT',
         'detailsObject TEXT',
       ];
-      const query_Tracking_Offline = await createTable({ tableName, columns });
+      await createTable({ tableName, columns });
 
       //alter table for new columns add
       //add unit_id in Tracking_Offline_2
       tableName = 'Tracking_Offline_2';
       columns = ['unit_id TEXT'];
-      const query_alter_Tracking_Offline = await alterTable({
+      await alterTable({
         tableName,
         newColumns: columns,
       });
@@ -204,7 +213,7 @@ const LanguageScreen = () => {
       } else {
         setLoading(false);
       }
-      const program = await getProgramData();
+      await getProgramData();
     };
     fetchData();
   }, [navigation]);
@@ -224,9 +233,6 @@ const LanguageScreen = () => {
   );
 
   const handlethis = () => {
-    //direct login show
-    // navigation.navigate('LoginScreen');
-    //show register and content button
     navigation.navigate('LoginSignUpScreen');
   };
 
@@ -237,11 +243,8 @@ const LanguageScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <AppUpdatePopup />
-      <StatusBar
-        barStyle="dark-content"
-        translucent={true}
-        backgroundColor="transparent"
-      />
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
+
       <Layout style={styles.container}>
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         {/* Text Samples here */}
@@ -261,21 +264,30 @@ const LanguageScreen = () => {
         <GlobalText category="p1" style={styles.description}>
           {t('select_language')}
         </GlobalText>
-        <View>
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            style={styles.list}
-            data={languages}
-            renderItem={renderItem}
-            initialNumToRender={10} // Adjust the number of items to render initially
-            maxToRenderPerBatch={10} // Number of items rendered per batch
-            numColumns={2}
-            windowSize={21} // Controls the number of items rendered around the current index
-          />
-        </View>
+        <CopilotStep text={t('select_language')} order={1} name="start">
+          <CopilotView style={{ width: '100%' }}>
+            <View>
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                style={styles.list}
+                data={languages}
+                renderItem={renderItem}
+                initialNumToRender={10} // Adjust the number of items to render initially
+                maxToRenderPerBatch={10} // Number of items rendered per batch
+                numColumns={2}
+                windowSize={21} // Controls the number of items rendered around the current index
+              />
+            </View>
+          </CopilotView>
+        </CopilotStep>
         <View style={{ top: -10 }}>
           <HorizontalLine />
-          <CustomBottomCard onPress={handlethis} />
+          <CustomBottomCard
+            onPress={handlethis}
+            copilotStepText="click_here_to_continue"
+            copilotStepOrder={2}
+            copilotStepName="continueButton"
+          />
         </View>
       </Layout>
     </SafeAreaView>
@@ -322,6 +334,18 @@ const styles = StyleSheet.create({
     height: 50,
     marginLeft: 5,
   },
+  // container: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  // },
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'red',
+  },
 });
+
+LanguageScreen.propTypes = {};
 
 export default LanguageScreen;

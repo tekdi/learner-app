@@ -290,5 +290,8 @@
   "completed_courses_certificates": "पूर्ण किए गए पाठ्यक्रम और प्रमाणपत्र",
   "you_havent_completed_any_courses_yet": "आपने अभी तक कोई पाठ्यक्रम पूरा नहीं किया है",
   "your_username_has_been_successfully_changed": "आपका उपयोगकर्ता नाम सफलतापूर्वक बदल दिया गया है",
-  "explore_courses": "पाठ्यक्रम खोजें"
+  "explore_courses": "पाठ्यक्रम खोजें",
+  "click_here_to_continue": "जारी रखने के लिए यहाँ क्लिक करें",
+  "click_here_to_create_new_account": "नया खाता बनाने के लिए यहाँ क्लिक करें",
+  "click_here_to_login": "लॉगिन करने के लिए यहाँ क्लिक करें"
 }

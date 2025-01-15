@@ -300,5 +300,8 @@
   "completed_courses_certificates": "Completed Courses & Certificates",
   "you_havent_completed_any_courses_yet": "Your haven’t Completed any Courses yet",
   "your_username_has_been_successfully_changed": "Your username has been successfully changed",
-  "explore_courses": "Explore Courses"
+  "explore_courses": "Explore Courses",
+  "click_here_to_continue": "Click here to continue",
+  "click_here_to_create_new_account": "Click here to create new account",
+  "click_here_to_login": "Click here to login"
 }

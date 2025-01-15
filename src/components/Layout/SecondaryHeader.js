@@ -43,7 +43,7 @@ const SecondaryHeader = ({ logo }) => {
     <SafeAreaView style={styles.layout}>
       <StatusBar
         barStyle="dark-content"
-        translucent={true}
+        // translucent={true}
         backgroundColor="transparent"
       />
 
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
-    paddingTop: 40,
+    // paddingTop: 40,
     width: '100%',
   },
   container: {

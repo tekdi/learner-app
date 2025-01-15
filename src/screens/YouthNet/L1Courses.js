@@ -204,7 +204,7 @@ const L1Courses = () => {
               <View style={styles.view}>
                 <StatusBar
                   barStyle="dark-content"
-                  translucent={true}
+                  // translucent={true}
                   backgroundColor="transparent"
                 />
                 <View style={styles.view2}>

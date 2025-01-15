@@ -184,7 +184,7 @@ const ExploreTab = () => {
       <SecondaryHeader logo />
       <StatusBar
         barStyle="dark-content"
-        translucent={true}
+        // translucent={true}
         backgroundColor="transparent"
       />
       <AppUpdatePopup />

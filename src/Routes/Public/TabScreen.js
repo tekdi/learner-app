@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import DashboardStack from './DashboardStack';
@@ -13,88 +13,53 @@ import content2 from '../../assets/images/png/content2.png';
 import Coursesunfilled from '../../assets/images/png/Coursesunfilled.png';
 import ProfileStack from './ProfileStack';
 import { getDataFromStorage, getTentantId } from '../../utils/JsHelper/Helper';
+import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
 
 const Tab = createBottomTabNavigator();
+const WalkthroughableView = walkthroughable(View); // Wrap Image component
 
 const TabScreen = () => {
   const { t } = useTranslation();
   const [contentShow, setContentShow] = useState(true);
+  const [CopilotStarted, setCopilotStarted] = useState(false);
+  const [CopilotStopped, setCopilotStopped] = useState(false);
+  const { start, goToNth, unregisterStep, copilotEvents } = useCopilot();
 
   useEffect(() => {
-    const fetchData = async () => {
-      const tenantId = await getTentantId();
-      const tenantDetails = JSON.parse(
-        await getDataFromStorage('tenantDetails')
-      );
+    if (!CopilotStarted) {
+      unregisterStep('login'); // Unregister step 1
+      unregisterStep('create_account'); // Unregister step 2
+      start();
+      copilotEvents.on('start', () => setCopilotStarted(true));
+    }
+    copilotEvents.on('stop', () => setCopilotStopped(true));
+  }, [start, copilotEvents]);
 
-      const youthnetTenantIds = tenantDetails?.filter((item) => {
-        if (item?.name === 'YouthNet') {
-          return item;
-        }
-      });
-      if (tenantId === youthnetTenantIds?.[0]?.tenantId) {
-        setContentShow(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const tenantId = await getTentantId();
+  //     const tenantDetails = JSON.parse(
+  //       await getDataFromStorage('tenantDetails')
+  //     );
 
-    fetchData();
-  }, []);
+  //     const youthnetTenantIds = tenantDetails?.filter((item) => {
+  //       if (item?.name === 'YouthNet') {
+  //         return item;
+  //       }
+  //     });
+  //     if (tenantId === youthnetTenantIds?.[0]?.tenantId) {
+  //       setContentShow(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   return (
     <Tab.Navigator
       initialRouteName="DashboardStack"
-      screenOptions={({ route }) => ({
+      screenOptions={() => ({
         headerShown: false,
-        tabBarIcon: ({ focused }) => {
-          if (route.name === 'content') {
-            if (focused) {
-              return (
-                <Image source={content2} style={{ width: 30, height: 30 }} />
-              );
-            } else {
-              return (
-                <Image source={content} style={{ width: 30, height: 30 }} />
-              );
-            }
-          } else if (route.name === 'DashboardStack') {
-            if (focused) {
-              return (
-                <Image
-                  source={Coursesfilled}
-                  style={{ width: 30, height: 30 }}
-                />
-              );
-            } else {
-              return (
-                <Image
-                  source={Coursesunfilled}
-                  style={{ width: 30, height: 30 }}
-                />
-              );
-            }
-          } else if (route.name === 'AssessmentStack') {
-            return (
-              <SimpleIcon
-                name="note"
-                color={focused ? '#987100' : 'black'}
-                size={30}
-              />
-            );
-          } else if (route.name === 'Profile') {
-            if (focused) {
-              return (
-                <Image
-                  source={profile_filled}
-                  style={{ width: 30, height: 30 }}
-                />
-              );
-            } else {
-              return (
-                <Image source={profile} style={{ width: 30, height: 30 }} />
-              );
-            }
-          }
-        },
         tabBarStyle: styles.footer,
         tabBarActiveTintColor: '#987100',
         tabBarInactiveTintColor: 'gray',
@@ -104,26 +69,82 @@ const TabScreen = () => {
     >
       <Tab.Screen
         name="DashboardStack"
-        component={DashboardStack}
-        options={{ tabBarLabel: t('courses') }}
-      />
+        options={{
+          tabBarLabel: t('courses'),
+          tabBarButton: (props) => (
+            <CopilotStep
+              text="This is the courses tab. Tap here to explore courses!"
+              order={3}
+              name="coursesTab"
+            >
+              <WalkthroughableView style={{ flex: 1 }}>
+                <TouchableOpacity {...props} />
+              </WalkthroughableView>
+            </CopilotStep>
+          ),
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={focused ? Coursesfilled : Coursesunfilled}
+              style={{ width: 30, height: 30 }}
+            />
+          ),
+        }}
+      >
+        {(props) => (
+          <DashboardStack {...props} CopilotStopped={CopilotStopped} />
+        )}
+      </Tab.Screen>
+
       {contentShow && (
         <Tab.Screen
           name="content"
           component={Contents}
-          options={{ tabBarLabel: t('content') }}
+          options={{
+            tabBarLabel: t('content'),
+            tabBarButton: (props) => (
+              <CopilotStep
+                text="This is the Content tab. Tap here to explore Content!"
+                order={4}
+                name="cotentTab"
+              >
+                <WalkthroughableView style={{ flex: 1 }}>
+                  <TouchableOpacity {...props} />
+                </WalkthroughableView>
+              </CopilotStep>
+            ),
+            tabBarIcon: ({ focused }) => (
+              <Image
+                source={focused ? profile_filled : profile}
+                style={{ width: 30, height: 30 }}
+              />
+            ),
+          }}
         />
       )}
 
-      {/* <Tab.Screen
-        name="AssessmentStack"
-        component={AssessmentStack}
-        options={{ tabBarLabel: t('assessment') }}
-      /> */}
       <Tab.Screen
         name="Profile"
         component={ProfileStack}
-        options={{ tabBarLabel: t('profile') }}
+        options={{
+          tabBarLabel: t('profile'),
+          tabBarButton: (props) => (
+            <CopilotStep
+              text="This is the Profile tab. Tap here to explore Profile!"
+              order={5}
+              name="Profile"
+            >
+              <WalkthroughableView style={{ flex: 1 }}>
+                <TouchableOpacity {...props} />
+              </WalkthroughableView>
+            </CopilotStep>
+          ),
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={focused ? profile_filled : profile}
+              style={{ width: 30, height: 30 }}
+            />
+          ),
+        }}
       />
     </Tab.Navigator>
   );
