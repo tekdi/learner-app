@@ -40,6 +40,7 @@ import { useInternet } from '../../context/NetworkContext';
 import { alterTable, createTable } from '../../utils/JsHelper/SqliteHelper';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import Config from 'react-native-config';
 
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
@@ -53,12 +54,25 @@ const LanguageScreen = () => {
   const { isConnected } = useInternet();
 
   // Listen to tutorial start and stop events
-  useEffect(() => {
-    if (!CopilotStarted) {
-      start();
-      copilotEvents.on('start', () => setCopilotStarted(true));
-    }
-  }, [start]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const languageScreenTour = await getDataFromStorage('languageScreenTour');
+  //     const COPILOT_ENABLE = Config.COPILOT_ENABLE;
+
+  //     if (
+  //       !CopilotStarted &&
+  //       languageScreenTour !== 'completed' &&
+  //       COPILOT_ENABLE
+  //     ) {
+  //       start();
+  //       copilotEvents.on('start', () => setCopilotStarted(true));
+  //       copilotEvents.on('stop', () =>
+  //         setDataInStorage('languageScreenTour', 'completed')
+  //       );
+  //     }
+  //   };
+  //   fetchData();
+  // }, [start]);
 
   const getProgramData = async () => {
     const data = await getProgramDetails();

@@ -14,6 +14,7 @@ import Coursesunfilled from '../../assets/images/png/Coursesunfilled.png';
 import ProfileStack from './ProfileStack';
 import { getDataFromStorage, getTentantId } from '../../utils/JsHelper/Helper';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
+import Config from 'react-native-config';
 
 const Tab = createBottomTabNavigator();
 const WalkthroughableView = walkthroughable(View); // Wrap Image component
@@ -25,15 +26,17 @@ const TabScreen = () => {
   const [CopilotStopped, setCopilotStopped] = useState(false);
   const { start, goToNth, unregisterStep, copilotEvents } = useCopilot();
 
-  useEffect(() => {
-    if (!CopilotStarted) {
-      unregisterStep('login'); // Unregister step 1
-      unregisterStep('create_account'); // Unregister step 2
-      start();
-      copilotEvents.on('start', () => setCopilotStarted(true));
-    }
-    copilotEvents.on('stop', () => setCopilotStopped(true));
-  }, [start, copilotEvents]);
+  // useEffect(() => {
+  //   const COPILOT_ENABLE = Config.COPILOT_ENABLE;
+
+  //   if (!CopilotStarted && COPILOT_ENABLE) {
+  //     unregisterStep('login'); // Unregister step 1
+  //     unregisterStep('create_account'); // Unregister step 2
+  //     start();
+  //     copilotEvents.on('start', () => setCopilotStarted(true));
+  //   }
+  //   copilotEvents.on('stop', () => setCopilotStopped(true));
+  // }, [start, copilotEvents]);
 
   // useEffect(() => {
   //   const fetchData = async () => {

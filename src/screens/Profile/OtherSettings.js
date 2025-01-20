@@ -42,13 +42,19 @@ const OtherSettings = ({ route }) => {
   const [storageData, setStorageData] = useState();
   const [conentView, setConentView] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [userType, setUserType] = useState();
 
   const { t } = useTranslation();
   const navigation = useNavigation();
 
+  const fetchData = async () => {
+    const userTypes = await getDataFromStorage('userType');
+    setUserType(userTypes);
+  };
+
   useFocusEffect(
     useCallback(() => {
-      // fetchData();
+      fetchData();
       StorageSize();
     }, [navigation])
   );
@@ -89,7 +95,7 @@ const OtherSettings = ({ route }) => {
           enableDefaultShare: true,
         });
       } else {
-        console.log('In-App Browser not available');
+        console.log('');
       }
     } catch (error) {
       console.error('Error opening browser:', error);
@@ -175,87 +181,91 @@ const OtherSettings = ({ route }) => {
               />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[globalStyles.flexrow, styles.borderColor]}
-            onPress={() => {
-              navigation.navigate('ProfileUpdateScreen');
-            }}
-          >
-            <View
-              style={[
-                globalStyles.flexrow,
-                { justifyContent: 'space-between', width: '100%' },
-              ]}
-            >
-              <GlobalText
-                style={[globalStyles.subHeading, { color: '#4D4639' }]}
-                numberOfLines={2}
-                ellipsizeMode="tail"
+          {userType !== 'scp' && (
+            <>
+              <TouchableOpacity
+                style={[globalStyles.flexrow, styles.borderColor]}
+                onPress={() => {
+                  navigation.navigate('ProfileUpdateScreen');
+                }}
               >
-                {t('edit_profile')}
-              </GlobalText>
-              <Icon
-                name="angle-right"
-                style={{ marginHorizontal: 10 }}
-                color={'#000'}
-                size={30}
-              />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[globalStyles.flexrow, styles.borderColor]}
-            onPress={() => {
-              navigation.navigate('ResetUsername');
-            }}
-          >
-            <View
-              style={[
-                globalStyles.flexrow,
-                { justifyContent: 'space-between', width: '100%' },
-              ]}
-            >
-              <GlobalText
-                style={[globalStyles.subHeading, { color: '#4D4639' }]}
-                numberOfLines={2}
-                ellipsizeMode="tail"
+                <View
+                  style={[
+                    globalStyles.flexrow,
+                    { justifyContent: 'space-between', width: '100%' },
+                  ]}
+                >
+                  <GlobalText
+                    style={[globalStyles.subHeading, { color: '#4D4639' }]}
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
+                  >
+                    {t('edit_profile')}
+                  </GlobalText>
+                  <Icon
+                    name="angle-right"
+                    style={{ marginHorizontal: 10 }}
+                    color={'#000'}
+                    size={30}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[globalStyles.flexrow, styles.borderColor]}
+                onPress={() => {
+                  navigation.navigate('ResetUsername');
+                }}
               >
-                {t('change_username')}
-              </GlobalText>
-              <Icon
-                name="angle-right"
-                style={{ marginHorizontal: 10 }}
-                color={'#000'}
-                size={30}
-              />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[globalStyles.flexrow, styles.borderColor]}
-            onPress={() => {
-              navigation.navigate('ResetPassword');
-            }}
-          >
-            <View
-              style={[
-                globalStyles.flexrow,
-                { justifyContent: 'space-between', width: '100%' },
-              ]}
-            >
-              <GlobalText
-                style={[globalStyles.subHeading, { color: '#4D4639' }]}
-                numberOfLines={2}
-                ellipsizeMode="tail"
+                <View
+                  style={[
+                    globalStyles.flexrow,
+                    { justifyContent: 'space-between', width: '100%' },
+                  ]}
+                >
+                  <GlobalText
+                    style={[globalStyles.subHeading, { color: '#4D4639' }]}
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
+                  >
+                    {t('change_username')}
+                  </GlobalText>
+                  <Icon
+                    name="angle-right"
+                    style={{ marginHorizontal: 10 }}
+                    color={'#000'}
+                    size={30}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[globalStyles.flexrow, styles.borderColor]}
+                onPress={() => {
+                  navigation.navigate('ResetPassword');
+                }}
               >
-                {t('change_password')}
-              </GlobalText>
-              <Icon
-                name="angle-right"
-                style={{ marginHorizontal: 10 }}
-                color={'#000'}
-                size={30}
-              />
-            </View>
-          </TouchableOpacity>
+                <View
+                  style={[
+                    globalStyles.flexrow,
+                    { justifyContent: 'space-between', width: '100%' },
+                  ]}
+                >
+                  <GlobalText
+                    style={[globalStyles.subHeading, { color: '#4D4639' }]}
+                    numberOfLines={2}
+                    ellipsizeMode="tail"
+                  >
+                    {t('change_password')}
+                  </GlobalText>
+                  <Icon
+                    name="angle-right"
+                    style={{ marginHorizontal: 10 }}
+                    color={'#000'}
+                    size={30}
+                  />
+                </View>
+              </TouchableOpacity>
+            </>
+          )}
           <TouchableOpacity
             style={[globalStyles.flexrow, styles.borderColor]}
             onPress={openInAppBrowser}

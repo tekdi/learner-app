@@ -14,43 +14,27 @@ import female from '../../assets/images/png/female.png';
 import male from '../../assets/images/png/male.png';
 import transgender from '../../assets/images/png/transgender.png';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
-const CustomCards = ({
-  field,
-  name,
-  errors,
-  setSelectedIds,
-  selectedIds,
-  control,
-}) => {
+const CustomCards = ({ field, errors, formData, handleValue }) => {
   const { t } = useTranslation();
 
-  const {
-    field: { onChange, value },
-  } = useController({ name, control });
+  console.log('formData', formData);
 
-  useEffect(() => {
-    if (value) {
-      onChange({ value: value?.value, fieldId: field?.fieldId });
-    }
-  }, [field]);
+  // useEffect(() => {
+  //   if (value) {
+  //     onChange({ value: value?.value, fieldId: field?.fieldId });
+  //   }
+  // }, [field]);
 
-  const handlePress = (name, id) => {
-    setSelectedIds((prevSelectedIds) => ({
-      ...prevSelectedIds,
-      [name]: id,
-    }));
-    onChange({ value: id, fieldId: field?.fieldId || null });
-  };
-  useEffect(() => {
-    if (value) {
-      setSelectedIds((prevSelectedIds) => ({
-        ...prevSelectedIds,
-        [name]: { value: value?.value, fieldId: field?.fieldId },
-      }));
-    }
-  }, [value]);
+  // useEffect(() => {
+  //   if (value) {
+  //     setSelectedIds((prevSelectedIds) => ({
+  //       ...prevSelectedIds,
+  //       [name]: { value: value?.value, fieldId: field?.fieldId },
+  //     }));
+  //   }
+  // }, [value]);
 
   return (
     <View style={styles.container} key={field.name}>
@@ -74,11 +58,10 @@ const CustomCards = ({
             {field.options.map((option, index) => (
               <TouchableOpacity
                 key={index}
-                onPress={() => handlePress(name, option.value)}
+                onPress={() => handleValue(field?.name, option.value)}
                 style={[
                   styles.card,
-                  selectedIds[name]?.value === option.value &&
-                    styles.selectedCard,
+                  formData[field.name] === option.value && styles.selectedCard,
                 ]}
               >
                 {option.label !== 'OTHER' && (
@@ -87,8 +70,8 @@ const CustomCards = ({
                       option.label == 'FEMALE'
                         ? female
                         : option.label == 'MALE'
-                        ? male
-                        : option.label == 'TRANSGENDER' && transgender
+                          ? male
+                          : option.label == 'TRANSGENDER' && transgender
                     }
                   />
                 )}
@@ -102,7 +85,7 @@ const CustomCards = ({
                       width: '70%',
                       marginLeft: 2,
                     },
-                    selectedIds[name]?.value === option.value && {
+                    formData[field.name] === option.value && {
                       fontFamily: 'Poppins-Medium',
                     },
                   ]}
@@ -115,8 +98,8 @@ const CustomCards = ({
             ))}
           </View>
         </View>
-        {errors[name] && (
-          <GlobalText style={styles.error}>{errors[name].message}</GlobalText>
+        {errors[field.name] && (
+          <GlobalText style={styles.error}>{errors[field.name]}</GlobalText>
         )}
       </ScrollView>
     </View>

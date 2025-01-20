@@ -146,10 +146,17 @@ const SCPDashboard = (props) => {
     }
   }, [date]);
 
-  useEffect(() => {
-    fetchData();
-    fetchCompleteWeekData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  //   fetchCompleteWeekData();
+  // }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+      fetchCompleteWeekData();
+    }, [])
+  );
 
   const handleCancel = () => {
     setShowExitModal(false); // Close the modal

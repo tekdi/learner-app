@@ -8,6 +8,7 @@ import { useTranslation } from '../../context/LanguageContext';
 import Logo from '../../assets/images/png/logo.png';
 import GlobalText from '@components/GlobalText/GlobalText';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
+import Config from 'react-native-config';
 
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
@@ -17,22 +18,23 @@ const LoginSignUpScreen = () => {
   const { start, copilotEvents, goToNth, unregisterStep } = useCopilot();
   const [CopilotStarted, setCopilotStarted] = useState(false);
 
-  useEffect(() => {
-    // Start Copilot only if it's not already started
-    if (!CopilotStarted) {
-      // Unregister steps 1 and 2
-      unregisterStep('start'); // Unregister step 1
-      unregisterStep('continueButton'); // Unregister step 2
+  // useEffect(() => {
+  //   const COPILOT_ENABLED = Config.COPILOT_ENABLE;
+  //   // Start Copilot only if it's not already started
+  //   if (!CopilotStarted && COPILOT_ENABLED) {
+  //     // Unregister steps 1 and 2
+  //     unregisterStep('start'); // Unregister step 1
+  //     unregisterStep('continueButton'); // Unregister step 2
 
-      // Optionally register new steps if required
-      // registerStep(3); // Example of dynamically registering a step
+  //     // Optionally register new steps if required
+  //     // registerStep(3); // Example of dynamically registering a step
 
-      start(); // Start the Copilot tour
-      // goToNth(3); // Navigate to step 3 to skip steps 1 and 2
+  //     start(); // Start the Copilot tour
+  //     // goToNth(3); // Navigate to step 3 to skip steps 1 and 2
 
-      copilotEvents.on('start', () => setCopilotStarted(true));
-    }
-  }, [start, copilotEvents, CopilotStarted, unregisterStep, goToNth]);
+  //     copilotEvents.on('start', () => setCopilotStarted(true));
+  //   }
+  // }, [start, copilotEvents, CopilotStarted, unregisterStep, goToNth]);
 
   return (
     <View style={styles.container}>
@@ -66,7 +68,7 @@ const LoginSignUpScreen = () => {
           </CopilotView>
         </CopilotStep>
         <View style={{ padding: 10 }} />
-        <CopilotStep
+        {/* <CopilotStep
           text={t('click_here_to_create_new_account')}
           order={4}
           name="create_account"
@@ -78,7 +80,7 @@ const LoginSignUpScreen = () => {
               style={{ fontSize: 14.5 }}
             />
           </CopilotView>
-        </CopilotStep>
+        </CopilotStep> */}
       </View>
     </View>
   );

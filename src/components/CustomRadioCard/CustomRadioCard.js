@@ -19,51 +19,18 @@ import { SwiperFlatList } from 'react-native-swiper-flatlist';
 import GlobalText from '@components/GlobalText/GlobalText';
 import { ImageCarousel } from '@src/screens/LanguageScreen/ImageCarousel';
 
-const CustomRadioCard = ({
-  field,
-  name,
-  errors,
-  setSelectedIds,
-  selectedIds,
-  control,
-}) => {
+const CustomRadioCard = ({ field, formData, options, handleValue, errors }) => {
   const { t } = useTranslation();
-
-  const {
-    field: { onChange, value },
-  } = useController({ name, control });
-
   const [selectedIndex, setSelectedIndex] = useState();
 
-  useEffect(() => {
-    if (value) {
-      const selectedOptionIndex = field.findIndex(
-        (option) => option.tenantId === value.tenantId
-      );
-      if (selectedOptionIndex >= 0) {
-        setSelectedIndex(selectedOptionIndex);
-      }
-    }
-  }, [value, field]);
-
   const handlePress = (index) => {
-    const selectedValue = field[index]?.tenantId || 'none';
-    const selectedName = field[index]?.name;
-    const role = field[index]?.role?.find(
+    const selectedValue = options[index]?.tenantId || 'none';
+    const selectedName = options[index]?.name;
+    const role = options[index]?.role?.find(
       (item) => item?.name == 'Learner' || item?.name === 'Student'
     );
-
+    handleValue(field.name, { value: selectedValue, roleId: role?.roleId });
     setSelectedIndex(selectedValue);
-    setSelectedIds((prevSelectedIds) => ({
-      ...prevSelectedIds,
-      [name]: { value: selectedValue, fieldId: field?.fieldId },
-    }));
-
-    onChange({
-      tenantId: selectedValue,
-      roleId: role?.roleId,
-      name: selectedName,
-    });
   };
 
   const renderItem = ({ item }) => (
@@ -71,6 +38,8 @@ const CustomRadioCard = ({
       <Image style={styles.img} source={item?.src} resizeMode="contain" />
     </View>
   );
+
+  console.log('formData', formData);
 
   return (
     <RadioGroup selectedIndex={selectedIndex} onChange={handlePress}>
@@ -83,14 +52,14 @@ const CustomRadioCard = ({
             width: '100%',
           }}
         >
-          {field?.map((option, index) => (
+          {options?.map((option, index) => (
             <TouchableOpacity
               key={index}
               style={[
                 styles.card,
                 {
                   backgroundColor:
-                    selectedIds?.[name]?.value === option?.tenantId
+                    formData?.[field.name]?.value === option?.tenantId
                       ? '#FFEFD5'
                       : 'white',
                 },
@@ -99,7 +68,7 @@ const CustomRadioCard = ({
             >
               <View style={styles.radioContainer}>
                 <Radio
-                  checked={selectedIds?.[name]?.value === option?.tenantId}
+                  checked={formData?.[field.name]?.value === option?.tenantId}
                   style={styles.radio}
                   onChange={() => handlePress(index)}
                 >
@@ -109,9 +78,9 @@ const CustomRadioCard = ({
               {/* <Image style={styles.img} source={program} resizeMode="contain" /> */}
               <View style={styles.carocontainer}>
                 <ImageCarousel
-                  backgroundColor={
-                    selectedIds?.[name]?.value === option?.tenantId && true
-                  }
+                  // backgroundColor={
+                  //   selectedIds?.[name]?.value === option?.tenantId && true
+                  // }
                   images={option?.programImages || []}
                 />
               </View>
@@ -153,8 +122,9 @@ const CustomRadioCard = ({
             </GlobalText>
           </TouchableOpacity> */}
         </View>
-        {errors[name] && (
-          <GlobalText style={styles.error}>{errors[name]?.message}</GlobalText>
+
+        {errors[field.name] && (
+          <GlobalText style={styles.error}>{errors[field.name]}</GlobalText>
         )}
       </ScrollView>
     </RadioGroup>
@@ -203,6 +173,7 @@ const styles = StyleSheet.create({
   },
   carocontainer: {
     // flex: 1,
+    marginTop: 10,
     backgroundColor: 'white',
     // height: 200,
     // borderWidth: 5,

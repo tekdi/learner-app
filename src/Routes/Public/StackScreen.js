@@ -65,6 +65,7 @@ const StackScreen = () => {
           lazy: true,
         }}
       />
+
       <Stack.Screen
         name="LoginSignUpScreen"
         component={LoginSignUpScreen}

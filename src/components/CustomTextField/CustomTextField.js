@@ -4,69 +4,57 @@ import { Controller } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const CustomTextField = ({
-  position = 'static',
-  secureTextEntry,
-  key,
+  handleValue,
   field,
-  control,
-  errors = {},
-  keyboardType,
+  formData,
+  errors,
+  secureTextEntry,
   autoCapitalize,
+  keyboardType,
 }) => {
   const { t } = useTranslation();
 
   return (
-    <Controller
-      key={key}
-      control={control}
-      name={field.name}
-      render={({ field: { onChange, value, onBlur } }) => (
-        <View style={styles.container}>
-          <TextInput
-            style={[
-              styles.input,
-              { position: position },
-              { borderColor: errors[field.name] ? 'red' : '#DADADA' },
-            ]}
-            onBlur={onBlur}
-            value={value}
-            onChangeText={(text) => {
-              const sanitizedText = text.replace(/\s/g, ''); // Remove all spaces
-              onChange(sanitizedText);
-            }}
-            secureTextEntry={secureTextEntry}
-            autoCapitalize={autoCapitalize} // Disable auto-capitalization
-            keyboardType={keyboardType} // Opens numeric keyboard by default
-          />
-          <View style={styles.overlap}>
-            <GlobalText
-              style={[
-                styles.text,
-                { color: errors[field.name] ? 'red' : '#4D4639' },
-              ]}
-            >
-              {t(field.label)}
-            </GlobalText>
-          </View>
-          {errors[field.name] && (
-            <GlobalText
-              style={{
-                color: 'red',
-                alignSelf: 'flex-start',
-                marginBottom: 10,
-                marginTop: -20,
-                fontFamily: 'Poppins-Regular',
-              }}
-            >
-              {errors[field.name].message}
-            </GlobalText>
-          )}
-        </View>
+    <View style={styles.container}>
+      <TextInput
+        style={[
+          styles.input,
+          { borderColor: errors[field.name] ? 'red' : '#DADADA' },
+        ]}
+        value={formData[field.name] || ''}
+        onChangeText={(text) => handleValue(field.name, text.trim())}
+        secureTextEntry={secureTextEntry}
+        autoCapitalize={autoCapitalize} // Disable auto-capitalization
+        keyboardType={keyboardType} // Opens numeric keyboard by default
+      />
+      <View style={styles.overlap}>
+        <GlobalText
+          style={[
+            styles.text,
+            { color: errors[field.name] ? 'red' : '#4D4639' },
+          ]}
+        >
+          {t(field.label.toLowerCase())}
+          {!field?.isRequired && `(${t('optional')})`}
+        </GlobalText>
+      </View>
+      {errors[field.name] && (
+        <GlobalText
+          style={{
+            color: 'red',
+            alignSelf: 'flex-start',
+            marginBottom: 10,
+            marginTop: -20,
+            fontFamily: 'Poppins-Regular',
+          }}
+        >
+          {errors[field.name]}
+        </GlobalText>
       )}
-    />
+    </View>
   );
 };
 
@@ -102,7 +90,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
   },
   overlap: {
-    top: -65,
+    top: -62,
     left: 13,
     // top: -76,
     // left: -120,

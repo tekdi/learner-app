@@ -13,83 +13,38 @@ import { useTranslation } from '../../context/LanguageContext';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 
-const DropdownSelect = ({
-  field,
-  name,
-  errors,
-  setSelectedIds,
-  selectedIds,
-  control,
-  setValue,
-}) => {
+const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { t } = useTranslation();
-  const {
-    field: { onChange, value },
-  } = useController({ name, control });
-
-  // useEffect(() => {
-  //   // setSelectedValue({ value: value?.value, fieldId: field?.fieldId });
-  //   setSelectedIds((prevSelectedIds) => ({
-  //     ...prevSelectedIds,
-  //     [name]: {
-  //       label: value?.label,
-  //       value: value?.value,
-  //       fieldId: field?.fieldId,
-  //     },
-  //   }));
-  //   onChange({
-  //     label: value?.label,
-  //     value: value?.value,
-  //     fieldId: field?.fieldId,
-  //   });
-  // }, []);
 
   const toggleDropdown = () => {
-    if (field.options && field.options.length > 0) {
+    if (options && options.length > 0) {
       setIsDropdownOpen(!isDropdownOpen);
     }
   };
 
   const handleSelect = (item) => {
-    // setSelectedValue({ name: item?.label, value: item?.value });
-    setSelectedIds((prevSelectedIds) => ({
-      ...prevSelectedIds,
-      [name]: {
-        label: item?.label,
-        value: item?.value,
-      },
-    }));
-    onChange({
-      label: item?.label,
-      value: item?.value,
-    });
-
-    if (name === 'state') {
-      setValue('district', null);
-      setValue('block', null);
-    }
-    if (name === 'district') {
-      // setValue('district', '');
-      setValue('block', null);
-    }
+    console.log('item', item);
+    handleValue(field?.name, { value: item?.value, label: item?.label });
     setIsDropdownOpen(false);
   };
 
   return (
     <View style={styles.dropdownContainer}>
       <View style={styles.label}>
-        <GlobalText style={globalStyles.text}>{t(name)}</GlobalText>
+        <GlobalText style={globalStyles.text}>{t(field.name)}</GlobalText>
       </View>
 
       <TouchableOpacity onPress={toggleDropdown} style={styles.dropdownButton}>
-        <GlobalText style={[globalStyles.text]}>{t(value?.label)}</GlobalText>
+        <GlobalText style={[globalStyles.text]}>
+          {t(formData[field.name]?.label)}
+        </GlobalText>
         <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
       </TouchableOpacity>
       {isDropdownOpen && (
         <View style={styles.dropdownOptions}>
           <ScrollView nestedScrollEnabled>
-            {field.options?.map((item) => (
+            {options?.map((item) => (
               <TouchableOpacity
                 key={item.value}
                 onPress={() => handleSelect(item)}
@@ -103,8 +58,8 @@ const DropdownSelect = ({
           </ScrollView>
         </View>
       )}
-      {errors[name] && (
-        <GlobalText style={styles.error}>{errors[name]?.message}</GlobalText>
+      {errors[field.name] && (
+        <GlobalText style={styles.error}>{errors[field.name]}</GlobalText>
       )}
     </View>
   );

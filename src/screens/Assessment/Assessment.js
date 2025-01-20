@@ -49,10 +49,10 @@ const Assessment = ({ header, background }) => {
     const cohort_id = await getDataFromStorage('cohortId');
     //console.log('########### cohort', cohort);
     let board = null;
-    let state = null;
+    // let state = null;
     try {
       board = cohort?.customField?.find((field) => field.label === 'BOARD');
-      state = cohort?.customField?.find((field) => field.label === 'STATES');
+      // state = cohort?.customField?.find((field) => field.label === 'STATES');
     } catch (e) {
       console.log('e', e);
     }
@@ -62,17 +62,15 @@ const Assessment = ({ header, background }) => {
       board = { value: 'maharashtra' };
     }*/
 
-    console.log('########### board', board);
-    console.log('########### state', state);
+    // console.log('########### board', board);
 
-    if (board && state) {
+    if (board) {
       const boardName = board.value;
-      const stateName = state.value;
-      console.log({ boardName });
+      // const stateName = state.value;
 
       const assessmentList = await assessmentListApi({
         boardName,
-        stateName,
+        // stateName,
         user_id,
       });
       if (assessmentList) {

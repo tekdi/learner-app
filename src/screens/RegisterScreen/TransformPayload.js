@@ -1,10 +1,7 @@
-import Config from 'react-native-config';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 
 export const transformPayload = async (data) => {
   const studentForm = JSON.parse(await getDataFromStorage('studentForm'));
-
-  console.log('data', JSON.stringify(data));
 
   const getFieldIdByName = (name) => {
     const field = studentForm.find(
@@ -13,20 +10,18 @@ export const transformPayload = async (data) => {
     return field ? field.fieldId : null;
   };
 
-  const ROLE_ID = Config.ROLE_ID;
-
   const customFields = [
-    {
-      value: data.preferred_language.value,
-      fieldId: getFieldIdByName('preferred language'),
-    },
+    // {
+    //   value: data.preferred_language.value,
+    //   fieldId: getFieldIdByName('preferred language'),
+    // },
     {
       value: data.age,
       fieldId: getFieldIdByName('age'),
     },
     {
-      value: data.gender.value,
-      fieldId: data.gender.fieldId,
+      value: data.gender,
+      fieldId: getFieldIdByName('gender'),
     },
     ...(data?.parent_name
       ? [
@@ -46,18 +41,21 @@ export const transformPayload = async (data) => {
       : []),
 
     // Add state, district, and block only if block value is present
-    ...(data?.block?.value
+    ...(data?.blocks?.value
       ? [
           {
-            value: [data?.state?.value] || null,
+            // eslint-disable-next-line no-constant-binary-expression
+            value: [data?.states?.value] || null,
             fieldId: getFieldIdByName('states'),
           },
           {
-            value: [data?.district?.value] || null,
+            // eslint-disable-next-line no-constant-binary-expression
+            value: [data?.districts?.value] || null,
             fieldId: getFieldIdByName('districts'),
           },
           {
-            value: [data?.block?.value] || '',
+            // eslint-disable-next-line no-constant-binary-expression
+            value: [data?.blocks?.value] || '',
             fieldId: getFieldIdByName('blocks'),
           },
         ]
@@ -75,7 +73,7 @@ export const transformPayload = async (data) => {
 
   const tenantCohortRoleMapping = [
     {
-      tenantId: data?.program?.tenantId,
+      tenantId: data?.program?.value,
       roleId: data?.program?.roleId,
     },
   ];

@@ -21,7 +21,7 @@ const ProfileUpdateScreen = () => {
     } else {
       // const states = await fetchstates();
       setDataInStorage('studentForm', JSON.stringify(data?.fields));
-      let schema = await ProfileUpdateSchema(data?.fields);
+      let schema = await ProfileUpdateSchema();
       setMainSchema(schema);
       setNetworkError(false);
     }
@@ -37,7 +37,7 @@ const ProfileUpdateScreen = () => {
     <Loading />
   ) : (
     <SafeAreaView style={styles.container}>
-      <ProfileUpdateForm schema={mainSchema} />
+      <ProfileUpdateForm fields={mainSchema} />
       <NetworkAlert onTryAgain={fetchData} isConnected={!networkError} />
     </SafeAreaView>
   );

@@ -68,9 +68,7 @@ const Courses = () => {
   useEffect(() => {
     const fetch = async () => {
       const cohort_id = await getDataFromStorage('cohortId');
-      console.log({ cohort_id });
       let userType = await getDataFromStorage('userType');
-      console.log('################## userType', userType);
       let isYouthnet = userType == 'youthnet' ? true : false;
       setYouthnet(isYouthnet);
       let userId = await getDataFromStorage('userId');
@@ -198,12 +196,12 @@ const Courses = () => {
             <ActiveLoading />
           ) : (
             <>
-              <View style={styles.view2}>
+              {/* <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
                 <GlobalText style={styles.text2}>
                   {t('welcome')}, {capitalizeName(userInfo?.[0]?.name)} !
                 </GlobalText>
-              </View>
+              </View> */}
 
               <GlobalText style={styles.text}>
                 {youthnet ? t('l1_courses') : t('courses')}

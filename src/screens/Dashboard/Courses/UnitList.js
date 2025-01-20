@@ -32,7 +32,7 @@ import {
   logEventFunction,
 } from '../../../utils/JsHelper/Helper';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const UnitList = ({ route }) => {
   const { children, name, course_id, unit_id, headingName } = route.params;
@@ -124,8 +124,8 @@ const UnitList = ({ route }) => {
             ?.course || [];
       }
       setTrackData(courseTrackData);
-      console.log('########## courseTrackData', courseTrackData);
-      console.log('##########');
+      // console.log('########## courseTrackData', courseTrackData);
+      // console.log('##########');
       setLoading(false); // Ensure to stop loading when data fetch completes
     } catch (e) {
       console.log('e', e);

@@ -49,6 +49,9 @@ const ResetUsername = () => {
     const user_id = await getDataFromStorage('userId');
     const register = await updateUser({ payload, user_id });
     console.log('register', register);
+    if (register?.params?.err) {
+      setmodalError(register?.params?.err);
+    }
     setmodal(true);
   };
 
@@ -88,51 +91,53 @@ const ResetUsername = () => {
             text={t('change_username')}
           />
         </View>
-        <Modal visible={modal} transparent={true} animationType="slide" onclo>
-          <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
-            <View style={styles.alertBox}>
-              <TouchableOpacity
-                activeOpacity={1} // Prevent closing the modal when clicking inside the alert box
-                style={styles.alertSubBox}
-              >
-                {modalError ? (
-                  <GlobalText
-                    style={[
-                      globalStyles.subHeading,
-                      { textAlign: 'center', marginVertical: 10 },
-                    ]}
-                  >
-                    {t(modalError.toLowerCase().replace(/\s+/g, '_'))}
-                  </GlobalText>
-                ) : (
-                  <>
-                    <Icon
-                      name={'checkmark-circle-outline'}
-                      size={60}
-                      color="#1A8825"
-                    />
+        {modal && (
+          <Modal visible={modal} transparent={true} animationType="slide" onclo>
+            <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
+              <View style={styles.alertBox}>
+                <TouchableOpacity
+                  activeOpacity={1} // Prevent closing the modal when clicking inside the alert box
+                  style={styles.alertSubBox}
+                >
+                  {modalError ? (
                     <GlobalText
                       style={[
                         globalStyles.subHeading,
                         { textAlign: 'center', marginVertical: 10 },
                       ]}
                     >
-                      {t('your_username_has_been_successfully_changed')}
+                      {t(modalError.toLowerCase().replace(/\s+/g, '_'))}
                     </GlobalText>
-                  </>
-                )}
-              </TouchableOpacity>
-              <View style={styles.btnbox}>
-                <PrimaryButton
-                  onPress={() => {
-                    navigation.goBack();
-                  }}
-                  text={t('ok')}
-                ></PrimaryButton>
+                  ) : (
+                    <>
+                      <Icon
+                        name={'checkmark-circle-outline'}
+                        size={60}
+                        color="#1A8825"
+                      />
+                      <GlobalText
+                        style={[
+                          globalStyles.subHeading,
+                          { textAlign: 'center', marginVertical: 10 },
+                        ]}
+                      >
+                        {t('your_username_has_been_successfully_changed')}
+                      </GlobalText>
+                    </>
+                  )}
+                </TouchableOpacity>
+                <View style={styles.btnbox}>
+                  <PrimaryButton
+                    onPress={() => {
+                      navigation.goBack();
+                    }}
+                    text={t('ok')}
+                  ></PrimaryButton>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        </Modal>
+            </TouchableOpacity>
+          </Modal>
+        )}
       </KeyboardAvoidingView>
     </>
   );

@@ -53,9 +53,7 @@ const ExploreTab = () => {
   useEffect(() => {
     const fetch = async () => {
       const cohort_id = await getDataFromStorage('cohortId');
-      console.log({ cohort_id });
       let userType = await getDataFromStorage('userType');
-      console.log('################## userType', userType);
       let isYouthnet = userType == 'youthnet' ? true : false;
       setYouthnet(isYouthnet);
       let userId = await getDataFromStorage('userId');

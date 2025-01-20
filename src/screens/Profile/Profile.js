@@ -169,7 +169,7 @@ const Profile = () => {
               </View>
             </View>
           </LinearGradient>
-          <NoCertificateBox userType={userType} />
+          {/* <NoCertificateBox userType={userType} /> */}
           <View style={{ backgroundColor: '#FFF8F2', paddingVertical: 20 }}>
             <View style={styles.viewBox}>
               <View>
@@ -216,8 +216,8 @@ const Profile = () => {
               { textAlign: 'center', paddingVertical: 10 },
             ]}
           >
-            Version {version} (Build {buildNumber}){' '}
-            {Config.ENV != 'PROD' ? Config.ENV : ''}
+            Version {version} (Build {buildNumber})
+            {/* {Config.ENV != 'PROD' ? Config.ENV : ''} */}
           </GlobalText>
         </ScrollView>
       )}
