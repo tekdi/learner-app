@@ -626,3 +626,9 @@ export const getActiveCohortData = async (cohortData) => {
     ?.filter((cohort) => cohort?.cohortMemberStatus === 'active')
     ?.map((cohort) => cohort);
 };
+
+// utils.js
+export const getAssociationsByName = (data, name) => {
+  const foundItem = data.find((item) => item.name === name);
+  return foundItem ? foundItem.associations : [];
+};

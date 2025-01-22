@@ -12,7 +12,7 @@ import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const EyeIcon = ({ setHidden, hidden }) => (
   <TouchableOpacity
@@ -24,65 +24,50 @@ const EyeIcon = ({ setHidden, hidden }) => (
   </TouchableOpacity>
 );
 
-const CustomPasswordTextField = ({
-  position = 'static',
-  key,
-  field,
-  control,
-  errors = {},
-}) => {
+const CustomPasswordTextField = ({ handleValue, field, formData, errors }) => {
   const [hidden, setHidden] = useState(true);
   const { t } = useTranslation();
 
   return (
-    <Controller
-      key={key}
-      control={control}
-      name={field.name}
-      render={({ field: { onChange, value, onBlur } }) => (
-        <View style={styles.container}>
-          <IconRegistry icons={EvaIconsPack} />
-          <TextInput
-            style={[
-              styles.input,
-              { position: position },
-              { borderColor: errors[field.name] ? 'red' : '#DADADA' },
-            ]}
-            onBlur={onBlur}
-            value={value}
-            onChangeText={onChange}
-            secureTextEntry={hidden}
-            autoCapitalize="none" // Disable auto-capitalization
-          />
-          <View style={styles.overlap}>
-            <GlobalText
-              style={[
-                styles.text,
-                { color: errors[field.name] ? 'red' : '#4D4639' },
-              ]}
-            >
-              {t(field.label)}
-            </GlobalText>
-          </View>
-          <View style={styles.overlap2}>
-            <EyeIcon setHidden={setHidden} hidden={hidden} />
-          </View>
-          {errors[field.name] && (
-            <GlobalText
-              style={{
-                color: 'red',
-                alignSelf: 'flex-start',
-                marginBottom: 10,
-                marginTop: -20,
-                fontFamily: 'Poppins-Regular',
-              }}
-            >
-              {errors[field.name].message}
-            </GlobalText>
-          )}
-        </View>
+    <View style={styles.container}>
+      <IconRegistry icons={EvaIconsPack} />
+      <TextInput
+        style={[
+          styles.input,
+          { borderColor: errors[field.name] ? 'red' : '#DADADA' },
+        ]}
+        value={formData[field.name] || ''}
+        onChangeText={(text) => handleValue(field.name, text)}
+        secureTextEntry={hidden}
+        autoCapitalize="none" // Disable auto-capitalization
+      />
+      <View style={styles.overlap}>
+        <GlobalText
+          style={[
+            styles.text,
+            { color: errors[field.name] ? 'red' : '#4D4639' },
+          ]}
+        >
+          {t(field.name)}
+        </GlobalText>
+      </View>
+      <View style={styles.overlap2}>
+        <EyeIcon setHidden={setHidden} hidden={hidden} />
+      </View>
+      {errors[field.name] && (
+        <GlobalText
+          style={{
+            color: 'red',
+            alignSelf: 'flex-start',
+            marginBottom: 10,
+            marginTop: -20,
+            fontFamily: 'Poppins-Regular',
+          }}
+        >
+          {errors[field.name]}
+        </GlobalText>
       )}
-    />
+    </View>
   );
 };
 

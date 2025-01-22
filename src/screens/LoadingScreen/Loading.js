@@ -15,7 +15,7 @@ import DeviceInfo from 'react-native-device-info'; // Import DeviceInfo
 //for react native config env : dev uat prod
 import Config from 'react-native-config';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const Loading = (style) => {
   // Get the version and build number
@@ -27,7 +27,7 @@ const Loading = (style) => {
       <View style={styles.container}>
         <StatusBar
           barStyle="dark-content"
-          translucent={true}
+          // translucent={true}
           backgroundColor="transparent"
         />
         <View style={styles.content}>

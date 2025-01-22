@@ -5,16 +5,16 @@ import { View } from 'react-native';
 import MaterialCard from './MaterialCard';
 import { useTranslation } from '../../../../../context/LanguageContext';
 import {
-  getActiveCohortData,
   getDataFromStorage,
   getOptionsByCategory,
 } from '../../../../../utils/JsHelper/Helper';
 import { LearningMaterialAPI } from '../../../../../utils/API/AuthService';
 import ActiveLoading from '../../../../LoadingScreen/ActiveLoading';
+import globalStyles from '../../../../../utils/Helper/Style';
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const LearningMaterial = () => {
   const { t } = useTranslation();
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedIds, setSelectedIds] = useState(null);
   const [courseTypes, setCourseTypes] = useState([]);
   const [courseSubjectList, setCourseSubjectList] = useState([]);
@@ -22,6 +22,8 @@ const LearningMaterial = () => {
   const [subjects, setSubjects] = useState([]);
 
   useEffect(() => {
+    console.log('hi');
+
     const fetchData = async () => {
       setLoading(true);
       const boardData = await LearningMaterialAPI();
@@ -29,89 +31,95 @@ const LearningMaterial = () => {
       const cohortData = JSON.parse(await getDataFromStorage('cohortData'));
 
       const frameworks = boardData?.result?.framework;
-      const state = cohortData.customField.find(
-        (item) => item.label === 'STATES'
-      );
+
       const board = cohortData?.customField.find(
         (item) => item.label === 'BOARD'
       );
-      const medium = cohortData.customField.find(
+      const medium = cohortData?.customField.find(
         (item) => item.label === 'MEDIUM'
       );
-      const grade = cohortData.customField.find(
+      const grade = cohortData?.customField.find(
         (item) => item.label === 'GRADE'
       );
 
-      const getStates = getOptionsByCategory(frameworks, 'state');
-      const matchState = getStates.find((item) => item.name === state?.value);
+      console.log('board', board);
+
+      // const getStates = getOptionsByCategory(frameworks, 'state');
+      // const matchState = getStates.find((item) => item.name === state?.value);
 
       const getBoards = getOptionsByCategory(frameworks, 'board');
-      const matchBoard = getBoards.find(
-        (item) => item.name === (board?.value || 'Maharashtra')
-      );
+      console.log('getBoards', JSON.stringify(getBoards));
+
+      const matchBoard = getBoards.find((item) => item.name === board?.value);
 
       const getMedium = getOptionsByCategory(frameworks, 'medium');
-      const matchMedium = getMedium.find(
-        (item) => item.name === (medium?.value || 'Marathi')
-      );
+      const matchMedium = getMedium.find((item) => item.name === medium?.value);
 
       const getGrades = getOptionsByCategory(frameworks, 'gradeLevel');
-      const matchGrade = getGrades.find(
-        (item) => item.name === (grade?.value || 'Grade 10')
-      );
+      const matchGrade = getGrades.find((item) => item.name === grade?.value);
 
       const getCourseTypes = getOptionsByCategory(frameworks, 'courseType');
+      // const getCourseTypes = getOptionsByCategory(frameworks, 'board');
 
       const courseType = getCourseTypes?.map((type) => ({
         label: type.name,
         value: type.name,
       }));
-      const courseTypesAssociations = getCourseTypes?.map((type) => {
-        return {
-          code: type.code,
-          name: type.name,
-          associations: type.associations,
-        };
-      });
+      // const courseTypesAssociations = matchBoard?.map((type) => {
+      //   return {
+      //     code: type.code,
+      //     name: type.name,
+      //     associations: type.associations,
+      //   };
+      // });
+      // console.log(
+      //   'courseTypesAssociations',
+      //   JSON.stringify(courseTypesAssociations)
+      // );
 
-      const courseSubjectLists = courseTypesAssociations.map((courseType) => {
-        const commonAssociations = courseType?.associations.filter(
-          (assoc) =>
-            matchState?.associations.some((item) => item.code === assoc.code) &&
-            matchBoard?.associations.some((item) => item.code === assoc.code) &&
-            matchMedium?.associations.some(
-              (item) => item.code === assoc.code
-            ) &&
-            matchGrade?.associations.some((item) => item.code === assoc.code)
-        );
+      // console.log('getBoards', JSON.stringify(getBoards));
+      // console.log('matchBoard', matchBoard);
 
-        const getSubjects = getOptionsByCategory(frameworks, 'subject');
-        const subjectAssociations = commonAssociations?.filter((assoc) =>
+      const commonAssociations = matchBoard?.associations?.filter(
+        (assoc) =>
+          // matchState?.associations.some((item) => item.code === assoc.code) &&
+          matchBoard?.associations.some((item) => item.code === assoc.code) &&
+          matchMedium?.associations.some((item) => item.code === assoc.code) &&
+          matchGrade?.associations.some((item) => item.code === assoc.code)
+      );
+
+      const getSubjects = getOptionsByCategory(frameworks, 'subject');
+      const subjectAssociations = commonAssociations
+        ?.filter((assoc) =>
           getSubjects.some((item) => assoc.code === item?.code)
-        );
+        )
+        ?.map((assoc) => assoc.name);
 
-        return {
-          courseTypeName: courseType?.name,
-          courseType: courseType?.code,
-          subjects: subjectAssociations?.map((subject) => subject?.name),
-        };
-      });
+      setSubjects(subjectAssociations || []);
 
-      setCourseSubjectList(courseSubjectLists);
+      // return {
+      //   courseTypeName: courseType?.name,
+      //   courseType: courseType?.code,
+      //   subjects: subjectAssociations?.map((subject) => subject?.name),
+      // };
+
+      // setCourseSubjectList(courseSubjectLists);
       setCourseTypes(courseType);
       setLoading(false);
     };
     fetchData();
   }, []);
 
-  useEffect(() => {
-    // Find the selected course and update the subjects
-    const selectedCourse = courseSubjectList.find(
-      (item) => item.courseTypeName === selectedIds?.label
-    );
+  // useEffect(() => {
+  //   // Find the selected course and update the subjects
+  //   const selectedCourse = courseSubjectList.find(
+  //     (item) => item.courseTypeName === selectedIds?.label
+  //   );
 
-    setSubjects(selectedCourse ? selectedCourse.subjects : []);
-  }, [selectedIds]);
+  //   setSubjects(selectedCourse ? selectedCourse.subjects : []);
+  // }, [selectedIds]);
+
+  console.log('sub', subjects);
 
   return loading ? (
     <ActiveLoading />
@@ -127,11 +135,19 @@ const LearningMaterial = () => {
 
       {selectedIds?.value && subjects && (
         <View style={styles.viewbox}>
-          {subjects.map((item, key) => {
-            return (
-              <MaterialCard key={key} selectedIds={selectedIds} title={item} />
-            );
-          })}
+          {subjects.length > 0 ? (
+            subjects.map((item, key) => {
+              return (
+                <MaterialCard
+                  key={key}
+                  selectedIds={selectedIds}
+                  title={item}
+                />
+              );
+            })
+          ) : (
+            <GlobalText style={globalStyles.text}>{t('no_data')}</GlobalText>
+          )}
         </View>
       )}
     </SafeAreaView>

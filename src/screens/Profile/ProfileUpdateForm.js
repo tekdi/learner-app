@@ -1,453 +1,51 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  Image,
   StyleSheet,
-  TouchableOpacity,
+  ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
-  SafeAreaView,
-  Text,
-  ScrollView,
-  BackHandler,
-  Button,
+  Modal,
+  Image,
 } from 'react-native';
-import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
-import HeaderComponent from '../../components/CustomHeaderComponent/customheadercomponent';
-import CustomCards from '../../components/CustomCard/CustomCard';
-import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
-import backIcon from '../../assets/images/png/arrow-back-outline.png';
-import { useNavigation } from '@react-navigation/native';
+import CustomRadioCard from '@components/CustomRadioCard/CustomRadioCard';
+import CustomCards from '@components/CustomCard/CustomCard';
+import { getAccessToken, registerUser } from '@src/utils/API/AuthService';
+import { logEventFunction } from '@src/utils/JsHelper/Helper';
+import { useTranslation } from '@context/LanguageContext';
+import { useInternet } from '@context/NetworkContext';
 import PropTypes from 'prop-types';
-// import Geolocation from 'react-native-geolocation-service';
-
-//multi language
-import { useTranslation } from '../../context/LanguageContext';
-
-import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
-import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
-import {
-  getDataFromStorage,
-  getUserId,
-  logEventFunction,
-  saveAccessToken,
-  saveRefreshToken,
-  saveToken,
-  setDataInStorage,
-  storeUsername,
-  translateLanguage,
-} from '../../utils/JsHelper/Helper';
-import PlainText from '../../components/PlainText/PlainText';
-import PlainTcText from '../../components/PlainText/PlainTcText';
+import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import { transformPayload } from './TransformPayload';
-import {
-  getCohort,
-  getGeoLocation,
-  getProfileDetails,
-  login,
-  registerUser,
-  updateUser,
-  userExist,
-} from '../../utils/API/AuthService';
-import { getAccessToken } from '../../utils/API/ApiCalls';
-import globalStyles from '../../utils/Helper/Style';
-import CustomRadioCard from '../../components/CustomRadioCard/CustomRadioCard';
-import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
-import Config from 'react-native-config';
-import FastImage from '@changwoolab/react-native-fast-image';
-import { CheckBox } from '@ui-kitten/components';
-import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
-import NetworkAlert from '../../components/NetworkError/NetworkAlert';
-import { useInternet } from '../../context/NetworkContext';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import ProfileHeader from './ProfileHeader';
+import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
+import FastImage from '@changwoolab/react-native-fast-image';
+import globalStyles from '../../utils/Helper/Style';
+import GlobalText from '@components/GlobalText/GlobalText';
+import lightning from '../../assets/images/png/lightning.png';
+import {
+  createNewObject,
+  getDataFromStorage,
+  setDataInStorage,
+} from '../../utils/JsHelper/Helper';
+import { getProfileDetails, updateUser } from '../../utils/API/AuthService';
+import { useNavigation } from '@react-navigation/native';
 
-import GlobalText from "@components/GlobalText/GlobalText";
-
-const buildYupSchema = (form, currentForm, t) => {
-  const shape = {};
-  form.fields.forEach((field) => {
-    if (field.validation) {
-      let validator;
-      switch (field.type) {
-        case 'text':
-        case 'password':
-        case 'email':
-          validator = yup.string();
-          if (field.validation.required) {
-            validator = validator.required(
-              `${t(field.name)} ${t('is_required')}`
-            );
-          }
-          if (field.validation.minLength) {
-            validator = validator.min(
-              field.validation.minLength,
-              `${t(field.name)} ${t('min')} ${t(
-                field.validation.minLength
-              )} ${t('characters')}`
-            );
-          }
-          if (field.validation.maxLength) {
-            validator = validator.max(
-              field.validation.maxLength,
-              `${t(field.label)} ${t('max')} ${t(
-                field.validation.maxLength
-              )} ${t('characters')}`
-            );
-          }
-          if (field.validation.match) {
-            validator = validator.oneOf(
-              [yup.ref('password'), null],
-              `${t('Password_must_match')}`
-            );
-          }
-          if (field.validation.pattern && field.type === 'text') {
-            validator = validator.matches(
-              field.validation.pattern,
-              `${t(field.name)} ${t('can_only_contain_letters')}`
-            );
-          }
-          if (field.validation.pattern && field.type == 'email') {
-            validator = validator.matches(
-              field.validation.pattern,
-              `${t(field.name)} ${t('is_invalid')}`
-            );
-          }
-          if (field.name === 'username' && currentForm === 6) {
-            validator = validator.test(
-              'userExist',
-              `${t('username_already_exists')}`,
-              async (value) => {
-                const payload = { username: value };
-                const exists = await userExist(payload);
-                return !exists?.data?.data;
-              }
-            );
-          }
-          break;
-        case 'select_drop_down':
-          validator = yup.lazy((value) =>
-            typeof value === 'object'
-              ? yup.object({
-                  value: yup
-                    .string()
-                    .required(`${t(field.name)} ${t('is_required')}`),
-                })
-              : yup.string().required(`${t(field.name)} ${t('is_required')}`)
-          );
-          break;
-        case 'radio':
-        case 'select':
-          validator = yup.lazy((value) =>
-            typeof value === 'object'
-              ? yup.object({
-                  value: yup
-                    .string()
-                    .required(`${t(field.name)} ${t('is_required')}`),
-                })
-              : yup.string().required(`${t(field.name)} ${t('is_required')}`)
-          );
-          break;
-        case 'number':
-          validator = yup.string(); // Change from yup.number() to yup.string()
-          if (field.validation.required) {
-            validator = validator.required(
-              `${t(field.name)} ${t('is_required')}`
-            );
-          }
-          if (field.validation.minLength) {
-            validator = validator.min(
-              field.validation.minLength,
-              `${t(field.name)} ${t('min')} ${t(
-                field.validation.minLength
-              )} ${t('numbers')}`
-            );
-          }
-          if (field.validation.maxLength) {
-            validator = validator.max(
-              field.validation.maxLength,
-              `${t(field.label)} ${t('max')} ${t(
-                field.validation.maxLength
-              )} ${t('numbers')}`
-            );
-          }
-          if (field.validation.pattern) {
-            validator = validator.matches(
-              field.validation.pattern,
-              `${t(field.name)} ${t('is_invalid')}` // Update the error message to reflect numbers only
-            );
-          }
-          break;
-        // Add other field types as needed...
-        case 'multipleCard':
-        case 'checkbox':
-          validator = yup.lazy((value) =>
-            typeof value === 'object'
-              ? yup.object({
-                  value: yup
-                    .array()
-                    .min(
-                      field.validation.minSelection,
-                      `${t('Choose_at_least')} ${field.validation.minSelection}`
-                    )
-                    .max(
-                      field.validation.maxSelection,
-                      `${t('max')} ${t(field.validation.maxSelection)} ${t(
-                        'can_only_contain_letters'
-                      )}`
-                    )
-                    .required(`${t(field.name)} selection is required`),
-                })
-              : yup
-                  .array()
-                  .min(
-                    field.validation.minSelection,
-                    `${t('Choose_at_least')} ${field.validation.minSelection}`
-                  )
-                  .max(
-                    field.validation.maxSelection,
-                    `${t('max')} ${t(field.validation.maxSelection)} ${t(
-                      'can_only_contain_letters'
-                    )}`
-                  )
-                  .required(`${t(field.name)} selection is required`)
-          );
-          break;
-        default:
-      }
-      shape[field.name] = validator;
-    }
-  });
-  return yup.object().shape(shape);
-};
-
-const ProfileUpdateForm = ({ schema }) => {
-  //multi language setup
-  const { t, language } = useTranslation();
-  //dynamic schema for json object validation
-
+const ProfileUpdateForm = ({ fields }) => {
+  const { t } = useTranslation();
+  const [formData, setFormData] = useState({});
+  // eslint-disable-next-line no-unused-vars
+  const [schema, setSchema] = useState(fields);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [modal, setModal] = useState(false);
+  const [err, setErr] = useState();
+  const { isConnected } = useInternet();
   const navigation = useNavigation();
-  const [selectedIds, setSelectedIds] = useState({});
-  const [isDisable, setIsDisable] = useState(true);
-  const [currentForm, setCurrentForm] = useState(1);
 
-  const stepSchema = schema?.map((form) =>
-    buildYupSchema(form, currentForm, t)
-  );
-
-  const currentschema = stepSchema[currentForm - 1];
-
-  const {
-    handleSubmit,
-    control,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(currentschema),
-    defaultValues: {
-      // first_name: "",
-      // lastname: '',
-      // mobile: "",
-      // email:"",
-      // age: '',
-      // password: '',
-      // repeatpassword: '',
-      // multiplecards: [],
-      username: '',
-      preferred_language: {
-        value: translateLanguage(language),
-        fieldId: '',
-      },
-    },
-  });
-
-  const logRegistrationComplete = async () => {
-    // Log the registration completed event
-    const obj = {
-      eventName: 'profile_updated',
-      method: 'button-click',
-      screenName: 'profile_update',
-    };
-    await logEventFunction(obj);
-
-    // Handle your registration logic here
-  };
-
-  const createNewObject = (customFields, labels) => {
-    const result = {};
-    customFields?.forEach((field) => {
-      const cleanedFieldLabel = field?.label?.replace(/[^a-zA-Z0-9_ ]/g, '');
-
-      if (labels.includes(cleanedFieldLabel)) {
-        result[cleanedFieldLabel] = field.value || '';
-      }
-    });
-
-    return result;
-  };
-
-  const onSubmit = async (data) => {
-    const payload = await transformPayload(data);
-    const user_id = await getDataFromStorage('userId');
-
-    // await saveToken(token);
-    const register = await updateUser({ payload, user_id });
-    console.log({ register });
-
-    if (register?.params?.status === 'failed') {
-    } else {
-      logRegistrationComplete();
-      const profileData = await getProfileDetails({
-        userId: user_id,
-      });
-
-      console.log(JSON.stringify(profileData));
-
-      await setDataInStorage('profileData', JSON.stringify(profileData));
-      navigation.navigate('MyProfile');
-    }
-  };
-
-  const renderFields = (fields) => {
-    return fields?.map((field) => {
-      switch (field.type) {
-        case 'text':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomTextField
-                field={field}
-                control={control}
-                errors={errors}
-              />
-            </View>
-          );
-        case 'number':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomTextField
-                field={field}
-                control={control}
-                errors={errors}
-                keyboardType="numeric"
-              />
-            </View>
-          );
-        case 'email':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomTextField
-                field={field}
-                control={control}
-                errors={errors}
-                autoCapitalize="none"
-              />
-            </View>
-          );
-        case 'password':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomPasswordTextField
-                field={field}
-                control={control}
-                secureTextEntry={true}
-                errors={errors}
-              />
-            </View>
-          );
-        case 'select':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomCards
-                field={field}
-                name={field.name}
-                errors={errors}
-                control={control}
-                secureTextEntry={true}
-                setSelectedIds={setSelectedIds}
-                selectedIds={selectedIds}
-              />
-            </View>
-          );
-        case 'radio':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomRadioCard
-                field={programData}
-                name={field.name}
-                errors={errors}
-                control={control}
-                secureTextEntry={true}
-                setSelectedIds={setSelectedIds}
-                selectedIds={selectedIds}
-              />
-            </View>
-          );
-        case 'select_drop_down':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <DropdownSelect
-                field={field || districts}
-                name={field.name}
-                errors={errors}
-                control={control}
-                secureTextEntry={true}
-                setSelectedIds={setSelectedIds}
-                selectedIds={selectedIds}
-                setValue={setValue}
-              />
-            </View>
-          );
-        case 'multipleCard':
-        case 'checkbox':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <InterestedCardsComponent
-                field={field}
-                name={field.name}
-                control={control}
-                selectedIds={selectedIds}
-                setSelectedIds={setSelectedIds}
-                errors={errors}
-              />
-            </View>
-          );
-        case 'plain_text':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <PlainText
-                text="terms_and_conditions"
-                CustomCards
-                field={field}
-                name={field.name}
-                errors={errors}
-                control={control}
-              />
-            </View>
-          );
-        case 'tc_text':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <PlainTcText
-                isDisable={isDisable}
-                setIsDisable={setIsDisable}
-                field={field}
-                name={field.name}
-                control={control}
-              />
-            </View>
-          );
-        default:
-          return null;
-      }
-    });
-  };
-
-  const logRegistrationInProgress = async () => {
+  const logProfileEditInProgress = async () => {
     const obj = {
       eventName: 'profile_update_view',
       method: 'on-click',
@@ -474,39 +72,220 @@ const ProfileUpdateForm = ({ schema }) => {
       const customFields = finalResult?.customFields;
       const userDetails = createNewObject(customFields, requiredLabels);
 
-      setValue('first_name', firstName);
-      setValue('last_name', lastName);
-      setValue('email', finalResult?.email);
-      setValue('mobile', finalResult?.mobile);
-      setValue('age', userDetails?.AGE);
-      setValue('gender', {
-        value: userDetails?.WHATS_YOUR_GENDER?.toLowerCase(),
-      });
+      const updatedFormData = {
+        ...formData,
+        ['first_name']: firstName,
+        ['last_name']: lastName,
+        ['email']: finalResult?.email,
+        ['age']: userDetails?.AGE,
+        ['mobile']: finalResult?.mobile,
+        ['gender']: userDetails?.WHATS_YOUR_GENDER?.toLowerCase(),
+      };
+      setFormData(updatedFormData);
     };
     fetchData();
-    logRegistrationInProgress();
+    logProfileEditInProgress();
   }, []);
 
-  let currentSchema = schema?.find((form) => form.formNumber === currentForm);
+  const logProfileEditComplete = async () => {
+    // Log the registration completed event
+    const obj = {
+      eventName: 'profile_updated',
+      method: 'button-click',
+      screenName: 'profile_update',
+    };
+    await logEventFunction(obj);
+  };
+
+  const onSubmit = async (data) => {
+    setLoading(true);
+    const payload = await transformPayload(data);
+    const user_id = await getDataFromStorage('userId');
+    console.log('data', data);
+    console.log('payload', payload);
+
+    const register = await updateUser({ payload, user_id });
+    // const register = await updateUser();
+
+    if (!isConnected) {
+      setLoading(false);
+    } else if (register?.params?.status === 'failed') {
+      setLoading(false);
+      setModal(true);
+      setErr(register?.params?.err);
+    } else {
+      logProfileEditComplete();
+      const profileData = await getProfileDetails({
+        userId: user_id,
+      });
+
+      await setDataInStorage('profileData', JSON.stringify(profileData));
+      navigation.navigate('MyProfile');
+    }
+  };
+
+  const pages = [
+    ['first_name', 'last_name', 'email', 'mobile', 'age', 'gender'],
+  ];
+
+  const handleInputChange = (name, value) => {
+    const updatedFormData = { ...formData, [name]: value };
+
+    setFormData(updatedFormData);
+    setErrors({ ...errors, [name]: '' }); // Clear errors for the field
+  };
+
+  const validateFields = () => {
+    const pageFields = pages;
+    const newErrors = {};
+
+    pageFields.forEach((fieldName) => {
+      const field = schema?.find((f) => f.name === fieldName);
+
+      if (field) {
+        const value = formData[field.name] || '';
+
+        if (field.isRequired && !value) {
+          newErrors[field.name] = `${t(field.name)} ${t('is_required')}`;
+        } else if (field.minLength && value.length < field.minLength && value) {
+          newErrors[field.name] =
+            `${t('min_validation').replace('{field}', t(field.name)).replace('{length}', field.minLength)}`;
+        } else if (field.maxLength && value.length > field.maxLength && value) {
+          newErrors[field.name] =
+            `${t('max_validation').replace('{field}', t(field.name)).replace('{length}', field.maxLength)}`;
+        } else if (
+          field.pattern &&
+          value &&
+          !new RegExp(field.pattern).test(value)
+        ) {
+          newErrors[field.name] = `${t(field.name)} ${t('is_invalid')}.`;
+        }
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const renderField = (field) => {
+    switch (field.type) {
+      case 'text':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomTextField
+              field={field}
+              formData={formData}
+              handleValue={handleInputChange}
+              errors={errors}
+            />
+          </View>
+        );
+      case 'email':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomTextField
+              field={field}
+              formData={formData}
+              handleValue={handleInputChange}
+              errors={errors}
+              autoCapitalize={false}
+            />
+          </View>
+        );
+      case 'numeric':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomTextField
+              field={field}
+              formData={formData}
+              handleValue={handleInputChange}
+              errors={errors}
+              keyboardType="numeric"
+            />
+          </View>
+        );
+      case 'radio':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomRadioCard
+              field={field}
+              // options={programData}
+              errors={errors}
+              formData={formData}
+              handleValue={handleInputChange}
+            />
+          </View>
+        );
+      case 'select':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomCards
+              field={field}
+              errors={errors}
+              formData={formData}
+              handleValue={handleInputChange}
+            />
+          </View>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const renderPage = () => {
+    const pageFields = pages[0];
+    return schema
+      .filter((field) => pageFields.includes(field.name))
+      .map((field) => renderField(field));
+  };
+
+  const handleSubmit = () => {
+    if (validateFields()) {
+      onSubmit(formData);
+    }
+  };
+
+  if (loading) {
+    return <ActiveLoading />;
+  }
 
   return (
     <>
       <SecondaryHeader logo />
 
-      <ProfileHeader onPress={handleSubmit(onSubmit)} />
-
+      <ProfileHeader onPress={handleSubmit} />
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView style={{ flex: 1 }} nestedScrollEnabled>
-          {schema
-            ?.filter((form) => form.formNumber === currentForm)
-            ?.map((form) => (
-              <View key={form.formNumber}>{renderFields(form.fields)}</View>
-            ))}
+        <ScrollView style={{ flex: 1, marginVertical: 20 }}>
+          {renderPage()}
         </ScrollView>
       </KeyboardAvoidingView>
+      {modal && (
+        <Modal transparent={true} animationType="slide">
+          <View style={styles.modalContainer} activeOpacity={1}>
+            {err && (
+              <View style={styles.alertBox}>
+                <Image source={lightning} resizeMode="contain" />
+
+                <GlobalText
+                  style={[globalStyles.subHeading, { marginVertical: 10 }]}
+                >
+                  Error: {err}
+                </GlobalText>
+                <PrimaryButton
+                  text={t('continue')}
+                  onPress={() => {
+                    setModal(false);
+                  }}
+                />
+              </View>
+            )}
+          </View>
+        </Modal>
+      )}
     </>
   );
 };
@@ -514,8 +293,8 @@ const ProfileUpdateForm = ({ schema }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginVertical: 20,
-    marginHorizontal: 10,
+    margin: 20,
+    marginTop: 0,
     backgroundColor: 'white',
   },
   inputContainer: {
@@ -523,72 +302,50 @@ const styles = StyleSheet.create({
     Bottom: 16,
   },
 
-  card: {
-    padding: 16,
-    borderWidth: 1,
-    borderRadius: 4,
-    marginVertical: 8,
-  },
-  input: {
-    borderWidth: 1,
-    padding: 8,
-    borderRadius: 4,
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   alertBox: {
-    width: 300,
+    width: 350,
     backgroundColor: 'white',
-    borderRadius: 10,
+    borderRadius: 20,
     alignItems: 'center',
     padding: 10,
   },
   image: {
-    margin: 20,
-    height: 60,
-    width: 60,
+    width: 150,
+    height: 150,
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+
+  otpInputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    width: '100%', // Adjust the width as per your design
+    alignSelf: 'center',
+  },
+  pinCodeText: {
+    color: '#000',
+  },
+  pinCodeContainer: {
+    // marginHorizontal: 5,
+  },
+  pinContainer: {
+    width: '100%',
+  },
+  btnbox: {
+    marginVertical: 10,
+    alignItems: 'center',
   },
 });
 
 ProfileUpdateForm.propTypes = {
-  schema: PropTypes.any,
+  fields: PropTypes.any,
 };
 
 export default ProfileUpdateForm;
-
-// const RenderBtn = ({
-//   currentForm,
-//   schema,
-//   handleSubmit,
-//   nextForm,
-//   onSubmit,
-//   isDisable,
-//   networkError,
-// }) => {
-//   const { t } = useTranslation();
-//   const [isBtnDisable, setIsBtnDisable] = useState(true);
-//   const [checked, setChecked] = useState(false);
-//   const [showMore, setShowMore] = useState(true); // State for showing more content
-
-//   const renderContent = () => {
-//     if (currentForm !== 8 && currentForm < schema?.length) {
-//       return (
-//         <PrimaryButton text={t('continue')} onPress={handleSubmit(nextForm)} />
-//       );
-//     }else {
-//       return (
-//         <>
-//           {/* <PrimaryButton
-//             isDisabled={isBtnDisable}
-//             text={t('create_account')}
-//             onPress={handleSubmit(onSubmit)}
-//           /> */}
-//           <NetworkAlert
-//             onTryAgain={handleSubmit(onSubmit)}
-//             isConnected={!networkError}
-//           />
-//         </>
-//       );
-//     }
-//   };
-
-//   return <View style={styles.buttonContainer}>{renderContent()}</View>;
-// };

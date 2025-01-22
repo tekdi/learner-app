@@ -67,6 +67,10 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
+    console.log('hiii');
+
+    console.log('isConnected', isConnected);
+
     if (isConnected) {
       setNetworkstatus(true);
       setLoading(true);
@@ -75,6 +79,7 @@ const LoginScreen = () => {
         password: password,
       };
       const data = await login(payload);
+      console.log('data', data);
 
       if (data?.params?.status !== 'failed' && !data?.error) {
         await saveRefreshToken(data?.refresh_token || '');
@@ -82,6 +87,8 @@ const LoginScreen = () => {
         const userDetails = await getuserDetails();
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
+        console.log('tenantData', tenantData);
+
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
         await setDataInStorage('userId', user_id);
@@ -112,22 +119,22 @@ const LoginScreen = () => {
           'cohortId',
           cohort_id || '00000000-0000-0000-0000-000000000000'
         );
-        const tenantDetails = await getProgramDetails();
+        const tenantDetails = (await getProgramDetails()) || [];
 
-        const youthnetTenantIds = tenantDetails?.filter((item) => {
-          if (item?.name === 'YouthNet') {
-            return item;
-          }
-        });
-        const scp = tenantDetails?.filter((item) => {
-          if (item?.name === 'Second Chance Program') {
-            return item;
-          }
-        });
+        const youthnetTenantIds = tenantDetails
+          ?.filter((item) => item.name === 'YouthNet')
+          ?.map((item) => item.tenantId);
+
+        const scp = tenantDetails
+          ?.filter((item) => item.name === 'Second Chance Program')
+          ?.map((item) => item.tenantId);
+
         const role = tenantData?.[0]?.roleName;
 
         if (role == 'Learner' || role == 'Student') {
-          if (tenantid === scp?.[0]?.tenantId) {
+          console.log('reached');
+
+          if (tenantid === scp?.[0]) {
             await setDataInStorage('userType', 'scp');
             if (cohort_id) {
               navigation.navigate('SCPUserTabScreen');
@@ -137,10 +144,12 @@ const LoginScreen = () => {
           } else {
             if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
               await setDataInStorage('userType', 'youthnet');
+              // navigation.navigate('YouthNetTabScreen');
+              navigation.navigate('Dashboard');
             } else {
               await setDataInStorage('userType', 'public');
+              navigation.navigate('Dashboard');
             }
-            navigation.navigate('Dashboard');
           }
           const deviceId = await getDeviceId();
           const action = 'add';
@@ -158,6 +167,10 @@ const LoginScreen = () => {
       setNetworkstatus(false);
     }
   };
+
+  // const handleLogin = async () => {
+  //   navigation.navigate('Dashboard');
+  // };
 
   useEffect(() => {
     if (userName.length > 0 && password.length > 0 && acceptTerms) {
@@ -185,7 +198,7 @@ const LoginScreen = () => {
         <ScrollView style={styles.scrollView} nestedScrollEnabled={true}>
           <StatusBar
             barStyle="dark-content"
-            translucent={true}
+            // translucent={true}
             backgroundColor="transparent"
           />
           <Image style={globalStyles.logo} source={Logo} resizeMode="contain" />
@@ -295,7 +308,7 @@ const LoginScreen = () => {
               isDisabled={!isDisabled}
             />
           </View>
-          <Pressable
+          {/* <Pressable
             onPress={() => {
               navigation.navigate('RegisterStart');
             }}
@@ -304,7 +317,7 @@ const LoginScreen = () => {
             <GlobalText style={[globalStyles.text, { color: '#0D599E' }]}>
               {t('dont_have_account')}
             </GlobalText>
-          </Pressable>
+          </Pressable> */}
         </ScrollView>
       )}
 

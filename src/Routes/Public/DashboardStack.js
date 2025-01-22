@@ -7,14 +7,14 @@ import UnitList from '../../screens/Dashboard/Courses/UnitList';
 
 const Stack = createNativeStackNavigator();
 
-const DashboardStack = () => {
+const DashboardStack = ({ CopilotStopped }) => {
+  console.log('CopilotSopped', CopilotStopped);
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen
-        name="Courses"
-        component={Courses}
-        options={{ lazy: true }} // Lazily load LoadingScreen
-      />
+      <Stack.Screen name="Courses" options={{ lazy: true }}>
+        {(props) => <Courses {...props} CopilotStopped={CopilotStopped} />}
+      </Stack.Screen>
       <Stack.Screen
         name="CourseContentList"
         component={CourseContentList}

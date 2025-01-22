@@ -91,12 +91,12 @@ const Contents = () => {
     const data = await contentListApi_Pratham({ searchText });
     //found content progress
     try {
-      console.log('########## contentListApi');
+      // console.log('########## contentListApi');
       const contentList = [
         ...(data?.content || []),
         ...(data?.QuestionSet || []),
       ];
-      console.log('########## contentList', contentList);
+      // console.log('########## contentList', contentList);
       let contentIdList = [];
       if (contentList) {
         for (let i = 0; i < contentList.length; i++) {
@@ -117,8 +117,8 @@ const Contents = () => {
       }
 
       setTrackData(courseTrackData);
-      console.log('########## courseTrackData', courseTrackData);
-      console.log('##########');
+      // console.log('########## courseTrackData', courseTrackData);
+      // console.log('##########');
       const result = JSON.parse(await getDataFromStorage('profileData'));
       setUserInfo(result?.getUserDetails);
       setData(contentList);

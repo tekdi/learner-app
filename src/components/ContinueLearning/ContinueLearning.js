@@ -113,8 +113,6 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
     />
   );
 
-  console.log('####data', JSON.stringify(data));
-
   return (
     <View style={styles.searchContainer}>
       <GlobalText style={[globalStyles.heading2, { color: '#06A816' }]}>

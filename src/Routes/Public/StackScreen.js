@@ -30,9 +30,9 @@ import StandAlonePlayer from '../../screens/PlayerScreen/StandAlonePlayer/StandA
 import EnableLocationScreen from '../../screens/Location/EnableLocationScreen';
 import DashboardStack from './DashboardStack';
 import SCPUserTabScreen from '../SCPUser/SCPUserTabScreen';
-// import YouthNetTabScreen from '../Youthnet/YouthNetTabScreen';
+import YouthNetTabScreen from '../Youthnet/YouthNetTabScreen';
 
-const StackScreen = (props) => {
+const StackScreen = () => {
   const Stack = createNativeStackNavigator();
 
   const headerBackground = () => {
@@ -65,6 +65,7 @@ const StackScreen = (props) => {
           lazy: true,
         }}
       />
+
       <Stack.Screen
         name="LoginSignUpScreen"
         component={LoginSignUpScreen}
@@ -93,11 +94,11 @@ const StackScreen = (props) => {
         //component={AssessmentStack} // Changed to AssessmentStack for now to show only Assessment
         options={{ headerShown: false, lazy: true }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="YouthNetTabScreen"
         component={YouthNetTabScreen}
         options={{ headerShown: false, lazy: true }}
-      /> */}
+      />
 
       <Stack.Screen
         name="PlayerScreen"

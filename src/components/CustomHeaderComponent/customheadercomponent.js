@@ -12,36 +12,44 @@ import PropTypes from 'prop-types';
 import FastImage from '@changwoolab/react-native-fast-image';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
-const HeaderComponent = ({ question, questionIndex, totalForms }) => {
+const HeaderComponent = ({ currentPage, questionIndex, totalForms }) => {
   const { t } = useTranslation();
 
   return (
-    question && (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.block}>
-          {/* <Image style={styles.image} source={Logo} resizeMode="contain" /> */}
-          <FastImage
-            style={styles.image}
-            source={require('../../assets/images/gif/pen_paper.gif')}
-            resizeMode={FastImage.resizeMode.contain}
-            priority={FastImage.priority.high} // Set the priority here
-          />
-          <View style={styles.textContainer}>
-            <GlobalText style={styles.text1}>
-              {questionIndex}/{totalForms}
-            </GlobalText>
-            <GlobalText style={styles.text2}>{t(question)}</GlobalText>
-          </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.block}>
+        {/* <Image style={styles.image} source={Logo} resizeMode="contain" /> */}
+        <FastImage
+          style={styles.image}
+          source={require('../../assets/images/gif/pen_paper.gif')}
+          resizeMode={FastImage.resizeMode.contain}
+          priority={FastImage.priority.high} // Set the priority here
+        />
+        <View style={styles.textContainer}>
+          <GlobalText style={styles.text1}>
+            {questionIndex}/{totalForms}
+          </GlobalText>
+          <GlobalText style={styles.text2}>
+            {currentPage === 1
+              ? t('q1_name')
+              : currentPage === 2
+                ? t('age_group')
+                : currentPage === 3
+                  ? t('which_program_do_you_want_to_enroll_to')
+                  : currentPage === 4
+                    ? t('where_are_you_located')
+                    : currentPage === 5 && t('q6_login_cred')}
+          </GlobalText>
         </View>
-      </SafeAreaView>
-    )
+      </View>
+    </SafeAreaView>
   );
 };
 
 HeaderComponent.propTypes = {
-  question: PropTypes.string,
+  // currentPage: PropTypes.number,
   questionIndex: PropTypes.number,
   totalForms: PropTypes.number,
 };
@@ -57,7 +65,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     maxHeight: 90,
     flex: 1,
-    marginBottom: 15,
+    // marginBottom: 15,
     // borderWidth: 1,
   },
   text1: {

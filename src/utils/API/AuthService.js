@@ -31,24 +31,21 @@ const getHeaderswithoutTenant = async () => {
 
 export const login = async (params = {}) => {
   try {
+    console.log('called');
+
     const result = await post(`${EndUrls.login}`, params, {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
     });
-    // console.log(`curl -X POST '${EndUrls.login}' \
-    // -H 'Content-Type: application/json' \
-    // -H 'Accept: application/json' \
-    // -d '${params}'
-    // `);
     if (result?.data) {
       return result?.data?.result;
     } else {
       return {};
     }
   } catch (e) {
-    return handleResponseException(e);
+    return console.log('e', e);
   }
 };
 
@@ -83,9 +80,23 @@ export const refreshToken = async (params = {}) => {
 export const getAccessToken = async () => {
   try {
     const headers = await getHeaderswithoutTenant();
-    const result = await get(`${EndUrls.get_current_token}`, {
+    const url = `${EndUrls.get_current_token}`;
+
+    // Generate the `curl` command
+    const curlCommand = [
+      `curl -X GET '${url}'`,
+      ...Object.entries(headers || {}).map(
+        ([key, value]) => `-H '${key}: ${value}'`
+      ),
+    ].join(' ');
+
+    // Log the `curl` command
+    // console.log('CURL Command:', curlCommand);
+
+    const result = await get(url, {
       headers: headers || {},
     });
+
     if (result) {
       return result?.data;
     } else {
@@ -110,7 +121,7 @@ ${Object.entries(headers || {})
   .map(([key, value]) => `-H '${key}: ${value}' \\`)
   .join('\n')}`;
 
-    // console.log(curlCommand);
+    console.log(curlCommand);
 
     // Make the API request
     const result = await get(url, {
@@ -154,11 +165,11 @@ export const registerUser = async (params = {}) => {
       Accept: 'application/json',
     };
     // Log the cURL command
-    // console.log(
-    //   `curl -X ${method} ${url} -H 'Content-Type: application/json' -d '${JSON.stringify(
-    //     params
-    //   )}'`
-    // );
+    console.log(
+      `curl -X ${method} ${url} -H 'Content-Type: application/json' -d '${JSON.stringify(
+        params
+      )}'`
+    );
 
     // Make the actual request
     const result = await post(url, params, {
@@ -181,15 +192,15 @@ export const updateUser = async ({ payload, user_id }) => {
     const token = await getDataFromStorage('Accesstoken');
     const headers = await getHeaders();
 
-    //     const curlCommand = `
-    // curl -X PATCH '${url}' \\
-    // -H 'Content-Type: application/json' \\
-    // -H 'Accept: application/json' \\
-    // -H 'Authorization:  ${headers.Authorization}' \\
-    // -H 'tenantId: ${headers.tenantId}' \\
-    // -d '${JSON.stringify(payload)}'
-    //     `;
-    //     console.log('cURL Command:', curlCommand);
+    const curlCommand = `
+    curl -X PATCH '${url}' \\
+    -H 'Content-Type: application/json' \\
+    -H 'Accept: application/json' \\
+    -H 'Authorization:  ${headers.Authorization}' \\
+    -H 'tenantId: ${headers.tenantId}' \\
+    -d '${JSON.stringify(payload)}'
+        `;
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await patch(url, payload, {
@@ -222,10 +233,10 @@ export const courseListApi_testing = async ({
       filters: {
         program:
           userType == 'scp'
-            ? ['secondchance', 'Second Chance']
-            : ['Youthnet', 'youthnet'],
+            ? ['secondchance', 'Second Chance', 'SCP']
+            : ['Youthnet', 'youthnet', 'YouthNet'],
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
-        status: ['Live'],
+        // status: ['Live','dra'],
         primaryCategory: ['Course'],
       },
       limit: 100,
@@ -296,8 +307,8 @@ export const contentListApi_Pratham = async ({ searchText }) => {
       filters: {
         program:
           userType == 'scp'
-            ? ['secondchance', 'Second Chance']
-            : ['Youthnet', 'youthnet'],
+            ? ['secondchance', 'Second Chance', 'SCP']
+            : ['Youthnet', 'youthnet', 'YouthNet'],
         //board: ['CBSE'],
         primaryCategory: ['Learning Resource', 'Practice Question Set'],
         visibility: ['Default', 'Parent'],
@@ -378,15 +389,15 @@ export const getCohort = async ({ user_id, tenantid, academicYearId }) => {
     const url = `${EndUrls.cohort}/${user_id}`;
 
     // Log the curl command
-    // console.log(
-    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${
-    //     headers.Authorization
-    //       ? ` -H 'Authorization: ${headers.Authorization}'`
-    //       : ''
-    //   }
-    //   -H 'tenantid: ${headers.tenantid}'
-    //   -H 'academicyearid: ${headers.academicyearid}'`
-    // );
+    console.log(
+      `curl -X GET '${url}' -H 'Content-Type: application/json'${
+        headers.Authorization
+          ? ` -H 'Authorization: ${headers.Authorization}'`
+          : ''
+      }
+      -H 'tenantid: ${headers.tenantid}'
+      -H 'academicyearid: ${headers.academicyearid}'`
+    );
 
     const result = await get(url, {
       headers: headers || {},
@@ -485,13 +496,12 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program:
-          userType == 'scp'
-            ? ['secondchance', 'Second Chance']
-            : ['Youthnet', 'youthnet'],
+        program: userType == 'scp' ? ['SCP'] : ['YouthNet'],
         board: `${params?.boardName}`,
-        state: `${params?.stateName}`,
-        assessmentType: ['pre-test', 'post-test'],
+        // board: `Maharashtra Education Board`,
+        // state: `${params?.stateName}`,
+        // assessmentType: ['pre-test', 'post-test'],
+        assessmentType: ['Pre Test', 'Post Test'],
         status: ['Live'],
         primaryCategory: ['Practice Question Set'],
       },
@@ -504,6 +514,14 @@ export const assessmentListApi = async (params = {}) => {
     },
   };
   try {
+    const curlCommand = `
+curl -X POST '${url}' \\
+-H 'Content-Type: application/json' \\
+-H 'Accept: application/json' \\
+-d '${JSON.stringify(payload)}'
+    `;
+    console.log('CURL Command:\n', curlCommand); // Log the generated curl command
+
     // Make the actual request
     const result = await post(url, payload, {
       params: {
@@ -1214,18 +1232,18 @@ export const targetedSolutions = async ({ subjectName, type }) => {
 
   const payload = {
     subject: subjectName,
-    state: data?.STATES,
+    // state: data?.STATES,
     medium: data?.MEDIUM,
     class: data?.GRADE,
     board: data?.BOARD,
     courseType: type,
   };
   try {
-    // console.log(
-    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-    //     headers['x-auth-token']
-    //   }' -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1426,6 +1444,8 @@ export const LearningMaterialAPI = async () => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
+    // console.log('curlCom', curlCommand);
+
     // Make the actual request
     const result = await get(url, {
       headers: headers || {},
@@ -1457,15 +1477,15 @@ export const notificationSubscribe = async ({ deviceId, user_id, action }) => {
     };
 
     // Construct cURL command
-    // const curlCommand = `
-    // curl -X PATCH '${url}' \\
-    // -H 'Content-Type: application/json' \\
-    // -H 'Accept: application/json' \\
-    // -H 'Authorization:  ${headers.Authorization}' \\
-    // -H 'tenantId: ${headers.tenantId}' \\
-    // -d '${JSON.stringify(payload)}'
-    //     `;
-    // console.log('cURL Command:', curlCommand);
+    const curlCommand = `
+    curl -X PATCH '${url}' \\
+    -H 'Content-Type: application/json' \\
+    -H 'Accept: application/json' \\
+    -H 'Authorization:  ${headers.Authorization}' \\
+    -H 'tenantId: ${headers.tenantId}' \\
+    -d '${JSON.stringify(payload)}'
+        `;
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await patch(url, payload, {

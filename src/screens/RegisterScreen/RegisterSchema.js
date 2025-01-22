@@ -1,326 +1,262 @@
 // SchemaConverting
 
-export const registerSchema = async (data, states, getage) => {
-  console.log({ getage });
-
+export const registerSchema = async () => {
   try {
     // Fix field order and labels
     const schema = [
       {
-        formNumber: 1,
-        question: 'q1_name',
-        fields: [
+        order: '1',
+        name: 'first_name',
+        type: 'text',
+        label: 'first_name',
+        isRequired: true,
+        pattern: /^[A-Za-z]+$/, // Only letters, no numbers
+        maxLength: null,
+        minLength: 3,
+      },
+      {
+        order: '2',
+        name: 'last_name',
+        type: 'text',
+        label: 'last_name',
+        isRequired: true,
+        options: [],
+        pattern: /^[A-Za-z]+$/, // Only letters, no numbers
+        maxLength: null,
+        minLength: 3,
+      },
+      {
+        order: '3',
+        name: 'email',
+        type: 'email',
+        label: 'EMAIL',
+        pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, // Only letters, no numbers
+        isRequired: false,
+      },
+      {
+        order: '4',
+        name: 'mobile',
+        type: 'numeric',
+        label: 'MOBILE',
+        pattern: /^[6-9]\d{9}$/, // Only numbers,
+        maxLength: 10,
+        minLength: 10,
+        isRequired: true,
+      },
+      {
+        order: '5',
+        label: 'age',
+        name: 'age',
+        type: 'numeric',
+        isRequired: true,
+        pattern: /^(0?[1-9]|[1-9][0-9])$/, // Only letters, no numbers
+        maxLength: 2,
+        minLength: 1,
+      },
+      {
+        order: '6',
+        label: 'WHAT’S_YOUR_GENDER',
+        name: 'gender',
+        type: 'select',
+        isRequired: true,
+        options: [
           {
-            type: 'text',
-            label: data?.[0]?.label.replace(/ /g, '_').toLowerCase(),
-            name: data?.[0]?.name.replace(/ /g, '_').toLowerCase(),
-            coreField: data?.[0]?.coreField,
-            fieldId: data?.[0]?.fieldId,
-            validation: {
-              required: true,
-              pattern: /^[A-Za-z]+$/, // Only letters, no numbers
-              minLength: 3,
-              maxLength: 30,
-            },
+            label: 'MALE',
+            value: 'male',
           },
           {
-            type: data?.[1]?.type,
-            label: data?.[1]?.label.replace(/ /g, '_').toLowerCase(),
-            name: data?.[1]?.name.replace(/ /g, '_').toLowerCase(),
-            coreField: data?.[1]?.coreField,
-            fieldId: data?.[1]?.fieldId,
-            validation: {
-              required: true,
-              pattern: /^[A-Za-z]+$/, // Only letters, no numbers
-              minLength: 3,
-              maxLength: 30,
-            },
+            label: 'FEMALE',
+            value: 'female',
           },
           {
-            type: 'number',
-            label: 'phone_number',
-            name: 'mobile',
-            coreField: data?.[2]?.coreField,
-            fieldId: data?.[2]?.fieldId,
-            validation: {
-              required: true,
-              pattern: /^[6-9]\d{9}$/, // Only numbers,
-              minLength: 10,
-              maxLength: 10,
-            },
+            label: 'TRANSGENDER',
+            value: 'transgender',
           },
           {
-            type: 'email',
-            label: 'email',
-            name: 'email',
-            coreField: data?.[3]?.coreField,
-            fieldId: data?.[3]?.fieldId,
-            validation: {
-              required: true,
-              pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, // Only letters, no numbers
-            },
+            label: 'OTHER',
+            value: 'other',
           },
         ],
       },
       {
-        formNumber: 2,
-        question: 'age_group',
-        fields: [
-          {
-            type: 'number',
-            label: 'age',
-            name: 'age',
-            coreField: data?.[4]?.coreField,
-            fieldId: data?.[4]?.fieldId,
-            validation: {
-              required: true,
-              pattern: /^(0?[1-9]|[1-9][0-9])$/, // Only letters, no numbers
-              minLength: 1,
-              maxLength: 2,
-            },
-          },
-          {
-            type: 'select',
-            label: data?.[5]?.label,
-            name: data?.[5]?.name,
-            coreField: data?.[5]?.coreField,
-            fieldId: data?.[5]?.fieldId,
-            options: data?.[5]?.options,
-            validation: {
-              required: true,
-            },
-          },
-        ],
+        order: '7',
+        type: 'radio',
+        label: 'program',
+        name: 'program',
+        isRequired: true,
       },
-      // {
-      //   formNumber: 3,
-      //   question: 'q4_language',
-      //   fields: [
-      //     {
-      //       type: 'select',
-      //       label: data?.[5]?.label,
-      //       name: data?.[5]?.name.replace(/ /g, '_'),
-      //       coreField: data?.[5]?.coreField,
-      //       fieldId: data?.[5]?.fieldId,
-      //       options: data?.[5]?.options,
-      //       validation: {
-      //         required: true,
-      //       },
-      //     },
-      //   ],
-      // },
+      {
+        order: '8',
+        label: 'states',
+        name: 'states',
+        type: 'drop_down',
+        isRequired: true,
 
-      {
-        formNumber: 3,
-        question: 'which_program_do_you_want_to_enroll_to',
-        fields: [
+        options: [
           {
-            type: 'radio',
-            label: 'program',
-            name: 'program',
-            // coreField: data?.[4]?.coreField,
-            // fieldId: data?.[4]?.fieldId,
-            // options: data?.[4]?.options,
-            validation: {
-              required: true,
-            },
+            value: 'SLP',
+          },
+          {
+            value: 'TGN',
+          },
+          {
+            value: 'TGT',
+          },
+          {
+            value: 'SDH',
+          },
+          {
+            value: 'SGA',
+          },
+          {
+            value: 'SH',
+          },
+          {
+            value: 'SHE',
+          },
+          {
+            value: 'SNW',
+          },
+          {
+            value: 'SSN',
+          },
+          {
+            value: 'STT',
+          },
+          {
+            value: 'AP',
+          },
+          {
+            value: 'KTR',
+          },
+          {
+            value: 'UP',
+          },
+          {
+            value: 'KA',
+          },
+          {
+            value: 'PG',
+          },
+          {
+            value: 'HJK',
+          },
+          {
+            value: 'NSS',
+          },
+          {
+            value: 'AS',
+          },
+          {
+            value: 'CH',
+          },
+          {
+            value: 'PNJ',
+          },
+          {
+            value: 'MH',
+          },
+          {
+            value: 'BR',
+          },
+          {
+            value: 'RJ',
+          },
+          {
+            value: 'KK',
+          },
+          {
+            value: 'TN',
+          },
+          {
+            value: 'JK',
           },
         ],
       },
-      // {
-      //   formNumber: 3,
-      //   question: 'q5_interested_in',
-      //   fields: [
-      //     {
-      //       type: data?.[9]?.type,
-      //       label: data?.[9]?.label,
-      //       name: data?.[9]?.name.replace(/ /g, '_'),
-      //       coreField: data?.[9]?.coreField,
-      //       fieldId: data?.[9]?.fieldId,
-      //       options: data?.[9]?.options,
-      //       validation: {
-      //         minSelection: 3,
-      //         maxSelection: 6,
-      //       },
-      //     },
-      //   ],
-      // },
       {
-        formNumber: 4,
-        question: 'where_are_you_located',
-        fields: [
-          {
-            type: 'select_drop_down',
-            label: 'state',
-            name: 'state',
-            coreField: data?.[6]?.coreField,
-            fieldId: data?.[6]?.fieldId,
-            options: states,
-            validation: {
-              required: true,
-            },
-          },
-          {
-            type: 'select_drop_down',
-            label: 'district',
-            name: 'district',
-            coreField: data?.[7]?.coreField,
-            fieldId: data?.[7]?.fieldId,
-            validation: {
-              required: true,
-            },
-          },
-          {
-            type: 'select_drop_down',
-            label: 'block',
-            name: 'block',
-            coreField: data?.[8]?.coreField,
-            fieldId: data?.[8]?.fieldId,
-            validation: {
-              required: true,
-            },
-          },
-          // {
-          //   type: 'select_drop_down',
-          //   label: 'village',
-          //   name: 'village',
-          //   coreField: data?.[1]?.coreField,
-          //   fieldId: data?.[1]?.fieldId,
-          //   validation: {
-          //     required: true,
+        order: '9',
+        label: 'districts',
+        name: 'districts',
+        type: 'drop_down',
+        isRequired: true,
+      },
+      {
+        order: '10',
+        label: 'blocks',
+        name: 'blocks',
+        type: 'drop_down',
+        isRequired: true,
+      },
+      {
+        order: '11',
+        name: 'username',
+        type: 'text',
+        label: 'username',
+        pattern: null,
+        maxLength: null,
+        minLength: 3,
+        isRequired: true,
+      },
+      {
+        order: '12',
+        name: 'password',
+        type: 'password',
+        label: 'password',
+        maxLength: null,
+        minLength: 8,
+        isRequired: true,
+      },
+      {
+        order: '13',
+        name: 'confirm_password',
+        type: 'password',
+        label: 'confirm_password',
+        isRequired: true,
+        maxLength: null,
+        minLength: 8,
+      },
+      {
+        order: '14',
+        label: 'parent_name',
+        name: 'parent_name',
+        type: 'text',
+        isRequired: true,
+        pattern: /^[A-Za-z]+$/, // Only letters, no numbers
+        maxLength: null,
+        minLength: 3,
+      },
+      {
+        order: '15',
+        label: 'parent_phone',
+        name: 'parent_phone',
+        type: 'numeric',
+        isRequired: true,
+        pattern: /^[6-9]\d{9}$/, // Only numbers,
+        maxLength: 10,
+        minLength: 10,
+      },
+      {
+        order: '16',
+        label: 'parent_phone_belong',
+        name: 'parent_phone_belong',
+        type: 'drop_down',
+        isRequired: true,
 
-          //   },
-          // },
+        options: [
+          {
+            label: 'PARENT',
+            value: 'parent',
+          },
+          {
+            label: 'GUARDIAN',
+            value: 'guardian',
+          },
+          {
+            label: 'NEIGHBOR_OTHERS',
+            value: 'others',
+          },
         ],
       },
-      {
-        formNumber: 5,
-        question: 'q6_login_cred',
-        fields: [
-          {
-            type: data?.[11]?.type,
-            label: data?.[11]?.label.toLowerCase(),
-            name: data?.[11]?.name.toLowerCase(),
-            coreField: data?.[11]?.coreField,
-            fieldId: data?.[11]?.fieldId,
-            placeholder: data?.[11]?.placeholder,
-            validation: {
-              required: true,
-              // minLength: data?.[6]?.minLength,
-              // maxLength: data?.[6]?.maxLength,
-              minLength: 8,
-              maxLength: 32,
-            },
-          },
-          {
-            type: 'password',
-            label: data?.[12]?.label.toLowerCase(),
-            name: data?.[12]?.name.toLowerCase(),
-            coreField: data?.[12]?.coreField,
-            fieldId: data?.[12]?.fieldId,
-            placeholder: data?.[12]?.placeholder,
-            validation: {
-              required: true,
-              // minLength: data?.[7]?.minLength,
-              // maxLength: data?.[7]?.maxLength,
-              minLength: 8,
-              maxLength: 16,
-            },
-          },
-          {
-            type: 'password',
-            label: data?.[13]?.name.replace(/ /g, '_').toLowerCase(),
-            name: data?.[13]?.name.replace(/ /g, '_').toLowerCase(),
-            coreField: data?.[13]?.coreField,
-            fieldId: data?.[13]?.fieldId,
-            placeholder: data?.[13]?.placeholder,
-            validation: {
-              required: true,
-              // minLength: data?.[8]?.minLength,
-              // maxLength: data?.[8]?.maxLength,
-              minLength: 8,
-              maxLength: 16,
-              match: true,
-            },
-          },
-          ...(getage < 18
-            ? [
-                {
-                  type: 'parent_text',
-                  // label: data?.[14]?.name.replace(/ /g, '_').toLowerCase(),
-                  // name: data?.[14]?.name.replace(/ /g, '_').toLowerCase(),
-                  // coreField: data?.[14]?.coreField,
-                  // fieldId: data?.[14]?.fieldId,
-                },
-                {
-                  type: 'text',
-                  label: data?.[14]?.name.replace(/ /g, '_').toLowerCase(),
-                  name: data?.[14]?.name.replace(/ /g, '_').toLowerCase(),
-                  coreField: data?.[14]?.coreField,
-                  fieldId: data?.[14]?.fieldId,
-                  placeholder: data?.[14]?.placeholder,
-                  validation: {
-                    required: true,
-                    pattern: /^[A-Za-z]+$/, // Only letters, no numbers
-                    minLength: 3,
-                    maxLength: 30,
-                  },
-                },
-                {
-                  type: 'number',
-                  label: data?.[15]?.name.replace(/ /g, '_').toLowerCase(),
-                  name: data?.[15]?.name.replace(/ /g, '_').toLowerCase(),
-                  coreField: data?.[15]?.coreField,
-                  fieldId: data?.[15]?.fieldId,
-                  placeholder: data?.[15]?.placeholder,
-                  validation: {
-                    required: true,
-                    pattern: /^[6-9]\d{9}$/, // Only numbers,
-                    minLength: 10,
-                    maxLength: 10,
-                  },
-                },
-                {
-                  type: 'select_drop_down',
-                  label: data?.[16]?.name.replace(/ /g, '_').toLowerCase(),
-                  name: data?.[16]?.name.replace(/ /g, '_').toLowerCase(),
-                  coreField: data?.[16]?.coreField,
-                  fieldId: data?.[16]?.fieldId,
-                  options: data?.[16]?.options,
-                  validation: {
-                    required: true,
-                  },
-                },
-              ]
-            : []),
-        ],
-      },
-      // {
-      //   formNumber: 8,
-      //   question: '',
-      //   fields: [
-      //     {
-      //       type: 'plain_text',
-      //       label: '',
-      //       name: '',
-      //       coreField: '',
-      //       fieldId: null,
-      //     },
-      //   ],
-      // },
-      // {
-      //   formNumber: 6,
-      //   question: null,
-      //   fields: [
-      //     {
-      //       type: 'tc_text',
-      //       label: '',
-      //       name: '',
-      //       coreField: '',
-      //       fieldId: null,
-      //     },
-      //   ],
-      // },
     ];
     return schema;
   } catch (e) {

@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Image,
   KeyboardAvoidingView,
   Modal,
-  SafeAreaView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -33,7 +31,7 @@ const ForgotPassword = ({ route }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  handleInput = (e) => {
+  const handleInput = (e) => {
     console.log({ e });
     setvalue(e.trim());
     seterror(false);
@@ -58,7 +56,7 @@ const ForgotPassword = ({ route }) => {
     console.log(data?.params?.err);
   };
 
-  onPress = () => {
+  const onPress = () => {
     if (value < 1) {
       seterror(true);
     } else {
@@ -240,6 +238,8 @@ const styles = StyleSheet.create({
   },
 });
 
-ForgotPassword.propTypes = {};
+ForgotPassword.propTypes = {
+  route: PropTypes.any,
+};
 
 export default ForgotPassword;

@@ -23,13 +23,10 @@ const AppUpdatePopup = () => {
     const checkForUpdate = async () => {
       try {
         const version = await checkVersion();
-        console.log('hi', version);
 
         setLatestVersion(version?.version);
         if (version.needsUpdate) {
           setIsUpdateAvailable(true);
-        } else {
-          console.log('out');
         }
       } catch (error) {
         console.error('Error checking app version: ', error);

@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   Image,
-  Pressable,
   SafeAreaView,
   StatusBar,
   TouchableOpacity,
@@ -14,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { languages } from '@context/Languages';
 import { useTranslation } from '../../context/LanguageContext';
 import Logo from '../../assets/images/png/logo.png';
+import PropTypes from 'prop-types';
 
 const SecondaryHeader = ({ logo }) => {
   const navigation = useNavigation();
@@ -43,7 +43,7 @@ const SecondaryHeader = ({ logo }) => {
     <SafeAreaView style={styles.layout}>
       <StatusBar
         barStyle="dark-content"
-        translucent={true}
+        // translucent={true}
         backgroundColor="transparent"
       />
 
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'white',
-    paddingTop: 40,
+    // paddingTop: 40,
     width: '100%',
   },
   container: {
@@ -116,5 +116,9 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
 });
+
+SecondaryHeader.propTypes = {
+  logo: PropTypes.bool,
+};
 
 export default SecondaryHeader;

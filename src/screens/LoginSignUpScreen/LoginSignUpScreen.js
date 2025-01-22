@@ -1,68 +1,86 @@
-import { View, TouchableOpacity, Image, StyleSheet, Text } from 'react-native';
+import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import SecondaryButton from '../../components/SecondaryButton/SecondaryButton';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
-
 import Logo from '../../assets/images/png/logo.png';
-
 import GlobalText from '@components/GlobalText/GlobalText';
+import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
+import Config from 'react-native-config';
+
+const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
 const LoginSignUpScreen = () => {
-  //multi language setup
   const { t } = useTranslation();
-
   const nav = useNavigation();
+  const { start, copilotEvents, goToNth, unregisterStep } = useCopilot();
+  const [CopilotStarted, setCopilotStarted] = useState(false);
 
-  const navigate = () => {
-    nav.navigate('LanguageScreen');
-  };
+  // useEffect(() => {
+  //   const COPILOT_ENABLED = Config.COPILOT_ENABLE;
+  //   // Start Copilot only if it's not already started
+  //   if (!CopilotStarted && COPILOT_ENABLED) {
+  //     // Unregister steps 1 and 2
+  //     unregisterStep('start'); // Unregister step 1
+  //     unregisterStep('continueButton'); // Unregister step 2
+
+  //     // Optionally register new steps if required
+  //     // registerStep(3); // Example of dynamically registering a step
+
+  //     start(); // Start the Copilot tour
+  //     // goToNth(3); // Navigate to step 3 to skip steps 1 and 2
+
+  //     copilotEvents.on('start', () => setCopilotStarted(true));
+  //   }
+  // }, [start, copilotEvents, CopilotStarted, unregisterStep, goToNth]);
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backbutton} onPress={navigate}>
+      <TouchableOpacity
+        style={styles.backbutton}
+        onPress={() => nav.navigate('LanguageScreen')}
+      >
         <Image
           source={backIcon}
           resizeMode="contain"
           style={{ width: 30, height: 30 }}
         />
       </TouchableOpacity>
-      {/* Icon png here */}
       <View style={styles.container_image}>
         <Image style={styles.image} source={Logo} resizeMode="contain" />
         <GlobalText style={styles.title}>{t('let_log_in')}</GlobalText>
       </View>
+
       <View style={styles.buttonContainer}>
-        <PrimaryButton
-          text={t('login')}
-          onPress={() => {
-            nav.navigate('LoginScreen');
-          }}
-        />
-        <View style={{ padding: 10 }}></View>
-        <SecondaryButton
-          text={'create_new_account'}
-          onPress={() => {
-            nav.navigate('RegisterStart');
-          }}
-          style={{ fontSize: 14.5 }}
-        />
-        <View style={{ padding: 10 }}></View>
-        {/* <PrimaryButton
-          text={'PlayerScreen'}
-          onPress={() => {
-            nav.navigate('PlayerScreen');
-          }}
-        />
-        <View style={{ padding: 10 }}></View>
-        <PrimaryButton
-          text={'Content'}
-          onPress={() => {
-            nav.navigate('DashboardStack');
-          }}
-        /> */}
+        <CopilotStep
+          text={t('click_here_to_login')}
+          isFirstStep={true}
+          order={3}
+          name="login"
+        >
+          <CopilotView>
+            <PrimaryButton
+              text={t('login')}
+              onPress={() => nav.navigate('LoginScreen')}
+            />
+          </CopilotView>
+        </CopilotStep>
+        <View style={{ padding: 10 }} />
+        {/* <CopilotStep
+          text={t('click_here_to_create_new_account')}
+          order={4}
+          name="create_account"
+        >
+          <CopilotView>
+            <SecondaryButton
+              text={'create_new_account'}
+              onPress={() => nav.navigate('RegisterStart')}
+              style={{ fontSize: 14.5 }}
+            />
+          </CopilotView>
+        </CopilotStep> */}
       </View>
     </View>
   );

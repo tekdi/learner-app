@@ -1,317 +1,87 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
-  Image,
-  StyleSheet,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-  SafeAreaView,
-  Text,
-  ScrollView,
-  BackHandler,
+  StyleSheet,
   Modal,
-  Button,
-  Dimensions,
+  ScrollView,
+  Image,
+  BackHandler,
 } from 'react-native';
-import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
-import HeaderComponent from '../../components/CustomHeaderComponent/customheadercomponent';
-import CustomCards from '../../components/CustomCard/CustomCard';
-import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
-import backIcon from '../../assets/images/png/arrow-back-outline.png';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import PropTypes from 'prop-types';
-import lightning from '../../assets/images/png/lightning.png';
-import InAppBrowser from 'react-native-inappbrowser-reborn';
-// import Geolocation from 'react-native-geolocation-service';
-
-//multi language
-import { useTranslation } from '../../context/LanguageContext';
-
-import InterestedCardsComponent from '../../components/InterestedComponents/InterestedComponents';
-import CustomPasswordTextField from '../../components/CustomPasswordComponent/CustomPasswordComponent';
+import CustomRadioCard from '@components/CustomRadioCard/CustomRadioCard';
+import CustomCards from '@components/CustomCard/CustomCard';
 import {
-  getActiveCohortData,
-  getActiveCohortIds,
-  getDataFromStorage,
-  getDeviceId,
-  getuserDetails,
-  getUserId,
-  logEventFunction,
-  saveAccessToken,
-  saveRefreshToken,
-  saveToken,
-  setDataInStorage,
-  storeUsername,
-  translateLanguage,
-} from '../../utils/JsHelper/Helper';
-import PlainText from '../../components/PlainText/PlainText';
-import PlainTcText from '../../components/PlainText/PlainTcText';
-import { transformPayload } from './TransformPayload';
-import {
+  getAccessToken,
   getCohort,
   getGeoLocation,
   getProfileDetails,
   getProgramDetails,
   login,
-  notificationSubscribe,
   registerUser,
   setAcademicYear,
-  userExist,
-} from '../../utils/API/AuthService';
-import { getAccessToken } from '../../utils/API/ApiCalls';
-import globalStyles from '../../utils/Helper/Style';
-import CustomRadioCard from '../../components/CustomRadioCard/CustomRadioCard';
-import DropdownSelect from '../../components/DropdownSelect/DropdownSelect';
-import Config from 'react-native-config';
-import FastImage from '@changwoolab/react-native-fast-image';
-import { CheckBox } from '@ui-kitten/components';
-import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
-import NetworkAlert from '../../components/NetworkError/NetworkAlert';
-import { useInternet } from '../../context/NetworkContext';
-
+} from '@src/utils/API/AuthService';
+import HeaderComponent from '@components/CustomHeaderComponent/customheadercomponent';
+import DropdownSelect from '@components/DropdownSelect/DropdownSelect';
+import {
+  getActiveCohortData,
+  getActiveCohortIds,
+  getDataFromStorage,
+  getuserDetails,
+  getUserId,
+  logEventFunction,
+  saveAccessToken,
+  saveRefreshToken,
+  setDataInStorage,
+  storeUsername,
+} from '@src/utils/JsHelper/Helper';
+import PrimaryButton from '@components/PrimaryButton/PrimaryButton';
+import { useTranslation } from '@context/LanguageContext';
+import CustomPasswordTextField from '@components/CustomPasswordComponent/CustomPasswordComponent';
+import backIcon from '../../assets/images/png/arrow-back-outline.png';
+import Exclamation from '../../assets/images/png/Exclamation.png';
 import GlobalText from '@components/GlobalText/GlobalText';
-import ParentText from '../../components/PlainText/ParentText';
-import { registerSchema } from './RegisterSchemaUpdate';
+import globalStyles from '@src/utils/Helper/Style';
 import FullPagePdfModal from './FullPagePdfModal';
+import CustomCheckbox from '@components/CustomCheckbox/CustomCheckbox';
+import InAppBrowser from 'react-native-inappbrowser-reborn';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { OtpInput } from 'react-native-otp-entry';
+import EnableLocationModal from '../Location/EnableLocationModal';
+import NetworkAlert from '@components/NetworkError/NetworkAlert';
+import FastImage from '@changwoolab/react-native-fast-image';
+import lightning from '../../assets/images/png/lightning.png';
+import { useInternet } from '@context/NetworkContext';
+import PropTypes from 'prop-types';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
+import { transformPayload } from './TransformPayload';
 
-const buildYupSchema = (form, currentForm, t) => {
-  const shape = {};
-  form.fields.forEach((field) => {
-    if (field.validation) {
-      let validator;
-      switch (field.type) {
-        case 'text':
-        case 'password':
-        case 'email':
-          validator = yup.string();
-          if (field.validation.required) {
-            validator = validator.required(
-              `${t(field.name)} ${t('is_required')}`
-            );
-          }
-          if (field.validation.minLength) {
-            validator = validator.min(
-              field.validation.minLength,
-              `${t(field.name)} ${t('min')} ${t(
-                field.validation.minLength
-              )} ${t('characters')}`
-            );
-          }
-          if (field.validation.maxLength) {
-            validator = validator.max(
-              field.validation.maxLength,
-              `${t(field.label)} ${t('max')} ${t(
-                field.validation.maxLength
-              )} ${t('characters')}`
-            );
-          }
-          if (field.validation.match) {
-            validator = validator.oneOf(
-              [yup.ref('password'), null],
-              `${t('Password_must_match')}`
-            );
-          }
-          if (field.validation.pattern && field.type === 'text') {
-            validator = validator.matches(
-              field.validation.pattern,
-              `${t(field.name)} ${t('can_only_contain_letters')}`
-            );
-          }
-          if (field.validation.pattern && field.type == 'email') {
-            validator = validator.matches(
-              field.validation.pattern,
-              `${t(field.name)} ${t('is_invalid')}`
-            );
-          }
-          if (field.name === 'username' && currentForm === 6) {
-            validator = validator.test(
-              'userExist',
-              `${t('username_already_exists')}`,
-              async (value) => {
-                const payload = { username: value };
-                const exists = await userExist(payload);
-                return !exists?.data?.data;
-              }
-            );
-          }
-          break;
-        case 'select_drop_down':
-          validator = yup.object(); // Change from yup.number() to yup.string()
-          if (field.validation.required) {
-            validator = validator.required(
-              `${t(field.name)} ${t('is_required')}`
-            );
-          }
-          break;
-        case 'select':
-          validator = yup.lazy((value) =>
-            typeof value === 'object'
-              ? yup.object({
-                  value: yup
-                    .string()
-                    .required(`${t(field.name)} ${t('is_required')}`),
-                })
-              : yup.string().required(`${t(field.name)} ${t('is_required')}`)
-          );
-          break;
-        case 'radio':
-          validator = yup.object(); // Change from yup.number() to yup.string()
-          if (field.validation.required) {
-            validator = validator.required(
-              `${t(field.name)} ${t('is_required')}`
-            );
-          }
-          break;
-        case 'number':
-          validator = yup.string(); // Change from yup.number() to yup.string()
-          if (field.validation.required) {
-            validator = validator.required(
-              `${t(field.name)} ${t('is_required')}`
-            );
-          }
-          if (field.validation.minLength) {
-            validator = validator.min(
-              field.validation.minLength,
-              `${t(field.name)} ${t('min')} ${t(
-                field.validation.minLength
-              )} ${t('numbers')}`
-            );
-          }
-          if (field.validation.maxLength) {
-            validator = validator.max(
-              field.validation.maxLength,
-              `${t(field.label)} ${t('max')} ${t(
-                field.validation.maxLength
-              )} ${t('numbers')}`
-            );
-          }
-          if (field.validation.pattern) {
-            validator = validator.matches(
-              field.validation.pattern,
-              `${t(field.name)} ${t('is_invalid')}` // Update the error message to reflect numbers only
-            );
-          }
-          break;
-        // Add other field types as needed...
-        case 'multipleCard':
-        case 'checkbox':
-          validator = yup.lazy((value) =>
-            typeof value === 'object'
-              ? yup.object({
-                  value: yup
-                    .array()
-                    .min(
-                      field.validation.minSelection,
-                      `${t('Choose_at_least')} ${field.validation.minSelection}`
-                    )
-                    .max(
-                      field.validation.maxSelection,
-                      `${t('max')} ${t(field.validation.maxSelection)} ${t(
-                        'can_only_contain_letters'
-                      )}`
-                    )
-                    .required(`${t(field.name)} selection is required`),
-                })
-              : yup
-                  .array()
-                  .min(
-                    field.validation.minSelection,
-                    `${t('Choose_at_least')} ${field.validation.minSelection}`
-                  )
-                  .max(
-                    field.validation.maxSelection,
-                    `${t('max')} ${t(field.validation.maxSelection)} ${t(
-                      'can_only_contain_letters'
-                    )}`
-                  )
-                  .required(`${t(field.name)} selection is required`)
-          );
-          break;
-        default:
-      }
-      shape[field.name] = validator;
-    }
-  });
-  return yup.object().shape(shape);
-};
-
-const RegistrationForm = ({ schema, geoData, setGetage }) => {
-  //multi language setup
-  const { t, language } = useTranslation();
-  //dynamic schema for json object validation
-
+const RegistrationForm = ({ fields }) => {
+  const { t } = useTranslation();
   const navigation = useNavigation();
-  const [selectedIds, setSelectedIds] = useState({});
-  const [isDisable, setIsDisable] = useState(true);
-  const [currentForm, setCurrentForm] = useState(1);
-  const [currentMySchema, setCurrentMySchema] = useState();
-  const [modal, setModal] = useState(false);
-  const [err, setErr] = useState();
-  const [networkError, setNetworkError] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [schema, setSchema] = useState(fields);
+  const [errors, setErrors] = useState({});
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isUserModalVisible, setUserModalVisible] = useState(false);
+  const [isOtpModalVisible, setOtpModalVisible] = useState(false);
   const [programData, setProgramData] = useState([]);
-  const [isBtnDisable, setIsBtnDisable] = useState(true);
+  const [stateData, setStateData] = useState([]);
+  const [districtData, setDistrictData] = useState([]);
+  const [blockData, setBlockData] = useState([]);
   const [checked, setChecked] = useState(false);
   const [secondChecked, setSecondChecked] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [currentGeoData, setCurrentGeoData] = useState(false);
+  const [enable, setEnable] = useState(false);
+  const [updateEnable, setUpdateEnable] = useState(false);
+  const [count, setCount] = useState();
+  const [intervalId, setIntervalId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState();
+  const [networkError, setNetworkError] = useState(false);
+  const [modal, setModal] = useState(false);
   const { isConnected } = useInternet();
-
-  const openInAppBrowser = async () => {
-    try {
-      const url = 'https://pratham.org/privacy-guidelines/';
-      if (await InAppBrowser.isAvailable()) {
-        await InAppBrowser.open(url, {
-          // Optional customization
-          toolbarColor: '#6200EE',
-          showTitle: true,
-          enableUrlBarHiding: true,
-          enableDefaultShare: true,
-        });
-      } else {
-        console.log('In-App Browser not available');
-      }
-    } catch (error) {
-      console.error('Error opening browser:', error);
-    }
-  };
-
-  const stepSchema = schema?.map((form) =>
-    buildYupSchema(form, currentForm, t)
-  );
-
-  const currentschema = stepSchema[currentForm - 1];
-
-  const {
-    handleSubmit,
-    control,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(currentschema),
-    defaultValues: {
-      // first_name: '',
-      // lastname: '',
-      // password: '',
-      // repeatpassword: '',
-      // multiplecards: [],
-      username: '',
-      preferred_language: {
-        value: translateLanguage(language),
-        fieldId: '',
-      },
-    },
-  });
-
-  const programValue = watch('program') || null;
-  const stateValue = watch('state') || null;
-  const districtValue = watch('district') || null;
-  const age = watch('age') || null;
 
   const RegisterLogin = async (loginData) => {
     const payload = {
@@ -339,7 +109,10 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
       'academicYearId',
       JSON.stringify(academicYearId || '')
     );
-    await setDataInStorage('cohortData', JSON.stringify(getActiveCohort?.[0]));
+    await setDataInStorage(
+      'cohortData',
+      JSON.stringify(getActiveCohort?.[0] || '')
+    );
     const cohort_id = getActiveCohortId?.[0];
     await setDataInStorage(
       'cohortId',
@@ -356,16 +129,12 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
 
     await storeUsername(profileData?.getUserDetails?.[0]?.username);
 
-    const youthnetTenantIds = programData?.filter((item) => {
-      if (item?.name === 'YouthNet') {
-        return item;
-      }
-    });
-    const scp = programData?.filter((item) => {
-      if (item?.name === 'Second Chance Program') {
-        return item;
-      }
-    });
+    const youthnetTenantIds = programData?.filter(
+      (item) => item.name === 'YouthNet'
+    );
+    const scp = programData?.filter(
+      (item) => item.name === 'Second Chance Program'
+    );
 
     if (tenantid === scp?.[0]?.tenantId) {
       await setDataInStorage('userType', 'scp');
@@ -405,12 +174,11 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
     // Handle your registration logic here
   };
 
-  const [loading, setLoading] = useState(false);
   const onSubmit = async (data) => {
     setLoading(true);
-    const payload = await transformPayload(data);
 
-    const token = await getAccessToken();
+    const payload = await transformPayload(data);
+    await getAccessToken();
     const register = await registerUser(payload);
 
     if (!isConnected) {
@@ -427,373 +195,417 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
     }
   };
 
-  useEffect(() => {
-    setGetage(age);
-  }, [age]);
-
-  function addOptionsToField(formObject, fieldName, newOptions) {
-    // Find the field in the 'fields' array where the name or label matches the given fieldName
-    const field = formObject.fields.find(
-      (field) => field.name === fieldName || field.label === fieldName
-    );
-
-    // If the field is found, add the new options
-    if (field) {
-      field.options = newOptions;
+  const openInAppBrowser = async () => {
+    try {
+      const url = 'https://pratham.org/privacy-guidelines/';
+      if (await InAppBrowser.isAvailable()) {
+        await InAppBrowser.open(url, {
+          // Optional customization
+          toolbarColor: '#6200EE',
+          showTitle: true,
+          enableUrlBarHiding: true,
+          enableDefaultShare: true,
+        });
+      } else {
+        console.log('In-App Browser not available');
+      }
+    } catch (error) {
+      console.error('Error opening browser:', error);
     }
+  };
 
-    // Return the updated formObject
-    return formObject;
-  }
-
-  const fetchDistricts = async () => {
+  const fetchDistricts = async (state) => {
     const payload = {
       // limit: 10,
       offset: 0,
       fieldName: 'districts',
-      controllingfieldfk: stateValue?.value || stateValue,
+      controllingfieldfk: state || formData['states']?.value,
     };
 
     const data = await getGeoLocation({ payload });
-    const foundDistrict = data?.values?.find(
-      (item) => item?.label === geoData?.district
-    );
-
-    const district = {
-      label: foundDistrict?.label,
-      value: foundDistrict?.value,
-    };
-
-    // if (districtValue?.label == undefined) {
-    //   setValue('district', district);
-    // }
-    const newSchema = addOptionsToField(
-      currentSchema,
-      'district',
-      data?.values
-    );
-    currentSchema = newSchema;
+    setDistrictData(data?.values);
+    return data?.values;
   };
-
-  const fetchBlock = async () => {
+  const fetchBlocks = async (district) => {
     const payload = {
       // limit: 10,
       offset: 0,
       fieldName: 'blocks',
-      controllingfieldfk: districtValue?.value,
+      controllingfieldfk: district || formData['districts']?.value,
     };
+
     const data = await getGeoLocation({ payload });
-    const newSchema = addOptionsToField(currentSchema, 'block', data?.values);
-    currentSchema = newSchema;
+    setBlockData(data?.values);
+    return data?.values;
   };
 
-  const setcontent = () => {
-    let mySchema = schema?.find((form) => form.formNumber === 5);
+  const fetchStates = async () => {
+    const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
+    const geoData = JSON.parse(await getDataFromStorage('geoData'));
+    setCurrentGeoData(geoData);
+    setStateData(stateAPIdata);
+    const foundState = stateAPIdata.find(
+      (item) => item?.label === geoData?.state
+    );
+    const districtAll = await fetchDistricts(foundState?.value);
 
-    const updatedschema = [
-      {
-        type: 'parent_text',
-        label: 'label',
-        name: 'label',
-        coreField: 'label',
-        fieldId: 'label',
+    const foundDistrict = districtAll.find(
+      (item) => item?.label === geoData?.district
+    );
+
+    const updatedFormData = {
+      ...formData,
+      ['states']: { value: foundState?.value, label: foundState?.label },
+      ['districts']: {
+        value: foundDistrict?.value,
+        label: foundDistrict?.label,
       },
-    ];
-
-    const newSchema = {
-      ...currentSchema,
-      fields: [...currentSchema.fields, ...updatedschema],
     };
-
-    currentSchema = newSchema;
+    setFormData(updatedFormData);
+    if (formData['states']?.label !== undefined) {
+      setEnable(false);
+      setUpdateEnable(false);
+    }
   };
-
-  useEffect(() => {
-    setcontent();
-  }, [currentForm === 4]);
 
   useEffect(() => {
     fetchDistricts();
-  }, [stateValue]);
+    fetchBlocks();
+  }, [formData['states'], formData['districts']]);
 
   useEffect(() => {
-    if (districtValue?.value) {
-      fetchBlock();
-    }
-  }, [districtValue]);
-
-  useEffect(() => {
-    if (currentForm === 4) {
-      fetchDistricts();
-    }
-    if (districtValue?.value) {
-      fetchBlock();
-    }
-  }, [currentForm]);
-
-  const renderFields = (fields) => {
-    return fields?.map((field) => {
-      switch (field.type) {
-        case 'text':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomTextField
-                field={field}
-                control={control}
-                errors={errors}
-              />
-            </View>
-          );
-        case 'number':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomTextField
-                field={field}
-                control={control}
-                errors={errors}
-                keyboardType="numeric"
-              />
-            </View>
-          );
-        case 'email':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomTextField
-                field={field}
-                control={control}
-                errors={errors}
-                autoCapitalize="none"
-              />
-            </View>
-          );
-        case 'password':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomPasswordTextField
-                field={field}
-                control={control}
-                secureTextEntry={true}
-                errors={errors}
-              />
-            </View>
-          );
-        case 'select':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomCards
-                field={field}
-                name={field.name}
-                errors={errors}
-                control={control}
-                secureTextEntry={true}
-                setSelectedIds={setSelectedIds}
-                selectedIds={selectedIds}
-              />
-            </View>
-          );
-        case 'radio':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <CustomRadioCard
-                field={programData}
-                name={field.name}
-                errors={errors}
-                control={control}
-                secureTextEntry={true}
-                setSelectedIds={setSelectedIds}
-                selectedIds={selectedIds}
-              />
-            </View>
-          );
-        case 'select_drop_down':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <DropdownSelect
-                field={field || districts}
-                name={field.name}
-                errors={errors}
-                control={control}
-                secureTextEntry={true}
-                setSelectedIds={setSelectedIds}
-                selectedIds={selectedIds}
-                setValue={setValue}
-              />
-            </View>
-          );
-        case 'multipleCard':
-        case 'checkbox':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <InterestedCardsComponent
-                field={field}
-                name={field.name}
-                control={control}
-                selectedIds={selectedIds}
-                setSelectedIds={setSelectedIds}
-                errors={errors}
-              />
-            </View>
-          );
-        case 'plain_text':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <PlainText
-                text="terms_and_conditions"
-                CustomCards
-                field={field}
-                name={field.name}
-                errors={errors}
-                control={control}
-              />
-            </View>
-          );
-        case 'tc_text':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <PlainTcText
-                isDisable={isDisable}
-                setIsDisable={setIsDisable}
-                field={field}
-                name={field.name}
-                control={control}
-              />
-            </View>
-          );
-        case 'parent_text':
-          return (
-            <View key={field.name} style={styles.inputContainer}>
-              <ParentText />
-            </View>
-          );
-        default:
-          return null;
-      }
-    });
-  };
-
-  const nextForm = async (data) => {
-    let nextFormNumber = currentForm + 1;
-
-    // Skip a specific form, e.g., form number 4
-    if (currentForm === 3 && programValue?.name === 'Public') {
-      nextFormNumber = 5; // Skip form number 4 and move to form 5
-    }
-
-    if (currentForm < schema?.length) {
-      setCurrentForm(nextFormNumber);
-    }
-
-    if (currentForm === 1) {
-      const randomThreeDigitNumber = Math.floor(Math.random() * 900) + 100;
-      const fullName = `${data.first_name}${data.last_name}${randomThreeDigitNumber}`;
-      setValue('username', fullName.toLowerCase());
-    }
-
-    if (currentForm === 2) {
-      const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
-      const foundState = stateAPIdata.find(
-        (item) => item?.label === geoData?.state
-      );
-
-      const payload = {
-        // limit: 10,
-        offset: 0,
-        fieldName: 'districts',
-        controllingfieldfk: stateValue?.value || stateValue,
-      };
-
-      const data = await getGeoLocation({ payload });
-      const foundDistrict = data?.values?.find(
-        (item) => item?.label === geoData?.district
-      );
-
-      const district = {
-        label: foundDistrict?.label,
-        value: foundDistrict?.value,
-      };
-
-      const state = {
-        label: foundState?.label,
-        value: foundState?.value,
-      };
-
-      if (foundState?.label !== undefined) {
-        setValue('state', state);
-        setValue('district', district);
-      }
-
-      fetchDistricts();
-    }
-  };
-
-  const prevForm = () => {
-    let prevFormNumber = currentForm - 1;
-
-    if (currentForm === 5 && programValue?.name === 'Public') {
-      prevFormNumber = 3; // Skip form number 4 and move to form 5
-    }
-
-    if (currentForm > 1) {
-      setCurrentForm(prevFormNumber);
-      setIsDisable(true);
-      return true; // Indicates that the back action has been handled
-    } else {
-      navigation.goBack();
-      return false; // Indicates that the back action should continue (exit)
-    }
-  };
-
-  const getProgramData = async () => {
-    const data = await getProgramDetails();
-    setProgramData(data);
-  };
-
-  useEffect(() => {
-    const logRegistrationInProgress = async () => {
-      const obj = {
-        eventName: 'registration_in_progress',
-        method: 'form-load',
-        screenName: 'Registration',
-      };
-      await logEventFunction(obj);
+    const getProgramData = async () => {
+      const data = await getProgramDetails();
+      setProgramData(data);
     };
     getProgramData();
-    logRegistrationInProgress();
+    fetchStates();
   }, []);
 
   useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      prevForm
-    );
+    fetchStates();
+  }, [updateEnable]);
 
-    return () => {
-      backHandler.remove();
-    };
-  }, [currentForm]);
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (currentPage > 0) {
+          handlePrevious();
+          return true; // Prevent default behavior (exit app)
+        } else {
+          // Optional: Show a confirmation dialog
+          navigation.goBack();
+          return true; // Prevent default behavior (exit app)
+        }
+      };
 
-  let currentSchema = schema?.find((form) => form.formNumber === currentForm);
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress
+      );
+
+      return () => {
+        backHandler.remove(); // Clean up event listener on unmount
+      };
+    }, [currentPage]) // Dependencies to trigger the effect
+  );
+
+  const pages = [
+    ['first_name', 'last_name', 'email', 'mobile'],
+    ['age', 'gender'],
+    ['program'],
+    ['states', 'districts', 'blocks'],
+    [
+      'username',
+      'password',
+      'confirm_password',
+      'parent_name',
+      'parent_phone',
+      'parent_phone_belong',
+    ],
+  ];
+
+  const handleInputChange = (name, value) => {
+    const updatedFormData = { ...formData, [name]: value };
+
+    // Reset dependent fields
+    if (name === 'states') {
+      updatedFormData['districts'] = '';
+      updatedFormData['blocks'] = '';
+    } else if (name === 'districts') {
+      updatedFormData['blocks'] = '';
+    }
+
+    setFormData(updatedFormData);
+    setErrors({ ...errors, [name]: '' }); // Clear errors for the field
+  };
+
+  const validateFields = () => {
+    const pageFields = pages[currentPage];
+    const newErrors = {};
+
+    pageFields.forEach((fieldName) => {
+      const field = schema?.find((f) => f.name === fieldName);
+
+      if (field) {
+        const value = formData[field.name] || '';
+
+        if (['confirm_password'].includes(field.name)) {
+          if (formData.password !== formData.confirm_password) {
+            newErrors[field.name] = `${t('Password_must_match')}`;
+          }
+        }
+
+        if (
+          ['parent_phone_belong', 'parent_phone', 'parent_name'].includes(
+            field.name
+          ) &&
+          formData.age &&
+          parseInt(formData.age, 10) >= 18
+        ) {
+          return; // Skip validation for these fields
+        }
+
+        if (field.isRequired && !value) {
+          newErrors[field.name] = `${t(field.name)} ${t('is_required')}`;
+        } else if (field.minLength && value.length < field.minLength && value) {
+          newErrors[field.name] =
+            `${t('min_validation').replace('{field}', t(field.name)).replace('{length}', field.minLength)}`;
+        } else if (field.maxLength && value.length > field.maxLength && value) {
+          newErrors[field.name] =
+            `${t('max_validation').replace('{field}', t(field.name)).replace('{length}', field.maxLength)}`;
+        } else if (
+          field.pattern &&
+          value &&
+          !new RegExp(field.pattern).test(value)
+        ) {
+          newErrors[field.name] = `${t(field.name)} ${t('is_invalid')}.`;
+        }
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const renderField = (field) => {
+    if (
+      (field.name === 'parent_phone_belong' ||
+        field.name === 'parent_phone' ||
+        field.name === 'parent_name') &&
+      formData.age &&
+      parseInt(formData.age, 10) >= 18
+    ) {
+      return null;
+    }
+
+    switch (field.type) {
+      case 'text':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomTextField
+              field={field}
+              formData={formData}
+              handleValue={handleInputChange}
+              errors={errors}
+            />
+          </View>
+        );
+      case 'email':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomTextField
+              field={field}
+              formData={formData}
+              handleValue={handleInputChange}
+              errors={errors}
+              autoCapitalize={false}
+            />
+          </View>
+        );
+      case 'numeric':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomTextField
+              field={field}
+              formData={formData}
+              handleValue={handleInputChange}
+              errors={errors}
+              keyboardType="numeric"
+            />
+          </View>
+        );
+      case 'radio':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomRadioCard
+              field={field}
+              options={programData}
+              errors={errors}
+              formData={formData}
+              handleValue={handleInputChange}
+            />
+          </View>
+        );
+      case 'select':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomCards
+              field={field}
+              errors={errors}
+              formData={formData}
+              handleValue={handleInputChange}
+            />
+          </View>
+        );
+      case 'drop_down':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <DropdownSelect
+              field={field}
+              options={
+                field.name === 'states'
+                  ? stateData
+                  : field.name === 'districts'
+                    ? districtData
+                    : field.name === 'blocks'
+                      ? blockData
+                      : field?.options
+              }
+              errors={errors}
+              formData={formData}
+              handleValue={handleInputChange}
+            />
+          </View>
+        );
+      case 'password':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomPasswordTextField
+              field={field}
+              errors={errors}
+              formData={formData}
+              handleValue={handleInputChange}
+            />
+          </View>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const renderPage = () => {
+    const pageFields = pages[currentPage];
+    return schema
+      .filter((field) => pageFields.includes(field.name))
+      .map((field) => renderField(field));
+  };
+
+  const handleNext = async () => {
+    if (validateFields()) {
+      if (currentPage === 0) {
+        const userExists = true;
+        if (userExists) {
+          setUserModalVisible(true);
+        } else {
+          setOtpModalVisible(true);
+        }
+      } else {
+        setCurrentPage(currentPage + 1);
+      }
+    }
+    if (currentPage === 2 && !currentGeoData) {
+      setEnable(true);
+    }
+    if (currentPage === 2) {
+      const fullName = `${formData.first_name}${formData.last_name}`;
+      const updatedFormData = {
+        ...formData,
+        ['username']: fullName.toLowerCase(),
+      };
+      setFormData(updatedFormData);
+    }
+  };
+  const handlePrevious = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (validateFields()) {
+      onSubmit(formData);
+    }
+  };
+
+  const handleOtpVerification = async () => {
+    const isValidOtp = true;
+    if (isValidOtp) {
+      setOtpModalVisible(false);
+      setUserModalVisible(false);
+      setCurrentPage(currentPage + 1);
+    } else {
+      alert('Invalid OTP. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    if (isOtpModalVisible) {
+      startOtpTimer();
+    } else {
+      stopOtpTimer();
+    }
+
+    return () => stopOtpTimer(); // Clean up interval when component unmounts
+  }, [isOtpModalVisible]);
+
+  const startOtpTimer = () => {
+    setCount(60); // Reset counter
+    const id = setInterval(() => {
+      setCount((prevCount) => {
+        if (prevCount <= 1) {
+          clearInterval(id);
+          return 0;
+        }
+        return prevCount - 1;
+      });
+    }, 1000);
+    setIntervalId(id);
+  };
+
+  const stopOtpTimer = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    }
+  };
+
+  const handleResendOTP = () => {
+    stopOtpTimer(); // Clear any existing timer
+    startOtpTimer(); // Start a new timer
+  };
+
+  if (loading) {
+    return <ActiveLoading />;
+  }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      {/* Back Button** */}
-      <TouchableOpacity style={styles.backbutton} onPress={prevForm}>
-        <Image
-          source={backIcon}
-          resizeMode="contain"
-          style={{ width: 30, height: 30 }}
-        />
-      </TouchableOpacity>
-
+    <View style={{ padding: 20, flex: 1 }}>
+      {currentPage > 0 && (
+        <TouchableOpacity style={styles.backbutton} onPress={handlePrevious}>
+          <Image
+            source={backIcon}
+            resizeMode="contain"
+            style={{ width: 30, height: 30 }}
+          />
+        </TouchableOpacity>
+      )}
       <HeaderComponent
-        question={currentSchema?.question}
-        questionIndex={currentForm}
-        totalForms={schema?.length}
+        currentPage={currentPage + 1}
+        questionIndex={currentPage + 1}
+        totalForms={pages?.length}
       />
-      {currentForm === 4 && (
+      {currentPage === 3 && (
         <>
           <GlobalText style={[globalStyles.text, { marginLeft: 20 }]}>
             {t('location_des')}
@@ -812,21 +624,15 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
           </View>
         </>
       )}
-      <ScrollView style={{ flex: 1 }} nestedScrollEnabled>
-        {schema
-          ?.filter((form) => form.formNumber === currentForm)
-          ?.map((form) => (
-            <View key={form.formNumber}>{renderFields(form.fields)}</View>
-          ))}
-        {currentForm === 1 && (
-          <GlobalText
-            style={[globalStyles.text, { marginLeft: 20, marginTop: -20 }]}
-          >
-            {t('phone_des')}
+      <ScrollView style={{ flex: 1 }}>
+        {renderPage()}
+
+        {currentPage === 0 && (
+          <GlobalText style={[globalStyles.text, { top: -20, left: 10 }]}>
+            {t('an_otp_will_be_sent_for_verification')}
           </GlobalText>
         )}
-
-        {currentForm === 5 && (
+        {currentPage === 4 && (
           <>
             <View
               style={[
@@ -878,7 +684,7 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
                 </GlobalText>
               </GlobalText>
             </View>
-            {age < 18 && (
+            {formData['age'] < 18 && (
               <View
                 style={[
                   globalStyles.flexrow,
@@ -901,30 +707,222 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
               // pdfPath={pdfPath}
               isModalVisible={isModalVisible}
               setModalVisible={setModalVisible}
-              age={age}
+              age={formData['age']}
             />
           </>
         )}
       </ScrollView>
-      <View style={styles.buttonContainer}>
-        {loading ? (
-          <ActiveLoading />
+
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginBottom: 20,
+        }}
+      >
+        {currentPage < pages.length - 1 ? (
+          <PrimaryButton text={t('continue')} onPress={handleNext} />
         ) : (
-          <RenderBtn
-            currentForm={currentForm}
-            schema={schema}
-            handleSubmit={handleSubmit}
-            nextForm={nextForm}
-            onSubmit={onSubmit}
-            isDisable={isDisable}
-            networkError={networkError}
-            isModalVisible={isModalVisible}
-            secondChecked={secondChecked}
-            checked={checked}
-            age={age}
+          <PrimaryButton
+            isDisabled={
+              formData.age < 18 ? !(checked && secondChecked) : !checked
+            } // Button disabled until both are checked
+            text={t('create_account')}
+            onPress={handleSubmit}
           />
         )}
       </View>
+      {enable && (
+        <EnableLocationModal
+          enable={enable}
+          setEnable={setEnable}
+          setUpdateEnable={setUpdateEnable}
+        />
+      )}
+
+      <Modal
+        visible={isUserModalVisible}
+        transparent={true}
+        animationType="slide"
+        onclo
+      >
+        <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
+          <View style={styles.alertBox}>
+            <View
+              style={{
+                padding: 15,
+              }}
+            >
+              <GlobalText style={globalStyles.text}>
+                {t('account_already_exists')}
+              </GlobalText>
+            </View>
+            <View
+              style={{
+                paddingVertical: 10,
+                borderBottomWidth: 1,
+                borderTopWidth: 1,
+                borderColor: '#D0C5B4',
+              }}
+            >
+              <View style={{ padding: 10, alignItems: 'center' }}>
+                <Image
+                  source={Exclamation}
+                  resizeMode="contain"
+                  style={{ width: 50, height: 50 }}
+                />
+              </View>
+              <View>
+                <GlobalText
+                  style={[
+                    globalStyles.subHeading,
+                    { textAlign: 'center', paddingHorizontal: 10 },
+                  ]}
+                >
+                  {t(
+                    'one_or_more_accounts_with_this_name_email_and_phone_number_already_exist'
+                  )}
+                </GlobalText>
+              </View>
+              <View style={{ alignItems: 'center', marginVertical: 10 }}>
+                <TouchableOpacity>
+                  <GlobalText
+                    style={[globalStyles.subHeading, { fontWeight: '800' }]}
+                  >
+                    random name
+                  </GlobalText>
+                </TouchableOpacity>
+              </View>
+              <View>
+                <GlobalText
+                  style={[globalStyles.text, { textAlign: 'center' }]}
+                >
+                  {t('are_you_sure_you_want_to_create_another_account')}
+                </GlobalText>
+              </View>
+            </View>
+            <View style={styles.btnbox}>
+              <TouchableOpacity
+                onPress={() => {
+                  setUserModalVisible(false);
+                  setOtpModalVisible(true);
+                }}
+              >
+                <GlobalText
+                  style={[
+                    globalStyles.subHeading,
+                    { color: '#0D599E', fontWeight: '700', marginBottom: 20 },
+                  ]}
+                >
+                  {t('yes_create_another_account')}
+                </GlobalText>
+              </TouchableOpacity>
+              <PrimaryButton
+                text={t('No_log_in_to_existing_account')}
+                onPress={() => {
+                  navigation.navigate('LoginScreen');
+                  setUserModalVisible(false);
+                }}
+              />
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+      <Modal
+        visible={isOtpModalVisible}
+        transparent={true}
+        animationType="slide"
+        onclo
+      >
+        <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
+          <View style={styles.alertBox}>
+            <View
+              style={{
+                padding: 15,
+              }}
+            >
+              <GlobalText style={globalStyles.text}>
+                {t('verify_phone_number')}
+              </GlobalText>
+            </View>
+            <View
+              style={{
+                paddingVertical: 10,
+                paddingHorizontal: 10,
+                borderBottomWidth: 1,
+                borderTopWidth: 1,
+                borderColor: '#D0C5B4',
+              }}
+            >
+              <View>
+                <GlobalText style={[globalStyles.subHeading]}>
+                  {t('we_sent_an_otp_to_verify_your_number')} :{' '}
+                  {formData?.mobile}
+                </GlobalText>
+              </View>
+
+              <GlobalText style={[globalStyles.text, { marginVertical: 5 }]}>
+                {t('enter_otp')}
+              </GlobalText>
+
+              <View style={styles.otpInputContainer}>
+                <OtpInput
+                  numberOfDigits={6}
+                  focusColor="green"
+                  autoFocus={false}
+                  hideStick={true}
+                  placeholder="******"
+                  blurOnFilled={true}
+                  disabled={false}
+                  type="numeric"
+                  secureTextEntry={false}
+                  focusStickBlinkingDuration={500}
+                  onTextChange={(text) => console.log(text)}
+                  textInputProps={{
+                    accessibilityLabel: 'One-Time Password',
+                  }}
+                  theme={{
+                    containerStyle: styles.pinContainer,
+                    pinCodeContainerStyle: styles.pinCodeContainer,
+                    pinCodeTextStyle: styles.pinCodeText,
+                    focusStickStyle: styles.focusStick,
+                    focusedPinCodeContainerStyle: styles.activePinCodeContainer,
+                    placeholderTextStyle: styles.placeholderText,
+                    filledPinCodeContainerStyle: styles.filledPinCodeContainer,
+                    disabledPinCodeContainerStyle:
+                      styles.disabledPinCodeContainer,
+                  }}
+                />
+              </View>
+              <TouchableOpacity
+                disabled={count > 0} // Disable the button if countdown is active
+                onPress={handleResendOTP}
+              >
+                <GlobalText
+                  style={[
+                    globalStyles.text,
+                    {
+                      marginTop: 20,
+                      marginBottom: 10,
+                      textAlign: 'center',
+                      color: count > 0 ? '#DADADA' : '#0D599E80',
+                    },
+                  ]}
+                >
+                  {t('resend_otp_in').replace(`{count}`, count)}
+                </GlobalText>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.btnbox}>
+              <PrimaryButton
+                text={t('verify_otp')}
+                onPress={handleOtpVerification}
+              />
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+      <NetworkAlert onTryAgain={handleSubmit} isConnected={!networkError} />
       {modal && (
         <Modal transparent={true} animationType="slide">
           <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
@@ -948,6 +946,7 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
               <View style={styles.alertBox}>
                 <FastImage
                   style={styles.image}
+                  // eslint-disable-next-line no-undef
                   source={require('../../assets/images/gif/party.gif')}
                   resizeMode={FastImage.resizeMode.contain}
                   priority={FastImage.priority.high} // Set the priority here
@@ -965,7 +964,7 @@ const RegistrationForm = ({ schema, geoData, setGetage }) => {
           </TouchableOpacity>
         </Modal>
       )}
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -981,17 +980,6 @@ const styles = StyleSheet.create({
     Bottom: 16,
   },
 
-  card: {
-    padding: 16,
-    borderWidth: 1,
-    borderRadius: 4,
-    marginVertical: 8,
-  },
-  input: {
-    borderWidth: 1,
-    padding: 8,
-    borderRadius: 4,
-  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -999,73 +987,43 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   alertBox: {
-    width: 300,
+    width: 350,
     backgroundColor: 'white',
-    borderRadius: 10,
+    borderRadius: 20,
     alignItems: 'center',
     padding: 10,
   },
   image: {
-    margin: 20,
-    height: 60,
-    width: 60,
+    width: 150,
+    height: 150,
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+
+  otpInputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    width: '100%', // Adjust the width as per your design
+    alignSelf: 'center',
+  },
+  pinCodeText: {
+    color: '#000',
+  },
+  pinCodeContainer: {
+    // marginHorizontal: 5,
+  },
+  pinContainer: {
+    width: '100%',
+  },
+  btnbox: {
+    marginVertical: 10,
+    alignItems: 'center',
   },
 });
 
 RegistrationForm.propTypes = {
-  schema: PropTypes.any,
+  fields: PropTypes.any,
 };
 
 export default RegistrationForm;
-
-const RenderBtn = ({
-  currentForm,
-  schema,
-  handleSubmit,
-  nextForm,
-  onSubmit,
-  age,
-  networkError,
-  isModalVisible,
-  secondChecked,
-  checked,
-}) => {
-  const { t } = useTranslation();
-
-  const [showMore, setShowMore] = useState(true); // State for showing more content
-  const { isConnected } = useInternet();
-
-  const renderContent = () => {
-    if (currentForm !== 8 && currentForm < schema?.length) {
-      return (
-        <PrimaryButton text={t('continue')} onPress={handleSubmit(nextForm)} />
-      );
-    } else {
-      return (
-        <>
-          <PrimaryButton
-            isDisabled={age < 18 ? !(checked && secondChecked) : !checked} // Button disabled until both are checked
-            text={t('create_account')}
-            onPress={handleSubmit(onSubmit)}
-          />
-
-          <NetworkAlert
-            onTryAgain={handleSubmit(onSubmit)}
-            isConnected={!networkError}
-          />
-        </>
-      );
-    }
-  };
-
-  return <View style={styles.buttonContainer}>{renderContent()}</View>;
-};
-
-RenderBtn.propTypes = {
-  schema: PropTypes.any,
-  currentForm: PropTypes.number,
-  handleSubmit: PropTypes.func,
-  nextForm: PropTypes.func,
-  onSubmit: PropTypes.func,
-  isDisable: PropTypes.any,
-};
