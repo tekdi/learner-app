@@ -422,13 +422,13 @@ export const getProgramDetails = async () => {
     const url = `${EndUrls.programDetails}`;
 
     // Log the curl command
-    // console.log(
-    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${
-    //     headers.Authorization
-    //       ? ` -H 'Authorization: ${headers.Authorization}'`
-    //       : ''
-    //   }`
-    // );
+    console.log(
+      `curl -X GET '${url}' -H 'Content-Type: application/json'${
+        headers.Authorization
+          ? ` -H 'Authorization: ${headers.Authorization}'`
+          : ''
+      }`
+    );
 
     const result = await get(url, {
       headers: headers || {},
@@ -1173,30 +1173,31 @@ export async function reverseGeocode(latitude, longitude) {
 }
 
 export const eventList = async ({ startDate, endDate }) => {
-  try {
-    const url = `${EndUrls.eventList}`; // Define the URL
-    const headers = await getHeaders();
-    const cohort = JSON.parse(await getDataFromStorage('cohortData'));
-    const payload = {
-      limit: 0,
-      offset: 0,
-      filters: {
-        date: {
-          after: startDate,
-          before: endDate,
-        },
-        cohortId: cohort?.cohortId,
-        status: ['live'],
+  const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+  const url = `${EndUrls.eventList}`; // Define the URL
+  const headers = await getHeaders();
+  const cohort = JSON.parse(await getDataFromStorage('cohortData'));
+  const payload = {
+    limit: 0,
+    offset: 0,
+    filters: {
+      date: {
+        after: startDate,
+        before: endDate,
       },
-    };
-    const curlCommand = `
-    curl -X POST '${url}' \\
-    -H 'Content-Type: application/json' \\
-    -H 'Accept: application/json' \\
-    -H 'Authorization:  ${headers.Authorization}' \\
-    -H 'tenantId: ${headers.tenantId}' \\
-    -d '${JSON.stringify(payload)}'
-        `;
+      cohortId: cohort?.cohortId,
+      status: ['live'],
+    },
+  };
+  try {
+    // const curlCommand = `
+    // curl -X POST '${url}' \\
+    // -H 'Content-Type: application/json' \\
+    // -H 'Accept: application/json' \\
+    // -H 'Authorization:  ${headers.Authorization}' \\
+    // -H 'tenantId: ${headers.tenantId}' \\
+    // -d '${JSON.stringify(payload)}'
+    //     `;
     // console.log('cURL Command_Event:', curlCommand);
 
     // Make the actual request
@@ -1205,12 +1206,21 @@ export const eventList = async ({ startDate, endDate }) => {
     });
 
     if (result) {
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
       return result?.data?.result;
     } else {
-      return {};
+      let result_offline = await getApiResponse(user_id, url, 'post', payload);
+      return result_offline;
     }
   } catch (e) {
-    return handleResponseException(e);
+    let result_offline = await getApiResponse(user_id, url, 'post', payload);
+    return result_offline;
   }
 };
 export const targetedSolutions = async ({ subjectName, type }) => {
@@ -1386,36 +1396,36 @@ export const SolutionEventDetails = async ({ templateId, solutionId }) => {
 };
 
 export const getAttendance = async ({ todate, fromDate }) => {
+  const method = 'POST'; // Define the HTTP method
+  const url = `${EndUrls.attendance}`; // Define the URL
+  const token = await getDataFromStorage('Accesstoken');
+  let userId = await getDataFromStorage('userId');
+  let cohortId = await getDataFromStorage('cohortId');
+  const tenantid = await getTentantId();
+
+  const headers = await getHeaders();
+
+  const payload = {
+    limit: 300,
+    page: 0,
+    filters: {
+      contextId: cohortId,
+      scope: 'student',
+      toDate: todate,
+      fromDate: fromDate,
+      userId: userId,
+    },
+  };
+
   try {
-    const method = 'POST'; // Define the HTTP method
-    const url = `${EndUrls.attendance}`; // Define the URL
-    const token = await getDataFromStorage('Accesstoken');
-    let userId = await getDataFromStorage('userId');
-    let cohortId = await getDataFromStorage('cohortId');
-    const tenantid = await getTentantId();
-
-    const headers = await getHeaders();
-
-    const payload = {
-      limit: 300,
-      page: 0,
-      filters: {
-        contextId: cohortId,
-        scope: 'student',
-        toDate: todate,
-        fromDate: fromDate,
-        userId: userId,
-      },
-    };
-
-    const curlCommand = `
-    curl -X POST '${url}' \\
-    -H 'Content-Type: application/json' \\
-    -H 'Accept: application/json' \\
-    -H 'Authorization:  ${headers.Authorization}' \\
-    -H 'tenantId: ${headers.tenantId}' \\
-    -d '${JSON.stringify(payload)}'
-        `;
+    // const curlCommand = `
+    // curl -X POST '${url}' \\
+    // -H 'Content-Type: application/json' \\
+    // -H 'Accept: application/json' \\
+    // -H 'Authorization:  ${headers.Authorization}' \\
+    // -H 'tenantId: ${headers.tenantId}' \\
+    // -d '${JSON.stringify(payload)}'
+    //     `;
     // console.log('cURL Command:', curlCommand);
 
     // Make the actual request
@@ -1424,12 +1434,15 @@ export const getAttendance = async ({ todate, fromDate }) => {
     });
 
     if (result) {
+      await storeApiResponse(userId, url, 'post', payload, result?.data?.data);
       return result?.data?.data;
     } else {
-      return {};
+      let result_offline = await getApiResponse(userId, url, 'post', payload);
+      return result_offline;
     }
   } catch (e) {
-    return handleResponseException(e);
+    let result_offline = await getApiResponse(userId, url, 'post', payload);
+    return result_offline;
   }
 };
 export const LearningMaterialAPI = async () => {
@@ -1440,10 +1453,10 @@ export const LearningMaterialAPI = async () => {
     const headers = await getHeaders();
 
     // Construct the curl command
-    let curlCommand = `curl -X ${method.toUpperCase()} '${url}' \\\n`;
-    for (const [key, value] of Object.entries(headers || {})) {
-      curlCommand += `-H '${key}: ${value}' \\\n`;
-    }
+    // let curlCommand = `curl -X ${method.toUpperCase()} '${url}' \\\n`;
+    // for (const [key, value] of Object.entries(headers || {})) {
+    //   curlCommand += `-H '${key}: ${value}' \\\n`;
+    // }
     // console.log('curlCom', curlCommand);
 
     // Make the actual request

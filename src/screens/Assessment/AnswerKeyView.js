@@ -27,7 +27,8 @@ import globalStyles from '../../utils/Helper/Style';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../context/NetworkContext';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -133,7 +134,7 @@ const AnswerKeyView = ({ route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Header />
+      <SecondaryHeader logo />
       {loading ? (
         <ActiveLoading />
       ) : (

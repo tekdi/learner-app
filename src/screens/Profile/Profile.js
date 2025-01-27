@@ -142,7 +142,7 @@ const Profile = () => {
             style={styles.gradient}
           >
             <GlobalText style={[globalStyles.subHeading, { fontWeight: 700 }]}>
-              {capitalizeName(userData?.name)}
+              {capitalizeName(`${userData?.firstName} ${userData?.lastName}`)}
             </GlobalText>
             <View
               style={[
