@@ -58,7 +58,6 @@ const ProfileUpdateForm = ({ fields }) => {
     const fetchData = async () => {
       const result = JSON.parse(await getDataFromStorage('profileData'));
       const finalResult = result?.getUserDetails?.[0];
-      const [firstName, lastName] = finalResult?.name?.split(' ') || [];
 
       const requiredLabels = [
         'WHATS_YOUR_GENDER',
@@ -74,8 +73,8 @@ const ProfileUpdateForm = ({ fields }) => {
 
       const updatedFormData = {
         ...formData,
-        ['first_name']: firstName,
-        ['last_name']: lastName,
+        ['first_name']: finalResult?.firstName,
+        ['last_name']: finalResult?.lastName,
         ['email']: finalResult?.email,
         ['age']: userDetails?.AGE,
         ['mobile']: finalResult?.mobile,

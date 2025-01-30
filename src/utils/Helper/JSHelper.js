@@ -75,3 +75,8 @@ export function convertDates(dates) {
     return `${year}-${month}-${day}`;
   });
 }
+
+export const convertDate = (dateStr) => {
+  const [day, month, year] = dateStr.split('/');
+  return `${year}-${month}-${day}`;
+};

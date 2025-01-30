@@ -1,10 +1,17 @@
-import { View, StyleSheet, TextInput, Text } from 'react-native';
-import React from 'react';
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
+import React, { useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
-
+import Icon from 'react-native-vector-icons/FontAwesome6';
 import GlobalText from '@components/GlobalText/GlobalText';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const CustomTextField = ({
   handleValue,
@@ -14,9 +21,15 @@ const CustomTextField = ({
   secureTextEntry,
   autoCapitalize,
   keyboardType,
+  text,
 }) => {
   const { t } = useTranslation();
+  const [showToast, setShowToast] = useState(false);
 
+  const handleCopyLink = (zoomLink) => {
+    Clipboard.setString(zoomLink); // Copy the Zoom link to the clipboard
+    setShowToast(true); // Show toast message
+  };
   return (
     <View style={styles.container}>
       <TextInput
@@ -30,6 +43,24 @@ const CustomTextField = ({
         autoCapitalize={autoCapitalize} // Disable auto-capitalization
         keyboardType={keyboardType} // Opens numeric keyboard by default
       />
+      {text && (
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            right: 0,
+            marginRight: 30,
+            marginTop: 15,
+            alignSelf: 'center',
+          }}
+          onPress={() => handleCopyLink(formData[field.name])}
+        >
+          <Icon
+            name={showToast ? 'clipboard-check' : 'copy'}
+            color={showToast ? '#1A8825' : '#0D599E'}
+            size={25}
+          />
+        </TouchableOpacity>
+      )}
       <View style={styles.overlap}>
         <GlobalText
           style={[
@@ -38,9 +69,12 @@ const CustomTextField = ({
           ]}
         >
           {t(field.label.toLowerCase())}
-          {!field?.isRequired && `(${t('optional')})`}
+          {!field?.isRequired &&
+            !['guardian_name', 'guardian_relation'].includes(field.name) &&
+            `(${t('optional')})`}
         </GlobalText>
       </View>
+
       {errors[field.name] && (
         <GlobalText
           style={{
@@ -54,6 +88,7 @@ const CustomTextField = ({
           {errors[field.name]}
         </GlobalText>
       )}
+      <View>{text}</View>
     </View>
   );
 };

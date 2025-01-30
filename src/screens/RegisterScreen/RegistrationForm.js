@@ -7,9 +7,11 @@ import {
   ScrollView,
   Image,
   BackHandler,
+  SafeAreaView,
 } from 'react-native';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import CustomRadioCard from '@components/CustomRadioCard/CustomRadioCard';
+import RadioButton from '@components/CustomRadioCard/RadioButton';
 import CustomCards from '@components/CustomCard/CustomCard';
 import {
   getAccessToken,
@@ -17,13 +19,17 @@ import {
   getGeoLocation,
   getProfileDetails,
   getProgramDetails,
+  getStudentForm,
   login,
   registerUser,
   setAcademicYear,
+  suggestUsername,
+  verifyOtp,
 } from '@src/utils/API/AuthService';
 import HeaderComponent from '@components/CustomHeaderComponent/customheadercomponent';
 import DropdownSelect from '@components/DropdownSelect/DropdownSelect';
 import {
+  calculateAge,
   getActiveCohortData,
   getActiveCohortIds,
   getDataFromStorage,
@@ -50,17 +56,22 @@ import { OtpInput } from 'react-native-otp-entry';
 import EnableLocationModal from '../Location/EnableLocationModal';
 import NetworkAlert from '@components/NetworkError/NetworkAlert';
 import FastImage from '@changwoolab/react-native-fast-image';
-import lightning from '../../assets/images/png/lightning.png';
+import bulb from '../../assets/images/png/bulb.png';
 import { useInternet } from '@context/NetworkContext';
 import PropTypes from 'prop-types';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import { transformPayload } from './TransformPayload';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { sendOtp, userExist } from '../../utils/API/AuthService';
+import SuggestUsername from './SuggestUsername';
 
 const RegistrationForm = ({ fields }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [formData, setFormData] = useState({});
   const [schema, setSchema] = useState(fields);
+  const [orginalSchema] = useState(fields);
   const [errors, setErrors] = useState({});
   const [currentPage, setCurrentPage] = useState(0);
   const [isUserModalVisible, setUserModalVisible] = useState(false);
@@ -69,6 +80,7 @@ const RegistrationForm = ({ fields }) => {
   const [stateData, setStateData] = useState([]);
   const [districtData, setDistrictData] = useState([]);
   const [blockData, setBlockData] = useState([]);
+  const [villageData, setVillageData] = useState([]);
   const [checked, setChecked] = useState(false);
   const [secondChecked, setSecondChecked] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -81,6 +93,11 @@ const RegistrationForm = ({ fields }) => {
   const [err, setErr] = useState();
   const [networkError, setNetworkError] = useState(false);
   const [modal, setModal] = useState(false);
+  const [pages, setPages] = useState([]);
+  const [existingUsers, setExistingUsers] = useState([]);
+  const [suggestedUsernames, setSuggestedUsernames] = useState([]);
+  const [OTP, setOTP] = useState();
+  const [OTPError, setOTPError] = useState();
   const { isConnected } = useInternet();
 
   const RegisterLogin = async (loginData) => {
@@ -178,6 +195,8 @@ const RegistrationForm = ({ fields }) => {
     setLoading(true);
 
     const payload = await transformPayload(data);
+    console.log('payload', JSON.stringify(payload));
+
     await getAccessToken();
     const register = await registerUser(payload);
 
@@ -215,6 +234,7 @@ const RegistrationForm = ({ fields }) => {
   };
 
   const fetchDistricts = async (state) => {
+    setLoading(true);
     const payload = {
       // limit: 10,
       offset: 0,
@@ -224,9 +244,26 @@ const RegistrationForm = ({ fields }) => {
 
     const data = await getGeoLocation({ payload });
     setDistrictData(data?.values);
+    setLoading(false);
+    return data?.values;
+  };
+  const fetchvillages = async (block) => {
+    setLoading(true);
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'villages',
+      controllingfieldfk: block || formData['blocks']?.value,
+    };
+
+    const data = await getGeoLocation({ payload });
+
+    setVillageData(data?.values);
+    setLoading(false);
     return data?.values;
   };
   const fetchBlocks = async (district) => {
+    setLoading(true);
     const payload = {
       // limit: 10,
       offset: 0,
@@ -236,11 +273,14 @@ const RegistrationForm = ({ fields }) => {
 
     const data = await getGeoLocation({ payload });
     setBlockData(data?.values);
+    setLoading(false);
     return data?.values;
   };
 
   const fetchStates = async () => {
+    setLoading(true);
     const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
+
     const geoData = JSON.parse(await getDataFromStorage('geoData'));
     setCurrentGeoData(geoData);
     setStateData(stateAPIdata);
@@ -249,7 +289,7 @@ const RegistrationForm = ({ fields }) => {
     );
     const districtAll = await fetchDistricts(foundState?.value);
 
-    const foundDistrict = districtAll.find(
+    const foundDistrict = districtAll?.find(
       (item) => item?.label === geoData?.district
     );
 
@@ -266,14 +306,26 @@ const RegistrationForm = ({ fields }) => {
       setEnable(false);
       setUpdateEnable(false);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    fetchDistricts();
-    fetchBlocks();
-  }, [formData['states'], formData['districts']]);
+    setLoading(true);
+    if (formData?.states) {
+      fetchDistricts();
+    }
+    if (formData?.districts) {
+      fetchBlocks();
+    }
+    if (formData?.blocks) {
+      fetchvillages();
+    }
+    setLoading(false);
+  }, [formData['states'], formData['districts'], formData['blocks']]);
 
   useEffect(() => {
+    const defaultPages = groupFieldsByOrder(schema);
+    setPages(defaultPages);
     const getProgramData = async () => {
       const data = await getProgramDetails();
       setProgramData(data);
@@ -310,30 +362,95 @@ const RegistrationForm = ({ fields }) => {
     }, [currentPage]) // Dependencies to trigger the effect
   );
 
-  const pages = [
-    ['first_name', 'last_name', 'email', 'mobile'],
-    ['age', 'gender'],
-    ['program'],
-    ['states', 'districts', 'blocks'],
-    [
-      'username',
-      'password',
-      'confirm_password',
-      'parent_name',
-      'parent_phone',
-      'parent_phone_belong',
-    ],
-  ];
+  const groupFieldsByOrder = (schema) => {
+    const grouped = schema.reduce((acc, item) => {
+      const order = parseInt(item.order);
+      if (!acc[order]) {
+        acc[order] = [];
+      }
+      acc[order].push(item.name);
+      return acc;
+    }, {});
+
+    // Convert the grouped object into an ordered array of arrays
+    const orderedPages = Object.keys(grouped)
+      .sort((a, b) => a - b)
+      .map((order) => grouped[order]);
+
+    // Add the default 7th step if not already present
+    if (!grouped[7]) {
+      orderedPages.push(['what_do_you_want_to_become']);
+    }
+
+    return orderedPages;
+  };
+
+  // let pages = groupFieldsByOrder(schema);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (formData?.program) {
+        setLoading(true);
+        const defaultPages = groupFieldsByOrder(schema);
+        setPages(defaultPages);
+
+        const tenantId = formData?.program?.value;
+        const data = await getStudentForm(tenantId);
+        console.log('orginalSchema', orginalSchema);
+
+        const fields = data?.fields || [];
+        console.log('ssss', fields);
+        setDataInStorage('studentProgramForm', JSON.stringify(fields));
+        // Remove existing fields with the same order (7) before merging
+        const filteredSchema = orginalSchema?.filter(
+          (item) => !fields.some((f) => f.order === item.order)
+        );
+
+        // Merge new fields into the filtered schema
+        const newSchema = [...filteredSchema, ...fields];
+        console.log('newSchema', JSON.stringify(newSchema));
+
+        setSchema(newSchema);
+
+        // Group fields into pages and update state
+        const mypages = groupFieldsByOrder(newSchema);
+        setPages(mypages);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [formData['program']]);
+
+  // const pages = [
+  //   ['first_name', 'middle_name', 'last_name', 'email', 'mobile'],
+  //   ['DOB', 'gender', 'mothers_name'],
+  //   [
+  //     'highest_education_level',
+  //     'type_of_phone_available',
+  //     'does_this_phone_belong_to_you',
+  //   ],
+  //   ['program'],
+  //   ['states', 'districts', 'blocks', 'villages'],
+  //   [
+  //     'username',
+  //     'password',
+  //     'confirm_password',
+  //     'parent_name',
+  //     'parent_phone',
+  //     'parent_phone_belong',
+  //   ],
+  // ];
 
   const handleInputChange = (name, value) => {
     const updatedFormData = { ...formData, [name]: value };
 
     // Reset dependent fields
-    if (name === 'states') {
-      updatedFormData['districts'] = '';
-      updatedFormData['blocks'] = '';
-    } else if (name === 'districts') {
-      updatedFormData['blocks'] = '';
+    if (name === 'state') {
+      updatedFormData['district'] = '';
+      updatedFormData['block'] = '';
+    } else if (name === 'district') {
+      updatedFormData['block'] = '';
     }
 
     setFormData(updatedFormData);
@@ -343,6 +460,8 @@ const RegistrationForm = ({ fields }) => {
   const validateFields = () => {
     const pageFields = pages[currentPage];
     const newErrors = {};
+    const age = calculateAge(formData?.dob || '');
+    console.log('age', age);
 
     pageFields.forEach((fieldName) => {
       const field = schema?.find((f) => f.name === fieldName);
@@ -352,34 +471,39 @@ const RegistrationForm = ({ fields }) => {
 
         if (['confirm_password'].includes(field.name)) {
           if (formData.password !== formData.confirm_password) {
-            newErrors[field.name] = `${t('Password_must_match')}`;
+            newErrors[field.label] = `${t('Password_must_match')}`;
           }
         }
 
         if (
-          ['parent_phone_belong', 'parent_phone', 'parent_name'].includes(
-            field.name
-          ) &&
-          formData.age &&
-          parseInt(formData.age, 10) >= 18
+          ['guardian_name', 'guardian_relation'].includes(field.name) &&
+          age &&
+          parseInt(age, 10) >= 18
         ) {
           return; // Skip validation for these fields
         }
-
-        if (field.isRequired && !value) {
-          newErrors[field.name] = `${t(field.name)} ${t('is_required')}`;
+        if (
+          (field.isRequired && !value) ||
+          (field.name === 'blocks' && !value) ||
+          (field.name === 'states' && !value) ||
+          (field.name === 'districts' && !value) ||
+          (field.name === 'guardian_name' && !value) ||
+          (field.name === 'guardian_relation' && !value)
+        ) {
+          newErrors[field.name] =
+            `${t(field.label.toLowerCase())} ${t('is_required')}`;
         } else if (field.minLength && value.length < field.minLength && value) {
           newErrors[field.name] =
-            `${t('min_validation').replace('{field}', t(field.name)).replace('{length}', field.minLength)}`;
+            `${t('min_validation').replace('{field}', t(field.label.toLowerCase())).replace('{length}', field.minLength)}`;
         } else if (field.maxLength && value.length > field.maxLength && value) {
           newErrors[field.name] =
-            `${t('max_validation').replace('{field}', t(field.name)).replace('{length}', field.maxLength)}`;
+            `${t('max_validation').replace('{field}', t(field.label.toLowerCase())).replace('{length}', field.maxLength)}`;
         } else if (
           field.pattern &&
           value &&
-          !new RegExp(field.pattern).test(value)
+          !new RegExp(field.pattern.replace(/^\/|\/$/g, '')).test(value)
         ) {
-          newErrors[field.name] = `${t(field.name)} ${t('is_invalid')}.`;
+          newErrors[field.name] = `${t(field.label)} ${t('is_invalid')}.`;
         }
       }
     });
@@ -389,15 +513,54 @@ const RegistrationForm = ({ fields }) => {
   };
 
   const renderField = (field) => {
+    const age = calculateAge(formData?.dob || '');
     if (
-      (field.name === 'parent_phone_belong' ||
-        field.name === 'parent_phone' ||
-        field.name === 'parent_name') &&
-      formData.age &&
-      parseInt(formData.age, 10) >= 18
+      (field.name === 'guardian_relation' || field.name === 'guardian_name') &&
+      age &&
+      parseInt(age, 10) >= 18
     ) {
       return null;
     }
+
+    const UsernameText = () => {
+      return (
+        <>
+          <GlobalText
+            style={[globalStyles.text, { marginLeft: 10, color: '#0D599E' }]}
+          >
+            {t(
+              'make_it_unique_try_adding_your_birth_date_or_your_lucky_number'
+            )}
+          </GlobalText>
+          <View
+            style={{
+              backgroundColor: '#D2F1CF',
+              padding: 10,
+              borderRadius: 10,
+              flexDirection: 'row',
+            }}
+          >
+            <Image
+              source={bulb}
+              resizeMode="contain"
+              style={{ width: 30, height: 30 }}
+            />
+            <GlobalText
+              style={[
+                globalStyles.text,
+                { width: 300, marginLeft: 10, color: '#0D599E' },
+              ]}
+              numberOfLines={4}
+              ellipsizeMode="tail"
+            >
+              {t(
+                'tip_you_can_copy_and_save_your_username_on_your_device_so_you_dont_forget_it'
+              )}
+            </GlobalText>
+          </View>
+        </>
+      );
+    };
 
     switch (field.type) {
       case 'text':
@@ -408,6 +571,7 @@ const RegistrationForm = ({ fields }) => {
               formData={formData}
               handleValue={handleInputChange}
               errors={errors}
+              {...(field.name === 'username' && { text: UsernameText() })}
             />
           </View>
         );
@@ -419,7 +583,7 @@ const RegistrationForm = ({ fields }) => {
               formData={formData}
               handleValue={handleInputChange}
               errors={errors}
-              autoCapitalize={false}
+              autoCapitalize={'none'}
             />
           </View>
         );
@@ -435,10 +599,22 @@ const RegistrationForm = ({ fields }) => {
             />
           </View>
         );
-      case 'radio':
+      case 'cradio':
         return (
           <View key={field.name} style={styles.inputContainer}>
             <CustomRadioCard
+              field={field}
+              options={programData}
+              errors={errors}
+              formData={formData}
+              handleValue={handleInputChange}
+            />
+          </View>
+        );
+      case 'radio':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <RadioButton
               field={field}
               options={programData}
               errors={errors}
@@ -470,7 +646,9 @@ const RegistrationForm = ({ fields }) => {
                     ? districtData
                     : field.name === 'blocks'
                       ? blockData
-                      : field?.options
+                      : field.name === 'villages'
+                        ? villageData
+                        : field?.options
               }
               errors={errors}
               formData={formData}
@@ -479,9 +657,21 @@ const RegistrationForm = ({ fields }) => {
           </View>
         );
       case 'password':
+      case 'confirm_password':
         return (
           <View key={field.name} style={styles.inputContainer}>
             <CustomPasswordTextField
+              field={field}
+              errors={errors}
+              formData={formData}
+              handleValue={handleInputChange}
+            />
+          </View>
+        );
+      case 'date':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <DateTimePicker
               field={field}
               errors={errors}
               formData={formData}
@@ -496,19 +686,70 @@ const RegistrationForm = ({ fields }) => {
 
   const renderPage = () => {
     const pageFields = pages[currentPage];
+
     return schema
-      .filter((field) => pageFields.includes(field.name))
+      .filter((field) => pageFields?.includes(field.name))
       .map((field) => renderField(field));
+  };
+
+  const checkUserExist = async () => {
+    const payload = {
+      firstName: formData?.firstName,
+      lastName: formData?.lastName,
+      mobile: formData?.mobile,
+      ...(formData?.email && { email: formData.email }),
+      ...(formData?.username && { username: formData.username }),
+    };
+    const data = await userExist(payload);
+    return data;
+  };
+
+  const UserSuggestion = async () => {
+    const payload = {
+      firstName: formData?.firstName,
+      lastName: formData?.lastName,
+      username: formData?.username,
+    };
+    const data = await suggestUsername(payload);
+    return data;
+  };
+
+  const sendOTPFunction = async () => {
+    const payload = {
+      mobile: formData?.mobile,
+      reason: 'signup',
+    };
+    const data = await sendOtp(payload);
+    setOTPError(data?.params?.err);
+  };
+  const verifyOTPFunction = async () => {
+    const payload = {
+      mobile: formData?.phone_number,
+      otp: '100308',
+      reason: 'signup',
+      hash: '5f8a218e4a676369ace6de324390fc9ab58d4a89ace1b88bb94580460fcd2205.1734678776526',
+    };
+    await verifyOtp(payload);
   };
 
   const handleNext = async () => {
     if (validateFields()) {
       if (currentPage === 0) {
-        const userExists = true;
-        if (userExists) {
+        const userExists = await checkUserExist();
+        if (userExists?.params?.status === 'successful') {
           setUserModalVisible(true);
+          setExistingUsers(userExists?.result);
         } else {
+          await sendOTPFunction();
           setOtpModalVisible(true);
+        }
+      } else if (currentPage === 4) {
+        const usernameSuggestion = await UserSuggestion();
+        if (usernameSuggestion?.params?.status === 'successful') {
+          setSuggestedUsernames(usernameSuggestion?.result?.suggestedUsername);
+          setModal(true);
+        } else {
+          setCurrentPage(currentPage + 1);
         }
       } else {
         setCurrentPage(currentPage + 1);
@@ -518,7 +759,9 @@ const RegistrationForm = ({ fields }) => {
       setEnable(true);
     }
     if (currentPage === 2) {
-      const fullName = `${formData.first_name}${formData.last_name}`;
+      const fullName = `${formData.firstName}${formData.lastName}`;
+      console.log('fullName', fullName);
+
       const updatedFormData = {
         ...formData,
         ['username']: fullName.toLowerCase(),
@@ -580,7 +823,8 @@ const RegistrationForm = ({ fields }) => {
     }
   };
 
-  const handleResendOTP = () => {
+  const handleResendOTP = async () => {
+    await sendOTPFunction();
     stopOtpTimer(); // Clear any existing timer
     startOtpTimer(); // Start a new timer
   };
@@ -590,7 +834,7 @@ const RegistrationForm = ({ fields }) => {
   }
 
   return (
-    <View style={{ padding: 20, flex: 1 }}>
+    <SafeAreaView style={{ padding: 10, flex: 1, paddingTop: 0 }}>
       {currentPage > 0 && (
         <TouchableOpacity style={styles.backbutton} onPress={handlePrevious}>
           <Image
@@ -632,7 +876,16 @@ const RegistrationForm = ({ fields }) => {
             {t('an_otp_will_be_sent_for_verification')}
           </GlobalText>
         )}
-        {currentPage === 4 && (
+        {currentPage === 3 && (
+          <GlobalText
+            style={[globalStyles.text, { marginBottom: 10, marginLeft: 10 }]}
+          >
+            {t(
+              'if_your_village_is_not_mentioned_in_the_list_please_select_your_nearest_village'
+            )}
+          </GlobalText>
+        )}
+        {currentPage === 6 && (
           <>
             <View
               style={[
@@ -744,18 +997,28 @@ const RegistrationForm = ({ fields }) => {
         visible={isUserModalVisible}
         transparent={true}
         animationType="slide"
-        onclo
       >
         <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
           <View style={styles.alertBox}>
             <View
               style={{
-                padding: 15,
+                padding: 20,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
               }}
             >
-              <GlobalText style={globalStyles.text}>
+              <GlobalText style={globalStyles.heading2}>
                 {t('account_already_exists')}
               </GlobalText>
+              <TouchableOpacity
+                onPress={() => {
+                  setUserModalVisible(false);
+                }}
+              >
+                <Icon name={'close'} color="#000" size={30} />
+              </TouchableOpacity>
             </View>
             <View
               style={{
@@ -763,6 +1026,7 @@ const RegistrationForm = ({ fields }) => {
                 borderBottomWidth: 1,
                 borderTopWidth: 1,
                 borderColor: '#D0C5B4',
+                paddingHorizontal: 5,
               }}
             >
               <View style={{ padding: 10, alignItems: 'center' }}>
@@ -774,54 +1038,96 @@ const RegistrationForm = ({ fields }) => {
               </View>
               <View>
                 <GlobalText
-                  style={[
-                    globalStyles.subHeading,
-                    { textAlign: 'center', paddingHorizontal: 10 },
-                  ]}
+                  style={[globalStyles.subHeading, { textAlign: 'center' }]}
                 >
                   {t(
                     'one_or_more_accounts_with_this_name_email_and_phone_number_already_exist'
                   )}
                 </GlobalText>
               </View>
-              <View style={{ alignItems: 'center', marginVertical: 10 }}>
-                <TouchableOpacity>
-                  <GlobalText
-                    style={[globalStyles.subHeading, { fontWeight: '800' }]}
+
+              {existingUsers?.map((item, key) => {
+                return (
+                  <View
+                    key={key}
+                    style={{
+                      alignItems: 'center',
+                      marginVertical: 10,
+                    }}
                   >
-                    random name
-                  </GlobalText>
-                </TouchableOpacity>
-              </View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.navigate('LoginScreen');
+                        setUserModalVisible(false);
+                      }}
+                      style={{ width: 300 }}
+                    >
+                      <GlobalText
+                        style={[
+                          globalStyles.subHeading,
+                          { textAlign: 'center' },
+                        ]}
+                      >
+                        {item?.firstName} {item?.lastName}
+                      </GlobalText>
+                      <View
+                        style={{
+                          backgroundColor: '#D0C5B4',
+                          padding: 10,
+                          borderRadius: 10,
+                        }}
+                      >
+                        <GlobalText
+                          numberOfLines={2}
+                          ellipsizeMode="tail"
+                          style={[globalStyles.subHeading]}
+                        >
+                          {item?.username}
+                        </GlobalText>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          <GlobalText
+                            style={[
+                              globalStyles.subHeading,
+                              { color: '#0D599E' },
+                            ]}
+                          >
+                            {t('login_with_this_username')}
+                          </GlobalText>
+                          <Icon
+                            name="arrow-forward"
+                            size={20}
+                            color={'#0D599E'}
+                          />
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
               <View>
                 <GlobalText
-                  style={[globalStyles.text, { textAlign: 'center' }]}
+                  style={[
+                    globalStyles.heading2,
+                    { textAlign: 'center', fontWeight: 'bold' },
+                  ]}
                 >
                   {t('are_you_sure_you_want_to_create_another_account')}
                 </GlobalText>
               </View>
             </View>
             <View style={styles.btnbox}>
-              <TouchableOpacity
-                onPress={() => {
+              <PrimaryButton
+                text={t('yes_create_another_account')}
+                onPress={async () => {
                   setUserModalVisible(false);
                   setOtpModalVisible(true);
-                }}
-              >
-                <GlobalText
-                  style={[
-                    globalStyles.subHeading,
-                    { color: '#0D599E', fontWeight: '700', marginBottom: 20 },
-                  ]}
-                >
-                  {t('yes_create_another_account')}
-                </GlobalText>
-              </TouchableOpacity>
-              <PrimaryButton
-                text={t('No_log_in_to_existing_account')}
-                onPress={() => {
-                  navigation.navigate('LoginScreen');
-                  setUserModalVisible(false);
+                  await sendOTPFunction();
                 }}
               />
             </View>
@@ -834,111 +1140,140 @@ const RegistrationForm = ({ fields }) => {
         animationType="slide"
         onclo
       >
-        <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
+        <View style={styles.modalContainer} activeOpacity={1}>
           <View style={styles.alertBox}>
             <View
               style={{
                 padding: 15,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                width: '100%',
               }}
             >
-              <GlobalText style={globalStyles.text}>
+              <GlobalText style={[globalStyles.heading2, { fontWeight: 650 }]}>
                 {t('verify_phone_number')}
               </GlobalText>
-            </View>
-            <View
-              style={{
-                paddingVertical: 10,
-                paddingHorizontal: 10,
-                borderBottomWidth: 1,
-                borderTopWidth: 1,
-                borderColor: '#D0C5B4',
-              }}
-            >
-              <View>
-                <GlobalText style={[globalStyles.subHeading]}>
-                  {t('we_sent_an_otp_to_verify_your_number')} :{' '}
-                  {formData?.mobile}
-                </GlobalText>
-              </View>
-
-              <GlobalText style={[globalStyles.text, { marginVertical: 5 }]}>
-                {t('enter_otp')}
-              </GlobalText>
-
-              <View style={styles.otpInputContainer}>
-                <OtpInput
-                  numberOfDigits={6}
-                  focusColor="green"
-                  autoFocus={false}
-                  hideStick={true}
-                  placeholder="******"
-                  blurOnFilled={true}
-                  disabled={false}
-                  type="numeric"
-                  secureTextEntry={false}
-                  focusStickBlinkingDuration={500}
-                  onTextChange={(text) => console.log(text)}
-                  textInputProps={{
-                    accessibilityLabel: 'One-Time Password',
-                  }}
-                  theme={{
-                    containerStyle: styles.pinContainer,
-                    pinCodeContainerStyle: styles.pinCodeContainer,
-                    pinCodeTextStyle: styles.pinCodeText,
-                    focusStickStyle: styles.focusStick,
-                    focusedPinCodeContainerStyle: styles.activePinCodeContainer,
-                    placeholderTextStyle: styles.placeholderText,
-                    filledPinCodeContainerStyle: styles.filledPinCodeContainer,
-                    disabledPinCodeContainerStyle:
-                      styles.disabledPinCodeContainer,
-                  }}
-                />
-              </View>
               <TouchableOpacity
-                disabled={count > 0} // Disable the button if countdown is active
-                onPress={handleResendOTP}
+                onPress={() => {
+                  setOtpModalVisible(false);
+                  setUserModalVisible(false);
+                }}
               >
-                <GlobalText
-                  style={[
-                    globalStyles.text,
-                    {
-                      marginTop: 20,
-                      marginBottom: 10,
-                      textAlign: 'center',
-                      color: count > 0 ? '#DADADA' : '#0D599E80',
-                    },
-                  ]}
-                >
-                  {t('resend_otp_in').replace(`{count}`, count)}
-                </GlobalText>
+                <Icon name={'close'} color="#000" size={30} />
               </TouchableOpacity>
             </View>
+            {OTPError ? (
+              <GlobalText style={[globalStyles.heading2, { fontWeight: 650 }]}>
+                {OTPError}
+              </GlobalText>
+            ) : (
+              <View
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 10,
+                  borderBottomWidth: 1,
+                  borderTopWidth: 1,
+                  borderColor: '#D0C5B4',
+                }}
+              >
+                <View>
+                  <GlobalText style={[globalStyles.subHeading]}>
+                    {t('we_sent_an_otp_to_verify_your_number')} :{' '}
+                    {formData?.phone_number}
+                  </GlobalText>
+                </View>
+
+                <GlobalText style={[globalStyles.text, { marginVertical: 5 }]}>
+                  {t('enter_otp')}
+                </GlobalText>
+
+                <View style={styles.otpInputContainer}>
+                  <OtpInput
+                    numberOfDigits={6}
+                    focusColor="green"
+                    autoFocus={false}
+                    hideStick={true}
+                    placeholder="******"
+                    blurOnFilled={true}
+                    disabled={false}
+                    type="numeric"
+                    secureTextEntry={false}
+                    focusStickBlinkingDuration={500}
+                    onTextChange={(text) => setOTP({ ...OTP, value: text })}
+                    textInputProps={{
+                      accessibilityLabel: 'One-Time Password',
+                    }}
+                    theme={{
+                      containerStyle: styles.pinContainer,
+                      pinCodeContainerStyle: styles.pinCodeContainer,
+                      pinCodeTextStyle: styles.pinCodeText,
+                      focusStickStyle: styles.focusStick,
+                      focusedPinCodeContainerStyle:
+                        styles.activePinCodeContainer,
+                      placeholderTextStyle: styles.placeholderText,
+                      filledPinCodeContainerStyle:
+                        styles.filledPinCodeContainer,
+                      disabledPinCodeContainerStyle:
+                        styles.disabledPinCodeContainer,
+                    }}
+                  />
+                </View>
+                <TouchableOpacity
+                  disabled={count > 0} // Disable the button if countdown is active
+                  onPress={handleResendOTP}
+                >
+                  <GlobalText
+                    style={[
+                      globalStyles.text,
+                      {
+                        marginTop: 20,
+                        marginBottom: 10,
+                        textAlign: 'center',
+                        color: count > 0 ? '#DADADA' : '#0D599E80',
+                      },
+                    ]}
+                  >
+                    {t('resend_otp_in').replace(`{count}`, count)}
+                  </GlobalText>
+                </TouchableOpacity>
+              </View>
+            )}
             <View style={styles.btnbox}>
               <PrimaryButton
+                // isDisabled={OTPError || !OTP?.value ? true : false}
                 text={t('verify_otp')}
                 onPress={handleOtpVerification}
               />
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
       <NetworkAlert onTryAgain={handleSubmit} isConnected={!networkError} />
       {modal && (
         <Modal transparent={true} animationType="slide">
           <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
-            {err ? (
+            {suggestedUsernames && !err ? (
+              <SuggestUsername
+                setSuggestedUsernames={setSuggestedUsernames}
+                suggestedUsernames={suggestedUsernames}
+                setModal={setModal}
+                setFormData={setFormData}
+                formData={formData}
+              />
+            ) : err ? (
               <View style={styles.alertBox}>
-                <Image source={lightning} resizeMode="contain" />
-
                 <GlobalText
                   style={[globalStyles.subHeading, { marginVertical: 10 }]}
                 >
                   Error: {err}
                 </GlobalText>
+
                 <PrimaryButton
-                  text={t('continue')}
+                  text={t('try_again')}
                   onPress={() => {
                     setModal(false);
+                    setErr('');
                   }}
                 />
               </View>
@@ -964,17 +1299,11 @@ const RegistrationForm = ({ fields }) => {
           </TouchableOpacity>
         </Modal>
       )}
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    margin: 20,
-    marginTop: 0,
-    backgroundColor: 'white',
-  },
   inputContainer: {
     marginTop: 5,
     Bottom: 16,

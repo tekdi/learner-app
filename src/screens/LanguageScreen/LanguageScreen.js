@@ -169,6 +169,7 @@ const LanguageScreen = () => {
       const token = await getDataFromStorage('Accesstoken');
       const userType = await getDataFromStorage('userType');
       console.log('userType', userType);
+      console.log('cohort_id', cohort_id);
 
       if (token) {
         if (isConnected) {
@@ -180,9 +181,10 @@ const LanguageScreen = () => {
             await saveAccessToken(data?.access_token);
             await saveRefreshToken(data?.refresh_token);
             if (
-              cohort_id !== '00000000-0000-0000-0000-000000000000' ||
+              cohort_id !== '00000000-0000-0000-0000-000000000000' &&
               userType === 'scp'
             ) {
+              console.log('reached');
               await setCurrentCohort(cohort_id);
               navigation.navigate('SCPUserTabScreen');
             } else {
@@ -194,9 +196,10 @@ const LanguageScreen = () => {
             }
           } else if (token) {
             if (
-              cohort_id !== '00000000-0000-0000-0000-000000000000' ||
+              cohort_id !== '00000000-0000-0000-0000-000000000000' &&
               userType === 'scp'
             ) {
+              console.log('reached here');
               await setCurrentCohort(cohort_id);
               navigation.navigate('SCPUserTabScreen');
             } else {
@@ -211,7 +214,7 @@ const LanguageScreen = () => {
           }
         } else {
           if (
-            cohort_id !== '00000000-0000-0000-0000-000000000000' ||
+            cohort_id !== '00000000-0000-0000-0000-000000000000' &&
             userType === 'scp'
           ) {
             // await setCurrentCohort(cohort_id);

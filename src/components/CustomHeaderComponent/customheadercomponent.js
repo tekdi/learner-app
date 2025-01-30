@@ -35,12 +35,16 @@ const HeaderComponent = ({ currentPage, questionIndex, totalForms }) => {
             {currentPage === 1
               ? t('q1_name')
               : currentPage === 2
-                ? t('age_group')
+                ? t('q2_a_bit_more')
                 : currentPage === 3
-                  ? t('which_program_do_you_want_to_enroll_to')
+                  ? t('your_background_other_details')
                   : currentPage === 4
                     ? t('where_are_you_located')
-                    : currentPage === 5 && t('q6_login_cred')}
+                    : currentPage === 5
+                      ? t('q6_login_cred')
+                      : currentPage === 6
+                        ? t('which_program_do_you_want_to_enroll_to')
+                        : t('which_program_do_you_want_to_enroll_to')}
           </GlobalText>
         </View>
       </View>

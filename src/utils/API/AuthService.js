@@ -107,12 +107,14 @@ export const getAccessToken = async () => {
   }
 };
 
-export const getStudentForm = async () => {
+export const getStudentForm = async (tenantId) => {
   try {
     const headers = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      ...(tenantId && { tenantId: `${tenantId}` }),
     };
+    // const url = `${EndUrls.get_form}`;
     const url = `${EndUrls.get_form}`;
 
     // Generate the curl command
@@ -138,14 +140,105 @@ ${Object.entries(headers || {})
   }
 };
 
-export const userExist = async (params = {}) => {
+export const userExist = async (payload) => {
   try {
-    const result = await post(`${EndUrls.userExist}`, params, {
+    const curlCommand = `
+    curl -X POST ${EndUrls.userExist} \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json" \
+    -d '${JSON.stringify(payload)}'
+  `.trim();
+
+    // Log the cURL command
+    console.log('cURL Command:', curlCommand);
+    const result = await post(`${EndUrls.userExist}`, payload, {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
     });
+
+    if (result?.data) {
+      return result?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const sendOtp = async (payload) => {
+  try {
+    //   const curlCommand = `
+    //   curl -X POST ${EndUrls.sendOTP} \
+    //   -H "Content-Type: application/json" \
+    //   -H "Accept: application/json" \
+    //   -d '${JSON.stringify(payload)}'
+    // `.trim();
+
+    //   // Log the cURL command
+    //   console.log('cURL Command:', curlCommand);
+    const result = await post(`${EndUrls.sendOTP}`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
+    if (result?.data) {
+      return result?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const verifyOtp = async (payload) => {
+  try {
+    //   const curlCommand = `
+    //   curl -X POST ${EndUrls.verifyOTP} \
+    //   -H "Content-Type: application/json" \
+    //   -H "Accept: application/json" \
+    //   -d '${JSON.stringify(payload)}'
+    // `.trim();
+
+    //   // Log the cURL command
+    //   console.log('cURL Command:', curlCommand);
+    const result = await post(`${EndUrls.verifyOTP}`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
+    if (result?.data) {
+      return result?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+export const suggestUsername = async (payload) => {
+  try {
+    const curlCommand = `
+    //   curl -X POST ${EndUrls.suggestUsername} \
+    //   -H "Content-Type: application/json" \
+    //   -H "Accept: application/json" \
+    //   -d '${JSON.stringify(payload)}'
+    // `.trim();
+
+    //   // Log the cURL command
+    console.log('cURL Command:', curlCommand);
+    const result = await post(`${EndUrls.suggestUsername}`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
     if (result?.data) {
       return result?.data;
     } else {
@@ -422,13 +515,13 @@ export const getProgramDetails = async () => {
     const url = `${EndUrls.programDetails}`;
 
     // Log the curl command
-    console.log(
-      `curl -X GET '${url}' -H 'Content-Type: application/json'${
-        headers.Authorization
-          ? ` -H 'Authorization: ${headers.Authorization}'`
-          : ''
-      }`
-    );
+    // console.log(
+    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${
+    //     headers.Authorization
+    //       ? ` -H 'Authorization: ${headers.Authorization}'`
+    //       : ''
+    //   }`
+    // );
 
     const result = await get(url, {
       headers: headers || {},

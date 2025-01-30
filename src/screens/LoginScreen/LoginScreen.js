@@ -43,7 +43,6 @@ import Logo from '../../assets/images/png/logo.png';
 import globalStyles from '../../utils/Helper/Style';
 import { useInternet } from '../../context/NetworkContext';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
-
 import GlobalText from '@components/GlobalText/GlobalText';
 
 const LoginScreen = () => {

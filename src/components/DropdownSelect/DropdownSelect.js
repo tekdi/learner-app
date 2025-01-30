@@ -32,12 +32,28 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
   return (
     <View style={styles.dropdownContainer}>
       <View style={styles.label}>
-        <GlobalText style={globalStyles.text}>{t(field.name)}</GlobalText>
+        <GlobalText
+          style={[
+            globalStyles.text,
+            { color: errors[field.name] ? 'red' : '#4D4639' },
+          ]}
+        >
+          {t(field.label.toLowerCase())}
+          {!field?.isRequired &&
+            !['states', 'districts', 'blocks'].includes(field.name) &&
+            `(${t('optional')})`}
+        </GlobalText>
       </View>
 
-      <TouchableOpacity onPress={toggleDropdown} style={styles.dropdownButton}>
+      <TouchableOpacity
+        onPress={toggleDropdown}
+        style={[
+          styles.dropdownButton,
+          { borderColor: errors[field.name] ? 'red' : '#DADADA' },
+        ]}
+      >
         <GlobalText style={[globalStyles.text]}>
-          {t(formData[field.name]?.label)}
+          {t(formData[field.name]?.label.toLowerCase())}
         </GlobalText>
         <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
       </TouchableOpacity>
@@ -51,7 +67,7 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
                 style={styles.dropdownOption}
               >
                 <GlobalText style={styles.optionText}>
-                  {t(item?.label)}
+                  {t(item?.label?.toLowerCase())}
                 </GlobalText>
               </TouchableOpacity>
             ))}
@@ -114,7 +130,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     fontSize: 15,
     marginTop: 20,
-    marginLeft: 20,
+    // marginLeft: 20,
   },
 });
 

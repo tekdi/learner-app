@@ -68,7 +68,7 @@ const LoginSignUpScreen = () => {
           </CopilotView>
         </CopilotStep>
         <View style={{ padding: 10 }} />
-        {/* <CopilotStep
+        <CopilotStep
           text={t('click_here_to_create_new_account')}
           order={4}
           name="create_account"
@@ -80,7 +80,7 @@ const LoginSignUpScreen = () => {
               style={{ fontSize: 14.5 }}
             />
           </CopilotView>
-        </CopilotStep> */}
+        </CopilotStep>
       </View>
     </View>
   );

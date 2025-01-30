@@ -63,14 +63,12 @@ const Profile = () => {
     setUserType(userTypes);
 
     const requiredLabels = [
-      'WHATS_YOUR_GENDER',
-      'GENDER',
-      'CLASS_OR_LAST_PASSED_GRADE',
-      'STATES',
-      'DISTRICTS',
-      'BLOCKS',
-      'AGE',
-      'EMAIL',
+      'gender',
+      'HIGHEST_EDCATIONAL_QUALIFICATION_OR_LAST_PASSED_GRADE',
+      'STATE',
+      'DISTRICT',
+      'BLOCK',
+      'email',
     ];
     const customFields = result?.getUserDetails?.[0]?.customFields;
     createNewObject(customFields, requiredLabels);
@@ -79,6 +77,8 @@ const Profile = () => {
 
     setLoading(false);
   };
+
+  console.log('useeee', userData);
 
   useFocusEffect(
     useCallback(() => {
@@ -186,22 +186,22 @@ const Profile = () => {
                 <TextField text={userDetails?.CLASS_OR_LAST_PASSED_GRADE} />
               </View> */}
               <View>
-                <Label text={`${t('age')} `} />
-                <TextField text={userDetails?.AGE} />
+                <Label text={`${t('dob')} `} />
+                {console.log('userDetails?.dob', userDetails)}
+
+                <TextField text={userData?.dob} />
               </View>
               <View>
                 <Label text={`${t('gender')} `} />
                 <TextField
-                  text={`${capitalizeFirstLetter(
-                    userDetails?.WHATS_YOUR_GENDER || userDetails?.GENDER
-                  )}`}
+                  text={`${capitalizeFirstLetter(userData?.gender)}`}
                 />
               </View>
               <View>
                 <Label text={`${t('location')}`} />
-                {userDetails?.STATES ? (
+                {userDetails?.STATE ? (
                   <TextField
-                    text={`${userDetails?.STATES || '-'},  ${userDetails?.DISTRICTS || ''}, ${userDetails?.BLOCKS || ''}`}
+                    text={`${userDetails?.STATE || '-'},  ${userDetails?.DISTRICT || ''}, ${userDetails?.BLOCK || ''}`}
                   />
                 ) : (
                   <TextField text={'-'} />

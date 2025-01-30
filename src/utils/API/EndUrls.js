@@ -17,8 +17,7 @@ const EndUrls = {
   update_profile: API_URL + '/user/v1/update',
   get_current_token: API_URL + '/user/v1/auth',
   refresh_token: API_URL + '/user/v1/auth/refresh',
-  get_form: API_URL + '/user/v1/form/read?context=USERS&contextType=STUDENT',
-
+  get_form: API_URL + '/user/v1/form/read?context=USERS&contextType=LEARNER',
   userExist: API_URL + `/user/v1/check`,
   programDetails: API_URL + `/user/v1/tenant/read`,
   cohort: API_URL + `/user/v1/cohort/mycohorts`,
@@ -42,6 +41,9 @@ const EndUrls = {
   SolutionEvent: `${EVENT_DETAILS}/solutions/details`,
   attendance: `${API_URL}/api/v1/attendance/list`,
   notificationSubscribe: `${API_URL}/user/v1/update`,
+  sendOTP: `${API_URL}/user/v1/send-otp`,
+  verifyOTP: `${API_URL}/user/v1/verify-otp`,
+  suggestUsername: `${API_URL}/user/v1/suggestUsername`,
 
   //CMS sunbird saas
   // hierarchy_content: `${CONTENT_URL}/learner/questionset/v1/hierarchy/`, //pass do id at end
