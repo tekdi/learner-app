@@ -11,13 +11,13 @@ import {
 import globalStyles from '../../utils/Helper/Style';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
-
 import { login, resetPassword } from '../../utils/API/AuthService';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import PasswordField from '../../components/CustomPasswordComponent/PasswordField';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
@@ -137,9 +137,9 @@ const ResetPassword = () => {
     <>
       <SecondaryHeader />
       <KeyboardAvoidingView style={globalStyles.container}>
-        <Text style={[globalStyles.heading, { marginBottom: 10 }]}>
+        <GlobalText style={[globalStyles.heading, { marginBottom: 10 }]}>
           {t('reset_password')}
-        </Text>
+        </GlobalText>
         <View style={styles.view}>
           <PasswordField
             error={false}

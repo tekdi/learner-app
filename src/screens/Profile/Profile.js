@@ -15,6 +15,7 @@ import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 import {
   capitalizeFirstLetter,
   capitalizeName,
+  createNewObject,
   getDataFromStorage,
   getTentantId,
   logEventFunction,
@@ -31,7 +32,7 @@ import Config from 'react-native-config';
 const Profile = () => {
   const { t, language } = useTranslation();
   const [userData, setUserData] = useState();
-  const [userDetails, setUserDetails] = useState();
+  const [userDetails, setUserDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
@@ -39,46 +40,107 @@ const Profile = () => {
   const [cohortId, setCohortId] = useState();
   const version = DeviceInfo.getVersion(); // e.g., "1.0.1"
   const buildNumber = DeviceInfo.getBuildNumber(); // e.g., "2"
+  const convertObjectToArray = (data) => {
+    let location = {};
 
-  const createNewObject = (customFields, labels) => {
-    const result = {};
-    customFields?.forEach((field) => {
-      const cleanedFieldLabel = field?.label?.replace(/[^a-zA-Z0-9_ ]/g, '');
+    const transformedArray = Object.entries(data).reduce(
+      (acc, [name, value]) => {
+        if (['states', 'districts', 'blocks'].includes(name)) {
+          location = `${value.label},`; // Store in location object
+        } else if (
+          typeof value === 'object' &&
+          value !== null &&
+          !Array.isArray(value)
+        ) {
+          acc.push({ name, value: value.value, label: value.label });
+        } else {
+          acc.push({ name, value });
+        }
+        return acc;
+      },
+      []
+    );
 
-      if (labels.includes(cleanedFieldLabel)) {
-        result[cleanedFieldLabel] = field.value || '';
-      }
-    });
+    // Push the location object into the array
+    if (Object.keys(location).length) {
+      transformedArray.push({ name: 'location', value: location });
+    }
 
-    setUserDetails(result);
-    return result;
+    return transformedArray;
   };
 
   const fetchData = async () => {
+    const studentForm = JSON.parse(await getDataFromStorage('studentForm'));
+    const studentProgramForm = JSON.parse(
+      await getDataFromStorage('studentProgramForm')
+    );
+
+    const mergedForm = [...studentForm, ...studentProgramForm];
+
     const result = JSON.parse(await getDataFromStorage('profileData'));
 
-    const userTypes = await getDataFromStorage('userType');
-    const cohortId = await getDataFromStorage('cohortId');
-    setCohortId(cohortId);
-    setUserType(userTypes);
-
-    const requiredLabels = [
-      'gender',
-      'HIGHEST_EDCATIONAL_QUALIFICATION_OR_LAST_PASSED_GRADE',
-      'STATE',
-      'DISTRICT',
-      'BLOCK',
-      'email',
+    const finalResult = result?.getUserDetails?.[0];
+    const keysToRemove = [
+      'customFields',
+      'total_count',
+      'status',
+      'updatedAt',
+      'createdAt',
+      'updatedBy',
+      'createdBy',
+      'role',
+      'userId',
+      'username',
+      'firstName',
+      'middleName',
+      'lastName',
     ];
-    const customFields = result?.getUserDetails?.[0]?.customFields;
-    createNewObject(customFields, requiredLabels);
+
+    const filteredResult = Object.keys(finalResult)
+      .filter((key) => !keysToRemove.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = finalResult[key];
+        return obj;
+      }, {});
+    const requiredLabels = mergedForm?.map((item) => {
+      return { label: item?.label, name: item?.name };
+    });
+    const customFields = finalResult?.customFields;
+    const userDetails = createNewObject(
+      customFields,
+      requiredLabels,
+      (profileView = true)
+    );
+
+    // Extract state, district, and block
+    const locationData = {
+      states: userDetails.states?.label || '',
+      districts: userDetails.districts?.label || '',
+      blocks: userDetails.blocks?.label || '',
+    };
+
+    // Convert location data into a single formatted string
+    const formattedLocation =
+      `${locationData.states}, ${locationData.districts}, ${locationData.blocks}`.trim();
+
+    // Remove states, districts, and blocks from userDetails
+    delete userDetails.states;
+    delete userDetails.districts;
+    delete userDetails.blocks;
+
+    // Add formatted location as a new field
+    userDetails.location = formattedLocation;
+
+    const UpdatedObj = { ...userDetails, ...filteredResult };
+    const newUpdatedObj = convertObjectToArray(UpdatedObj);
     setUserData(result?.getUserDetails?.[0]);
-    const tenantData = await getTentantId();
+
+    setUserDetails(newUpdatedObj);
+
+    // const tenantData = await getTentantId();
 
     setLoading(false);
   };
-
-  console.log('useeee', userData);
 
   useFocusEffect(
     useCallback(() => {
@@ -172,22 +234,26 @@ const Profile = () => {
           {/* <NoCertificateBox userType={userType} /> */}
           <View style={{ backgroundColor: '#FFF8F2', paddingVertical: 20 }}>
             <View style={styles.viewBox}>
-              <View>
-                <Label text={`${t('contact_number')}`} />
-                <TextField text={userData?.mobile} />
-              </View>
-              <View>
+              {userDetails?.map((item, key) => {
+                return (
+                  <View key={key} style={{ paddingVertical: 10 }}>
+                    <Label text={`${t(item?.name)}`} />
+                    <TextField text={item?.value} />
+                  </View>
+                );
+              })}
+
+              {/* <View>
                 <Label text={`${t('email')}`} />
                 <TextField text={`${userData?.email || '-'}   `} />
               </View>
 
-              {/* <View>
+              <View>
                 <Label text={`${t('class')} (${t('last_passed_grade')})`} />
                 <TextField text={userDetails?.CLASS_OR_LAST_PASSED_GRADE} />
-              </View> */}
+              </View> 
               <View>
                 <Label text={`${t('dob')} `} />
-                {console.log('userDetails?.dob', userDetails)}
 
                 <TextField text={userData?.dob} />
               </View>
@@ -206,7 +272,7 @@ const Profile = () => {
                 ) : (
                   <TextField text={'-'} />
                 )}
-              </View>
+              </View> */}
             </View>
           </View>
 
@@ -217,7 +283,7 @@ const Profile = () => {
             ]}
           >
             Version {version} (Build {buildNumber})
-            {/* {Config.ENV != 'PROD' ? Config.ENV : ''} */}
+            {Config.ENV != 'PROD' ? Config.ENV : ''}
           </GlobalText>
         </ScrollView>
       )}

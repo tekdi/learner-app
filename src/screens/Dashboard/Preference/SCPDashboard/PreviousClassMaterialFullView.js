@@ -50,7 +50,6 @@ const PreviousClassMaterialFullView = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    // console.log('hi');
 
     const startDate = new Date();
     startDate.setUTCDate(startDate.getUTCDate() - 1); // Go to yesterday

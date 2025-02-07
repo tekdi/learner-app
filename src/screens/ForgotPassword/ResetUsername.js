@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import {
-  Image,
   KeyboardAvoidingView,
   Modal,
   StyleSheet,
@@ -12,10 +11,8 @@ import globalStyles from '../../utils/Helper/Style';
 import CustomTextInput from '../../components/CustomTextField/CustomTextInput';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
-import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
-import Logo from '../../assets/images/png/logo.png';
-import lock_open from '../../assets/images/png/lock_open.png';
-import { forgotPassword, updateUser } from '../../utils/API/AuthService';
+
+import { updateUser } from '../../utils/API/AuthService';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
@@ -74,9 +71,11 @@ const ResetUsername = () => {
 
   return (
     <>
-      <SecondaryHeader logo />
+      <SecondaryHeader />
       <KeyboardAvoidingView style={[globalStyles.container]}>
-        <BackHeader title={'change_username'} />
+        <GlobalText style={[globalStyles.heading, { marginBottom: 10 }]}>
+          {t('change_username')}
+        </GlobalText>
         <View style={styles.view}>
           <CustomTextInput
             error={error}

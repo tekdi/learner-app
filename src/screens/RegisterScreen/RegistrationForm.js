@@ -195,7 +195,6 @@ const RegistrationForm = ({ fields }) => {
     setLoading(true);
 
     const payload = await transformPayload(data);
-    console.log('payload', JSON.stringify(payload));
 
     await getAccessToken();
     const register = await registerUser(payload);
@@ -284,7 +283,7 @@ const RegistrationForm = ({ fields }) => {
     const geoData = JSON.parse(await getDataFromStorage('geoData'));
     setCurrentGeoData(geoData);
     setStateData(stateAPIdata);
-    const foundState = stateAPIdata.find(
+    const foundState = stateAPIdata?.find(
       (item) => item?.label === geoData?.state
     );
     const districtAll = await fetchDistricts(foundState?.value);
@@ -396,10 +395,8 @@ const RegistrationForm = ({ fields }) => {
 
         const tenantId = formData?.program?.value;
         const data = await getStudentForm(tenantId);
-        console.log('orginalSchema', orginalSchema);
 
         const fields = data?.fields || [];
-        console.log('ssss', fields);
         setDataInStorage('studentProgramForm', JSON.stringify(fields));
         // Remove existing fields with the same order (7) before merging
         const filteredSchema = orginalSchema?.filter(
@@ -408,7 +405,6 @@ const RegistrationForm = ({ fields }) => {
 
         // Merge new fields into the filtered schema
         const newSchema = [...filteredSchema, ...fields];
-        console.log('newSchema', JSON.stringify(newSchema));
 
         setSchema(newSchema);
 
@@ -461,7 +457,6 @@ const RegistrationForm = ({ fields }) => {
     const pageFields = pages[currentPage];
     const newErrors = {};
     const age = calculateAge(formData?.dob || '');
-    console.log('age', age);
 
     pageFields.forEach((fieldName) => {
       const field = schema?.find((f) => f.name === fieldName);
@@ -484,9 +479,9 @@ const RegistrationForm = ({ fields }) => {
         }
         if (
           (field.isRequired && !value) ||
-          (field.name === 'blocks' && !value) ||
-          (field.name === 'states' && !value) ||
-          (field.name === 'districts' && !value) ||
+          // (field.name === 'blocks' && !value) ||
+          // (field.name === 'states' && !value) ||
+          // (field.name === 'districts' && !value) ||
           (field.name === 'guardian_name' && !value) ||
           (field.name === 'guardian_relation' && !value)
         ) {
@@ -515,7 +510,9 @@ const RegistrationForm = ({ fields }) => {
   const renderField = (field) => {
     const age = calculateAge(formData?.dob || '');
     if (
-      (field.name === 'guardian_relation' || field.name === 'guardian_name') &&
+      (field.name === 'guardian_relation' ||
+        field.name === 'guardian_name' ||
+        field.name === 'parent_phone') &&
       age &&
       parseInt(age, 10) >= 18
     ) {
@@ -760,7 +757,6 @@ const RegistrationForm = ({ fields }) => {
     }
     if (currentPage === 2) {
       const fullName = `${formData.firstName}${formData.lastName}`;
-      console.log('fullName', fullName);
 
       const updatedFormData = {
         ...formData,
@@ -998,7 +994,7 @@ const RegistrationForm = ({ fields }) => {
         transparent={true}
         animationType="slide"
       >
-        <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
+        <View style={styles.modalContainer} activeOpacity={1}>
           <View style={styles.alertBox}>
             <View
               style={{
@@ -1020,13 +1016,14 @@ const RegistrationForm = ({ fields }) => {
                 <Icon name={'close'} color="#000" size={30} />
               </TouchableOpacity>
             </View>
-            <View
+            <ScrollView
               style={{
-                paddingVertical: 10,
+                marginVertical: 20,
                 borderBottomWidth: 1,
                 borderTopWidth: 1,
                 borderColor: '#D0C5B4',
                 paddingHorizontal: 5,
+                height: 330,
               }}
             >
               <View style={{ padding: 10, alignItems: 'center' }}>
@@ -1110,7 +1107,7 @@ const RegistrationForm = ({ fields }) => {
                   </View>
                 );
               })}
-              <View>
+              <View style={{ paddingVertical: 10 }}>
                 <GlobalText
                   style={[
                     globalStyles.heading2,
@@ -1120,7 +1117,7 @@ const RegistrationForm = ({ fields }) => {
                   {t('are_you_sure_you_want_to_create_another_account')}
                 </GlobalText>
               </View>
-            </View>
+            </ScrollView>
             <View style={styles.btnbox}>
               <PrimaryButton
                 text={t('yes_create_another_account')}
@@ -1132,7 +1129,7 @@ const RegistrationForm = ({ fields }) => {
               />
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
       <Modal
         visible={isOtpModalVisible}
@@ -1163,7 +1160,7 @@ const RegistrationForm = ({ fields }) => {
                 <Icon name={'close'} color="#000" size={30} />
               </TouchableOpacity>
             </View>
-            {OTPError ? (
+            {!OTPError ? (
               <GlobalText style={[globalStyles.heading2, { fontWeight: 650 }]}>
                 {OTPError}
               </GlobalText>

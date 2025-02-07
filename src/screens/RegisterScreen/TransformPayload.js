@@ -41,12 +41,7 @@ export const transformPayload = async (data) => {
             },
           ];
         } else {
-          if (keyName === 'dob') {
-            result[keyName] = convertDate(data[keyName]);
-          } else {
-            result[keyName] = data[keyName];
-          }
-          // Add directly to result if fieldId is absent (Core Fields)
+          result[keyName] = data[keyName];
         }
       }
     });
