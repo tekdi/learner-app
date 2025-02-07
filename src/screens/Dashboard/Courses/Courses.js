@@ -196,12 +196,15 @@ const Courses = () => {
             <ActiveLoading />
           ) : (
             <>
-              {/* <View style={styles.view2}>
+              <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
                 <GlobalText style={styles.text2}>
-                  {t('welcome')}, {capitalizeName(userInfo?.[0]?.name)} !
+                  {t('welcome')},
+                  {capitalizeName(
+                    `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
+                  )}
                 </GlobalText>
-              </View> */}
+              </View>
 
               <GlobalText style={styles.text}>
                 {youthnet ? t('l1_courses') : t('courses')}

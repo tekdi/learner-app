@@ -632,3 +632,27 @@ export const getAssociationsByName = (data, name) => {
   const foundItem = data.find((item) => item.name === name);
   return foundItem ? foundItem.associations : [];
 };
+
+export const calculateAge = (dobString) => {
+  // Split the date string into day, month, and year
+  const [day, month, year] = dobString.split('/').map(Number);
+
+  // Create a Date object for the DOB
+  const dob = new Date(year, month - 1, day);
+
+  // Get the current date
+  const today = new Date();
+
+  // Calculate the age
+  let age = today.getFullYear() - dob.getFullYear();
+
+  // Adjust if the birthday hasn't occurred this year yet
+  const hasBirthdayPassed =
+    today.getMonth() > dob.getMonth() ||
+    (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate());
+  if (!hasBirthdayPassed) {
+    age -= 1;
+  }
+
+  return age;
+};

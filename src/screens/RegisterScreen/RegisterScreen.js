@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
-import { getGeoLocation, getStudentForm } from '../../utils/API/AuthService';
+import {
+  getGeoLocation,
+  getStudentForm,
+  reverseGeocode,
+} from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { registerSchema } from './RegisterSchema';
 import {
@@ -9,6 +13,7 @@ import {
 } from '../../utils/JsHelper/Helper';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import RegistrationForm from './RegistrationForm';
+import Geolocation from 'react-native-geolocation-service'; // GeoLocation Comment
 
 const RegisterScreen = () => {
   const [mainSchema, setMainSchema] = useState([]);
@@ -29,7 +34,24 @@ const RegisterScreen = () => {
 
   // GetLocation Comment
 
+  const getLocationFromGoogle = async () => {
+    Geolocation.getCurrentPosition(
+      async (position) => {
+        const data = await reverseGeocode(
+          position?.coords?.latitude,
+          position?.coords?.longitude
+        );
+        await setDataInStorage('geoData', JSON.stringify(data));
+      },
+      (error) => {
+        console.log('Error: ', error);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
+
   const getLocation = async () => {
+    await getLocationFromGoogle();
     const data = JSON.parse(await getDataFromStorage('geoData'));
     setgeoData(data);
   };
@@ -41,7 +63,7 @@ const RegisterScreen = () => {
     } else {
       await fetchstates();
       setDataInStorage('studentForm', JSON.stringify(data?.fields));
-      let schema = await registerSchema();
+      let schema = data?.fields;
       setMainSchema(schema);
       getLocation(); // GetLocation Comment
     }

@@ -48,6 +48,17 @@ const CustomPasswordTextField = ({ handleValue, field, formData, errors }) => {
             { color: errors[field.name] ? 'red' : '#4D4639' },
           ]}
         >
+          {t(field.label.toLowerCase())}
+          {!field?.isRequired && `(${t('optional')})`}
+        </GlobalText>
+      </View>
+      <View style={styles.overlap}>
+        <GlobalText
+          style={[
+            styles.text,
+            { color: errors[field.name] ? 'red' : '#4D4639' },
+          ]}
+        >
           {t(field.name)}
         </GlobalText>
       </View>
@@ -60,7 +71,7 @@ const CustomPasswordTextField = ({ handleValue, field, formData, errors }) => {
             color: 'red',
             alignSelf: 'flex-start',
             marginBottom: 10,
-            marginTop: -20,
+            marginTop: 5,
             fontFamily: 'Poppins-Regular',
           }}
         >
@@ -89,10 +100,11 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     alignItems: 'flex-start',
-    paddingBottom: 10,
+    paddingBottom: 25,
     paddingLeft: 10,
     paddingRight: 10,
     backgroundColor: 'white',
+    // borderWidth: 1,
   },
   input: {
     backgroundColor: 'white',
@@ -119,8 +131,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   overlap: {
-    top: -65,
-    left: 13,
+    position: 'absolute',
+    top: -10,
+    left: 30,
     // top: -76,
     // left: -120,
     backgroundColor: 'white',

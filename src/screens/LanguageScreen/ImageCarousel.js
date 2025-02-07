@@ -14,7 +14,7 @@ export const ImageCarousel = ({ images, backgroundColor }) => {
   useEffect(() => {
     setLoading(true);
     if (!images || images.length === 0) {
-      console.warn('No images provided to ImageCarousel.');
+      // console.warn('No images provided to ImageCarousel.');
       return;
     }
 

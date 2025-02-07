@@ -43,11 +43,10 @@ const CustomCards = ({ field, errors, formData, handleValue }) => {
           {field.name === 'gender' && (
             <GlobalText
               style={{
-                color: 'black',
-                fontSize: 18,
+                color: '#4D4639',
+                fontSize: 16,
                 fontFamily: 'Poppins-Regular',
                 width: '100%',
-                marginBottom: 20,
                 marginLeft: 20,
               }}
             >
@@ -141,6 +140,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
+    marginBottom: 10,
   },
   selectedCard: {
     backgroundColor: '#FEEDA1',
@@ -150,6 +150,8 @@ const styles = StyleSheet.create({
     color: 'red',
     fontFamily: 'Poppins-Regular',
     fontSize: 15,
+    marginBottom: 10,
+    marginLeft: 10,
   },
 });
 

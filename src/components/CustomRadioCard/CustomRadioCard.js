@@ -11,10 +11,6 @@ import {
 } from 'react-native';
 import { Radio, RadioGroup } from '@ui-kitten/components';
 import { useTranslation } from '../../context/LanguageContext';
-import { useController } from 'react-hook-form';
-import program from '../../assets/images/png/program.png';
-import globalStyles from '../../utils/Helper/Style';
-import { SwiperFlatList } from 'react-native-swiper-flatlist';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import { ImageCarousel } from '@src/screens/LanguageScreen/ImageCarousel';
@@ -32,14 +28,6 @@ const CustomRadioCard = ({ field, formData, options, handleValue, errors }) => {
     handleValue(field.name, { value: selectedValue, roleId: role?.roleId });
     setSelectedIndex(selectedValue);
   };
-
-  const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
-      <Image style={styles.img} source={item?.src} resizeMode="contain" />
-    </View>
-  );
-
-  console.log('formData', formData);
 
   return (
     <RadioGroup selectedIndex={selectedIndex} onChange={handlePress}>
@@ -75,52 +63,11 @@ const CustomRadioCard = ({ field, formData, options, handleValue, errors }) => {
                   <GlobalText style={styles.title}>{option.name}</GlobalText>
                 </Radio>
               </View>
-              {/* <Image style={styles.img} source={program} resizeMode="contain" /> */}
               <View style={styles.carocontainer}>
-                <ImageCarousel
-                  // backgroundColor={
-                  //   selectedIds?.[name]?.value === option?.tenantId && true
-                  // }
-                  images={option?.programImages || []}
-                />
+                <ImageCarousel images={option?.programImages || []} />
               </View>
-              {/* <GlobalText style={globalStyles.subHeading}>
-                {option.description}
-              </GlobalText> */}
             </TouchableOpacity>
           ))}
-
-          {/* <TouchableOpacity
-            style={styles.card}
-            onPress={() => handlePress(field?.options?.length + 1)}
-          >
-            <View style={styles.radioContainer}>
-              <Radio
-                checked={selectedIds[name]?.value === 'none'}
-                style={styles.radio}
-                onChange={() => handlePress(field?.options?.length + 1)}
-              >
-                <GlobalText  style={styles.title}>
-                  {t('optional_content')}
-                </GlobalText>
-              </Radio>
-            </View>
-            <GlobalText
-              
-              style={[
-                globalStyles.subHeading,
-                {
-                  padding: 10,
-                  borderWidth: 1,
-                  color: 'white',
-                  backgroundColor: '#1C5533',
-                  borderRadius: 20,
-                },
-              ]}
-            >
-              {t('optional_content_des')}
-            </GlobalText>
-          </TouchableOpacity> */}
         </View>
 
         {errors[field.name] && (
@@ -172,7 +119,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   carocontainer: {
-    // flex: 1,
+    flex: 1,
     marginTop: 10,
     backgroundColor: 'white',
     // height: 200,
@@ -182,11 +129,7 @@ const styles = StyleSheet.create({
 
 CustomRadioCard.propTypes = {
   field: PropTypes.object.isRequired,
-  name: PropTypes.string.isRequired,
   errors: PropTypes.object,
-  setSelectedIds: PropTypes.func.isRequired,
-  selectedIds: PropTypes.object.isRequired,
-  control: PropTypes.object.isRequired,
 };
 
 export default CustomRadioCard;

@@ -38,6 +38,7 @@ import BackButtonHandler from '../../../../components/BackNavigation/BackButtonH
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../../components/AppUpdate/AppUpdatePopup';
+import NetworkAlert from '@components/NetworkError/NetworkAlert';
 
 const SCPDashboard = (props) => {
   const { t } = useTranslation();
@@ -64,6 +65,7 @@ const SCPDashboard = (props) => {
 
   const currentMonthName = monthNames[new Date().getMonth()];
   const [showExitModal, setShowExitModal] = useState(false);
+  const [networkstatus, setNetworkstatus] = useState(true);
 
   const getUserInfo = async () => {
     const result = JSON.parse(await getDataFromStorage('profileData'));
@@ -95,6 +97,7 @@ const SCPDashboard = (props) => {
 
     // Fetch the data within the specified date range
     const data = await eventList({ startDate, endDate });
+
     const boardData = await LearningMaterialAPI();
 
     const finalData = await categorizeEvents(data?.events);
@@ -116,6 +119,9 @@ const SCPDashboard = (props) => {
 
     // Fetch the data within the specified date range
     const data = await eventList({ startDate, endDate });
+    if (!data) {
+      setNetworkstatus(false);
+    }
     const finalData = await categorizeEvents(data?.events);
 
     setEventData(finalData);
@@ -195,7 +201,10 @@ const SCPDashboard = (props) => {
         <View style={globalStyles.flexrow}>
           <Image source={wave} resizeMode="contain" />
           <GlobalText style={styles.text2}>
-            {t('welcome')}, {capitalizeName(userInfo?.[0]?.name)}!
+            {t('welcome')},
+            {capitalizeName(
+              `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
+            )}
           </GlobalText>
         </View>
         <View style={{ marginVertical: 20, alignItems: 'center' }}>
@@ -314,6 +323,15 @@ const SCPDashboard = (props) => {
           onExit={handleExitApp}
         />
       )}
+      <NetworkAlert
+        onTryAgain={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+        isConnected={networkstatus}
+        closeModal={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+      />
     </SafeAreaView>
   );
 };

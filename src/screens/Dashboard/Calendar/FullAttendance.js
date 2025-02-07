@@ -19,6 +19,7 @@ import { getAttendance } from '../../../utils/API/AuthService';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import ActiveLoading from '../../LoadingScreen/ActiveLoading';
+import NetworkAlert from '../../../components/NetworkError/NetworkAlert';
 
 const FullAttendance = () => {
   const [eventDate, setEventDate] = useState(null);
@@ -26,6 +27,7 @@ const FullAttendance = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
+  const [networkstatus, setNetworkstatus] = useState(true);
 
   // Sample data for the last 30 days
 
@@ -42,14 +44,21 @@ const FullAttendance = () => {
     const todate = todayDate.toISOString().split('T')[0]; // 'YYYY-MM-DD'
     const fromDate = lastDate.toISOString().split('T')[0]; // 'YYYY-MM-DD'
 
-    const response = await getAttendance({ todate, fromDate });
-    setLearnerAttendance(response.attendanceList);
+    const response = (await getAttendance({ todate, fromDate })) || [];
+    console.log('response', response);
+    if (response.length < 1) {
+      setNetworkstatus(false);
+    }
+
+    setLearnerAttendance(response?.attendanceList);
     setLoading(false);
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  console.log('networkstatus', networkstatus);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -89,6 +98,15 @@ const FullAttendance = () => {
           )}
         </ScrollView>
       )}
+      <NetworkAlert
+        onTryAgain={() => {
+          navigation.goBack();
+        }}
+        isConnected={networkstatus}
+        closeModal={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+      />
     </SafeAreaView>
   );
 };

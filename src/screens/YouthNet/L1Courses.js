@@ -208,7 +208,10 @@ const L1Courses = () => {
                 <View style={styles.view2}>
                   <Image source={wave} resizeMode="contain" />
                   <GlobalText style={styles.text2}>
-                    {t('welcome')}, {capitalizeName(userInfo?.[0]?.name)} !
+                    {t('welcome')},
+                    {capitalizeName(
+                      `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
+                    )}
                   </GlobalText>
                 </View>
                 <GlobalText
