@@ -66,10 +66,6 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
-    console.log('hiii');
-
-    console.log('isConnected', isConnected);
-
     if (isConnected) {
       setNetworkstatus(true);
       setLoading(true);
@@ -78,7 +74,6 @@ const LoginScreen = () => {
         password: password,
       };
       const data = await login(payload);
-      console.log('data', data);
 
       if (data?.params?.status !== 'failed' && !data?.error) {
         await saveRefreshToken(data?.refresh_token || '');
@@ -86,7 +81,6 @@ const LoginScreen = () => {
         const userDetails = await getuserDetails();
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
-        console.log('tenantData', tenantData);
 
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
@@ -131,8 +125,6 @@ const LoginScreen = () => {
         const role = tenantData?.[0]?.roleName;
 
         if (role == 'Learner' || role == 'Student') {
-          console.log('reached');
-
           if (tenantid === scp?.[0]) {
             await setDataInStorage('userType', 'scp');
             if (cohort_id) {
@@ -307,7 +299,7 @@ const LoginScreen = () => {
               isDisabled={!isDisabled}
             />
           </View>
-          {/* <Pressable
+          <Pressable
             onPress={() => {
               navigation.navigate('RegisterStart');
             }}
@@ -316,7 +308,7 @@ const LoginScreen = () => {
             <GlobalText style={[globalStyles.text, { color: '#0D599E' }]}>
               {t('dont_have_account')}
             </GlobalText>
-          </Pressable> */}
+          </Pressable>
         </ScrollView>
       )}
 

@@ -21,7 +21,6 @@ const LearningResources = ({ route }) => {
     let contentList = [];
 
     data.forEach((item) => {
-      console.log('item', JSON.stringify(item));
       if (item.type === 'prerequisite') {
         prerequisites.push(item?.id?.toLowerCase());
         contentList.push(item?.id);

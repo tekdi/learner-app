@@ -31,8 +31,6 @@ const getHeaderswithoutTenant = async () => {
 
 export const login = async (params = {}) => {
   try {
-    console.log('called');
-
     const result = await post(`${EndUrls.login}`, params, {
       headers: {
         'Content-Type': 'application/json',
@@ -727,6 +725,19 @@ export const getProfileDetails = async (params = {}) => {
       offset: 0,
     };
 
+    // Convert headers object to cURL header format
+    const headerString = Object.entries(headers || {})
+      .map(([key, value]) => `-H "${key}: ${value}"`)
+      .join(' ');
+
+    // Convert payload to JSON string
+    const payloadString = JSON.stringify(payload);
+
+    // Construct cURL command
+    const curlCommand = `curl -X POST "${url}" ${headerString} -H "Content-Type: application/json" -d '${payloadString}'`;
+
+    // console.log('Generated cURL Command:', curlCommand);
+
     // Make the actual request
     const result = await post(url, payload, {
       headers: headers || {},
@@ -741,6 +752,7 @@ export const getProfileDetails = async (params = {}) => {
     return handleResponseException(e);
   }
 };
+
 export const getAssessmentStatus = async (params = {}) => {
   try {
     const url = `${EndUrls.AssessmentStatus}`; // Define the URL

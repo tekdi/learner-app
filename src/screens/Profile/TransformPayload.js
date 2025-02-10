@@ -1,38 +1,46 @@
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 
 export const transformPayload = async (data) => {
-  // console.log(data?.program);
-
   const studentForm = JSON.parse(await getDataFromStorage('studentForm'));
-  // console.log({ studentForm });
+  const studentProgramForm = JSON.parse(
+    await getDataFromStorage('studentProgramForm')
+  );
 
-  const getFieldIdByName = (name) => {
-    // Assuming studentForm is the array that contains all the fields
-    const field = studentForm.find(
-      (item) => item.name.toLowerCase() === name.toLowerCase()
-    );
+  const mergedForm = [...studentForm, ...studentProgramForm];
 
-    // If the field is found, return its fieldId, otherwise return null
-    return field ? field.fieldId : null;
+  const getFieldIdByName = () => {
+    const result = {
+      customFields: [],
+      userData: {},
+    };
+
+    mergedForm.forEach((field) => {
+      const keyName = field.name; // Get field name from studentForm
+      const type = field.type;
+
+      if (data.hasOwnProperty(keyName)) {
+        if (field.fieldId) {
+          // Push to customFields if fieldId is present
+          if (type === 'drop_down') {
+            result.customFields.push({
+              value: [data[keyName].value],
+              fieldId: field.fieldId,
+            });
+          } else {
+            result.customFields.push({
+              value: data[keyName].value || data[keyName],
+              fieldId: field.fieldId,
+            });
+          }
+        } else {
+          result.userData[keyName] = data[keyName];
+        }
+      }
+    });
+    console.log('result', JSON.stringify(result));
+
+    return result;
   };
 
-  const customFields = [
-    {
-      value: data.age,
-      fieldId: getFieldIdByName('age'),
-    },
-    {
-      value: data.gender,
-      fieldId: getFieldIdByName('gender'),
-    },
-  ];
-
-  return {
-    userData: {
-      name: `${data.first_name} ${data.last_name}`,
-      email: data?.email,
-      mobile: data?.mobile,
-    },
-    customFields: customFields,
-  };
+  return getFieldIdByName();
 };

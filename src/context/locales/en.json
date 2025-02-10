@@ -367,5 +367,18 @@
   "non_agricultural_laborer": "Non-agricultural laborer",
   "salaried_work": "Salaried work",
   "self_employment": "Self-employment",
-  "unemployed_or_domestic_work": "Unemployed/Domestic work"
+  "unemployed_or_domestic_work": "Unemployed/Domestic work",
+  "enrolled_in_educational_institute": "Enrolled in Educational Institute",
+  "have_you_receive_any_prior_training": "Have you received any prior training?",
+  "learners_primary_work": "Have you ever worked or are you currently working?",
+  "class_or_last_passed_grade": "Highest education qualification / last passed grade",
+  "graduate": "Graduate",
+  "post_graduate": "Post Graduate",
+  "is_it_your_own_phone": "Does this phone belong to you?",
+  "parent_guardian_phone_no": "Guardian's Mobile Number",
+  "marriage": "Marriage",
+  "migration": "Migration",
+  "started_vocational_course": "Started vocational course",
+  "started_a_job": "Started a job",
+  "school_closure_due_to_covid": "School closure due to covid"
 }

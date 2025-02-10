@@ -6,7 +6,6 @@ import {
   reverseGeocode,
 } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
-import { registerSchema } from './RegisterSchema';
 import {
   getDataFromStorage,
   setDataInStorage,
@@ -28,7 +27,7 @@ const RegisterScreen = () => {
       fieldName: 'states',
     };
     const data = await getGeoLocation({ payload });
-    setDataInStorage('states', JSON.stringify(data?.values));
+    setDataInStorage('states', JSON.stringify(data?.values || []));
     return data?.values;
   };
 

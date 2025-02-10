@@ -419,14 +419,51 @@ export const translateDate = (dateStr, lang) => {
   }
 };
 
-export const createNewObject = (customFields, labels) => {
+export const createNewObject = (customFields, labels, profileView) => {
   const result = {};
+  console.log('labels', JSON.stringify(customFields));
+
   customFields?.forEach((field) => {
     const cleanedFieldLabel = field?.label?.replace(/[^a-zA-Z0-9_ ]/g, '');
+    labels.map((item) => {
+      if (item?.label === cleanedFieldLabel) {
+        if (field.type === 'drop_down') {
+          if (profileView) {
+            result[item.label.toLowerCase()] = {
+              label: field.value || '-',
+              value: field.code || '-',
+            };
+          } else {
+            result[item.name] = {
+              label: field.value || '-',
+              value: field.code || '-',
+            };
+          }
 
-    if (labels.includes(cleanedFieldLabel)) {
-      result[cleanedFieldLabel] = field.value || '';
-    }
+          if (
+            ['STATES', 'DISTRICTS', 'BLOCKS', 'VILLAGE'].includes(field.label)
+          ) {
+            if (profileView) {
+              result[item.label.toLowerCase()] = {
+                label: field.value || '-',
+                value: field.code || '-',
+              };
+            } else {
+              result[item.name] = {
+                label: field.value || '-',
+                value: field.code || '-',
+              };
+            }
+          }
+        } else {
+          if (profileView) {
+            result[item.label.toLowerCase()] = field.code || '';
+          } else {
+            result[item.name] = field.code || '';
+          }
+        }
+      }
+    });
   });
 
   return result;
@@ -634,8 +671,8 @@ export const getAssociationsByName = (data, name) => {
 };
 
 export const calculateAge = (dobString) => {
-  // Split the date string into day, month, and year
-  const [day, month, year] = dobString.split('/').map(Number);
+  // Split the date string into year, month, and day (assuming YYYY-MM-DD format)
+  const [year, month, day] = dobString.split('-').map(Number);
 
   // Create a Date object for the DOB
   const dob = new Date(year, month - 1, day);

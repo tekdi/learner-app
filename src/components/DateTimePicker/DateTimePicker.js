@@ -12,6 +12,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import GlobalText from '@components/GlobalText/GlobalText';
 import { default as MaterialIcons } from 'react-native-vector-icons/MaterialIcons';
 import globalStyles from '../../utils/Helper/Style';
+import moment from 'moment';
 
 const DateTimePicker = ({
   handleValue,
@@ -34,8 +35,8 @@ const DateTimePicker = ({
   };
 
   const handleConfirm = (date) => {
-    console.log('date', date.toLocaleDateString());
-    handleValue(field?.name, date.toLocaleDateString());
+    const selectedDate = moment(date).format('YYYY-MM-DD');
+    handleValue(field?.name, selectedDate);
     hideDatePicker();
   };
 
@@ -58,10 +59,12 @@ const DateTimePicker = ({
           }}
         >
           <Text style={[globalStyles.text, { color: '#4D4639' }]}>
-            {formData[field.label] || ''}
+            {formData[field.name]
+              ? moment(formData[field.name], 'YYYY-MM-DD').format('DD-MM-YYYY')
+              : ''}
           </Text>
           <TouchableOpacity onPress={showDatePicker} style={{ right: 20 }}>
-            <MaterialIcons name="calendar-month" color={'#0D599E'} size={30} />
+            <MaterialIcons name="calendar-month" color={'#000'} size={30} />
           </TouchableOpacity>
         </View>
       </View>

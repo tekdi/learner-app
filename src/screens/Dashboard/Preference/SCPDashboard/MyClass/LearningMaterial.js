@@ -22,8 +22,6 @@ const LearningMaterial = () => {
   const [subjects, setSubjects] = useState([]);
 
   useEffect(() => {
-    console.log('hi');
-
     const fetchData = async () => {
       setLoading(true);
       const boardData = await LearningMaterialAPI();

@@ -24,7 +24,6 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
   };
 
   const handleSelect = (item) => {
-    console.log('item', item);
     handleValue(field?.name, { value: item?.value, label: item?.label });
     setIsDropdownOpen(false);
   };
@@ -40,7 +39,7 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
         >
           {t(field.label.toLowerCase())}
           {!field?.isRequired &&
-            !['states', 'districts', 'blocks'].includes(field.name) &&
+            // && !['states', 'districts', 'blocks'].includes(field.name)
             `(${t('optional')})`}
         </GlobalText>
       </View>
@@ -53,7 +52,7 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
         ]}
       >
         <GlobalText style={[globalStyles.text]}>
-          {t(formData[field.name]?.label.toLowerCase())}
+          {t(formData[field.name]?.label?.toLowerCase())}
         </GlobalText>
         <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
       </TouchableOpacity>

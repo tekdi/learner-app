@@ -9,9 +9,7 @@ import {
   Image,
 } from 'react-native';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
-import CustomRadioCard from '@components/CustomRadioCard/CustomRadioCard';
 import CustomCards from '@components/CustomCard/CustomCard';
-import { getAccessToken, registerUser } from '@src/utils/API/AuthService';
 import { logEventFunction } from '@src/utils/JsHelper/Helper';
 import { useTranslation } from '@context/LanguageContext';
 import { useInternet } from '@context/NetworkContext';
@@ -21,17 +19,25 @@ import { transformPayload } from './TransformPayload';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import ProfileHeader from './ProfileHeader';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
-import FastImage from '@changwoolab/react-native-fast-image';
 import globalStyles from '../../utils/Helper/Style';
 import GlobalText from '@components/GlobalText/GlobalText';
 import lightning from '../../assets/images/png/lightning.png';
 import {
+  calculateAge,
   createNewObject,
   getDataFromStorage,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
-import { getProfileDetails, updateUser } from '../../utils/API/AuthService';
+import {
+  getGeoLocation,
+  getProfileDetails,
+  updateUser,
+} from '../../utils/API/AuthService';
 import { useNavigation } from '@react-navigation/native';
+import RadioButton from '@components/CustomRadioCard/RadioButton';
+import DropdownSelect from '@components/DropdownSelect/DropdownSelect';
+import CustomPasswordTextField from '@components/CustomPasswordComponent/CustomPasswordComponent';
+import DateTimePicker from '@components/DateTimePicker/DateTimePicker';
 
 const ProfileUpdateForm = ({ fields }) => {
   const { t } = useTranslation();
@@ -44,6 +50,13 @@ const ProfileUpdateForm = ({ fields }) => {
   const [err, setErr] = useState();
   const { isConnected } = useInternet();
   const navigation = useNavigation();
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pages, setPages] = useState([]);
+  const [stateData, setStateData] = useState([]);
+  const [districtData, setDistrictData] = useState([]);
+  const [blockData, setBlockData] = useState([]);
+  const [villageData, setVillageData] = useState([]);
+  const [updateFormData, setUpdateFormData] = useState([]);
 
   const logProfileEditInProgress = async () => {
     const obj = {
@@ -54,37 +67,120 @@ const ProfileUpdateForm = ({ fields }) => {
     await logEventFunction(obj);
   };
 
+  const fetchDistricts = async (state) => {
+    setLoading(true);
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'districts',
+      controllingfieldfk: state || formData['states']?.value,
+    };
+
+    const data = await getGeoLocation({ payload });
+    setDistrictData(data?.values);
+    setLoading(false);
+    return data?.values;
+  };
+  const fetchvillages = async (block) => {
+    setLoading(true);
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'villages',
+      controllingfieldfk: block || formData['blocks']?.value,
+    };
+
+    const data = await getGeoLocation({ payload });
+
+    setVillageData(data?.values);
+    setLoading(false);
+    return data?.values;
+  };
+  const fetchBlocks = async (district) => {
+    setLoading(true);
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'blocks',
+      controllingfieldfk: district || formData['districts']?.value,
+    };
+
+    const data = await getGeoLocation({ payload });
+    setBlockData(data?.values);
+    setLoading(false);
+    return data?.values;
+  };
+
+  const fetchStates = async (data) => {
+    setLoading(true);
+    const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
+
+    const geoData = JSON.parse(await getDataFromStorage('geoData'));
+    setStateData(stateAPIdata);
+    const foundState = stateAPIdata?.find(
+      (item) => item?.label === geoData?.state
+    );
+    const districtAll = await fetchDistricts(foundState?.value);
+
+    const foundDistrict = districtAll?.find(
+      (item) => item?.label === geoData?.district
+    );
+
+    const updatedFormData = {
+      ...data,
+      ['states']: { value: foundState?.value, label: foundState?.label },
+      ['districts']: {
+        value: foundDistrict?.value,
+        label: foundDistrict?.label,
+      },
+    };
+    setFormData(updatedFormData);
+
+    setLoading(false);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const result = JSON.parse(await getDataFromStorage('profileData'));
       const finalResult = result?.getUserDetails?.[0];
-
-      const requiredLabels = [
-        'WHATS_YOUR_GENDER',
-        'CLASS_OR_LAST_PASSED_GRADE',
-        'STATES',
-        'DISTRICTS',
-        'BLOCKS',
-        'AGE',
-        'EMAIL',
+      const keysToRemove = [
+        'customFields',
+        'total_count',
+        'status',
+        'updatedAt',
+        'createdAt',
+        'updatedBy',
+        'createdBy',
+        'username',
       ];
+
+      const filteredResult = Object.keys(finalResult)
+        .filter((key) => !keysToRemove.includes(key))
+        .reduce((obj, key) => {
+          obj[key] = finalResult[key];
+          return obj;
+        }, {});
+      const requiredLabels = schema?.map((item) => {
+        return { label: item?.label, name: item?.name };
+      });
       const customFields = finalResult?.customFields;
       const userDetails = createNewObject(customFields, requiredLabels);
+      const newUpdatedObj = { ...userDetails, ...filteredResult };
 
       const updatedFormData = {
         ...formData,
-        ['first_name']: finalResult?.firstName,
-        ['last_name']: finalResult?.lastName,
-        ['email']: finalResult?.email,
-        ['age']: userDetails?.AGE,
-        ['mobile']: finalResult?.mobile,
-        ['gender']: userDetails?.WHATS_YOUR_GENDER?.toLowerCase(),
+        ...newUpdatedObj,
       };
-      setFormData(updatedFormData);
+      fetchStates(updatedFormData);
     };
+
+    const defaultPages = groupFieldsByOrder(schema);
+    setPages(defaultPages);
     fetchData();
     logProfileEditInProgress();
   }, []);
+
+  // console.log('formData', JSON.stringify(formData));
 
   const logProfileEditComplete = async () => {
     // Log the registration completed event
@@ -100,8 +196,6 @@ const ProfileUpdateForm = ({ fields }) => {
     setLoading(true);
     const payload = await transformPayload(data);
     const user_id = await getDataFromStorage('userId');
-    console.log('data', data);
-    console.log('payload', payload);
 
     const register = await updateUser({ payload, user_id });
     // const register = await updateUser();
@@ -123,19 +217,52 @@ const ProfileUpdateForm = ({ fields }) => {
     }
   };
 
-  const pages = [
-    ['first_name', 'last_name', 'email', 'mobile', 'age', 'gender'],
-  ];
+  const groupFieldsByOrder = (schema) => {
+    const grouped = schema.reduce((acc, item) => {
+      const order = parseInt(item.order);
+      if (!acc[order]) {
+        acc[order] = [];
+      }
+      acc[order].push(item.name);
+      return acc;
+    }, {});
+
+    // Convert the grouped object into an ordered array of arrays
+    const orderedPages = Object.keys(grouped)
+      .sort((a, b) => a - b)
+      .map((order) => grouped[order]);
+
+    return orderedPages;
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    if (formData?.states) {
+      fetchDistricts();
+    }
+    if (formData?.districts) {
+      fetchBlocks();
+    }
+    if (formData?.blocks) {
+      fetchvillages();
+    }
+    setLoading(false);
+  }, [formData['states'], formData['districts'], formData['blocks']]);
+
+  useEffect(() => {}, []);
 
   const handleInputChange = (name, value) => {
     const updatedFormData = { ...formData, [name]: value };
 
     setFormData(updatedFormData);
+    setUpdateFormData({ ...updateFormData, [name]: value });
     setErrors({ ...errors, [name]: '' }); // Clear errors for the field
   };
 
+  console.log('updatedFormData', JSON.stringify(updateFormData));
+
   const validateFields = () => {
-    const pageFields = pages;
+    const pageFields = pages[currentPage];
     const newErrors = {};
 
     pageFields.forEach((fieldName) => {
@@ -143,7 +270,13 @@ const ProfileUpdateForm = ({ fields }) => {
 
       if (field) {
         const value = formData[field.name] || '';
-
+        if (
+          ['confirm_password', 'password', 'program', 'username'].includes(
+            field.name
+          )
+        ) {
+          return; // Skip validation for these fields
+        }
         if (field.isRequired && !value) {
           newErrors[field.name] = `${t(field.name)} ${t('is_required')}`;
         } else if (field.minLength && value.length < field.minLength && value) {
@@ -155,7 +288,7 @@ const ProfileUpdateForm = ({ fields }) => {
         } else if (
           field.pattern &&
           value &&
-          !new RegExp(field.pattern).test(value)
+          !new RegExp(field.pattern.replace(/^\/|\/$/g, '')).test(value)
         ) {
           newErrors[field.name] = `${t(field.name)} ${t('is_invalid')}.`;
         }
@@ -163,10 +296,39 @@ const ProfileUpdateForm = ({ fields }) => {
     });
 
     setErrors(newErrors);
+    console.log('newErrors', newErrors);
+
     return Object.keys(newErrors).length === 0;
   };
 
   const renderField = (field) => {
+    const age = calculateAge(formData?.dob || '');
+    if (
+      (field.name === 'guardian_relation' ||
+        field.name === 'guardian_name' ||
+        field.name === 'parent_phone') &&
+      age &&
+      parseInt(age, 10) >= 18
+    ) {
+      return null;
+    }
+    if (field.name && !field?.isEditable) {
+      return null;
+    }
+    if (
+      [
+        'username',
+        'password',
+        'confirm_password',
+        'states',
+        'districts',
+        'blocks',
+        'villages',
+      ].includes(field.name)
+    ) {
+      return null;
+    }
+
     switch (field.type) {
       case 'text':
         return (
@@ -187,7 +349,7 @@ const ProfileUpdateForm = ({ fields }) => {
               formData={formData}
               handleValue={handleInputChange}
               errors={errors}
-              autoCapitalize={false}
+              autoCapitalize={'none'}
             />
           </View>
         );
@@ -203,10 +365,11 @@ const ProfileUpdateForm = ({ fields }) => {
             />
           </View>
         );
+
       case 'radio':
         return (
           <View key={field.name} style={styles.inputContainer}>
-            <CustomRadioCard
+            <RadioButton
               field={field}
               // options={programData}
               errors={errors}
@@ -226,22 +389,66 @@ const ProfileUpdateForm = ({ fields }) => {
             />
           </View>
         );
-
+      case 'drop_down':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <DropdownSelect
+              field={field}
+              options={
+                field.name === 'states'
+                  ? stateData
+                  : field.name === 'districts'
+                    ? districtData
+                    : field.name === 'blocks'
+                      ? blockData
+                      : field.name === 'villages'
+                        ? villageData
+                        : field?.options
+              }
+              errors={errors}
+              formData={formData}
+              handleValue={handleInputChange}
+            />
+          </View>
+        );
+      case 'password':
+      case 'confirm_password':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <CustomPasswordTextField
+              field={field}
+              errors={errors}
+              formData={formData}
+              handleValue={handleInputChange}
+            />
+          </View>
+        );
+      case 'date':
+        return (
+          <View key={field.name} style={styles.inputContainer}>
+            <DateTimePicker
+              field={field}
+              errors={errors}
+              formData={formData}
+              handleValue={handleInputChange}
+            />
+          </View>
+        );
       default:
         return null;
     }
   };
 
   const renderPage = () => {
-    const pageFields = pages[0];
+    const pageFields = pages[currentPage];
+
     return schema
-      .filter((field) => pageFields.includes(field.name))
+      .filter((field) => pageFields?.includes(field.name))
       .map((field) => renderField(field));
   };
-
   const handleSubmit = () => {
     if (validateFields()) {
-      onSubmit(formData);
+      onSubmit(updateFormData);
     }
   };
 
