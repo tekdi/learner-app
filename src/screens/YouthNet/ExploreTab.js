@@ -16,7 +16,10 @@ import {
 import { useTranslation } from '@context/LanguageContext';
 import CoursesBox from '@src/components/CoursesBox/CoursesBox';
 import SecondaryHeader from '@src/components/Layout/SecondaryHeader';
-import { courseListApi_testing } from '@src/utils/API/AuthService';
+import {
+  courseListApi_testing,
+  courseListApi_New,
+} from '@src/utils/API/AuthService';
 import SyncCard from '@src/components/SyncComponent/SyncCard';
 import BackButtonHandler from '@src/components/BackNavigation/BackButtonHandler';
 import {
@@ -31,6 +34,8 @@ import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '@src/components/AppUpdate/AppUpdatePopup';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SkillCenterCard from './SkillCenterCard';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import FilterModal from '@components/FilterModal/FilterModal';
 
 const ExploreTab = () => {
   const navigation = useNavigation();
@@ -44,6 +49,11 @@ const ExploreTab = () => {
   const [youthnet, setYouthnet] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [userId, setUserId] = useState('');
+  const [isModal, setIsModal] = useState(false);
+  const [parentFormData, setParentFormData] = useState([]);
+  const [parentStaticFormData, setParentStaticFormData] = useState([]);
+  const [orginalFormData, setOrginalFormData] = useState([]);
+  const [instant, setInstant] = useState([]);
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -58,6 +68,14 @@ const ExploreTab = () => {
       setYouthnet(isYouthnet);
       let userId = await getDataFromStorage('userId');
       setUserId(userId);
+
+      // const instant =
+      //   userType === 'youthnet'
+      //     ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+      //     : userType === 'scp'
+      //       ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+      //       : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+      setInstant({ frameworkId: 'pos-framework', channelId: 'pos-channel' });
     };
     fetch();
   }, []);
@@ -116,7 +134,7 @@ const ExploreTab = () => {
 
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
-      fetchData();
+      // fetchData();
 
       return () => {
         BackHandler.removeEventListener('hardwareBackPress', onBackPress);
@@ -127,7 +145,10 @@ const ExploreTab = () => {
   const fetchData = async () => {
     //setSearchText('');
     setLoading(true);
-    let data = await courseListApi_testing({ searchText });
+    const mergedFilter = { ...parentFormData, ...parentStaticFormData };
+    console.log('mergedFilter', mergedFilter);
+
+    let data = await courseListApi_New({ searchText, mergedFilter });
 
     //found course progress
     try {
@@ -162,6 +183,12 @@ const ExploreTab = () => {
     setData(data?.content || []);
     setLoading(false);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [parentFormData, parentStaticFormData])
+  );
 
   const handleSearch = async () => {
     await fetchData();
@@ -230,51 +257,61 @@ const ExploreTab = () => {
                     />
                   </TouchableOpacity>
                 </View>
-                <CustomSearchBox
-                  setSearchText={setSearchText}
-                  searchText={searchText}
-                  handleSearch={handleSearch}
-                  placeholder={t('Search Courses')}
-                />
+                <View style={globalStyles.flexrow}>
+                  <View style={{ width: '70%' }}>
+                    <CustomSearchBox
+                      setSearchText={setSearchText}
+                      searchText={searchText}
+                      handleSearch={handleSearch}
+                      placeholder={t('Search Courses')}
+                    />
+                  </View>
+                  <TouchableOpacity
+                    style={[
+                      globalStyles.flexrow,
+                      {
+                        borderWidth: 1,
+                        padding: 10,
+                        borderRadius: 10,
+                        width: 100,
+                        justifyContent: 'space-evenly',
+                        borderColor: '#DADADA',
+                      },
+                    ]}
+                    onPress={() => {
+                      setIsModal(true);
+                    }}
+                  >
+                    <GlobalText style={globalStyles.text}>
+                      {t('filter')}
+                    </GlobalText>
+                    <AntDesign
+                      name={'caretdown'}
+                      size={10}
+                      color="#000"
+                      // style={{ marginLeft: 10 }}
+                    />
+                  </TouchableOpacity>
+                </View>
 
                 <SyncCard doneSync={fetchData} />
               </View>
               {data.length > 0 ? (
-                <View
-                  style={{
-                    backgroundColor: '#FFF8F2',
-                    padding: 15,
-                    borderRadius: 10,
-                  }}
-                >
-                  <CoursesBox
-                    title={'Continue_Learning'}
-                    description={'Digital Skill Building'}
-                    style={{ titlecolor: '#06A816' }}
-                    viewAllLink={() =>
-                      navigation.navigate('ViewAll', {
-                        title: 'Continue_Learning',
-                        data: data,
-                      })
-                    }
-                    ContentData={data}
-                    TrackData={trackData}
-                    isHorizontal={true}
-                  />
-                  <CoursesBox
-                    description={'Health Awareness'}
-                    style={{ titlecolor: '#06A816' }}
-                    viewAllLink={() =>
-                      navigation.navigate('ViewAll', {
-                        title: 'Continue_Learning',
-                        data: data,
-                      })
-                    }
-                    ContentData={data}
-                    TrackData={trackData}
-                    isHorizontal={true}
-                  />
-                </View>
+                <CoursesBox
+                  // title={'Continue_Learning'}
+                  // description={'Food_Production'}
+                  style={{ titlecolor: '#06A816' }}
+                  // viewAllLink={() =>
+                  //   navigation.navigate('ViewAll', {
+                  //     title: 'Continue_Learning',
+                  //     data: data,
+                  //   }
+                  // )
+                  // }
+                  ContentData={data}
+                  TrackData={trackData}
+                  isHorizontal={false}
+                />
               ) : (
                 <GlobalText style={globalStyles.heading2}>
                   {t('no_data_found')}
@@ -291,7 +328,7 @@ const ExploreTab = () => {
           )}
         </View>
         <View style={{ padding: 15 }}>
-          <View
+          {/* <View
             style={[
               globalStyles.flexrow,
               { justifyContent: 'space-between', marginVertical: 10 },
@@ -316,9 +353,22 @@ const ExploreTab = () => {
                 size={20}
               />
             </TouchableOpacity>
-          </View>
-          <SkillCenterCard data={mydata} />
+          </View> */}
+          {/* <SkillCenterCard data={mydata} /> */}
         </View>
+        {isModal && (
+          <FilterModal
+            isModal={isModal}
+            setIsModal={setIsModal}
+            setParentFormData={setParentFormData}
+            parentFormData={parentFormData}
+            setParentStaticFormData={setParentStaticFormData}
+            parentStaticFormData={parentStaticFormData}
+            setOrginalFormData={setOrginalFormData}
+            orginalFormData={orginalFormData}
+            instant={instant}
+          />
+        )}
       </ScrollView>
     </SafeAreaView>
   );

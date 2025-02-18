@@ -384,6 +384,89 @@ export const courseListApi_testing = async ({
     return result_offline;
   }
 };
+export const courseListApi_New = async ({ searchText, mergedFilter }) => {
+  const user_id = await getDataFromStorage('userId');
+  const url = `${EndUrls.contentList_testing}`; // Define the URL
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  let userType = await getDataFromStorage('userType');
+  const payload = {
+    request: {
+      filters: {
+        // program:
+        //   userType == 'scp'
+        //     ? ['secondchance', 'Second Chance', 'SCP']
+        //     : ['Youthnet', 'youthnet', 'YouthNet'],
+        // ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
+        status: ['Live'],
+        primaryCategory: ['Course'],
+        ...(mergedFilter && mergedFilter),
+      },
+      limit: 100,
+      sort_by: {
+        lastPublishedOn: 'desc',
+      },
+      ...(searchText && { query: searchText }), // Add query conditionally
+      fields: [
+        'name',
+        'appIcon',
+        'description',
+        'posterImage',
+        'mimeType',
+        'identifier',
+        'resourceType',
+        'primaryCategory',
+        'contentType',
+        'trackable',
+        'children',
+        'leafNodes',
+      ],
+      // facets: [
+      //   'se_boards',
+      //   'se_gradeLevels',
+      //   'se_subjects',
+      //   'se_mediums',
+      //   'primaryCategory',
+      // ],
+      offset: 0,
+    },
+  };
+  // Construct the cURL command
+  let curlCommand = `curl -X POST '${url}' \\\n`;
+  for (const [key, value] of Object.entries(headers)) {
+    curlCommand += `-H '${key}: ${value}' \\\n`;
+  }
+  curlCommand += `-d '${JSON.stringify(payload)}'`;
+
+  // Output the cURL command to the console
+  console.log('Equivalent cURL command:\n', curlCommand);
+  try {
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      // store result
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
+      return result?.data?.result;
+    } else {
+      let result_offline = await getApiResponse(user_id, url, 'post', payload);
+      return result_offline;
+    }
+  } catch (e) {
+    let result_offline = await getApiResponse(user_id, url, 'post', payload);
+    return result_offline;
+  }
+};
 
 export const contentListApi_Pratham = async ({ searchText }) => {
   const user_id = await getDataFromStorage('userId');
@@ -1617,5 +1700,65 @@ export const notificationSubscribe = async ({ deviceId, user_id, action }) => {
     }
   } catch (e) {
     return handleResponseException(e);
+  }
+};
+
+export const filterContent = async ({ instantId }) => {
+  const url = `${EndUrls.filterContent}/${instantId}`; // Define the URL
+  try {
+    const method = 'get'; // Define the HTTP method
+    const headers = await getHeaders();
+
+    // Construct the curl command
+    let curlCommand = `curl -X ${method.toUpperCase()} '${url}' \\\n`;
+    for (const [key, value] of Object.entries(headers || {})) {
+      curlCommand += `-H '${key}: ${value}' \\\n`;
+    }
+    console.log('curlCom', curlCommand);
+
+    // Make the actual request
+    const result = await get(url, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    }
+  } catch (e) {
+    console.log('No internet available, retrieving offline data...', e);
+  }
+};
+
+export const staticFilterContent = async ({ instantId }) => {
+  const url = `${EndUrls.staticFilterContent}`; // Define the URL
+  const headers = await getHeaders();
+  const payload = {
+    request: {
+      objectCategoryDefinition: {
+        objectType: 'Collection',
+        name: 'Course',
+        channel: instantId,
+      },
+    },
+  };
+  try {
+    const curlCommand = `
+    curl -X POST '${url}' \\
+    -H 'Content-Type: application/json' \\
+    -H 'Accept: application/json' \\
+    -d '${JSON.stringify(payload)}'
+        `;
+    console.log('cURL Command:', curlCommand);
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    }
+  } catch (e) {
+    console.log('e', e);
   }
 };

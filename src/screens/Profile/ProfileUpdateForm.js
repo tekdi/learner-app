@@ -50,7 +50,7 @@ const ProfileUpdateForm = ({ fields }) => {
   const [err, setErr] = useState();
   const { isConnected } = useInternet();
   const navigation = useNavigation();
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage] = useState(0);
   const [pages, setPages] = useState([]);
   const [stateData, setStateData] = useState([]);
   const [districtData, setDistrictData] = useState([]);

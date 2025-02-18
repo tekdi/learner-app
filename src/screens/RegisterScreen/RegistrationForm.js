@@ -163,10 +163,11 @@ const RegistrationForm = ({ fields }) => {
     } else {
       if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
         await setDataInStorage('userType', 'youthnet');
+        navigation.navigate('YouthNetTabScreen');
       } else {
         await setDataInStorage('userType', 'public');
+        navigation.navigate('Dashboard');
       }
-      navigation.navigate('Dashboard');
     }
     setModal(false);
     const obj = {
@@ -471,7 +472,9 @@ const RegistrationForm = ({ fields }) => {
         }
 
         if (
-          ['guardian_name', 'guardian_relation'].includes(field.name) &&
+          ['guardian_name', 'guardian_relation', 'parent_phone'].includes(
+            field.name
+          ) &&
           age &&
           parseInt(age, 10) >= 18
         ) {
@@ -483,7 +486,8 @@ const RegistrationForm = ({ fields }) => {
           // (field.name === 'states' && !value) ||
           // (field.name === 'districts' && !value) ||
           (field.name === 'guardian_name' && !value) ||
-          (field.name === 'guardian_relation' && !value)
+          (field.name === 'guardian_relation' && !value) ||
+          (field.name === 'parent_phone' && !value)
         ) {
           newErrors[field.name] =
             `${t(field.label.toLowerCase())} ${t('is_required')}`;
@@ -506,6 +510,8 @@ const RegistrationForm = ({ fields }) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  console.log('errors,', errors);
 
   const renderField = (field) => {
     const age = calculateAge(formData?.dob || '');

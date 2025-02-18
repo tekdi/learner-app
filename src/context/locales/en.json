@@ -380,5 +380,7 @@
   "migration": "Migration",
   "started_vocational_course": "Started vocational course",
   "started_a_job": "Started a job",
-  "school_closure_due_to_covid": "School closure due to covid"
+  "school_closure_due_to_covid": "School closure due to covid",
+  "other_filters": "Other Filters",
+  "filter": "Filter"
 }

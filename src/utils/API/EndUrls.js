@@ -65,6 +65,9 @@ const EndUrls = {
   contentSearch: `${API_URL}/action/composite/v3/search`,
   framework: `${API_URL}/api/framework/v1/read/${FRAMEWORK_ID}`,
   question_set_read: `${API_URL}/action/questionset/v2/read/`, //pass do id at end ?fields=instructions,outcomeDeclaration
+  // filterContent: `https://lap.prathamdigital.org/api/framework/v1/read/scp-framework`,
+  filterContent: `${API_URL}/api/framework/v1/read`,
+  staticFilterContent: `${API_URL}/action/object/category/definition/v1/read?fields=objectMetadata,forms,name,label`,
 };
 
 export default EndUrls;

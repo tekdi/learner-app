@@ -43,14 +43,18 @@ const OtherSettings = ({ route }) => {
   const [conentView, setConentView] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [userType, setUserType] = useState();
+  const [cohortId, setCohortId] = useState();
 
   const { t } = useTranslation();
   const navigation = useNavigation();
 
   const fetchData = async () => {
     const userTypes = await getDataFromStorage('userType');
+    const getCohortId = await getDataFromStorage('cohortId');
     setUserType(userTypes);
+    setCohortId(getCohortId);
   };
+  console.log('cohortId', cohortId);
 
   useFocusEffect(
     useCallback(() => {
@@ -181,7 +185,10 @@ const OtherSettings = ({ route }) => {
               />
             </View>
           </TouchableOpacity>
-          {userType !== 'scp' && (
+          {userType === 'scp' &&
+          cohortId !== '00000000-0000-0000-0000-000000000000' ? (
+            <></>
+          ) : (
             <>
               <TouchableOpacity
                 style={[globalStyles.flexrow, styles.borderColor]}

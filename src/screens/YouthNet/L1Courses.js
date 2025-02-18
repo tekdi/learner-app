@@ -24,6 +24,7 @@ import SecondaryHeader from '@src/components/Layout/SecondaryHeader';
 import ContinueLearning from '@src/components/ContinueLearning/ContinueLearning';
 import {
   courseListApi_testing,
+  courseListApi_New,
   getAccessToken,
 } from '@src/utils/API/AuthService';
 import SyncCard from '@src/components/SyncComponent/SyncCard';
@@ -42,7 +43,10 @@ import globalStyles from '@src/utils/Helper/Style';
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '@src/components/AppUpdate/AppUpdatePopup';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+
 import { Linking } from 'react-native';
+import FilterModal from '@components/FilterModal/FilterModal';
 
 const L1Courses = () => {
   const navigation = useNavigation();
@@ -56,6 +60,11 @@ const L1Courses = () => {
   const [youthnet, setYouthnet] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [userId, setUserId] = useState('');
+  const [isModal, setIsModal] = useState(false);
+  const [parentFormData, setParentFormData] = useState([]);
+  const [parentStaticFormData, setParentStaticFormData] = useState([]);
+  const [orginalFormData, setOrginalFormData] = useState([]);
+  const [instant, setInstant] = useState([]);
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -65,12 +74,21 @@ const L1Courses = () => {
   useEffect(() => {
     const fetch = async () => {
       const cohort_id = await getDataFromStorage('cohortId');
-      let userType = await getDataFromStorage('userType');
-      let isYouthnet = userType == 'youthnet' ? true : false;
+      const userType = await getDataFromStorage('userType');
+      const isYouthnet = userType === 'youthnet';
       setYouthnet(isYouthnet);
-      let userId = await getDataFromStorage('userId');
+      const userId = await getDataFromStorage('userId');
       setUserId(userId);
+
+      const instant =
+        userType === 'youthnet'
+          ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+          : userType === 'scp'
+            ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+            : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+      setInstant(instant);
     };
+
     fetch();
   }, []);
 
@@ -132,7 +150,7 @@ const L1Courses = () => {
 
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
 
-      fetchData();
+      // fetchData();
 
       return () => {
         BackHandler.removeEventListener('hardwareBackPress', onBackPress);
@@ -143,7 +161,10 @@ const L1Courses = () => {
   const fetchData = async () => {
     //setSearchText('');
     setLoading(true);
-    let data = await courseListApi_testing({ searchText });
+    const mergedFilter = { ...parentFormData, ...parentStaticFormData };
+    console.log('mergedFilter', mergedFilter);
+
+    let data = await courseListApi_New({ searchText, mergedFilter });
 
     //found course progress
     try {
@@ -189,6 +210,13 @@ const L1Courses = () => {
   const sendEmail = (email) => {
     Linking.openURL(`mailto:${email}`); // Opens the email client
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [parentFormData, parentStaticFormData])
+  );
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
@@ -209,9 +237,9 @@ const L1Courses = () => {
                   <Image source={wave} resizeMode="contain" />
                   <GlobalText style={styles.text2}>
                     {t('welcome')},
-                    {capitalizeName(
+                    {/* {capitalizeName(
                       `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
-                    )}
+                    )} */}
                   </GlobalText>
                 </View>
                 <GlobalText
@@ -220,51 +248,66 @@ const L1Courses = () => {
                   {youthnet ? t('get_started_with_l1_courses') : t('courses')}
                 </GlobalText>
                 <ContinueLearning youthnet={youthnet} t={t} userId={userId} />
-                <CustomSearchBox
-                  setSearchText={setSearchText}
-                  searchText={searchText}
-                  handleSearch={handleSearch}
-                  placeholder={t('Search Courses')}
-                />
-
+                <View style={globalStyles.flexrow}>
+                  <View style={{ width: '70%' }}>
+                    <CustomSearchBox
+                      setSearchText={setSearchText}
+                      searchText={searchText}
+                      handleSearch={handleSearch}
+                      placeholder={t('Search Courses')}
+                    />
+                  </View>
+                  <TouchableOpacity
+                    style={[
+                      globalStyles.flexrow,
+                      {
+                        borderWidth: 1,
+                        padding: 10,
+                        borderRadius: 10,
+                        width: 100,
+                        justifyContent: 'space-evenly',
+                        borderColor: '#DADADA',
+                      },
+                    ]}
+                    onPress={() => {
+                      setIsModal(true);
+                    }}
+                  >
+                    <GlobalText style={globalStyles.text}>
+                      {t('filter')}
+                    </GlobalText>
+                    <AntDesign
+                      name={'caretdown'}
+                      size={10}
+                      color="#000"
+                      // style={{ marginLeft: 10 }}
+                    />
+                  </TouchableOpacity>
+                </View>
                 <SyncCard doneSync={fetchData} />
                 {data.length > 0 ? (
-                  <>
-                    <CoursesBox
-                      title={'Continue_Learning'}
-                      description={'Digital Skill Building'}
-                      style={{ titlecolor: '#06A816' }}
-                      viewAllLink={() =>
-                        navigation.navigate('ViewAll', {
-                          title: 'Continue_Learning',
-                          data: data,
-                        })
-                      }
-                      ContentData={data}
-                      TrackData={trackData}
-                      isHorizontal={true}
-                    />
-                    <CoursesBox
-                      description={'Health Awareness'}
-                      style={{ titlecolor: '#06A816' }}
-                      viewAllLink={() =>
-                        navigation.navigate('ViewAll', {
-                          title: 'Continue_Learning',
-                          data: data,
-                        })
-                      }
-                      ContentData={data}
-                      TrackData={trackData}
-                      isHorizontal={true}
-                    />
-                  </>
+                  <CoursesBox
+                    // title={'Continue_Learning'}
+                    // description={'Food_Production'}
+                    style={{ titlecolor: '#06A816' }}
+                    // viewAllLink={() =>
+                    //   navigation.navigate('ViewAll', {
+                    //     title: 'Continue_Learning',
+                    //     data: data,
+                    //   }
+                    // )
+                    // }
+                    ContentData={data}
+                    TrackData={trackData}
+                    isHorizontal={false}
+                  />
                 ) : (
                   <GlobalText style={globalStyles.heading2}>
                     {t('no_data_found')}
                   </GlobalText>
                 )}
               </View>
-              <View style={{ backgroundColor: '#FFF8F2', padding: 25 }}>
+              {/* <View style={{ backgroundColor: '#FFF8F2', padding: 25 }}>
                 <GlobalText
                   style={[globalStyles.subHeading, { fontWeight: 700 }]}
                 >
@@ -301,7 +344,7 @@ const L1Courses = () => {
                     </GlobalText>
                   </TouchableOpacity>
                 </View>
-              </View>
+              </View> */}
             </SafeAreaView>
           )}
           {showExitModal && (
@@ -312,6 +355,19 @@ const L1Courses = () => {
             />
           )}
         </View>
+        {isModal && (
+          <FilterModal
+            isModal={isModal}
+            setIsModal={setIsModal}
+            setParentFormData={setParentFormData}
+            parentFormData={parentFormData}
+            setParentStaticFormData={setParentStaticFormData}
+            parentStaticFormData={parentStaticFormData}
+            setOrginalFormData={setOrginalFormData}
+            orginalFormData={orginalFormData}
+            instant={instant}
+          />
+        )}
       </ScrollView>
     </SafeAreaView>
   );

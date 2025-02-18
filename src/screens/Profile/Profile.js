@@ -19,6 +19,7 @@ import {
   getDataFromStorage,
   getTentantId,
   logEventFunction,
+  setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
@@ -28,6 +29,7 @@ import NoCertificateBox from './NoCertificateBox';
 import GlobalText from '@components/GlobalText/GlobalText';
 import DeviceInfo from 'react-native-device-info';
 import Config from 'react-native-config';
+import { getStudentForm } from '../../utils/API/AuthService';
 
 const Profile = () => {
   const { t, language } = useTranslation();
@@ -70,16 +72,22 @@ const Profile = () => {
   };
 
   const fetchData = async () => {
-    const studentForm = JSON.parse(await getDataFromStorage('studentForm'));
-    const studentProgramForm = JSON.parse(
-      await getDataFromStorage('studentProgramForm')
-    );
+    const data = await getStudentForm();
+    setDataInStorage('studentForm', JSON.stringify(data?.fields));
+    const tenantId = await getDataFromStorage('userTenantid');
 
+    const studentForm = data?.fields;
+    const programFormData = await getStudentForm(tenantId);
+
+    const studentProgramForm = programFormData?.fields;
+    setDataInStorage('studentProgramForm', JSON.stringify(studentProgramForm));
     const mergedForm = [...studentForm, ...studentProgramForm];
 
     const result = JSON.parse(await getDataFromStorage('profileData'));
 
     const finalResult = result?.getUserDetails?.[0];
+    console.log('finalResult', result);
+
     const keysToRemove = [
       'customFields',
       'total_count',

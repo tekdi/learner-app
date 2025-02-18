@@ -1,16 +1,12 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
+import { CopilotStep, walkthroughable } from 'react-native-copilot';
 
 import {
-  ActivityIndicator,
   BackHandler,
   Image,
   SafeAreaView,
   ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -19,23 +15,20 @@ import {
   useNavigation,
   useNavigationState,
 } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Octicons';
-import ScrollViewLayout from '../../../components/Layout/ScrollViewLayout';
+import Icon from 'react-native-vector-icons/AntDesign';
+
 import { useTranslation } from '../../../context/LanguageContext';
 import wave from '../../../assets/images/png/wave.png';
 import CoursesBox from '../../../components/CoursesBox/CoursesBox';
 import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
 import ContinueLearning from '../../../components/ContinueLearning/ContinueLearning';
-import {
-  courseListApi_testing,
-  getAccessToken,
-} from '../../../utils/API/AuthService';
+import { courseListApi_testing } from '../../../utils/API/AuthService';
 import SyncCard from '../../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
+import FilterModal from '@components/FilterModal/FilterModal';
 import {
   capitalizeName,
   getDataFromStorage,
-  getTentantId,
   logEventFunction,
 } from '../../../utils/JsHelper/Helper';
 import { courseTrackingStatus } from '../../../utils/API/ApiCalls';
@@ -56,9 +49,13 @@ const Courses = () => {
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
+  const [isModal, setIsModal] = useState(false);
   const [youthnet, setYouthnet] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [userId, setUserId] = useState('');
+  const [parentFormData, setParentFormData] = useState([]);
+  const [parentStaticFormData, setParentStaticFormData] = useState([]);
+  const [filters, setFilters] = useState([]);
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -146,7 +143,12 @@ const Courses = () => {
   const fetchData = async () => {
     //setSearchText('');
     setLoading(true);
-    let data = await courseListApi_testing({ searchText });
+    const mainFormData = {
+      ...parentFormData,
+      ...parentStaticFormData,
+    };
+    setFilters(mainFormData);
+    let data = await courseListApi_testing({ searchText, mainFormData });
 
     //found course progress
     try {
@@ -182,6 +184,10 @@ const Courses = () => {
     setLoading(false);
   };
 
+  useEffect(() => {
+    fetchData();
+  }, [parentFormData, parentStaticFormData]);
+
   const handleSearch = async () => {
     await fetchData();
   };
@@ -210,22 +216,51 @@ const Courses = () => {
                 {youthnet ? t('l1_courses') : t('courses')}
               </GlobalText>
               <ContinueLearning youthnet={youthnet} t={t} userId={userId} />
-              <CopilotStep
-                text="You can search courses from here"
-                order={6}
-                name="start"
-              >
-                <CopilotView style={{ width: '100%' }}>
-                  <View>
-                    <CustomSearchBox
-                      setSearchText={setSearchText}
-                      searchText={searchText}
-                      handleSearch={handleSearch}
-                      placeholder={t('Search Courses')}
-                    />
-                  </View>
-                </CopilotView>
-              </CopilotStep>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <CopilotStep
+                  text="You can search courses from here"
+                  order={6}
+                  name="start"
+                >
+                  <CopilotView style={{ width: '70%' }}>
+                    <View>
+                      <CustomSearchBox
+                        setSearchText={setSearchText}
+                        searchText={searchText}
+                        handleSearch={handleSearch}
+                        placeholder={t('Search Courses')}
+                      />
+                    </View>
+                  </CopilotView>
+                </CopilotStep>
+
+                <TouchableOpacity
+                  style={[
+                    globalStyles.flexrow,
+                    {
+                      borderWidth: 1,
+                      padding: 10,
+                      borderRadius: 10,
+                      width: 100,
+                      justifyContent: 'space-evenly',
+                      borderColor: '#DADADA',
+                    },
+                  ]}
+                  onPress={() => {
+                    setIsModal(true);
+                  }}
+                >
+                  <GlobalText style={globalStyles.text}>
+                    {t('filter')}
+                  </GlobalText>
+                  <Icon
+                    name={'caretdown'}
+                    size={10}
+                    color="#000"
+                    // style={{ marginLeft: 10 }}
+                  />
+                </TouchableOpacity>
+              </View>
 
               <SyncCard doneSync={fetchData} />
               <CopilotStep
@@ -270,6 +305,16 @@ const Courses = () => {
           )}
         </View>
       </ScrollView>
+      {isModal && (
+        <FilterModal
+          isModal={isModal}
+          setIsModal={setIsModal}
+          setParentFormData={setParentFormData}
+          setParentStaticFormData={setParentStaticFormData}
+          parentFormData={parentFormData}
+          parentStaticFormData={parentStaticFormData}
+        />
+      )}
     </SafeAreaView>
   );
 };

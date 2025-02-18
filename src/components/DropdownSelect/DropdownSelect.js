@@ -28,6 +28,7 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
     setIsDropdownOpen(false);
   };
 
+  console.log('field.label', field.label);
   return (
     <View style={styles.dropdownContainer}>
       <View style={styles.label}>
@@ -51,9 +52,26 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
           { borderColor: errors[field.name] ? 'red' : '#DADADA' },
         ]}
       >
-        <GlobalText style={[globalStyles.text]}>
+        {[
+          'STATES',
+          'DISTRICTS',
+          'BLOCKS',
+          'VILLAGE',
+          'STATE',
+          'DISTRICT',
+          'BLOCK',
+        ].includes(field.label) ? (
+          <GlobalText style={[globalStyles.text]}>
+            {t(formData[field.name]?.label)}
+          </GlobalText>
+        ) : (
+          <GlobalText style={[globalStyles.text]}>
+            {t(formData[field.name]?.label?.toLowerCase())}
+          </GlobalText>
+        )}
+        {/* <GlobalText style={[globalStyles.text]}>
           {t(formData[field.name]?.label?.toLowerCase())}
-        </GlobalText>
+        </GlobalText> */}
         <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
       </TouchableOpacity>
       {isDropdownOpen && (

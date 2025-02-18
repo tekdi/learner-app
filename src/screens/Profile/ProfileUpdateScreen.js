@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
-import { ProfileUpdateSchema } from './ProfileUpdateSchema';
 import ProfileUpdateForm from './ProfileUpdateForm';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { getStudentForm } from '../../utils/API/AuthService';
@@ -8,7 +7,7 @@ import {
   getDataFromStorage,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
-import Loading from '../LoadingScreen/Loading';
+import ActiveLoading from '../LoadingScreen/ActiveLoading';
 // import Geolocation from 'react-native-geolocation-service'; //GeoLocation Comment
 
 const ProfileUpdateScreen = () => {
@@ -43,7 +42,7 @@ const ProfileUpdateScreen = () => {
   }, []);
 
   return loading ? (
-    <Loading />
+    <ActiveLoading />
   ) : (
     <SafeAreaView style={styles.container}>
       <ProfileUpdateForm fields={mainSchema} />
