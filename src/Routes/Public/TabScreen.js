@@ -2,19 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
-import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import DashboardStack from './DashboardStack';
+import ExploreStack from '../Youthnet/ExploreStack';
 import Contents from '../../screens/Dashboard/Contents';
 import Coursesfilled from '../../assets/images/png/Coursesfilled.png';
 import profile from '../../assets/images/png/profile.png';
 import profile_filled from '../../assets/images/png/profile_filled.png';
-import content from '../../assets/images/png/content.png';
-import content2 from '../../assets/images/png/content2.png';
+
 import Coursesunfilled from '../../assets/images/png/Coursesunfilled.png';
 import ProfileStack from './ProfileStack';
-import { getDataFromStorage, getTentantId } from '../../utils/JsHelper/Helper';
+import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
-import Config from 'react-native-config';
+import explore_FILL from '@src/assets/images/png/explore_FILL.png';
+import explore_UNFILLED from '@src/assets/images/png/explore_UNFILLED.png';
 
 const Tab = createBottomTabNavigator();
 const WalkthroughableView = walkthroughable(View); // Wrap Image component
@@ -38,25 +38,17 @@ const TabScreen = () => {
   //   copilotEvents.on('stop', () => setCopilotStopped(true));
   // }, [start, copilotEvents]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const tenantId = await getTentantId();
-  //     const tenantDetails = JSON.parse(
-  //       await getDataFromStorage('tenantDetails')
-  //     );
+  useEffect(() => {
+    const fetchData = async () => {
+      let userType = await getDataFromStorage('userType');
+      console.log('userType', userType);
+      if (userType === 'youthnet') {
+        setContentShow(false);
+      }
+    };
 
-  //     const youthnetTenantIds = tenantDetails?.filter((item) => {
-  //       if (item?.name === 'YouthNet') {
-  //         return item;
-  //       }
-  //     });
-  //     if (tenantId === youthnetTenantIds?.[0]?.tenantId) {
-  //       setContentShow(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+    fetchData();
+  }, []);
 
   return (
     <Tab.Navigator
@@ -118,6 +110,32 @@ const TabScreen = () => {
             tabBarIcon: ({ focused }) => (
               <Image
                 source={focused ? profile_filled : profile}
+                style={{ width: 30, height: 30 }}
+              />
+            ),
+          }}
+        />
+      )}
+      {!contentShow && (
+        <Tab.Screen
+          name="explore"
+          component={ExploreStack}
+          options={{
+            tabBarLabel: t('explore'),
+            tabBarButton: (props) => (
+              <CopilotStep
+                text="This is the Content tab. Tap here to explore Content!"
+                order={4}
+                name="explore"
+              >
+                <WalkthroughableView style={{ flex: 1 }}>
+                  <TouchableOpacity {...props} />
+                </WalkthroughableView>
+              </CopilotStep>
+            ),
+            tabBarIcon: ({ focused }) => (
+              <Image
+                source={focused ? explore_FILL : explore_UNFILLED}
                 style={{ width: 30, height: 30 }}
               />
             ),

@@ -1,20 +1,17 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 
 import {
   BackHandler,
   Image,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  useFocusEffect,
-  useNavigation,
-  useNavigationState,
-} from '@react-navigation/native';
+import { useFocusEffect, useNavigationState } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/AntDesign';
 
 import { useTranslation } from '../../../context/LanguageContext';
@@ -22,10 +19,12 @@ import wave from '../../../assets/images/png/wave.png';
 import CoursesBox from '../../../components/CoursesBox/CoursesBox';
 import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
 import ContinueLearning from '../../../components/ContinueLearning/ContinueLearning';
-import { courseListApi_testing } from '../../../utils/API/AuthService';
+import { courseListApi_New } from '../../../utils/API/AuthService';
 import SyncCard from '../../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
 import FilterModal from '@components/FilterModal/FilterModal';
+import FilterList from '@components/FilterModal/FilterList';
+import FilterDrawer from '@components/FilterModal/FilterDrawer';
 import {
   capitalizeName,
   getDataFromStorage,
@@ -38,13 +37,18 @@ import globalStyles from '../../../utils/Helper/Style';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../components/AppUpdate/AppUpdatePopup';
+import PrimaryButton from '../../../components/PrimaryButton/PrimaryButton';
+import {
+  restoreScrollPosition,
+  storeScrollPosition,
+} from '../../../utils/Helper/JSHelper';
 
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
 const Courses = () => {
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   const { t } = useTranslation();
-  const [data, setData] = useState([]);
+  const [courseData, setCourseData] = useState([]);
   const [trackData, setTrackData] = useState([]);
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
@@ -55,7 +59,37 @@ const Courses = () => {
   const [userId, setUserId] = useState('');
   const [parentFormData, setParentFormData] = useState([]);
   const [parentStaticFormData, setParentStaticFormData] = useState([]);
-  const [filters, setFilters] = useState([]);
+  const [orginalFormData, setOrginalFormData] = useState([]);
+  const [instant, setInstant] = useState([]);
+  const [offset, setOffset] = useState(0);
+  const [count, setCount] = useState(0);
+  const scrollViewRef = useRef(null);
+  // const [scrollPosition, setScrollPosition] = useState(0);
+  const [restoreScroll, setRestoreScroll] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Function to store the scroll position
+
+  // Save scroll position when user scrolls
+  const handleScroll = (event) => {
+    const position = event.nativeEvent.contentOffset.y;
+    const page = 'courses';
+    storeScrollPosition(position, page);
+  };
+
+  // Restore scroll position only when coming back
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      if (restoreScroll) {
+        const page = 'courses';
+        restoreScrollPosition(scrollViewRef, page);
+      }
+
+      setRestoreScroll(true);
+      setLoading(false);
+    }, [restoreScroll])
+  );
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -64,12 +98,20 @@ const Courses = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      const cohort_id = await getDataFromStorage('cohortId');
+      // const cohort_id = await getDataFromStorage('cohortId');
       let userType = await getDataFromStorage('userType');
+
       let isYouthnet = userType == 'youthnet' ? true : false;
       setYouthnet(isYouthnet);
       let userId = await getDataFromStorage('userId');
       setUserId(userId);
+      const instant =
+        userType === 'youthnet'
+          ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+          : userType === 'scp'
+            ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+            : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+      setInstant(instant);
     };
     fetch();
   }, []);
@@ -115,10 +157,6 @@ const Courses = () => {
     setShowExitModal(false); // Close the modal
   };
 
-  const handlePress = () => {
-    navigation.navigate('Preference');
-  };
-
   useFocusEffect(
     useCallback(() => {
       // console.log('########## in focus course');
@@ -131,56 +169,68 @@ const Courses = () => {
       };
 
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      // const newOffset = offset; // Increase offset by 5
+      // console.log('newOffset', newOffset);
 
-      fetchData();
-
+      // setOffset(newOffset); // Update state
+      // fetchData(newOffset, false); // Append new data
       return () => {
         BackHandler.removeEventListener('hardwareBackPress', onBackPress);
       };
     }, []) // Make sure to include the dependencies
   );
 
-  const fetchData = async () => {
-    //setSearchText('');
+  const fetchData = async (offset, append = false) => {
     setLoading(true);
-    const mainFormData = {
-      ...parentFormData,
-      ...parentStaticFormData,
-    };
-    setFilters(mainFormData);
-    let data = await courseListApi_testing({ searchText, mainFormData });
 
-    //found course progress
+    const mergedFilter = { ...parentFormData, ...parentStaticFormData };
+    let userType = await getDataFromStorage('userType');
+
+    const instant =
+      userType === 'youthnet'
+        ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+        : userType === 'scp'
+          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+
+    let data = await courseListApi_New({
+      searchText,
+      mergedFilter,
+      instant,
+      offset,
+    });
+
     try {
-      // console.log('########## contentListApi');
-      const contentList = data?.content;
-      //console.log('########## contentList', contentList);
-      let courseList = [];
-      if (contentList) {
-        for (let i = 0; i < contentList.length; i++) {
-          courseList.push(contentList[i]?.identifier);
-        }
-      }
-      //console.log('########## courseList', courseList);
-      //get course track data
+      const contentList = data?.content || [];
+      let courseList = contentList.map((item) => item?.identifier);
+
       let userId = await getDataFromStorage('userId');
       let course_track_data = await courseTrackingStatus(userId, courseList);
-      //console.log('########## course_track_data', course_track_data?.data);
+
       let courseTrackData = [];
       if (course_track_data?.data) {
         courseTrackData =
           course_track_data?.data.find((course) => course.userId === userId)
             ?.course || [];
       }
-      setTrackData(courseTrackData);
-      // console.log('########## courseTrackData', courseTrackData);
-      // console.log('##########');
+      // setTrackData(courseTrackData);
+      setTrackData((prevData) =>
+        append
+          ? [...prevData, ...(courseTrackData || [])]
+          : courseTrackData || []
+      );
     } catch (e) {
-      console.log('e', e);
+      console.log('Error:', e);
     }
+
     const result = JSON.parse(await getDataFromStorage('profileData'));
     setUserInfo(result?.getUserDetails);
-    setData(data?.content || []);
+    setCount(data?.count);
+    // Append new data only if handleViewMore is triggered
+    setCourseData((prevData) =>
+      append ? [...prevData, ...(data?.content || [])] : data?.content || []
+    );
+
     setLoading(false);
   };
 
@@ -188,15 +238,48 @@ const Courses = () => {
     fetchData();
   }, [parentFormData, parentStaticFormData]);
 
+  console.log('parentFormData', parentFormData);
+  console.log('parentStaticFormData', parentStaticFormData);
+
   const handleSearch = async () => {
-    await fetchData();
+    setOffset(0); // Reset offset when searching
+    await fetchData(0, false); // Reset course data
   };
 
+  const handleViewMore = () => {
+    const newOffset = offset + 5; // Increase offset by 5
+    setOffset(newOffset); // Update state
+    fetchData(newOffset, true); // Append new data
+    const page = 'courses';
+    restoreScrollPosition(scrollViewRef, page);
+  };
+
+  // Refresh the component.
+  const handleRefresh = async () => {
+    setLoading(true); // Start Refresh Indicator
+
+    try {
+      console.log('Fetching Data...');
+      fetchData(0, false); // Reset course data
+    } catch (error) {
+      console.log('Error fetching data:', error);
+    } finally {
+      setLoading(false); // Stop Refresh Indicator
+    }
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
       <AppUpdatePopup />
-      <ScrollView nestedScrollEnabled>
+      <ScrollView
+        nestedScrollEnabled
+        ref={scrollViewRef}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+        }
+      >
         <View style={styles.view}>
           {loading ? (
             <ActiveLoading />
@@ -247,7 +330,7 @@ const Courses = () => {
                     },
                   ]}
                   onPress={() => {
-                    setIsModal(true);
+                    setIsDrawerOpen(true);
                   }}
                 >
                   <GlobalText style={globalStyles.text}>
@@ -270,7 +353,7 @@ const Courses = () => {
               >
                 <CopilotView style={{ width: '100%' }}>
                   <View>
-                    {data.length > 0 ? (
+                    {courseData.length > 0 ? (
                       <CoursesBox
                         // title={'Continue_Learning'}
                         // description={'Food_Production'}
@@ -282,7 +365,7 @@ const Courses = () => {
                         //   }
                         // )
                         // }
-                        ContentData={data}
+                        ContentData={courseData}
                         TrackData={trackData}
                         isHorizontal={false}
                       />
@@ -294,6 +377,14 @@ const Courses = () => {
                   </View>
                 </CopilotView>
               </CopilotStep>
+              {courseData.length !== count && (
+                <View>
+                  <PrimaryButton
+                    onPress={handleViewMore}
+                    text={t('viewmore')}
+                  />
+                </View>
+              )}
             </>
           )}
           {showExitModal && (
@@ -305,7 +396,7 @@ const Courses = () => {
           )}
         </View>
       </ScrollView>
-      {isModal && (
+      {/* {isModal && (
         <FilterModal
           isModal={isModal}
           setIsModal={setIsModal}
@@ -313,7 +404,30 @@ const Courses = () => {
           setParentStaticFormData={setParentStaticFormData}
           parentFormData={parentFormData}
           parentStaticFormData={parentStaticFormData}
+          setOrginalFormData={setOrginalFormData}
+          orginalFormData={orginalFormData}
+          instant={instant}
         />
+      )} */}
+
+      {isDrawerOpen && (
+        <FilterDrawer
+          isVisible={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+        >
+          <FilterList
+            isModal={isModal}
+            setIsModal={setIsModal}
+            setParentFormData={setParentFormData}
+            setParentStaticFormData={setParentStaticFormData}
+            parentFormData={parentFormData}
+            parentStaticFormData={parentStaticFormData}
+            setOrginalFormData={setOrginalFormData}
+            orginalFormData={orginalFormData}
+            instant={instant}
+            setIsDrawerOpen={setIsDrawerOpen}
+          />
+        </FilterDrawer>
       )}
     </SafeAreaView>
   );

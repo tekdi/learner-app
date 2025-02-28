@@ -15,7 +15,6 @@ import {
   deleteFilesInDirectory,
   deleteSavedItem,
   getDataFromStorage,
-  getDeviceId,
   logEventFunction,
 } from '../../utils/JsHelper/Helper';
 import GlobalText from '@components/GlobalText/GlobalText';
@@ -30,10 +29,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
-import { notificationSubscribe } from '../../utils/API/AuthService';
 import InAppBrowser from 'react-native-inappbrowser-reborn';
 import FullPagePdfModal from '../RegisterScreen/FullPagePdfModal';
 import PropTypes from 'prop-types';
+import { NotificationUnsubscribe } from '../../utils/Helper/JSHelper';
 
 const OtherSettings = ({ route }) => {
   const { age } = route.params;
@@ -66,16 +65,6 @@ const OtherSettings = ({ route }) => {
   const StorageSize = async () => {
     const data = await calculateTotalStorageSize();
     setStorageData(data);
-  };
-
-  const NotificationUnsubscribe = async () => {
-    const user_id = await getDataFromStorage('userId');
-    const deviceId = await getDeviceId();
-    const action = 'remove';
-
-    if (user_id) {
-      await notificationSubscribe({ deviceId, user_id, action });
-    }
   };
 
   const logoutEvent = async () => {

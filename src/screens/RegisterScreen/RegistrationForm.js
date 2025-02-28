@@ -98,6 +98,7 @@ const RegistrationForm = ({ fields }) => {
   const [suggestedUsernames, setSuggestedUsernames] = useState([]);
   const [OTP, setOTP] = useState();
   const [OTPError, setOTPError] = useState();
+  const [hashCode, setHashCode] = useState('');
   const { isConnected } = useInternet();
 
   const RegisterLogin = async (loginData) => {
@@ -511,8 +512,6 @@ const RegistrationForm = ({ fields }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  console.log('errors,', errors);
-
   const renderField = (field) => {
     const age = calculateAge(formData?.dob || '');
     if (
@@ -723,16 +722,18 @@ const RegistrationForm = ({ fields }) => {
       reason: 'signup',
     };
     const data = await sendOtp(payload);
+    setHashCode(data?.result?.data?.hash);
     setOTPError(data?.params?.err);
   };
   const verifyOTPFunction = async () => {
     const payload = {
-      mobile: formData?.phone_number,
-      otp: '100308',
+      mobile: formData?.mobile,
+      otp: OTP?.value,
       reason: 'signup',
-      hash: '5f8a218e4a676369ace6de324390fc9ab58d4a89ace1b88bb94580460fcd2205.1734678776526',
+      hash: hashCode,
     };
-    await verifyOtp(payload);
+    const data = await verifyOtp(payload);
+    return data?.params?.status;
   };
 
   const handleNext = async () => {
@@ -784,8 +785,8 @@ const RegistrationForm = ({ fields }) => {
   };
 
   const handleOtpVerification = async () => {
-    const isValidOtp = true;
-    if (isValidOtp) {
+    const isValidOtp = await verifyOTPFunction();
+    if (isValidOtp !== 'failed') {
       setOtpModalVisible(false);
       setUserModalVisible(false);
       setCurrentPage(currentPage + 1);
@@ -1166,7 +1167,7 @@ const RegistrationForm = ({ fields }) => {
                 <Icon name={'close'} color="#000" size={30} />
               </TouchableOpacity>
             </View>
-            {!OTPError ? (
+            {OTPError ? (
               <GlobalText style={[globalStyles.heading2, { fontWeight: 650 }]}>
                 {OTPError}
               </GlobalText>
@@ -1237,14 +1238,16 @@ const RegistrationForm = ({ fields }) => {
                       },
                     ]}
                   >
-                    {t('resend_otp_in').replace(`{count}`, count)}
+                    {count !== 0
+                      ? t('resend_otp_in').replace(`{count}`, count)
+                      : t('resend_otp')}
                   </GlobalText>
                 </TouchableOpacity>
               </View>
             )}
             <View style={styles.btnbox}>
               <PrimaryButton
-                // isDisabled={OTPError || !OTP?.value ? true : false}
+                isDisabled={OTPError || !OTP?.value ? true : false}
                 text={t('verify_otp')}
                 onPress={handleOtpVerification}
               />

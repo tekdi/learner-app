@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import {
   ActivityIndicator,
   BackHandler,
@@ -10,6 +10,7 @@ import {
   FlatList,
   View,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
 import {
   useFocusEffect,
@@ -34,6 +35,11 @@ import CustomSearchBox from '../../components/CustomSearchBox/CustomSearchBox';
 import globalStyles from '../../utils/Helper/Style';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
+import {
+  restoreScrollPosition,
+  storeScrollPosition,
+} from '../../utils/Helper/JSHelper';
 
 const Contents = () => {
   const navigation = useNavigation();
@@ -45,6 +51,33 @@ const Contents = () => {
   const [loading, setLoading] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const [instant, setInstant] = useState([]);
+  const [offset, setOffset] = useState(0);
+  const [count, setCount] = useState(0);
+  const scrollViewRef = useRef(null);
+  // const [scrollPosition, setScrollPosition] = useState(0);
+  const [restoreScroll, setRestoreScroll] = useState(false);
+
+  // Save scroll position when user scrolls
+  const handleScroll = (event) => {
+    const position = event.nativeEvent.contentOffset.y;
+    const page = 'content';
+    storeScrollPosition(position, page);
+  };
+
+  // Restore scroll position only when coming back
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      if (restoreScroll) {
+        const page = 'content';
+        restoreScrollPosition(scrollViewRef, page);
+      }
+
+      setRestoreScroll(true);
+      setLoading(false);
+    }, [restoreScroll])
+  );
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -60,19 +93,19 @@ const Contents = () => {
     setShowExitModal(false); // Close the modal
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      setSearchText('');
-      // console.log('########## in focus course');
-      // setLoading(true);
-      //bug fix for not realtime tracking
-      //fetchData();
-      setTimeout(() => {
-        // Code to run after 1 second
-        fetchData();
-      }, 500); // 1000 milliseconds = 1 second
-    }, []) // Make sure to include the dependencies
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     setSearchText('');
+  //     // console.log('########## in focus course');
+  //     // setLoading(true);
+  //     //bug fix for not realtime tracking
+  //     //fetchData();
+  //     setTimeout(() => {
+  //       // Code to run after 1 second
+  //       // fetchData();
+  //     }, 500); // 1000 milliseconds = 1 second
+  //   }, []) // Make sure to include the dependencies
+  // );
   useEffect(() => {
     const logEvent = async () => {
       const obj = {
@@ -83,12 +116,22 @@ const Contents = () => {
 
       await logEventFunction(obj);
     };
+    fetchData();
     logEvent();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (offset, append = false) => {
     setLoading(true);
-    const data = await contentListApi_Pratham({ searchText });
+    console.log('refreshed');
+    let userType = await getDataFromStorage('userType');
+    const instant =
+      userType === 'youthnet'
+        ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+        : userType === 'scp'
+          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+
+    const data = await contentListApi_Pratham({ searchText, instant, offset });
     //found content progress
     try {
       // console.log('########## contentListApi');
@@ -121,7 +164,13 @@ const Contents = () => {
       // console.log('##########');
       const result = JSON.parse(await getDataFromStorage('profileData'));
       setUserInfo(result?.getUserDetails);
-      setData(contentList);
+      console.log('data', JSON.stringify(data));
+      console.log('contentList', JSON.stringify(contentList));
+      setCount(data?.count);
+      // setData(contentList);
+      setData((prevData) =>
+        append ? [...prevData, ...(contentList || [])] : contentList || []
+      );
       setLoading(false);
     } catch (e) {
       console.log('e', e);
@@ -129,7 +178,16 @@ const Contents = () => {
   };
 
   const handleSearch = async () => {
-    await fetchData();
+    setOffset(0); // Reset offset when searching
+    await fetchData(0, false); // Reset course data
+  };
+
+  const handleViewMore = () => {
+    const newOffset = offset + 5; // Increase offset by 5
+    setOffset(newOffset); // Update state
+    fetchData(newOffset, true); // Append new data
+    const page = 'content';
+    restoreScrollPosition(scrollViewRef, page);
   };
 
   useEffect(() => {
@@ -149,10 +207,32 @@ const Contents = () => {
     };
   }, [navigation]);
 
+  // Refresh the component.
+  const handleRefresh = async () => {
+    setLoading(true); // Start Refresh Indicator
+
+    try {
+      console.log('Fetching Data...');
+      fetchData(0, false); // Reset course data
+    } catch (error) {
+      console.log('Error fetching data:', error);
+    } finally {
+      setLoading(false); // Stop Refresh Indicator
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
-      <ScrollView nestedScrollEnabled>
+      <ScrollView
+        nestedScrollEnabled
+        ref={scrollViewRef}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+        }
+      >
         <View style={styles.view}>
           {loading ? (
             <ActiveLoading />
@@ -176,9 +256,7 @@ const Contents = () => {
                 handleSearch={handleSearch}
                 placeholder={t('Search Content')}
               />
-              <SyncCard
-              //doneSync={fetchData}
-              />
+              <SyncCard doneSync={fetchData} />
               <View
                 style={{
                   padding: 10,
@@ -216,6 +294,15 @@ const Contents = () => {
                   columnWrapperStyle={styles.columnWrapper} // Adds space between columns
                   scrollEnabled={false}
                 /> */}
+
+                {data.length !== count && (
+                  <View>
+                    <PrimaryButton
+                      onPress={handleViewMore}
+                      text={t('viewmore')}
+                    />
+                  </View>
+                )}
               </View>
             </SafeAreaView>
           )}

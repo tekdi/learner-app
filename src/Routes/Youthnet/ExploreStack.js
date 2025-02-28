@@ -7,7 +7,7 @@ import SkillCenter from '@src/screens/YouthNet/SkillCenter';
 
 const Stack = createNativeStackNavigator();
 
-const YouthNetStack = () => {
+const ExploreStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen
@@ -35,4 +35,4 @@ const YouthNetStack = () => {
   );
 };
 
-export default YouthNetStack;
+export default ExploreStack;

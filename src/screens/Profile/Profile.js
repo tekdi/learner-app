@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -29,7 +30,7 @@ import NoCertificateBox from './NoCertificateBox';
 import GlobalText from '@components/GlobalText/GlobalText';
 import DeviceInfo from 'react-native-device-info';
 import Config from 'react-native-config';
-import { getStudentForm } from '../../utils/API/AuthService';
+import { getProfileDetails, getStudentForm } from '../../utils/API/AuthService';
 
 const Profile = () => {
   const { t, language } = useTranslation();
@@ -82,12 +83,14 @@ const Profile = () => {
     const studentProgramForm = programFormData?.fields;
     setDataInStorage('studentProgramForm', JSON.stringify(studentProgramForm));
     const mergedForm = [...studentForm, ...studentProgramForm];
-
-    const result = JSON.parse(await getDataFromStorage('profileData'));
+    const user_id = await getDataFromStorage('userId');
+    const profileData = await getProfileDetails({
+      userId: user_id,
+    });
+    const result = profileData;
+    await setDataInStorage('profileData', JSON.stringify(profileData));
 
     const finalResult = result?.getUserDetails?.[0];
-    console.log('finalResult', result);
-
     const keysToRemove = [
       'customFields',
       'total_count',
@@ -183,13 +186,31 @@ const Profile = () => {
     return ` ${month} ${day}, ${year}`; // Format as "26 October 2024"
   };
 
+  // Refresh the component.
+  const handleRefresh = async () => {
+    setLoading(true); // Start Refresh Indicator
+
+    try {
+      fetchData(); // Reset course data
+    } catch (error) {
+      console.log('Error fetching data:', error);
+    } finally {
+      setLoading(false); // Stop Refresh Indicator
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <SecondaryHeader logo />
       {loading ? (
         <ActiveLoading />
       ) : (
-        <ScrollView style={[globalStyles.container, { padding: 0 }]}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+          }
+          style={[globalStyles.container, { padding: 0 }]}
+        >
           <View style={styles.view}>
             <GlobalText style={globalStyles.heading}>
               {t('my_profile')}
@@ -212,7 +233,9 @@ const Profile = () => {
             style={styles.gradient}
           >
             <GlobalText style={[globalStyles.subHeading, { fontWeight: 700 }]}>
-              {capitalizeName(`${userData?.firstName} ${userData?.lastName}`)}
+              {capitalizeName(
+                `${userData?.firstName} ${userData?.lastName ? userData?.lastName : ''}`
+              )}
             </GlobalText>
             <View
               style={[

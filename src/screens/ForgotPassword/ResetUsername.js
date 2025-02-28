@@ -12,12 +12,15 @@ import CustomTextInput from '../../components/CustomTextField/CustomTextInput';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
 
-import { updateUser } from '../../utils/API/AuthService';
+import { getProfileDetails, updateUser } from '../../utils/API/AuthService';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import GlobalText from '@components/GlobalText/GlobalText';
-import { getDataFromStorage } from '@src/utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  setDataInStorage,
+} from '@src/utils/JsHelper/Helper';
 import BackHeader from '@components/Layout/BackHeader';
 
 const ResetUsername = () => {
@@ -42,14 +45,18 @@ const ResetUsername = () => {
         username: value,
       },
     };
-
     const user_id = await getDataFromStorage('userId');
     const register = await updateUser({ payload, user_id });
-    console.log('register', register);
     if (register?.params?.err) {
+      console.log('reached_here');
+
       setmodalError(register?.params?.err);
     }
     setmodal(true);
+    const profileData = await getProfileDetails({
+      userId: user_id,
+    });
+    await setDataInStorage('profileData', JSON.stringify(profileData));
   };
 
   const onPress = () => {

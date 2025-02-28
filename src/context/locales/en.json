@@ -93,6 +93,7 @@
   "T&C_12": "I have read and agree to the Privacy Policy and I consent to the collection and use of my personal data as described in the Consent Form.",
   "T&C_13": "You can request for data deletion, updating, or changes any time from the contact details provided in 'Data & Privacy Center' in the profile page.",
   "username_already_exists": "Username already exists",
+  "username_is_already_exists_in_keycloak": "Username already exists",
   "something_went_wrong_try_again_later": "Something went wrong, please try again later.",
   "Learning_Content": "Learning Content",
   "Update_your_preferences_to_get_the_best_picks_just_for_you": "Update your preferences to get the best picks just for you!",
@@ -382,5 +383,11 @@
   "started_a_job": "Started a job",
   "school_closure_due_to_covid": "School closure due to covid",
   "other_filters": "Other Filters",
-  "filter": "Filter"
+  "select_filters": "Select Filters",
+  "filter": "Filter",
+  "viewmore": "View More",
+  "view_certificate": "View Certificate",
+  "enroll_now": "Enroll Now!",
+  "certificate": "Certificate",
+  "resend_otp": "Resend OTP"
 }

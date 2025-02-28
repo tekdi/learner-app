@@ -8,6 +8,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
 import globalStyles from '../../../utils/Helper/Style';
 import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
@@ -28,41 +29,64 @@ const FullAttendance = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [networkstatus, setNetworkstatus] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Sample data for the last 30 days
 
   const fetchData = async () => {
     setLoading(true);
-    // Get today's date
-    const todayDate = new Date();
 
-    // Get date 31 days ago
+    const todayDate = new Date();
     const lastDate = new Date();
     lastDate.setDate(todayDate.getDate() - 91);
 
-    // Format the dates as 'YYYY-MM-DD'
-    const todate = todayDate.toISOString().split('T')[0]; // 'YYYY-MM-DD'
-    const fromDate = lastDate.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+    const todate = todayDate.toISOString().split('T')[0];
+    const fromDate = lastDate.toISOString().split('T')[0];
 
     const response = (await getAttendance({ todate, fromDate })) || [];
     console.log('response', response);
+
     if (response.length < 1) {
       setNetworkstatus(false);
     }
 
-    setLearnerAttendance(response?.attendanceList);
+    // Ensure new state reference
+    setLearnerAttendance(
+      response?.attendanceList ? [...response.attendanceList] : []
+    );
     setLoading(false);
   };
 
   useEffect(() => {
     fetchData();
+  }, [refreshKey]);
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  console.log('networkstatus', networkstatus);
+  const handleRefresh = async () => {
+    setLoading(true); // Start Refresh Indicator
+
+    try {
+      console.log('Fetching Data...');
+      await fetchData();
+      setRefreshKey((prevKey) => prevKey + 1);
+      // navigation.navigate('SCPUserTabScreen');
+    } catch (error) {
+      console.log('Error fetching data:', error);
+    } finally {
+      setLoading(false); // Stop Refresh Indicator
+    }
+  };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView
+      key={refreshKey}
+      style={{ flex: 1, backgroundColor: 'white' }}
+    >
       <SecondaryHeader logo />
+
       <View style={styles.card}>
         <View style={styles.leftContainer}>
           <TouchableOpacity
@@ -88,12 +112,18 @@ const FullAttendance = () => {
       {loading ? (
         <ActiveLoading />
       ) : (
-        <ScrollView style={styles.scroll}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+          }
+          style={styles.scroll}
+        >
           {learnerAttendance && (
             <MonthlyCalendar
               learnerAttendance={learnerAttendance}
               attendance
               setEventDate={setEventDate}
+              key={refreshKey}
             />
           )}
         </ScrollView>

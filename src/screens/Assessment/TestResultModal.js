@@ -26,9 +26,9 @@ const TestResultModal = ({ modal, title }) => {
     if (userType == 'scp') {
       isSCP = true;
     }
-    console.log('############# isSCP', isSCP);
+    // console.log('############# isSCP', isSCP);
     if (isSCP == true) {
-      console.log('############# isSCP', isSCP);
+      // console.log('############# isSCP', isSCP);
       // const stackRoutes = navigation.getState()?.routes || [];
       // // Extract screen names from the routes array
       // const screenNames = stackRoutes.map((route) => route.name);

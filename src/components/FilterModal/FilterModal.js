@@ -143,7 +143,7 @@ const FilterModal = ({
     const transformedOutput = transformCategories(categories);
     const result = convertToStructuredArray(transformedOutput);
     // RenderForm
-    const transformRenderFormOutput = transformRenderForm(categories);
+    const transformRenderFormOutput = transformRenderForm(categories || []);
 
     setrenderForm(transformRenderFormOutput);
     fetchStaticForm(transformRenderFormOutput);

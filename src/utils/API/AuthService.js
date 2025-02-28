@@ -51,10 +51,7 @@ export const refreshToken = async (params = {}) => {
   try {
     // Construct the cURL command
     const url = `${EndUrls.refresh_token}`;
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    };
+    const headers = await getHeaders();
     const headersString = Object.entries(headers)
       .map(([key, value]) => `-H "${key}: ${value}"`)
       .join(' ');
@@ -89,7 +86,7 @@ export const getAccessToken = async () => {
     ].join(' ');
 
     // Log the `curl` command
-    // console.log('CURL Command:', curlCommand);
+    console.log('CURL Command:', curlCommand);
 
     const result = await get(url, {
       headers: headers || {},
@@ -167,15 +164,15 @@ export const userExist = async (payload) => {
 };
 export const sendOtp = async (payload) => {
   try {
-    //   const curlCommand = `
-    //   curl -X POST ${EndUrls.sendOTP} \
-    //   -H "Content-Type: application/json" \
-    //   -H "Accept: application/json" \
-    //   -d '${JSON.stringify(payload)}'
-    // `.trim();
+    const curlCommand = `
+      curl -X POST ${EndUrls.sendOTP} \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json" \
+      -d '${JSON.stringify(payload)}'
+    `.trim();
 
     //   // Log the cURL command
-    //   console.log('cURL Command:', curlCommand);
+    console.log('cURL Command:', curlCommand);
     const result = await post(`${EndUrls.sendOTP}`, payload, {
       headers: {
         'Content-Type': 'application/json',
@@ -194,15 +191,15 @@ export const sendOtp = async (payload) => {
 };
 export const verifyOtp = async (payload) => {
   try {
-    //   const curlCommand = `
-    //   curl -X POST ${EndUrls.verifyOTP} \
-    //   -H "Content-Type: application/json" \
-    //   -H "Accept: application/json" \
-    //   -d '${JSON.stringify(payload)}'
-    // `.trim();
+    const curlCommand = `
+      curl -X POST ${EndUrls.verifyOTP} \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json" \
+      -d '${JSON.stringify(payload)}'
+    `.trim();
 
     //   // Log the cURL command
-    //   console.log('cURL Command:', curlCommand);
+    console.log('cURL Command:', curlCommand);
     const result = await post(`${EndUrls.verifyOTP}`, payload, {
       headers: {
         'Content-Type': 'application/json',
@@ -291,7 +288,7 @@ export const updateUser = async ({ payload, user_id }) => {
     -H 'tenantId: ${headers.tenantId}' \\
     -d '${JSON.stringify(payload)}'
         `;
-    console.log('cURL Command:', curlCommand);
+    // console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await patch(url, payload, {
@@ -384,7 +381,12 @@ export const courseListApi_testing = async ({
     return result_offline;
   }
 };
-export const courseListApi_New = async ({ searchText, mergedFilter }) => {
+export const courseListApi_New = async ({
+  searchText,
+  mergedFilter,
+  instant,
+  offset,
+}) => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList_testing}`; // Define the URL
   const headers = {
@@ -395,6 +397,7 @@ export const courseListApi_New = async ({ searchText, mergedFilter }) => {
   const payload = {
     request: {
       filters: {
+        channel: instant?.channelId,
         // program:
         //   userType == 'scp'
         //     ? ['secondchance', 'Second Chance', 'SCP']
@@ -404,7 +407,7 @@ export const courseListApi_New = async ({ searchText, mergedFilter }) => {
         primaryCategory: ['Course'],
         ...(mergedFilter && mergedFilter),
       },
-      limit: 100,
+      limit: 5,
       sort_by: {
         lastPublishedOn: 'desc',
       },
@@ -430,7 +433,7 @@ export const courseListApi_New = async ({ searchText, mergedFilter }) => {
       //   'se_mediums',
       //   'primaryCategory',
       // ],
-      offset: 0,
+      offset: offset ? offset : 0,
     },
   };
   // Construct the cURL command
@@ -468,7 +471,12 @@ export const courseListApi_New = async ({ searchText, mergedFilter }) => {
   }
 };
 
-export const contentListApi_Pratham = async ({ searchText }) => {
+export const contentListApi_Pratham = async ({
+  searchText,
+  // mergedFilter,
+  instant,
+  offset,
+}) => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList}`; // Define the URL
   const headers = {
@@ -479,15 +487,12 @@ export const contentListApi_Pratham = async ({ searchText }) => {
   let payload = {
     request: {
       filters: {
-        program:
-          userType == 'scp'
-            ? ['secondchance', 'Second Chance', 'SCP']
-            : ['Youthnet', 'youthnet', 'YouthNet'],
-        //board: ['CBSE'],
+        channel: instant?.channelId,
+
         primaryCategory: ['Learning Resource', 'Practice Question Set'],
         visibility: ['Default', 'Parent'],
       },
-      limit: 100,
+      limit: 5,
       sort_by: {
         lastPublishedOn: 'desc',
       },
@@ -506,14 +511,14 @@ export const contentListApi_Pratham = async ({ searchText }) => {
         'children',
         'leafNodes',
       ],
-      facets: [
-        'se_boards',
-        'se_gradeLevels',
-        'se_subjects',
-        'se_mediums',
-        'primaryCategory',
-      ],
-      offset: 0,
+      // facets: [
+      //   'se_boards',
+      //   'se_gradeLevels',
+      //   'se_subjects',
+      //   'se_mediums',
+      //   'primaryCategory',
+      // ],
+      offset: offset ? offset : 0,
     },
   };
 
@@ -524,6 +529,16 @@ export const contentListApi_Pratham = async ({ searchText }) => {
     let language = [result?.getUserDetails?.[0]?.customFields?.[0]?.value];
     payload.request.filters['se_mediums'] = language;
   }*/
+
+  // Construct the cURL command
+  let curlCommand = `curl -X POST '${url}' \\\n`;
+  for (const [key, value] of Object.entries(headers)) {
+    curlCommand += `-H '${key}: ${value}' \\\n`;
+  }
+  curlCommand += `-d '${JSON.stringify(payload)}'`;
+
+  // Output the cURL command to the console
+  // console.log('Equivalent cURL command:\n', curlCommand);
 
   try {
     // Make the actual request
@@ -563,15 +578,15 @@ export const getCohort = async ({ user_id, tenantid, academicYearId }) => {
     const url = `${EndUrls.cohort}/${user_id}`;
 
     // Log the curl command
-    console.log(
-      `curl -X GET '${url}' -H 'Content-Type: application/json'${
-        headers.Authorization
-          ? ` -H 'Authorization: ${headers.Authorization}'`
-          : ''
-      }
-      -H 'tenantid: ${headers.tenantid}'
-      -H 'academicyearid: ${headers.academicyearid}'`
-    );
+    // console.log(
+    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${
+    //     headers.Authorization
+    //       ? ` -H 'Authorization: ${headers.Authorization}'`
+    //       : ''
+    //   }
+    //   -H 'tenantid: ${headers.tenantid}'
+    //   -H 'academicyearid: ${headers.academicyearid}'`
+    // );
 
     const result = await get(url, {
       headers: headers || {},
@@ -593,16 +608,16 @@ export const getProgramDetails = async () => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
-    const url = `${EndUrls.programDetails}`;
+    const url = `${EndUrls.tenantRead}`;
 
     // Log the curl command
-    // console.log(
-    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${
-    //     headers.Authorization
-    //       ? ` -H 'Authorization: ${headers.Authorization}'`
-    //       : ''
-    //   }`
-    // );
+    console.log(
+      `curl -X GET '${url}' -H 'Content-Type: application/json'${
+        headers.Authorization
+          ? ` -H 'Authorization: ${headers.Authorization}'`
+          : ''
+      }`
+    );
 
     const result = await get(url, {
       headers: headers || {},
@@ -819,7 +834,7 @@ export const getProfileDetails = async (params = {}) => {
     // Construct cURL command
     const curlCommand = `curl -X POST "${url}" ${headerString} -H "Content-Type: application/json" -d '${payloadString}'`;
 
-    // console.log('Generated cURL Command:', curlCommand);
+    console.log('Generated cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1259,11 +1274,11 @@ export const getGeoLocation = async ({ payload }) => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
-    // console.log(
-    //   `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
-    //     payload
-    //   )}'`
-    // );
+    console.log(
+      `curl -X POST ${url} -H 'Content-Type: application/json' -H -d '${JSON.stringify(
+        payload
+      )}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1668,7 +1683,7 @@ export const LearningMaterialAPI = async () => {
 
 export const notificationSubscribe = async ({ deviceId, user_id, action }) => {
   try {
-    const url = `${EndUrls.notificationSubscribe}/${user_id}`; // Define the URL
+    const url = `${EndUrls.update_profile}/${user_id}`; // Define the URL
     const headers = await getHeaders(); // Ensure headers are awaited
     const payload = {
       userData: {
@@ -1686,7 +1701,7 @@ export const notificationSubscribe = async ({ deviceId, user_id, action }) => {
     -H 'tenantId: ${headers.tenantId}' \\
     -d '${JSON.stringify(payload)}'
         `;
-    console.log('cURL Command:', curlCommand);
+    // console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await patch(url, payload, {
@@ -1748,7 +1763,7 @@ export const staticFilterContent = async ({ instantId }) => {
     -H 'Accept: application/json' \\
     -d '${JSON.stringify(payload)}'
         `;
-    console.log('cURL Command:', curlCommand);
+    // console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1757,6 +1772,145 @@ export const staticFilterContent = async ({ instantId }) => {
 
     if (result) {
       return result?.data?.result;
+    }
+  } catch (e) {
+    console.log('e', e);
+  }
+};
+export const CourseEnrollStatus = async ({ course_id }) => {
+  const url = `${EndUrls.courseEnrollStatus}`; // Define the URL
+  const headers = await getHeaders();
+  const headersString = Object.entries(headers)
+    .map(([key, value]) => `-H "${key}: ${value}"`)
+    .join(' ');
+
+  const user_id = await getDataFromStorage('userId');
+  const payload = {
+    userId: user_id,
+    courseId: course_id,
+  };
+  try {
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+
+    console.log('cURL Command:', curlCommand);
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data;
+    }
+  } catch (e) {
+    console.log('e', e);
+  }
+};
+export const courseEnroll = async ({ course_id }) => {
+  const url = `${EndUrls.courseEnroll}`; // Define the URL
+  const headers = await getHeaders();
+  const headersString = Object.entries(headers)
+    .map(([key, value]) => `-H "${key}: ${value}"`)
+    .join(' ');
+
+  const user_id = await getDataFromStorage('userId');
+  const payload = {
+    userId: user_id,
+    courseId: course_id,
+  };
+  try {
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+
+    console.log('cURL Command:', curlCommand);
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data;
+    }
+  } catch (e) {
+    console.log('e', e);
+  }
+};
+export const updateCourseStatus = async ({ course_id }) => {
+  const url = `${EndUrls.updateCourseStatus}`; // Define the URL
+  const headers = await getHeaders();
+  const headersString = Object.entries(headers)
+    .map(([key, value]) => `-H "${key}: ${value}"`)
+    .join(' ');
+
+  const user_id = await getDataFromStorage('userId');
+  const payload = {
+    userId: user_id,
+    courseId: course_id,
+  };
+  try {
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+
+    console.log('cURL Command:', curlCommand);
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data;
+    }
+  } catch (e) {
+    console.log('e', e);
+  }
+};
+export const issueCertificate = async ({ payload }) => {
+  const url = `${EndUrls.issueCertificate}`; // Define the URL
+  const headers = await getHeaders();
+  const headersString = Object.entries(headers)
+    .map(([key, value]) => `-H "${key}: ${value}"`)
+    .join(' ');
+
+  try {
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+
+    console.log('cURL Command:', curlCommand);
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data;
+    }
+  } catch (e) {
+    console.log('e', e);
+  }
+};
+export const viewCertificate = async ({ certificateId }) => {
+  const url = `${EndUrls.viewCertificate}`; // Define the URL
+  const headers = await getHeaders();
+  const headersString = Object.entries(headers)
+    .map(([key, value]) => `-H "${key}: ${value}"`)
+    .join(' ');
+  const payload = {
+    credentialId: certificateId,
+    templateId: 'cm74egxc0000aoc3gqp2p4fvk',
+  };
+
+  try {
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+
+    console.log('cURL Command:', curlCommand);
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data;
     }
   } catch (e) {
     console.log('e', e);

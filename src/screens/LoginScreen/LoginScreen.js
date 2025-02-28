@@ -76,10 +76,10 @@ const LoginScreen = () => {
         const userDetails = await getuserDetails();
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
-        console.log('tenantData', JSON.stringify(tenantData));
+        // console.log('tenantData', JSON.stringify(tenantData));
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
-        await setDataInStorage('userId', user_id);
+        await setDataInStorage('userId', user_id || '');
 
         const academicyear = await setAcademicYear({ tenantid });
         const academicYearId = academicyear?.[0]?.id;
@@ -100,7 +100,7 @@ const LoginScreen = () => {
         await setDataInStorage('profileData', JSON.stringify(profileData));
         await setDataInStorage(
           'Username',
-          profileData?.getUserDetails?.[0]?.username
+          profileData?.getUserDetails?.[0]?.username || ''
         );
         await storeUsername(profileData?.getUserDetails?.[0]?.username);
 
@@ -111,8 +111,8 @@ const LoginScreen = () => {
         const tenantDetails = (await getProgramDetails()) || [];
 
         const youthnetTenantIds = tenantDetails
-          ?.filter((item) => item.name === 'YouthNet')
-          ?.map((item) => item.tenantId);
+          ?.filter((item) => item?.name === 'YouthNet')
+          ?.map((item) => item?.tenantId);
 
         const scp = tenantDetails
           ?.filter((item) => item.name === 'Second Chance Program')
@@ -131,8 +131,8 @@ const LoginScreen = () => {
           } else {
             if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
               await setDataInStorage('userType', 'youthnet');
-              navigation.navigate('YouthNetTabScreen');
-              // navigation.navigate('Dashboard');
+              // navigation.navigate('YouthNetTabScreen');
+              navigation.navigate('Dashboard');
             } else {
               await setDataInStorage('userType', 'public');
               navigation.navigate('Dashboard');

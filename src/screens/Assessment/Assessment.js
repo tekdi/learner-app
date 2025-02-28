@@ -34,7 +34,7 @@ const Assessment = ({ header, background }) => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log('########## in focus assessments');
+      // console.log('########## in focus assessments');
 
       fetchData();
     }, []) // Make sure to include the dependencies

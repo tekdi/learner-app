@@ -73,7 +73,7 @@ const UnitList = ({ route }) => {
         backAction
       );
 
-      console.log('############ in focus unit list');
+      // console.log('############ in focus unit list');
       setLoading(true);
       //bug fix for not realtime tracking
       //fetchDataTrack();
@@ -109,7 +109,7 @@ const UnitList = ({ route }) => {
   const fetchDataTrack = async () => {
     //found course progress
     try {
-      console.log('########## fetchDataTrack');
+      // console.log('########## fetchDataTrack');
       //console.log('########## contentList', contentList);
       let courseList = [course_id];
       //console.log('########## courseList', courseList);

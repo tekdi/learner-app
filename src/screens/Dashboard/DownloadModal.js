@@ -547,13 +547,13 @@ const DownloadModal = ({
   };
 
   const cancelDownload = () => {
-    console.log('############## download Task', downloadTask);
+    // console.log('############## download Task', downloadTask);
     if (downloadTask.current && downloadTask.current?.jobId) {
       RNFS.stopDownload(downloadTask.current.jobId);
-      console.log('Download canceled');
+      // console.log('Download canceled');
       resetDownload();
     } else {
-      console.log('No active download to cancel');
+      // console.log('No active download to cancel');
     }
   };
 
