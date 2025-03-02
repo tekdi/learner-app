@@ -125,19 +125,20 @@ const Profile = () => {
 
     // Extract state, district, and block
     const locationData = {
-      states: userDetails.states?.label || '',
-      districts: userDetails.districts?.label || '',
-      blocks: userDetails.blocks?.label || '',
+      states: userDetails.state?.label || '',
+      districts: userDetails.district?.label || '',
+      blocks: userDetails.block?.label || '',
+      village: userDetails.village?.label || '',
     };
 
     // Convert location data into a single formatted string
     const formattedLocation =
-      `${locationData.states}, ${locationData.districts}, ${locationData.blocks}`.trim();
+      `${locationData.states}, ${locationData.districts}, ${locationData.blocks}, ${locationData.village}`.trim();
 
     // Remove states, districts, and blocks from userDetails
-    delete userDetails.states;
-    delete userDetails.districts;
-    delete userDetails.blocks;
+    delete userDetails.state;
+    delete userDetails.district;
+    delete userDetails.block;
 
     // Add formatted location as a new field
     userDetails.location = formattedLocation;

@@ -4,9 +4,12 @@ import PropTypes from 'prop-types';
 import {
   ActivityIndicator,
   BackHandler,
+  Image,
+  Modal,
   SafeAreaView,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import TextField from '../../../components/TextField/TextField';
@@ -42,6 +45,9 @@ import CertificateViewer from '../../CertificateViewer/CertificateViewer';
 import GlobalText from '@components/GlobalText/GlobalText';
 import { getFormattedDate } from '@src/utils/Helper/JSHelper';
 import InAppBrowser from 'react-native-inappbrowser-reborn';
+import Accordion3 from '@components/Accordion/Accordion3';
+import Icon from 'react-native-vector-icons/Ionicons';
+import SecondaryButton from '@components/SecondaryButton/SecondaryButton';
 
 const CourseContentList = ({ route }) => {
   const { language, t } = useTranslation();
@@ -56,7 +62,9 @@ const CourseContentList = ({ route }) => {
   const [enrollStatus, setEnrollStatus] = useState(false); // State to track which item is expanded
   const [visible, setVisible] = useState(false); // State to track which item is expanded
   const [certificateId, setCertificateId] = useState(null); // State to track which item is expanded
+  const [certificateModal, setCertificateModal] = useState(false); // State to track which item is expanded
   const [certificateHtml, setCertificateHtml] = useState(null); // State to track which item is expanded
+  const [isModal, setIsModal] = useState(false); // State to track which item is expanded
 
   useFocusEffect(
     useCallback(() => {
@@ -79,6 +87,7 @@ const CourseContentList = ({ route }) => {
 
   const fetchEnrollStatus = async () => {
     setLoading(true);
+    setEnrollStatus(true);
     const data = await CourseEnrollStatus({ course_id });
     if (data?.params?.status === 'successful') {
       setEnrollStatus(true);
@@ -284,6 +293,7 @@ const CourseContentList = ({ route }) => {
   }, [trackData]);
 
   const handleEnroll = async () => {
+    setIsModal(true);
     const data = await courseEnroll({ course_id });
     if (data?.params?.status === 'successful') {
       setEnrollStatus(true);
@@ -292,7 +302,7 @@ const CourseContentList = ({ route }) => {
 
   const updateCourseStatusFun = async () => {
     const data = await updateCourseStatus({ course_id });
-    console.log('data', JSON.stringify(data));
+    // console.log('data', JSON.stringify(data));
     const result = JSON.parse(await getDataFromStorage('profileData'));
     const userDetails = result?.getUserDetails?.[0];
     let userId = await getDataFromStorage('userId');
@@ -311,18 +321,19 @@ const CourseContentList = ({ route }) => {
       courseName: coursesContent?.name,
     };
     const certificate = await issueCertificate({ payload });
-    console.log(
-      'certificate',
-      JSON.stringify(certificate?.result?.credential?.id)
-    );
+    // console.log(
+    //   'certificate',
+    //   JSON.stringify(certificate?.result?.credential?.id)
+    // );
     setCertificateId(certificate?.result?.credential?.id);
+    setCertificateModal(true);
   };
 
   useEffect(() => {
     setLoading(true);
 
     if (trackCompleted >= 100) {
-      console.log('completed====>');
+      // console.log('completed====>');
       if (!certificateId) {
         updateCourseStatusFun();
       }
@@ -332,12 +343,12 @@ const CourseContentList = ({ route }) => {
 
   const handleViewCertificate = async () => {
     const data = await viewCertificate({ certificateId });
-    console.log('data', JSON.stringify(data?.result));
+    // console.log('data', JSON.stringify(data?.result));
     setCertificateHtml(data?.result);
     setVisible(true);
   };
 
-  console.log('enrollStatus', JSON.stringify(enrollStatus));
+  // console.log('coursesContent',  JSON.stringify(coursesContent?.children));
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -375,7 +386,28 @@ const CourseContentList = ({ route }) => {
                 {coursesContent?.description}
               </GlobalText>
             </View>
+            <View style={globalStyles.flexrow}>
+              <GlobalText
+                style={[globalStyles.heading2, { fontWeight: 'bold' }]}
+              >
+                {t('what_you_learn')}
+              </GlobalText>
+            </View>
+            <View>
+              {coursesContent?.children?.map((item, i) => {
+                return (
+                  <Accordion3
+                    key={i}
+                    index={i}
+                    openDropDown={true}
+                    title={item?.name}
+                    description={item?.description}
+                  />
+                );
+              })}
+            </View>
           </View>
+
           {!enrollStatus ? (
             <View style={{ width: '90%', alignSelf: 'center' }}>
               <PrimaryButton onPress={handleEnroll} text={t('enroll_now')} />
@@ -504,6 +536,162 @@ const CourseContentList = ({ route }) => {
             setVisible={setVisible}
             certificateHtml={certificateHtml}
           />
+
+          <Modal visible={isModal} transparent={true} animationType="slide">
+            <View style={styles.modalContainer} activeOpacity={1}>
+              <View style={styles.alertBox}>
+                <View
+                  style={{
+                    borderBottomWidth: 1,
+                    borderColor: '#D0C5B4',
+                    marginVertical: 20,
+                    width: '100%',
+                  }}
+                >
+                  <View style={{ alignItems: 'center', marginLeft: 20 }}>
+                    <FastImage
+                      style={styles.image}
+                      // eslint-disable-next-line no-undef
+                      source={require('../../../assets/images/gif/party.gif')}
+                      resizeMode={FastImage.resizeMode.contain}
+                      priority={FastImage.priority.high} // Set the priority here
+                    />
+                  </View>
+                  <View style={{ paddingVertical: 10 }}>
+                    <GlobalText
+                      style={[globalStyles.subHeading, { textAlign: 'center' }]}
+                    >
+                      {t('good_luck')}
+                    </GlobalText>
+                    <GlobalText
+                      style={[globalStyles.subHeading, { textAlign: 'center' }]}
+                    >
+                      {t('you_are_now_enrolled_to_the_course')}
+                    </GlobalText>
+                  </View>
+                </View>
+                <View style={styles.btnbox}>
+                  <PrimaryButton
+                    text={t('close')}
+                    onPress={() => {
+                      setIsModal(false);
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+          </Modal>
+
+          <Modal
+            visible={certificateModal}
+            transparent={true}
+            animationType="slide"
+          >
+            <View style={styles.modalContainer} activeOpacity={1}>
+              <View style={styles.alertBox}>
+                <View
+                  style={{
+                    borderBottomWidth: 1,
+                    borderColor: '#D0C5B4',
+                    marginVertical: 20,
+                    width: '100%',
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      setCertificateModal(false);
+                    }}
+                    style={{ alignSelf: 'flex-end' }}
+                  >
+                    <Icon name={'close'} color="#000" size={30} />
+                  </TouchableOpacity>
+                  <View style={{ alignItems: 'center', marginLeft: 20 }}>
+                    <FastImage
+                      style={styles.image}
+                      // eslint-disable-next-line no-undef
+                      source={require('../../../assets/images/gif/party.gif')}
+                      resizeMode={FastImage.resizeMode.contain}
+                      priority={FastImage.priority.high} // Set the priority here
+                    />
+                  </View>
+                  <View
+                    style={{
+                      marginVertical: 20,
+                      paddingVertical: 20,
+                      // backgroundColor: '#FFDEA1',
+                    }}
+                  >
+                    <GlobalText
+                      style={[
+                        globalStyles.subHeading,
+                        { textAlign: 'center', color: '#1A8825' },
+                      ]}
+                    >
+                      {t('congratulation')}
+                    </GlobalText>
+                    <GlobalText
+                      style={[
+                        globalStyles.heading2,
+                        {
+                          textAlign: 'center',
+                          fontWeight: 'bold',
+                          marginVertical: 10,
+                        },
+                      ]}
+                    >
+                      {t('you_have_completed_the_course')}
+                    </GlobalText>
+                    <GlobalText
+                      style={[globalStyles.text, { textAlign: 'center' }]}
+                    >
+                      {t(
+                        'you_can_access_the_Certificate_at_any_time_from_your_rofile'
+                      )}
+                    </GlobalText>
+                  </View>
+                </View>
+                <View
+                  style={[
+                    {
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      // paddingHorizontal: 20,
+                    },
+                  ]}
+                >
+                  <View style={{ width: 180 }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.goBack();
+                      }}
+                    >
+                      <GlobalText
+                        style={[
+                          globalStyles.text,
+                          {
+                            textAlign: 'center',
+                            fontWeight: 'bold',
+                            color: '#0D599E',
+                          },
+                        ]}
+                      >
+                        {t('view_more_courses')}
+                      </GlobalText>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{ width: 160 }}>
+                    <PrimaryButton
+                      text={t('view_certificate')}
+                      onPress={() => {
+                        setCertificateModal(false);
+                        handleViewCertificate();
+                      }}
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </Modal>
         </ScrollView>
       )}
     </SafeAreaView>
@@ -545,6 +733,22 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 20,
     marginRight: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  alertBox: {
+    width: 350,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    alignItems: 'center',
+    padding: 10,
+  },
+  btnbox: {
+    width: 200,
   },
 });
 

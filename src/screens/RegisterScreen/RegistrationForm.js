@@ -239,8 +239,8 @@ const RegistrationForm = ({ fields }) => {
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'districts',
-      controllingfieldfk: state || formData['states']?.value,
+      fieldName: 'district',
+      controllingfieldfk: state || formData['state']?.value,
     };
 
     const data = await getGeoLocation({ payload });
@@ -253,8 +253,8 @@ const RegistrationForm = ({ fields }) => {
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'villages',
-      controllingfieldfk: block || formData['blocks']?.value,
+      fieldName: 'village',
+      controllingfieldfk: block || formData['block']?.value,
     };
 
     const data = await getGeoLocation({ payload });
@@ -268,8 +268,8 @@ const RegistrationForm = ({ fields }) => {
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'blocks',
-      controllingfieldfk: district || formData['districts']?.value,
+      fieldName: 'block',
+      controllingfieldfk: district || formData['district']?.value,
     };
 
     const data = await getGeoLocation({ payload });
@@ -296,14 +296,14 @@ const RegistrationForm = ({ fields }) => {
 
     const updatedFormData = {
       ...formData,
-      ['states']: { value: foundState?.value, label: foundState?.label },
-      ['districts']: {
+      ['state']: { value: foundState?.value, label: foundState?.label },
+      ['district']: {
         value: foundDistrict?.value,
         label: foundDistrict?.label,
       },
     };
     setFormData(updatedFormData);
-    if (formData['states']?.label !== undefined) {
+    if (formData['state']?.label !== undefined) {
       setEnable(false);
       setUpdateEnable(false);
     }
@@ -312,17 +312,17 @@ const RegistrationForm = ({ fields }) => {
 
   useEffect(() => {
     setLoading(true);
-    if (formData?.states) {
+    if (formData?.state) {
       fetchDistricts();
     }
-    if (formData?.districts) {
+    if (formData?.district) {
       fetchBlocks();
     }
-    if (formData?.blocks) {
+    if (formData?.block) {
       fetchvillages();
     }
     setLoading(false);
-  }, [formData['states'], formData['districts'], formData['blocks']]);
+  }, [formData['state'], formData['district'], formData['block']]);
 
   useEffect(() => {
     const defaultPages = groupFieldsByOrder(schema);
@@ -388,6 +388,10 @@ const RegistrationForm = ({ fields }) => {
 
   // let pages = groupFieldsByOrder(schema);
 
+  function updateOrder(fields, newOrder = 7) {
+    return fields.map((field) => ({ ...field, order: newOrder }));
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       if (formData?.program) {
@@ -398,7 +402,8 @@ const RegistrationForm = ({ fields }) => {
         const tenantId = formData?.program?.value;
         const data = await getStudentForm(tenantId);
 
-        const fields = data?.fields || [];
+        const field = data?.fields || [];
+        const fields = updateOrder(field) || [];
         setDataInStorage('studentProgramForm', JSON.stringify(fields));
         // Remove existing fields with the same order (7) before merging
         const filteredSchema = orginalSchema?.filter(
@@ -487,8 +492,7 @@ const RegistrationForm = ({ fields }) => {
           // (field.name === 'states' && !value) ||
           // (field.name === 'districts' && !value) ||
           (field.name === 'guardian_name' && !value) ||
-          (field.name === 'guardian_relation' && !value) ||
-          (field.name === 'parent_phone' && !value)
+          (field.name === 'guardian_relation' && !value)
         ) {
           newErrors[field.name] =
             `${t(field.label.toLowerCase())} ${t('is_required')}`;
@@ -642,13 +646,13 @@ const RegistrationForm = ({ fields }) => {
             <DropdownSelect
               field={field}
               options={
-                field.name === 'states'
+                field.name === 'state'
                   ? stateData
-                  : field.name === 'districts'
+                  : field.name === 'district'
                     ? districtData
-                    : field.name === 'blocks'
+                    : field.name === 'block'
                       ? blockData
-                      : field.name === 'villages'
+                      : field.name === 'village'
                         ? villageData
                         : field?.options
               }
@@ -1184,7 +1188,7 @@ const RegistrationForm = ({ fields }) => {
                 <View>
                   <GlobalText style={[globalStyles.subHeading]}>
                     {t('we_sent_an_otp_to_verify_your_number')} :{' '}
-                    {formData?.phone_number}
+                    {formData?.mobile}
                   </GlobalText>
                 </View>
 

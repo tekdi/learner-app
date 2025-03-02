@@ -24,7 +24,7 @@ const EndUrls = {
   get_form: `${API_URL}/interface/v1/form/read?context=USERS&contextType=LEARNER`,
   geolocation: `${API_URL}/interface/v1/fields/options/read`,
   academicyears: API_URL + `/interface/v1/academicyears/list`,
-  update_profile: API_URL + '/interface/v1/user/update/:id',
+  update_profile: API_URL + '/interface/v1/user/update',
   trackAssessment: `${API_URL}/interface/v1/tracking/assessment/list`,
   AssessmentCreate: `${API_URL}/interface/v1/tracking/assessment/create`,
   AssessmentStatus: `${API_URL}/interface/v1/tracking/assessment/search/status`,
@@ -51,6 +51,9 @@ const EndUrls = {
   updateCourseStatus: `${API_URL}/interface/v1/tracking/user_certificate/status/update`,
   issueCertificate: `${API_URL}/interface/v1/tracking/certificate/issue`,
   viewCertificate: `${API_URL}/interface/v1/tracking/certificate/render`,
+
+  // SalesForce APis (L2 Interest)
+  enrollInterest: `${API_URL}/prathamservice/v1/save-user-salesforce`,
 
   //CMS sunbird saas
   // hierarchy_content: `${CONTENT_URL}/learner/questionset/v1/hierarchy/`, //pass do id at end

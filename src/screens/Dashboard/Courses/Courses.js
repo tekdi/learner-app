@@ -19,7 +19,10 @@ import wave from '../../../assets/images/png/wave.png';
 import CoursesBox from '../../../components/CoursesBox/CoursesBox';
 import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
 import ContinueLearning from '../../../components/ContinueLearning/ContinueLearning';
-import { courseListApi_New } from '../../../utils/API/AuthService';
+import {
+  courseListApi_New,
+  enrollInterest,
+} from '../../../utils/API/AuthService';
 import SyncCard from '../../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
 import FilterModal from '@components/FilterModal/FilterModal';
@@ -38,6 +41,7 @@ import globalStyles from '../../../utils/Helper/Style';
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../components/AppUpdate/AppUpdatePopup';
 import PrimaryButton from '../../../components/PrimaryButton/PrimaryButton';
+import InterestModal from './InterestModal';
 import {
   restoreScrollPosition,
   storeScrollPosition,
@@ -67,6 +71,9 @@ const Courses = () => {
   // const [scrollPosition, setScrollPosition] = useState(0);
   const [restoreScroll, setRestoreScroll] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [interestModal, setInterestModal] = useState(false);
+  const [interestContent, setInterestContent] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Function to store the scroll position
 
@@ -90,6 +97,13 @@ const Courses = () => {
       setLoading(false);
     }, [restoreScroll])
   );
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      fetchData(0, false); // Reset course data
+      setLoading(false);
+    }, [])
+  );
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -100,6 +114,7 @@ const Courses = () => {
     const fetch = async () => {
       // const cohort_id = await getDataFromStorage('cohortId');
       let userType = await getDataFromStorage('userType');
+      // console.log('userType', userType);
 
       let isYouthnet = userType == 'youthnet' ? true : false;
       setYouthnet(isYouthnet);
@@ -219,6 +234,7 @@ const Courses = () => {
           ? [...prevData, ...(courseTrackData || [])]
           : courseTrackData || []
       );
+      updateInterestStatus(courseTrackData);
     } catch (e) {
       console.log('Error:', e);
     }
@@ -234,12 +250,21 @@ const Courses = () => {
     setLoading(false);
   };
 
+  function updateInterestStatus(trackData) {
+    console.log('trackData', trackData);
+    const isInterested = trackData.some((course) => course.completed === 1);
+    console.log('isInterested', isInterested);
+    if (isInterested) {
+      setInterestContent(true);
+    }
+  }
+
   useEffect(() => {
-    fetchData();
+    fetchData(0, false);
   }, [parentFormData, parentStaticFormData]);
 
-  console.log('parentFormData', parentFormData);
-  console.log('parentStaticFormData', parentStaticFormData);
+  // console.log('parentFormData', parentFormData);
+  // console.log('trackData', JSON.stringify(trackData));
 
   const handleSearch = async () => {
     setOffset(0); // Reset offset when searching
@@ -259,7 +284,8 @@ const Courses = () => {
     setLoading(true); // Start Refresh Indicator
 
     try {
-      console.log('Fetching Data...');
+      // console.log('Fetching Data...');
+      setRefreshKey((prevKey) => prevKey + 1);
       fetchData(0, false); // Reset course data
     } catch (error) {
       console.log('Error fetching data:', error);
@@ -267,8 +293,18 @@ const Courses = () => {
       setLoading(false); // Stop Refresh Indicator
     }
   };
+
+  const handleInterest = async () => {
+    // console.log('cfff');
+    await enrollInterest();
+    setInterestModal(true);
+    setInterestContent(false);
+  };
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView
+      key={refreshKey}
+      style={{ flex: 1, backgroundColor: 'white' }}
+    >
       <SecondaryHeader logo />
       <AppUpdatePopup />
       <ScrollView
@@ -296,9 +332,57 @@ const Courses = () => {
               </View>
 
               <GlobalText style={styles.text}>
-                {youthnet ? t('l1_courses') : t('courses')}
+                {!youthnet && t('courses')}
               </GlobalText>
               <ContinueLearning youthnet={youthnet} t={t} userId={userId} />
+              {youthnet && interestContent && (
+                <View>
+                  <GlobalText
+                    style={[
+                      globalStyles.heading2,
+                      { fontWeight: 'bold', color: '#78590C' },
+                    ]}
+                  >
+                    {youthnet && t('l2_courses')}
+                  </GlobalText>
+                  <View
+                    style={{
+                      borderRadius: 20,
+                      padding: 20,
+                      backgroundColor: '#F3EDF7',
+                      marginTop: 10,
+                    }}
+                  >
+                    <GlobalText style={[globalStyles.text]}>
+                      {t(
+                        'you_can_boost_your_skills_and_unlock_new_job_opportunities_with_our_L2_course'
+                      )}
+                    </GlobalText>
+                    <View style={{ width: 180, marginVertical: 10 }}>
+                      <PrimaryButton
+                        onPress={handleInterest}
+                        text={t('Im_interested')}
+                      />
+                    </View>
+
+                    <GlobalText
+                      style={[globalStyles.text, { color: '#635E57' }]}
+                    >
+                      {t(
+                        'show_interest_to_receive_personalized_guidance_from_our_expert'
+                      )}
+                    </GlobalText>
+                  </View>
+                </View>
+              )}
+              <GlobalText
+                style={[
+                  globalStyles.heading2,
+                  { fontWeight: 'bold', color: '#78590C' },
+                ]}
+              >
+                {youthnet && t('l1_courses')}
+              </GlobalText>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <CopilotStep
                   text="You can search courses from here"
@@ -394,6 +478,10 @@ const Courses = () => {
               onExit={handleExitApp}
             />
           )}
+          <InterestModal
+            setIsModal={setInterestModal}
+            isModal={interestModal}
+          />
         </View>
       </ScrollView>
       {/* {isModal && (

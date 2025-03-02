@@ -24,11 +24,13 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
   };
 
   const handleSelect = (item) => {
+    console.log('item', item);
+
     handleValue(field?.name, { value: item?.value, label: item?.label });
     setIsDropdownOpen(false);
   };
 
-  console.log('field.label', field.label);
+  // console.log('options', options);
   return (
     <View style={styles.dropdownContainer}>
       <View style={styles.label}>

@@ -389,5 +389,19 @@
   "view_certificate": "View Certificate",
   "enroll_now": "Enroll Now!",
   "certificate": "Certificate",
-  "resend_otp": "Resend OTP"
+  "resend_otp": "Resend OTP",
+  "what_you_learn": "What You'll Learn",
+  "good_luck": "Good Luck!",
+  "you_are_now_enrolled_to_the_course": "You are now enrolled to the course!",
+  "you_can_boost_your_skills_and_unlock_new_job_opportunities_with_our_L2_course": "You can boost your skills and unlock new job opportunities with our L2 course.",
+  "show_interest_to_receive_personalized_guidance_from_our_expert": "Show interest to receive personalized guidance from our expert!",
+  "Im_interested": "I’m interested",
+  "l2_courses": "L2 Courses",
+  "your_response_has_been_recorded": "Your response has been recorded",
+  "our_expert_will_reach_out_to_you_soon": "Our expert will reach out to you soon",
+  "l2_desp": "In the meantime, feel free to explore more courses or continue building your skills!",
+  "congratulation": "Congratulations!",
+  "you_have_completed_the_course": "You have completed the course!",
+  "you_can_access_the_Certificate_at_any_time_from_your_rofile": "You can access the Certificate at any time from your 'Profile'",
+  "view_more_courses": "View More Courses"
 }

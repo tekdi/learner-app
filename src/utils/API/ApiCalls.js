@@ -529,6 +529,16 @@ export const CourseInProgress = async (userId) => {
       data: data,
     };
 
+    // Generate the cURL command
+    const curlCommand = `curl -X POST "${url}" \\
+      -H "Content-Type: application/json" \\
+      ${Object.entries(headers || {})
+        .map(([key, value]) => `-H "${key}: ${value}" \\`)
+        .join('\n')} 
+      --data '${data}'`;
+
+    console.log('Generated cURL Command:', curlCommand);
+
     try {
       const response = await axios.request(config);
       api_response = response.data;

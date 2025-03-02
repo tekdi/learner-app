@@ -421,45 +421,47 @@ export const translateDate = (dateStr, lang) => {
 
 export const createNewObject = (customFields, labels, profileView) => {
   const result = {};
-  console.log('labels', JSON.stringify(customFields));
+  // console.log('customFields', JSON.stringify(customFields));
+  // console.log('requiredLabelsfROMsCHEMA', JSON.stringify(labels));
 
   customFields?.forEach((field) => {
     const cleanedFieldLabel = field?.label?.replace(/[^a-zA-Z0-9_ ]/g, '');
+    // console.log('cleanedFieldLabel', cleanedFieldLabel);
+
     labels.map((item) => {
       if (item?.label === cleanedFieldLabel) {
+        const selectedValues = field?.selectedValues?.[0];
         if (field.type === 'drop_down') {
           if (profileView) {
             result[item.label.toLowerCase()] = {
-              label: field.value || '-',
-              value: field.code || '-',
+              label: selectedValues.value || '-',
+              value: selectedValues.value || '-',
             };
           } else {
             result[item.name] = {
-              label: field.value || '-',
-              value: field.code || '-',
+              label: selectedValues.value || '-',
+              value: selectedValues.value || '-',
             };
           }
 
-          if (
-            ['STATES', 'DISTRICTS', 'BLOCKS', 'VILLAGE'].includes(field.label)
-          ) {
+          if (['STATE', 'DISTRICT', 'BLOCK', 'VILLAGE'].includes(field.label)) {
             if (profileView) {
               result[item.label.toLowerCase()] = {
-                label: field.value || '-',
-                value: field.code || '-',
+                label: selectedValues.value || '-',
+                value: selectedValues.value || '-',
               };
             } else {
               result[item.name] = {
-                label: field.value || '-',
-                value: field.code || '-',
+                label: selectedValues.value || '-',
+                value: selectedValues.id || '-',
               };
             }
           }
         } else {
           if (profileView) {
-            result[item.label.toLowerCase()] = field.code || '';
+            result[item.label.toLowerCase()] = selectedValues.id || '';
           } else {
-            result[item.name] = field.code || '';
+            result[item.name] = selectedValues.id || '';
           }
         }
       }

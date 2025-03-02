@@ -109,6 +109,7 @@ const LoginScreen = () => {
           cohort_id || '00000000-0000-0000-0000-000000000000'
         );
         const tenantDetails = (await getProgramDetails()) || [];
+        console.log('tenantDetails', JSON.stringify(tenantDetails));
 
         const youthnetTenantIds = tenantDetails
           ?.filter((item) => item?.name === 'YouthNet')
@@ -129,7 +130,10 @@ const LoginScreen = () => {
               navigation.navigate('Dashboard');
             }
           } else {
-            if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
+            console.log('tentn', tenantid);
+            console.log('youthnetTenantIds?.[0]?.tenantId', youthnetTenantIds);
+
+            if (tenantid === youthnetTenantIds?.[0]) {
               await setDataInStorage('userType', 'youthnet');
               // navigation.navigate('YouthNetTabScreen');
               navigation.navigate('Dashboard');

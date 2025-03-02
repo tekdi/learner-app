@@ -31,7 +31,7 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
     const fetch = async () => {
       let course_in_progress = await CourseInProgress(userId);
       let courseData = course_in_progress?.data;
-      // console.log('courseData', courseData);
+      console.log('courseData', courseData);
 
       if (courseData) {
         console.log(

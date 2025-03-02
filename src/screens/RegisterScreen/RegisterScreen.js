@@ -24,7 +24,7 @@ const RegisterScreen = () => {
     const payload = {
       limit: 10,
       offset: 0,
-      fieldName: 'states',
+      fieldName: 'state',
     };
     const data = await getGeoLocation({ payload });
     setDataInStorage('states', JSON.stringify(data?.values || []));
@@ -890,6 +890,7 @@ const RegisterScreen = () => {
       let schema = data?.fields;
       setMainSchema(schema);
       getLocation(); // GetLocation Comment
+      setNetworkError(false);
     }
 
     setLoading(false);

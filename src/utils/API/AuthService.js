@@ -288,7 +288,7 @@ export const updateUser = async ({ payload, user_id }) => {
     -H 'tenantId: ${headers.tenantId}' \\
     -d '${JSON.stringify(payload)}'
         `;
-    // console.log('cURL Command:', curlCommand);
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await patch(url, payload, {
@@ -1912,6 +1912,55 @@ export const viewCertificate = async ({ certificateId }) => {
     if (result) {
       return result?.data;
     }
+  } catch (e) {
+    console.log('e', e);
+  }
+};
+export const enrollInterest = async () => {
+  const url = `${EndUrls.enrollInterest}`; // Define the URL
+  const headers = await getHeaders();
+  const profileDetails = JSON.parse(await getDataFromStorage('profileData'))
+    ?.getUserDetails?.[0];
+  const customFields = profileDetails?.customFields.reduce(
+    (acc, { label, value }) => {
+      acc[label] = value;
+      return acc;
+    },
+    {}
+  );
+
+  const headersString = Object.entries(headers)
+    .map(([key, value]) => `-H "${key}: ${value}"`)
+    .join(' ');
+  const payload = {
+    first_name: profileDetails?.firstName,
+    middle_name: profileDetails?.middleName ? profileDetails?.middleName : '',
+    last_name: profileDetails?.lastName,
+    mother_name: customFields?.MOTHER_NAME ? customFields?.MOTHER_NAME : '',
+    gender: profileDetails?.gender,
+    email_address: profileDetails?.email ? profileDetails?.email : '',
+    dob: profileDetails?.dob,
+    qualification:
+      customFields?.HIGHEST_EDCATIONAL_QUALIFICATION_OR_LAST_PASSED_GRADE
+        ? customFields?.HIGHEST_EDCATIONAL_QUALIFICATION_OR_LAST_PASSED_GRADE
+        : '',
+    phone_number: profileDetails?.mobile,
+    state: customFields?.STATES ? customFields?.STATES : '',
+    district: customFields?.DISTRICTS ? customFields?.DISTRICTS : '',
+    block: customFields?.BLOCKS ? customFields?.BLOCKS : '',
+    village: customFields?.VILLAGE ? customFields?.VILLAGE : '',
+    blood_group: '',
+  };
+  const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+  console.log('cURL Command:', curlCommand);
+  try {
+    // Make the actual request
+    // const result = await post(url, payload, {
+    //   headers: headers || {},
+    // });
+    // if (result) {
+    //   return result?.data;
+    // }
   } catch (e) {
     console.log('e', e);
   }
