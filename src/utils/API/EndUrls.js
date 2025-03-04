@@ -53,7 +53,7 @@ const EndUrls = {
   viewCertificate: `${API_URL}/interface/v1/tracking/certificate/render`,
 
   // SalesForce APis (L2 Interest)
-  enrollInterest: `${API_URL}/prathamservice/v1/save-user-salesforce`,
+  enrollInterest: `https://dev-middleware.prathamdigital.org/prathamservice/v1/save-user-salesforce`,
 
   //CMS sunbird saas
   // hierarchy_content: `${CONTENT_URL}/learner/questionset/v1/hierarchy/`, //pass do id at end

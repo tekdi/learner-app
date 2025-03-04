@@ -32,6 +32,7 @@ import {
   capitalizeName,
   getDataFromStorage,
   logEventFunction,
+  setDataInStorage,
 } from '../../../utils/JsHelper/Helper';
 import { courseTrackingStatus } from '../../../utils/API/ApiCalls';
 import ActiveLoading from '../../LoadingScreen/ActiveLoading';
@@ -46,12 +47,15 @@ import {
   restoreScrollPosition,
   storeScrollPosition,
 } from '../../../utils/Helper/JSHelper';
+import { useInternet } from '../../../context/NetworkContext';
 
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
 const Courses = () => {
   // const navigation = useNavigation();
   const { t } = useTranslation();
+  const { isConnected } = useInternet();
+
   const [courseData, setCourseData] = useState([]);
   const [trackData, setTrackData] = useState([]);
   const [userInfo, setUserInfo] = useState('');
@@ -101,9 +105,17 @@ const Courses = () => {
     useCallback(() => {
       setLoading(true);
       fetchData(0, false); // Reset course data
+      fetchInterestStatus();
       setLoading(false);
     }, [])
   );
+
+  const fetchInterestStatus = async () => {
+    const data = (await getDataFromStorage(`Enrolled_to_l2${userId}`)) || '';
+    if (data === 'yes') {
+      setInterestContent(false);
+    }
+  };
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -114,7 +126,6 @@ const Courses = () => {
     const fetch = async () => {
       // const cohort_id = await getDataFromStorage('cohortId');
       let userType = await getDataFromStorage('userType');
-      // console.log('userType', userType);
 
       let isYouthnet = userType == 'youthnet' ? true : false;
       setYouthnet(isYouthnet);
@@ -250,11 +261,12 @@ const Courses = () => {
     setLoading(false);
   };
 
-  function updateInterestStatus(trackData) {
-    console.log('trackData', trackData);
-    const isInterested = trackData.some((course) => course.completed === 1);
-    console.log('isInterested', isInterested);
-    if (isInterested) {
+  async function updateInterestStatus(trackData) {
+    const isInterested = trackData.some((course) => course.completed);
+    const data = (await getDataFromStorage(`Enrolled_to_l2${userId}`)) || '';
+    if (data === 'yes') {
+      setInterestContent(false);
+    } else if (isInterested && data !== 'yes') {
       setInterestContent(true);
     }
   }
@@ -262,9 +274,6 @@ const Courses = () => {
   useEffect(() => {
     fetchData(0, false);
   }, [parentFormData, parentStaticFormData]);
-
-  // console.log('parentFormData', parentFormData);
-  // console.log('trackData', JSON.stringify(trackData));
 
   const handleSearch = async () => {
     setOffset(0); // Reset offset when searching
@@ -295,11 +304,14 @@ const Courses = () => {
   };
 
   const handleInterest = async () => {
-    // console.log('cfff');
-    await enrollInterest();
-    setInterestModal(true);
-    setInterestContent(false);
+    const data = await enrollInterest();
+    if (data?.params?.status === 'successful') {
+      setInterestModal(true);
+      setInterestContent(false);
+      await setDataInStorage(`Enrolled_to_l2${userId}`, 'yes');
+    }
   };
+
   return (
     <SafeAreaView
       key={refreshKey}
@@ -461,7 +473,7 @@ const Courses = () => {
                   </View>
                 </CopilotView>
               </CopilotStep>
-              {courseData.length !== count && (
+              {courseData.length !== count && courseData.length > 0 && (
                 <View>
                   <PrimaryButton
                     onPress={handleViewMore}

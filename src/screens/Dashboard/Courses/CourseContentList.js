@@ -48,6 +48,8 @@ import InAppBrowser from 'react-native-inappbrowser-reborn';
 import Accordion3 from '@components/Accordion/Accordion3';
 import Icon from 'react-native-vector-icons/Ionicons';
 import SecondaryButton from '@components/SecondaryButton/SecondaryButton';
+import NetworkAlert from '../../../components/NetworkError/NetworkAlert';
+import { useInternet } from '../../../context/NetworkContext';
 
 const CourseContentList = ({ route }) => {
   const { language, t } = useTranslation();
@@ -146,10 +148,13 @@ const CourseContentList = ({ route }) => {
   };
 
   //set progress and start date
+  const { isConnected } = useInternet();
   const [trackData, setTrackData] = useState([]);
   const [trackCompleted, setTrackCompleted] = useState(0);
   const [trackProgress, setTrackProgress] = useState(0);
   const [startedOn, setStartedOn] = useState('');
+  const [networkstatus, setNetworkstatus] = useState(true);
+  console.log('isConnected', isConnected);
 
   const fetchDataTrack = async () => {
     //found course progress
@@ -293,9 +298,12 @@ const CourseContentList = ({ route }) => {
   }, [trackData]);
 
   const handleEnroll = async () => {
-    setIsModal(true);
+    if (!isConnected) {
+      setNetworkstatus(false);
+    }
     const data = await courseEnroll({ course_id });
     if (data?.params?.status === 'successful') {
+      setIsModal(true);
       setEnrollStatus(true);
     }
   };
@@ -356,344 +364,377 @@ const CourseContentList = ({ route }) => {
       {loading ? (
         <ActivityIndicator style={{ top: 300 }} />
       ) : (
-        <ScrollView>
-          <View style={{ padding: 20, paddingBottom: 10 }}>
-            <View style={[globalStyles.flexrow]}>
-              <FastImage
-                style={styles.image}
-                source={
-                  coursesContent?.posterImage
-                    ? {
-                        uri: coursesContent?.posterImage,
-                        priority: FastImage.priority.high,
-                      }
-                    : require('../../../assets/images/png/Course.png')
-                }
-                resizeMode={FastImage.resizeMode.contain} // Adjust to cover the circular area
-              />
-              <GlobalText
-                style={[globalStyles.heading2, { flex: 1 }]}
-                numberOfLines={3}
-                ellipsizeMode="tail"
-              >
-                {coursesContent?.name}
-              </GlobalText>
-            </View>
-            <View style={globalStyles.flexrow}>
-              <GlobalText
-                style={[globalStyles.subHeading, { marginVertical: 10 }]}
-              >
-                {coursesContent?.description}
-              </GlobalText>
-            </View>
-            <View style={globalStyles.flexrow}>
-              <GlobalText
-                style={[globalStyles.heading2, { fontWeight: 'bold' }]}
-              >
-                {t('what_you_learn')}
-              </GlobalText>
-            </View>
-            <View>
-              {coursesContent?.children?.map((item, i) => {
-                return (
-                  <Accordion3
-                    key={i}
-                    index={i}
-                    openDropDown={true}
-                    title={item?.name}
-                    description={item?.description}
+        <>
+          {coursesContent ? (
+            <ScrollView>
+              <View style={{ padding: 20, paddingBottom: 10 }}>
+                <View style={[globalStyles.flexrow]}>
+                  <FastImage
+                    style={styles.image}
+                    source={
+                      coursesContent?.posterImage
+                        ? {
+                            uri: coursesContent?.posterImage,
+                            priority: FastImage.priority.high,
+                          }
+                        : require('../../../assets/images/png/Course.png')
+                    }
+                    resizeMode={FastImage.resizeMode.contain} // Adjust to cover the circular area
                   />
-                );
-              })}
-            </View>
-          </View>
-
-          {!enrollStatus ? (
-            <View style={{ width: '90%', alignSelf: 'center' }}>
-              <PrimaryButton onPress={handleEnroll} text={t('enroll_now')} />
-            </View>
-          ) : certificateId ? (
-            <View style={{ width: '90%', alignSelf: 'center' }}>
-              <PrimaryButton
-                onPress={handleViewCertificate}
-                text={t('view_certificate')}
-              />
-            </View>
-          ) : (
-            <>
-              <View
-                style={[
-                  globalStyles.flexrow,
-                  {
-                    justifyContent: 'space-between',
-                    backgroundColor: '#3B383E',
-                    paddingHorizontal: 25,
-                    paddingVertical: 10,
-                    borderRadius: 20,
-                    width: '90%',
-                    alignSelf: 'center',
-                  },
-                ]}
-              >
-                {trackCompleted != 0 || trackProgress != 0 ? (
-                  <View style={[globalStyles.flexrow]}>
-                    <TextField
-                      style={[
-                        globalStyles.text,
-                        { fontSize: 12, color: 'white' },
-                      ]}
-                      text={'started_on'}
-                    />
-                    <TextField
-                      style={[
-                        globalStyles.text,
-                        { fontSize: 12, color: 'white' },
-                      ]}
-                      text={`${translateDate(startedOn, language)}`}
-                    />
-                  </View>
-                ) : (
-                  <></>
-                )}
-                <View
-                  style={[
-                    globalStyles.flexrow,
-                    { flex: 1, justifyContent: 'flex-end' },
-                  ]}
-                >
-                  {trackCompleted < 100 && trackCompleted > 0 ? (
-                    <>
-                      <CircularProgressBarCustom
-                        size={30}
-                        strokeWidth={5}
-                        progress={trackCompleted / 100}
-                        color="green"
-                        backgroundColor="#e6e6e6"
-                        textStyle={{ fontSize: 8, color: 'white' }}
-                      />
-                      <GlobalText
-                        style={{ marginLeft: 10, color: 'white' }}
-                      >{`${translateDigits(
-                        Math.round((trackCompleted / 100) * 100),
-                        language
-                      )}%`}</GlobalText>
-                      <TextField
-                        style={[
-                          globalStyles.text,
-                          { fontSize: 12, color: 'white' },
-                        ]}
-                        text={'completed'}
-                      />
-                    </>
-                  ) : (
-                    <StatusCardCourse
-                      status={
-                        trackCompleted >= 100
-                          ? 'completed'
-                          : trackCompleted > 0
-                            ? 'inprogress'
-                            : trackProgress > 0
-                              ? 'progress'
-                              : 'not_started'
-                      }
-                      trackCompleted={trackCompleted}
-                      viewStyle={{
-                        borderTopLeftRadius: 10,
-                        borderTopRightRadius: 10,
-                      }}
-                    />
-                  )}
-                </View>
-              </View>
-              <View
-                style={{
-                  padding: 20,
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  flexDirection: 'row',
-                  minHeight: 300,
-                  // borderWidth: 1,
-                }}
-              >
-                {coursesContent?.children?.map((item) => {
-                  return (
-                    <UnitCard
-                      key={item?.name}
-                      item={item}
-                      headingName={coursesContent?.name}
-                      course_id={course_id}
-                      unit_id={item?.identifier}
-                      TrackData={trackData}
-                    />
-                  );
-                })}
-              </View>
-            </>
-          )}
-
-          <CertificateViewer
-            visible={visible}
-            setVisible={setVisible}
-            certificateHtml={certificateHtml}
-          />
-
-          <Modal visible={isModal} transparent={true} animationType="slide">
-            <View style={styles.modalContainer} activeOpacity={1}>
-              <View style={styles.alertBox}>
-                <View
-                  style={{
-                    borderBottomWidth: 1,
-                    borderColor: '#D0C5B4',
-                    marginVertical: 20,
-                    width: '100%',
-                  }}
-                >
-                  <View style={{ alignItems: 'center', marginLeft: 20 }}>
-                    <FastImage
-                      style={styles.image}
-                      // eslint-disable-next-line no-undef
-                      source={require('../../../assets/images/gif/party.gif')}
-                      resizeMode={FastImage.resizeMode.contain}
-                      priority={FastImage.priority.high} // Set the priority here
-                    />
-                  </View>
-                  <View style={{ paddingVertical: 10 }}>
-                    <GlobalText
-                      style={[globalStyles.subHeading, { textAlign: 'center' }]}
-                    >
-                      {t('good_luck')}
-                    </GlobalText>
-                    <GlobalText
-                      style={[globalStyles.subHeading, { textAlign: 'center' }]}
-                    >
-                      {t('you_are_now_enrolled_to_the_course')}
-                    </GlobalText>
-                  </View>
-                </View>
-                <View style={styles.btnbox}>
-                  <PrimaryButton
-                    text={t('close')}
-                    onPress={() => {
-                      setIsModal(false);
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
-          </Modal>
-
-          <Modal
-            visible={certificateModal}
-            transparent={true}
-            animationType="slide"
-          >
-            <View style={styles.modalContainer} activeOpacity={1}>
-              <View style={styles.alertBox}>
-                <View
-                  style={{
-                    borderBottomWidth: 1,
-                    borderColor: '#D0C5B4',
-                    marginVertical: 20,
-                    width: '100%',
-                  }}
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      setCertificateModal(false);
-                    }}
-                    style={{ alignSelf: 'flex-end' }}
+                  <GlobalText
+                    style={[globalStyles.heading2, { flex: 1 }]}
+                    numberOfLines={3}
+                    ellipsizeMode="tail"
                   >
-                    <Icon name={'close'} color="#000" size={30} />
-                  </TouchableOpacity>
-                  <View style={{ alignItems: 'center', marginLeft: 20 }}>
-                    <FastImage
-                      style={styles.image}
-                      // eslint-disable-next-line no-undef
-                      source={require('../../../assets/images/gif/party.gif')}
-                      resizeMode={FastImage.resizeMode.contain}
-                      priority={FastImage.priority.high} // Set the priority here
-                    />
+                    {coursesContent?.name}
+                  </GlobalText>
+                </View>
+                <View style={globalStyles.flexrow}>
+                  <GlobalText
+                    style={[globalStyles.subHeading, { marginVertical: 10 }]}
+                  >
+                    {coursesContent?.description}
+                  </GlobalText>
+                </View>
+                <View style={globalStyles.flexrow}>
+                  <GlobalText
+                    style={[globalStyles.heading2, { fontWeight: 'bold' }]}
+                  >
+                    {t('what_you_learn')}
+                  </GlobalText>
+                </View>
+                <View>
+                  {coursesContent?.children?.map((item, i) => {
+                    return (
+                      <Accordion3
+                        key={i}
+                        index={i}
+                        openDropDown={true}
+                        title={item?.name}
+                        description={item?.description}
+                      />
+                    );
+                  })}
+                </View>
+              </View>
+
+              {!enrollStatus ? (
+                <View style={{ width: '90%', alignSelf: 'center' }}>
+                  <PrimaryButton
+                    onPress={handleEnroll}
+                    text={t('enroll_now')}
+                  />
+                </View>
+              ) : certificateId ? (
+                <View style={{ width: '90%', alignSelf: 'center' }}>
+                  <PrimaryButton
+                    onPress={handleViewCertificate}
+                    text={t('view_certificate')}
+                  />
+                </View>
+              ) : (
+                <>
+                  <View
+                    style={[
+                      globalStyles.flexrow,
+                      {
+                        justifyContent: 'space-between',
+                        backgroundColor: '#3B383E',
+                        paddingHorizontal: 25,
+                        paddingVertical: 10,
+                        borderRadius: 20,
+                        width: '90%',
+                        alignSelf: 'center',
+                      },
+                    ]}
+                  >
+                    {trackCompleted != 0 || trackProgress != 0 ? (
+                      <View style={[globalStyles.flexrow]}>
+                        <TextField
+                          style={[
+                            globalStyles.text,
+                            { fontSize: 12, color: 'white' },
+                          ]}
+                          text={'started_on'}
+                        />
+                        <TextField
+                          style={[
+                            globalStyles.text,
+                            { fontSize: 12, color: 'white' },
+                          ]}
+                          text={`${translateDate(startedOn, language)}`}
+                        />
+                      </View>
+                    ) : (
+                      <></>
+                    )}
+                    <View
+                      style={[
+                        globalStyles.flexrow,
+                        { flex: 1, justifyContent: 'flex-end' },
+                      ]}
+                    >
+                      {trackCompleted < 100 && trackCompleted > 0 ? (
+                        <>
+                          <CircularProgressBarCustom
+                            size={30}
+                            strokeWidth={5}
+                            progress={trackCompleted / 100}
+                            color="green"
+                            backgroundColor="#e6e6e6"
+                            textStyle={{ fontSize: 8, color: 'white' }}
+                          />
+                          <GlobalText
+                            style={{ marginLeft: 10, color: 'white' }}
+                          >{`${translateDigits(
+                            Math.round((trackCompleted / 100) * 100),
+                            language
+                          )}%`}</GlobalText>
+                          <TextField
+                            style={[
+                              globalStyles.text,
+                              { fontSize: 12, color: 'white' },
+                            ]}
+                            text={'completed'}
+                          />
+                        </>
+                      ) : (
+                        <StatusCardCourse
+                          status={
+                            trackCompleted >= 100
+                              ? 'completed'
+                              : trackCompleted > 0
+                                ? 'inprogress'
+                                : trackProgress > 0
+                                  ? 'progress'
+                                  : 'not_started'
+                          }
+                          trackCompleted={trackCompleted}
+                          viewStyle={{
+                            borderTopLeftRadius: 10,
+                            borderTopRightRadius: 10,
+                          }}
+                        />
+                      )}
+                    </View>
                   </View>
                   <View
                     style={{
-                      marginVertical: 20,
-                      paddingVertical: 20,
-                      // backgroundColor: '#FFDEA1',
+                      padding: 20,
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      flexDirection: 'row',
+                      minHeight: 300,
+                      // borderWidth: 1,
                     }}
                   >
-                    <GlobalText
-                      style={[
-                        globalStyles.subHeading,
-                        { textAlign: 'center', color: '#1A8825' },
-                      ]}
+                    {coursesContent?.children?.map((item) => {
+                      return (
+                        <UnitCard
+                          key={item?.name}
+                          item={item}
+                          headingName={coursesContent?.name}
+                          course_id={course_id}
+                          unit_id={item?.identifier}
+                          TrackData={trackData}
+                        />
+                      );
+                    })}
+                  </View>
+                </>
+              )}
+
+              <CertificateViewer
+                visible={visible}
+                setVisible={setVisible}
+                certificateHtml={certificateHtml}
+              />
+
+              <Modal visible={isModal} transparent={true} animationType="slide">
+                <View style={styles.modalContainer} activeOpacity={1}>
+                  <View style={styles.alertBox}>
+                    <View
+                      style={{
+                        borderBottomWidth: 1,
+                        borderColor: '#D0C5B4',
+                        marginVertical: 20,
+                        width: '100%',
+                      }}
                     >
-                      {t('congratulation')}
-                    </GlobalText>
-                    <GlobalText
+                      <View style={{ alignItems: 'center', marginLeft: 20 }}>
+                        <FastImage
+                          style={styles.image}
+                          // eslint-disable-next-line no-undef
+                          source={require('../../../assets/images/gif/party.gif')}
+                          resizeMode={FastImage.resizeMode.contain}
+                          priority={FastImage.priority.high} // Set the priority here
+                        />
+                      </View>
+                      <View style={{ paddingVertical: 10 }}>
+                        <GlobalText
+                          style={[
+                            globalStyles.subHeading,
+                            { textAlign: 'center' },
+                          ]}
+                        >
+                          {t('good_luck')}
+                        </GlobalText>
+                        <GlobalText
+                          style={[
+                            globalStyles.subHeading,
+                            { textAlign: 'center' },
+                          ]}
+                        >
+                          {t('you_are_now_enrolled_to_the_course')}
+                        </GlobalText>
+                      </View>
+                    </View>
+                    <View style={styles.btnbox}>
+                      <PrimaryButton
+                        text={t('close')}
+                        onPress={() => {
+                          setIsModal(false);
+                        }}
+                      />
+                    </View>
+                  </View>
+                </View>
+              </Modal>
+
+              <Modal
+                visible={certificateModal}
+                transparent={true}
+                animationType="slide"
+              >
+                <View style={styles.modalContainer} activeOpacity={1}>
+                  <View style={styles.alertBox}>
+                    <View
+                      style={{
+                        borderBottomWidth: 1,
+                        borderColor: '#D0C5B4',
+                        marginVertical: 20,
+                        width: '100%',
+                      }}
+                    >
+                      <TouchableOpacity
+                        onPress={() => {
+                          setCertificateModal(false);
+                        }}
+                        style={{ alignSelf: 'flex-end' }}
+                      >
+                        <Icon name={'close'} color="#000" size={30} />
+                      </TouchableOpacity>
+                      <View style={{ alignItems: 'center', marginLeft: 20 }}>
+                        <FastImage
+                          style={styles.image}
+                          // eslint-disable-next-line no-undef
+                          source={require('../../../assets/images/gif/party.gif')}
+                          resizeMode={FastImage.resizeMode.contain}
+                          priority={FastImage.priority.high} // Set the priority here
+                        />
+                      </View>
+                      <View
+                        style={{
+                          marginVertical: 20,
+                          paddingVertical: 20,
+                          // backgroundColor: '#FFDEA1',
+                        }}
+                      >
+                        <GlobalText
+                          style={[
+                            globalStyles.subHeading,
+                            { textAlign: 'center', color: '#1A8825' },
+                          ]}
+                        >
+                          {t('congratulation')}
+                        </GlobalText>
+                        <GlobalText
+                          style={[
+                            globalStyles.heading2,
+                            {
+                              textAlign: 'center',
+                              fontWeight: 'bold',
+                              marginVertical: 10,
+                            },
+                          ]}
+                        >
+                          {t('you_have_completed_the_course')}
+                        </GlobalText>
+                        <GlobalText
+                          style={[globalStyles.text, { textAlign: 'center' }]}
+                        >
+                          {t(
+                            'you_can_access_the_Certificate_at_any_time_from_your_rofile'
+                          )}
+                        </GlobalText>
+                      </View>
+                    </View>
+                    <View
                       style={[
-                        globalStyles.heading2,
                         {
-                          textAlign: 'center',
-                          fontWeight: 'bold',
-                          marginVertical: 10,
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          // paddingHorizontal: 20,
                         },
                       ]}
                     >
-                      {t('you_have_completed_the_course')}
-                    </GlobalText>
-                    <GlobalText
-                      style={[globalStyles.text, { textAlign: 'center' }]}
-                    >
-                      {t(
-                        'you_can_access_the_Certificate_at_any_time_from_your_rofile'
-                      )}
-                    </GlobalText>
+                      <View style={{ width: 180 }}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            navigation.goBack();
+                          }}
+                        >
+                          <GlobalText
+                            style={[
+                              globalStyles.text,
+                              {
+                                textAlign: 'center',
+                                fontWeight: 'bold',
+                                color: '#0D599E',
+                              },
+                            ]}
+                          >
+                            {t('view_more_courses')}
+                          </GlobalText>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={{ width: 160 }}>
+                        <PrimaryButton
+                          text={t('view_certificate')}
+                          onPress={() => {
+                            setCertificateModal(false);
+                            handleViewCertificate();
+                          }}
+                        />
+                      </View>
+                    </View>
                   </View>
                 </View>
-                <View
-                  style={[
-                    {
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      // paddingHorizontal: 20,
-                    },
-                  ]}
-                >
-                  <View style={{ width: 180 }}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.goBack();
-                      }}
-                    >
-                      <GlobalText
-                        style={[
-                          globalStyles.text,
-                          {
-                            textAlign: 'center',
-                            fontWeight: 'bold',
-                            color: '#0D599E',
-                          },
-                        ]}
-                      >
-                        {t('view_more_courses')}
-                      </GlobalText>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={{ width: 160 }}>
-                    <PrimaryButton
-                      text={t('view_certificate')}
-                      onPress={() => {
-                        setCertificateModal(false);
-                        handleViewCertificate();
-                      }}
-                    />
-                  </View>
-                </View>
-              </View>
-            </View>
-          </Modal>
-        </ScrollView>
+              </Modal>
+            </ScrollView>
+          ) : (
+            <GlobalText
+              style={[
+                globalStyles.text,
+                {
+                  fontWeight: 'bold',
+                  color: '#0D599E',
+                  padding: 30,
+                },
+              ]}
+            >
+              {t('sync_pending_no_internet_available')}
+            </GlobalText>
+          )}
+        </>
       )}
+      <NetworkAlert
+        onTryAgain={handleEnroll}
+        isConnected={networkstatus}
+        closeModal={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+      />
     </SafeAreaView>
   );
 };

@@ -103,15 +103,15 @@ export const getAccessToken = async () => {
 };
 
 export const getStudentForm = async (tenantId) => {
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    ...(tenantId && { tenantId: `${tenantId}` }),
+  };
+  // const url = `${EndUrls.get_form}`;
+  const url = `${EndUrls.get_form}`;
+  const user_id = await getDataFromStorage('userId'); // Ensure this is defined
   try {
-    const headers = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      ...(tenantId && { tenantId: `${tenantId}` }),
-    };
-    // const url = `${EndUrls.get_form}`;
-    const url = `${EndUrls.get_form}`;
-
     // Generate the curl command
     const curlCommand = `curl -X GET '${url}' \\
 ${Object.entries(headers || {})
@@ -126,12 +126,15 @@ ${Object.entries(headers || {})
     });
 
     if (result) {
+      await storeApiResponse(user_id, url, 'get', null, result?.data?.result);
       return result?.data?.result;
     } else {
-      return {};
+      const result_offline = await getApiResponse(user_id, url, 'get', null);
+      return result_offline;
     }
   } catch (e) {
-    return handleResponseException(e);
+    const result_offline = await getApiResponse(user_id, url, 'get', null);
+    return result_offline;
   }
 };
 
@@ -310,7 +313,7 @@ export const courseListApi_testing = async ({
   inprogress_do_ids,
 }) => {
   const user_id = await getDataFromStorage('userId');
-  const url = `${EndUrls.contentList_testing}`; // Define the URL
+  const url = `${EndUrls.contentList_testing}`;
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -323,15 +326,14 @@ export const courseListApi_testing = async ({
           userType == 'scp'
             ? ['secondchance', 'Second Chance', 'SCP']
             : ['Youthnet', 'youthnet', 'YouthNet'],
-        ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
-        // status: ['Live','dra'],
+        ...(inprogress_do_ids && { identifier: inprogress_do_ids }),
         primaryCategory: ['Course'],
       },
       limit: 100,
       sort_by: {
         lastPublishedOn: 'desc',
       },
-      ...(searchText && { query: searchText }), // Add query conditionally
+      ...(searchText && { query: searchText }),
       fields: [
         'name',
         'appIcon',
@@ -356,14 +358,20 @@ export const courseListApi_testing = async ({
       offset: 0,
     },
   };
+
+  // Generate cURL command
+  const curlCommand = `curl -X POST "${url}" \\
+  -H "Content-Type: application/json" \\
+  -H "Accept: application/json" \\
+  -d '${JSON.stringify(payload, null, 2)}'`;
+
+  console.log('Generated cURL Command:');
+  console.log(curlCommand);
+
   try {
-    // Make the actual request
-    const result = await post(url, payload, {
-      headers: headers || {},
-    });
+    const result = await post(url, payload, { headers });
 
     if (result) {
-      // store result
       await storeApiResponse(
         user_id,
         url,
@@ -381,11 +389,13 @@ export const courseListApi_testing = async ({
     return result_offline;
   }
 };
+
 export const courseListApi_New = async ({
   searchText,
   mergedFilter,
   instant,
   offset,
+  inprogress_do_ids,
 }) => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.contentList_testing}`; // Define the URL
@@ -402,7 +412,7 @@ export const courseListApi_New = async ({
         //   userType == 'scp'
         //     ? ['secondchance', 'Second Chance', 'SCP']
         //     : ['Youthnet', 'youthnet', 'YouthNet'],
-        // ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
+        ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
         status: ['Live'],
         primaryCategory: ['Course'],
         ...(mergedFilter && mergedFilter),
@@ -811,18 +821,18 @@ export const trackAssessment = async (params = {}) => {
   }
 };
 export const getProfileDetails = async (params = {}) => {
+  const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+  const url = `${EndUrls.profileDetails}`; // Define the URL
+  const headers = await getHeaders();
+  const payload = {
+    limit: 0,
+    filters: {
+      userId: params?.userId,
+    },
+    sort: ['createdAt', 'asc'],
+    offset: 0,
+  };
   try {
-    const url = `${EndUrls.profileDetails}`; // Define the URL
-    const headers = await getHeaders();
-    const payload = {
-      limit: 0,
-      filters: {
-        userId: params?.userId,
-      },
-      sort: ['createdAt', 'asc'],
-      offset: 0,
-    };
-
     // Convert headers object to cURL header format
     const headerString = Object.entries(headers || {})
       .map(([key, value]) => `-H "${key}: ${value}"`)
@@ -842,12 +852,26 @@ export const getProfileDetails = async (params = {}) => {
     });
 
     if (result) {
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
       return result?.data?.result;
     } else {
-      return {};
+      const result_offline = await getApiResponse(
+        user_id,
+        url,
+        'post',
+        payload
+      );
+      return result_offline;
     }
   } catch (e) {
-    return handleResponseException(e);
+    const result_offline = await getApiResponse(user_id, url, 'post', payload);
+    return result_offline;
   }
 };
 
@@ -1800,10 +1824,21 @@ export const CourseEnrollStatus = async ({ course_id }) => {
     });
 
     if (result) {
+      await storeApiResponse(user_id, url, 'post', payload, result?.data);
       return result?.data;
+    } else {
+      const result_offline = await getApiResponse(
+        user_id,
+        url,
+        'post',
+        payload
+      );
+      return result_offline;
     }
   } catch (e) {
     console.log('e', e);
+    const result_offline = await getApiResponse(user_id, url, 'post', payload);
+    return result_offline;
   }
 };
 export const courseEnroll = async ({ course_id }) => {
@@ -1894,9 +1929,11 @@ export const viewCertificate = async ({ certificateId }) => {
   const headersString = Object.entries(headers)
     .map(([key, value]) => `-H "${key}: ${value}"`)
     .join(' ');
+  const user_id = await getDataFromStorage('userId');
+
   const payload = {
     credentialId: certificateId,
-    templateId: 'cm74egxc0000aoc3gqp2p4fvk',
+    templateId: 'cm7nbogii000moc3gth63l863',
   };
 
   try {
@@ -1910,10 +1947,21 @@ export const viewCertificate = async ({ certificateId }) => {
     });
 
     if (result) {
+      await storeApiResponse(user_id, url, 'post', payload, result?.data);
       return result?.data;
+    } else {
+      const result_offline = await getApiResponse(
+        user_id,
+        url,
+        'post',
+        payload
+      );
+      return result_offline;
     }
   } catch (e) {
     console.log('e', e);
+    const result_offline = await getApiResponse(user_id, url, 'post', payload);
+    return result_offline;
   }
 };
 export const enrollInterest = async () => {
@@ -1922,12 +1970,14 @@ export const enrollInterest = async () => {
   const profileDetails = JSON.parse(await getDataFromStorage('profileData'))
     ?.getUserDetails?.[0];
   const customFields = profileDetails?.customFields.reduce(
-    (acc, { label, value }) => {
-      acc[label] = value;
+    (acc, { label, selectedValues }) => {
+      acc[label] = selectedValues.map((item) => item.value).join(', '); // Extract values from selectedValues
       return acc;
     },
     {}
   );
+  console.log('sssssssss======>', JSON.stringify(profileDetails?.customFields));
+  console.log('customFields', JSON.stringify(customFields));
 
   const headersString = Object.entries(headers)
     .map(([key, value]) => `-H "${key}: ${value}"`)
@@ -1938,16 +1988,18 @@ export const enrollInterest = async () => {
     last_name: profileDetails?.lastName,
     mother_name: customFields?.MOTHER_NAME ? customFields?.MOTHER_NAME : '',
     gender: profileDetails?.gender,
-    email_address: profileDetails?.email ? profileDetails?.email : '',
+    email_address: profileDetails?.email
+      ? profileDetails?.email
+      : 'swapnil.phalke@tekditechnologies.com',
     dob: profileDetails?.dob,
     qualification:
       customFields?.HIGHEST_EDCATIONAL_QUALIFICATION_OR_LAST_PASSED_GRADE
         ? customFields?.HIGHEST_EDCATIONAL_QUALIFICATION_OR_LAST_PASSED_GRADE
         : '',
     phone_number: profileDetails?.mobile,
-    state: customFields?.STATES ? customFields?.STATES : '',
-    district: customFields?.DISTRICTS ? customFields?.DISTRICTS : '',
-    block: customFields?.BLOCKS ? customFields?.BLOCKS : '',
+    state: customFields?.STATE ? customFields?.STATE : '',
+    district: customFields?.DISTRICT ? customFields?.DISTRICT : '',
+    block: customFields?.BLOCK ? customFields?.BLOCK : '',
     village: customFields?.VILLAGE ? customFields?.VILLAGE : '',
     blood_group: '',
   };
@@ -1955,12 +2007,12 @@ export const enrollInterest = async () => {
   console.log('cURL Command:', curlCommand);
   try {
     // Make the actual request
-    // const result = await post(url, payload, {
-    //   headers: headers || {},
-    // });
-    // if (result) {
-    //   return result?.data;
-    // }
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+    if (result) {
+      return result?.data;
+    }
   } catch (e) {
     console.log('e', e);
   }

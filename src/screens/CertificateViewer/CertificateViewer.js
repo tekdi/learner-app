@@ -59,20 +59,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
   },
   alertBox: {
-    width: 350, // Matching size from NetworkAlert
+    width: '90%', // Matching size from NetworkAlert
     height: '80%', // Adjusted height
     backgroundColor: 'white',
     borderRadius: 10,
     overflow: 'hidden', // Ensures proper boundary for WebView
   },
   webViewContainer: {
-    // flex: 1, // Makes WebView take most of the space
-    width: '105%',
-    height: 500,
-    // borderWidth: 5,
+    flex: 1, // Makes WebView take most of the space
+    // width: '100%',
+    // height: 550,
+    // marginVertical: 20,
+    // borderWidth: 1,
+    // padding: -10,
   },
   webview: {
-    // flex: 1, // Ensures scrollability within defined space
+    flex: 1, // Ensures scrollability within defined space
     // borderWidth: 5,
   },
   closeButton: {

@@ -31,6 +31,8 @@ import GlobalText from '@components/GlobalText/GlobalText';
 import DeviceInfo from 'react-native-device-info';
 import Config from 'react-native-config';
 import { getProfileDetails, getStudentForm } from '../../utils/API/AuthService';
+import { useInternet } from '../../context/NetworkContext';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 
 const Profile = () => {
   const { t, language } = useTranslation();
@@ -38,7 +40,8 @@ const Profile = () => {
   const [userDetails, setUserDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
-
+  const { isConnected } = useInternet();
+  const [networkstatus, setNetworkstatus] = useState(true);
   const [userType, setUserType] = useState();
   const [cohortId, setCohortId] = useState();
   const version = DeviceInfo.getVersion(); // e.g., "1.0.1"
@@ -152,12 +155,24 @@ const Profile = () => {
     // const tenantData = await getTentantId();
 
     setLoading(false);
+    setNetworkstatus(true);
   };
+
+  console.log('userdetails', JSON.stringify(userDetails.length));
 
   useFocusEffect(
     useCallback(() => {
-      fetchData();
-    }, [navigation])
+      console.log('isConnected', isConnected);
+
+      if (isConnected) {
+        fetchData();
+        setNetworkstatus(true);
+      } else if (!isConnected && userDetails.length === 0) {
+        setNetworkstatus(false);
+      } else {
+        setNetworkstatus(true);
+      }
+    }, []) // Correct dependencies
   );
 
   useEffect(() => {
@@ -319,6 +334,13 @@ const Profile = () => {
           </GlobalText>
         </ScrollView>
       )}
+      <NetworkAlert
+        onTryAgain={fetchData}
+        isConnected={networkstatus}
+        closeModal={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+      />
     </SafeAreaView>
   );
 };

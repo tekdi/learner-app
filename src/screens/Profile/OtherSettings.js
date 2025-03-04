@@ -33,6 +33,7 @@ import InAppBrowser from 'react-native-inappbrowser-reborn';
 import FullPagePdfModal from '../RegisterScreen/FullPagePdfModal';
 import PropTypes from 'prop-types';
 import { NotificationUnsubscribe } from '../../utils/Helper/JSHelper';
+import { useInternet } from '../../context/NetworkContext';
 
 const OtherSettings = ({ route }) => {
   const { age } = route.params;
@@ -43,6 +44,7 @@ const OtherSettings = ({ route }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [userType, setUserType] = useState();
   const [cohortId, setCohortId] = useState();
+  const { isConnected } = useInternet();
 
   const { t } = useTranslation();
   const navigation = useNavigation();
@@ -174,8 +176,9 @@ const OtherSettings = ({ route }) => {
               />
             </View>
           </TouchableOpacity>
-          {userType === 'scp' &&
-          cohortId !== '00000000-0000-0000-0000-000000000000' ? (
+          {(userType === 'scp' &&
+            cohortId !== '00000000-0000-0000-0000-000000000000') ||
+          !isConnected ? (
             <></>
           ) : (
             <>
@@ -288,11 +291,7 @@ const OtherSettings = ({ route }) => {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[
-              globalStyles.flexrow,
-              styles.borderColor,
-              { borderBottomWidth: 0 },
-            ]}
+            style={[globalStyles.flexrow, styles.borderColor]}
             onPress={() => {
               setModalVisible(true);
             }}
@@ -309,6 +308,37 @@ const OtherSettings = ({ route }) => {
                 ellipsizeMode="tail"
               >
                 {t('consent_form')}
+              </GlobalText>
+              <Icon
+                name="angle-right"
+                style={{ marginHorizontal: 10 }}
+                color={'#000'}
+                size={30}
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              globalStyles.flexrow,
+              styles.borderColor,
+              { borderBottomWidth: 0 },
+            ]}
+            onPress={() => {
+              navigation.navigate('SupportRequest');
+            }}
+          >
+            <View
+              style={[
+                globalStyles.flexrow,
+                { justifyContent: 'space-between', width: '100%' },
+              ]}
+            >
+              <GlobalText
+                style={[globalStyles.subHeading, { color: '#4D4639' }]}
+                numberOfLines={2}
+                ellipsizeMode="tail"
+              >
+                {t('contact_us')}
               </GlobalText>
               <Icon
                 name="angle-right"

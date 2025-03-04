@@ -164,7 +164,8 @@ const RegistrationForm = ({ fields }) => {
     } else {
       if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
         await setDataInStorage('userType', 'youthnet');
-        navigation.navigate('YouthNetTabScreen');
+        // navigation.navigate('YouthNetTabScreen');
+        navigation.navigate('Dashboard');
       } else {
         await setDataInStorage('userType', 'public');
         navigation.navigate('Dashboard');

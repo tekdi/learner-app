@@ -509,7 +509,9 @@ export const courseTrackingStatus = async (userId, courseId) => {
 };
 
 //course in progress
-export const CourseInProgress = async (userId) => {
+export const CourseInProgress = async () => {
+  // console.log('userId===>', userId);
+  const userId = await getDataFromStorage('userId');
   try {
     const url = EndUrls.CourseInProgress;
 

@@ -116,7 +116,7 @@ const TabScreen = () => {
           }}
         />
       )}
-      {!contentShow && (
+      {/* {!contentShow && (
         <Tab.Screen
           name="explore"
           component={ExploreStack}
@@ -141,7 +141,7 @@ const TabScreen = () => {
             ),
           }}
         />
-      )}
+      )} */}
 
       <Tab.Screen
         name="Profile"

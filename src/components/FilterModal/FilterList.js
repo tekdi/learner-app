@@ -9,6 +9,7 @@ import CustomCheckbox from '@components/Checkboxes/CustomCheckbox';
 import CustomCheckbox2 from '@components/Checkboxes/CustomCheckbox2';
 import { filterContent, staticFilterContent } from '@src/utils/API/AuthService';
 import ActiveLoading from '@src/screens/LoadingScreen/ActiveLoading';
+import { useInternet } from '../../context/NetworkContext';
 
 const FilterList = ({
   setParentFormData,
@@ -27,6 +28,7 @@ const FilterList = ({
   const [formData, setFormData] = useState([]);
   const [staticFormData, setStaticFormData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isConnected } = useInternet();
 
   // useEffect(() => {
   //   setParentFormData(formData);
@@ -164,9 +166,13 @@ const FilterList = ({
   };
 
   useEffect(() => {
-    fetchData();
-    setFormData(orginalFormData);
-    setStaticFormData(parentStaticFormData);
+    if (isConnected) {
+      fetchData();
+      setFormData(orginalFormData);
+      setStaticFormData(parentStaticFormData);
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   const findAndRemoveIndexes = (currentSelectedIndex, maxIndex, form) => {
@@ -313,7 +319,7 @@ const FilterList = ({
 
   const handleFilter = () => {
     const transformedFormData = transformFormData(formData, staticFilter);
-    console.log('staticFilter', JSON.stringify(renderForm));
+    // console.log('staticFilter', JSON.stringify(renderForm));
     // console.log('staticFormData', JSON.stringify(staticFormData));
     setParentFormData(transformedFormData);
     setOrginalFormData(formData);
@@ -333,68 +339,85 @@ const FilterList = ({
             <ActiveLoading />
           </View>
         ) : (
-          <ScrollView
-            nestedScrollEnabled={true} // ✅ Enables independent scrolling
-            style={styles.scrollContainer}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View style={{ padding: 10 }}>
-              {renderForm?.map((item, key) => {
-                return (
-                  <View key={key}>
-                    <GlobalText
-                      style={[
-                        globalStyles.subHeading,
-                        { fontWeight: 600, marginLeft: 10 },
-                      ]}
-                    >
-                      {item?.name}
-                    </GlobalText>
+          <>
+            {!isConnected ? (
+              <GlobalText
+                style={[
+                  globalStyles.text,
+                  {
+                    fontWeight: 'bold',
+                    color: '#0D599E',
+                    padding: 30,
+                  },
+                ]}
+              >
+                {t('sync_pending_no_internet_available')}
+              </GlobalText>
+            ) : (
+              <ScrollView
+                nestedScrollEnabled={true} // ✅ Enables independent scrolling
+                style={styles.scrollContainer}
+                keyboardShouldPersistTaps="handled"
+              >
+                <View style={{ padding: 10 }}>
+                  {renderForm?.map((item, key) => {
+                    return (
+                      <View key={key}>
+                        <GlobalText
+                          style={[
+                            globalStyles.subHeading,
+                            { fontWeight: 600, marginLeft: 10 },
+                          ]}
+                        >
+                          {item?.name}
+                        </GlobalText>
 
-                    <CustomCheckbox
-                      setFormData={setFormData}
-                      formData={formData}
-                      options={item?.options}
-                      category={item?.code}
-                      index={item?.index}
-                      replaceOptionsWithAssoc={replaceOptionsWithAssoc}
-                    />
-                  </View>
-                );
-              })}
-            </View>
-            <GlobalText
-              style={[
-                globalStyles.heading2,
-                { fontWeight: 700, marginLeft: 10 },
-              ]}
-            >
-              {t('other_filters')}
-            </GlobalText>
-            <View style={{ padding: 10 }}>
-              {renderStaticForm?.map((item, key) => {
-                return (
-                  <View key={key}>
-                    <GlobalText
-                      style={[
-                        globalStyles.subHeading,
-                        { fontWeight: 600, marginLeft: 10 },
-                      ]}
-                    >
-                      {item?.name}
-                    </GlobalText>
+                        <CustomCheckbox
+                          setFormData={setFormData}
+                          formData={formData}
+                          options={item?.options}
+                          category={item?.code}
+                          index={item?.index}
+                          replaceOptionsWithAssoc={replaceOptionsWithAssoc}
+                        />
+                      </View>
+                    );
+                  })}
+                </View>
+                <GlobalText
+                  style={[
+                    globalStyles.heading2,
+                    { fontWeight: 700, marginLeft: 10 },
+                  ]}
+                >
+                  {t('other_filters')}
+                </GlobalText>
+                <View style={{ padding: 10 }}>
+                  {renderStaticForm?.map((item, key) => {
+                    return (
+                      <View key={key}>
+                        <GlobalText
+                          style={[
+                            globalStyles.subHeading,
+                            { fontWeight: 600, marginLeft: 10 },
+                          ]}
+                        >
+                          {item?.name}
+                        </GlobalText>
 
-                    <CustomCheckbox2
-                      setStaticFormData={setStaticFormData}
-                      staticFormData={staticFormData}
-                      options={item?.range}
-                      category={item?.code}
-                    />
-                  </View>
-                );
-              })}
-            </View>
-          </ScrollView>
+                        <CustomCheckbox2
+                          setStaticFormData={setStaticFormData}
+                          staticFormData={staticFormData}
+                          options={item?.range}
+                          category={item?.code}
+                        />
+                      </View>
+                    );
+                  })}
+                </View>
+              </ScrollView>
+            )}
+          </>
         )}
         {/* Footer Buttons */}
         <View style={styles.btnbox}>
