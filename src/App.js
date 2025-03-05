@@ -184,8 +184,8 @@ const App = () => {
       // Show notification in system tray
       PushNotification.localNotification({
         channelId: 'default-channel-id', // Ensure this matches your created channel
-        title: remoteMessage.notification.title,
-        message: remoteMessage.notification.body,
+        title: remoteMessage?.notification?.title,
+        message: remoteMessage?.notification?.body,
       });
     });
 

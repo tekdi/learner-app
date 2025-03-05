@@ -50,7 +50,7 @@ const ProfileUpdateForm = ({ fields }) => {
   const [err, setErr] = useState();
   const { isConnected } = useInternet();
   const navigation = useNavigation();
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage] = useState(0);
   const [pages, setPages] = useState([]);
   const [stateData, setStateData] = useState([]);
   const [districtData, setDistrictData] = useState([]);
@@ -165,6 +165,9 @@ const ProfileUpdateForm = ({ fields }) => {
       });
       const customFields = finalResult?.customFields;
       const userDetails = createNewObject(customFields, requiredLabels);
+      console.log('userDetails', JSON.stringify(userDetails));
+      // console.log('customFields', JSON.stringify(customFields));
+
       const newUpdatedObj = { ...userDetails, ...filteredResult };
 
       const updatedFormData = {
@@ -179,8 +182,6 @@ const ProfileUpdateForm = ({ fields }) => {
     fetchData();
     logProfileEditInProgress();
   }, []);
-
-  // console.log('formData', JSON.stringify(formData));
 
   const logProfileEditComplete = async () => {
     // Log the registration completed event
@@ -259,14 +260,13 @@ const ProfileUpdateForm = ({ fields }) => {
     setErrors({ ...errors, [name]: '' }); // Clear errors for the field
   };
 
-  console.log('updatedFormData', JSON.stringify(updateFormData));
-
   const validateFields = () => {
     const pageFields = pages[currentPage];
     const newErrors = {};
 
     pageFields.forEach((fieldName) => {
       const field = schema?.find((f) => f.name === fieldName);
+      const age = calculateAge(formData?.dob || '');
 
       if (field) {
         const value = formData[field.name] || '';
@@ -277,6 +277,16 @@ const ProfileUpdateForm = ({ fields }) => {
         ) {
           return; // Skip validation for these fields
         }
+        if (
+          ['guardian_name', 'guardian_relation', 'parent_phone'].includes(
+            field.name
+          ) &&
+          age &&
+          parseInt(age, 10) >= 18
+        ) {
+          return; // Skip validation for these fields
+        }
+
         if (field.isRequired && !value) {
           newErrors[field.name] = `${t(field.name)} ${t('is_required')}`;
         } else if (field.minLength && value.length < field.minLength && value) {
@@ -296,7 +306,6 @@ const ProfileUpdateForm = ({ fields }) => {
     });
 
     setErrors(newErrors);
-    console.log('newErrors', newErrors);
 
     return Object.keys(newErrors).length === 0;
   };
@@ -312,9 +321,9 @@ const ProfileUpdateForm = ({ fields }) => {
     ) {
       return null;
     }
-    if (field.name && !field?.isEditable) {
-      return null;
-    }
+    // if (field.name && !field?.isEditable) {
+    //   return null;
+    // }
     if (
       [
         'username',

@@ -59,9 +59,9 @@ const SubjectBox = ({ name, disabled, data }) => {
   }, []);
 
   const fetchData = async () => {
-    console.log('########### IN SUBJECT BOX');
+    // console.log('########### IN SUBJECT BOX');
     let content_do_id = data?.IL_UNIQUE_ID;
-    console.log('########### content_do_id', content_do_id);
+    // console.log('########### content_do_id', content_do_id);
     let contentObj = await getData(content_do_id, 'json');
     if (contentObj == null) {
       setDownloadStatus('download');
@@ -74,7 +74,7 @@ const SubjectBox = ({ name, disabled, data }) => {
     const user_id = await getDataFromStorage('userId');
     const content_id = data?.IL_UNIQUE_ID;
     const result_sync_offline = await getAsessmentOffline(user_id, content_id);
-    console.log('############ result_sync_offline', result_sync_offline);
+    // console.log('############ result_sync_offline', result_sync_offline);
     if (result_sync_offline) {
       setIsSyncPending(true);
     } else {

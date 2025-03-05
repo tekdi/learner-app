@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { Layout } from '@ui-kitten/components';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import Logo from '../../assets/images/png/logo.png';
 import CustomBottomCard from '../../components/CustomBottomCard/CustomBottomCard';
 import HorizontalLine from '../../components/HorizontalLine/HorizontalLine';
@@ -22,14 +22,18 @@ import { useTranslation } from '../../context/LanguageContext';
 import FastImage from '@changwoolab/react-native-fast-image';
 
 import {
+  deleteSavedItem,
   getActiveCohortData,
   getActiveCohortIds,
   getDataFromStorage,
   getRefreshToken,
+  logEventFunction,
   saveAccessToken,
   saveRefreshToken,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
+import { NotificationUnsubscribe } from '../../utils/Helper/JSHelper';
+
 import {
   getCohort,
   getProgramDetails,
@@ -77,8 +81,6 @@ const LanguageScreen = () => {
   const getProgramData = async () => {
     const data = await getProgramDetails();
 
-    // console.log('################ getProgramData', JSON.stringify(data));
-
     await setDataInStorage('tenantDetails', JSON.stringify(data));
   };
 
@@ -87,7 +89,6 @@ const LanguageScreen = () => {
     const tenantid = tenantData?.[0]?.tenantId;
     const user_id = await getDataFromStorage('userId');
     const academicYearId = await getDataFromStorage('academicYearId');
-    // console.log({ tenantid });
     const cohort = await getCohort({
       user_id,
       tenantid,
@@ -96,7 +97,6 @@ const LanguageScreen = () => {
     const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
     const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
     const cohort_id = getActiveCohortId?.[0];
-    // console.log({ cohort_id });
 
     await setDataInStorage(
       'cohortData',
@@ -106,6 +106,41 @@ const LanguageScreen = () => {
       'cohortId',
       cohort_id || '00000000-0000-0000-0000-000000000000'
     );
+  };
+
+  const logoutEvent = async () => {
+    const obj = {
+      eventName: 'auto_logout',
+      method: 'refresh-token',
+      screenName: 'dashboard',
+    };
+    await logEventFunction(obj);
+  };
+
+  const handleLogout = () => {
+    const fetchData = async () => {
+      await NotificationUnsubscribe();
+      await deleteSavedItem('refreshToken');
+      await deleteSavedItem('Accesstoken');
+      await deleteSavedItem('userId');
+      await deleteSavedItem('cohortId');
+      await deleteSavedItem('cohortData');
+      await deleteSavedItem('weightedProgress');
+      await deleteSavedItem('courseTrackData');
+      await deleteSavedItem('profileData');
+      await deleteSavedItem('tenantData');
+      await deleteSavedItem('academicYearId');
+      logoutEvent();
+      // Reset the navigation stack and navigate to LoginSignUpScreen
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'LoginScreen' }],
+        })
+      );
+    };
+
+    fetchData();
   };
 
   useEffect(() => {
@@ -168,8 +203,6 @@ const LanguageScreen = () => {
       const cohort_id = await getDataFromStorage('cohortId');
       const token = await getDataFromStorage('Accesstoken');
       const userType = await getDataFromStorage('userType');
-      console.log('userType', userType);
-      console.log('cohort_id', cohort_id);
 
       if (token) {
         if (isConnected) {
@@ -177,6 +210,7 @@ const LanguageScreen = () => {
           const data = await refreshToken({
             refresh_token: refresh_token,
           });
+
           if (token && data?.access_token) {
             await saveAccessToken(data?.access_token);
             await saveRefreshToken(data?.refresh_token);
@@ -184,31 +218,22 @@ const LanguageScreen = () => {
               cohort_id !== '00000000-0000-0000-0000-000000000000' &&
               userType === 'scp'
             ) {
-              console.log('reached');
               await setCurrentCohort(cohort_id);
               navigation.navigate('SCPUserTabScreen');
             } else {
               if (userType === 'youthnet') {
-                navigation.navigate('YouthNetTabScreen');
+                // navigation.navigate('YouthNetTabScreen');
+                navigation.navigate('Dashboard');
               } else {
                 navigation.navigate('Dashboard');
               }
             }
-          } else if (token) {
-            if (
-              cohort_id !== '00000000-0000-0000-0000-000000000000' &&
-              userType === 'scp'
-            ) {
-              console.log('reached here');
-              await setCurrentCohort(cohort_id);
-              navigation.navigate('SCPUserTabScreen');
-            } else {
-              if (userType === 'youthnet') {
-                navigation.navigate('YouthNetTabScreen');
-              } else {
-                navigation.navigate('Dashboard');
-              }
-            }
+          } else if (
+            token &&
+            (data?.params?.status === 'failed' ||
+              data?.params?.status === undefined)
+          ) {
+            handleLogout();
           } else {
             setLoading(false);
           }
@@ -221,7 +246,8 @@ const LanguageScreen = () => {
             navigation.navigate('SCPUserTabScreen');
           } else {
             if (userType === 'youthnet') {
-              navigation.navigate('YouthNetTabScreen');
+              // navigation.navigate('YouthNetTabScreen');
+              navigation.navigate('Dashboard');
             } else {
               navigation.navigate('Dashboard');
             }

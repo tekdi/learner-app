@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -19,6 +20,7 @@ import {
   getDataFromStorage,
   getTentantId,
   logEventFunction,
+  setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
@@ -28,6 +30,9 @@ import NoCertificateBox from './NoCertificateBox';
 import GlobalText from '@components/GlobalText/GlobalText';
 import DeviceInfo from 'react-native-device-info';
 import Config from 'react-native-config';
+import { getProfileDetails, getStudentForm } from '../../utils/API/AuthService';
+import { useInternet } from '../../context/NetworkContext';
+import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 
 const Profile = () => {
   const { t, language } = useTranslation();
@@ -35,7 +40,8 @@ const Profile = () => {
   const [userDetails, setUserDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
-
+  const { isConnected } = useInternet();
+  const [networkstatus, setNetworkstatus] = useState(true);
   const [userType, setUserType] = useState();
   const [cohortId, setCohortId] = useState();
   const version = DeviceInfo.getVersion(); // e.g., "1.0.1"
@@ -70,14 +76,22 @@ const Profile = () => {
   };
 
   const fetchData = async () => {
-    const studentForm = JSON.parse(await getDataFromStorage('studentForm'));
-    const studentProgramForm = JSON.parse(
-      await getDataFromStorage('studentProgramForm')
-    );
+    const data = await getStudentForm();
+    setDataInStorage('studentForm', JSON.stringify(data?.fields));
+    const tenantId = await getDataFromStorage('userTenantid');
 
+    const studentForm = data?.fields;
+    const programFormData = await getStudentForm(tenantId);
+
+    const studentProgramForm = programFormData?.fields;
+    setDataInStorage('studentProgramForm', JSON.stringify(studentProgramForm));
     const mergedForm = [...studentForm, ...studentProgramForm];
-
-    const result = JSON.parse(await getDataFromStorage('profileData'));
+    const user_id = await getDataFromStorage('userId');
+    const profileData = await getProfileDetails({
+      userId: user_id,
+    });
+    const result = profileData;
+    await setDataInStorage('profileData', JSON.stringify(profileData));
 
     const finalResult = result?.getUserDetails?.[0];
     const keysToRemove = [
@@ -114,19 +128,20 @@ const Profile = () => {
 
     // Extract state, district, and block
     const locationData = {
-      states: userDetails.states?.label || '',
-      districts: userDetails.districts?.label || '',
-      blocks: userDetails.blocks?.label || '',
+      states: userDetails.state?.label || '',
+      districts: userDetails.district?.label || '',
+      blocks: userDetails.block?.label || '',
+      village: userDetails.village?.label || '',
     };
 
     // Convert location data into a single formatted string
     const formattedLocation =
-      `${locationData.states}, ${locationData.districts}, ${locationData.blocks}`.trim();
+      `${locationData.states}, ${locationData.districts}, ${locationData.blocks}, ${locationData.village}`.trim();
 
     // Remove states, districts, and blocks from userDetails
-    delete userDetails.states;
-    delete userDetails.districts;
-    delete userDetails.blocks;
+    delete userDetails.state;
+    delete userDetails.district;
+    delete userDetails.block;
 
     // Add formatted location as a new field
     userDetails.location = formattedLocation;
@@ -140,12 +155,24 @@ const Profile = () => {
     // const tenantData = await getTentantId();
 
     setLoading(false);
+    setNetworkstatus(true);
   };
+
+  console.log('userdetails', JSON.stringify(userDetails.length));
 
   useFocusEffect(
     useCallback(() => {
-      fetchData();
-    }, [navigation])
+      console.log('isConnected', isConnected);
+
+      if (isConnected) {
+        fetchData();
+        setNetworkstatus(true);
+      } else if (!isConnected && userDetails.length === 0) {
+        setNetworkstatus(false);
+      } else {
+        setNetworkstatus(true);
+      }
+    }, []) // Correct dependencies
   );
 
   useEffect(() => {
@@ -175,13 +202,31 @@ const Profile = () => {
     return ` ${month} ${day}, ${year}`; // Format as "26 October 2024"
   };
 
+  // Refresh the component.
+  const handleRefresh = async () => {
+    setLoading(true); // Start Refresh Indicator
+
+    try {
+      fetchData(); // Reset course data
+    } catch (error) {
+      console.log('Error fetching data:', error);
+    } finally {
+      setLoading(false); // Stop Refresh Indicator
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <SecondaryHeader logo />
       {loading ? (
         <ActiveLoading />
       ) : (
-        <ScrollView style={[globalStyles.container, { padding: 0 }]}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+          }
+          style={[globalStyles.container, { padding: 0 }]}
+        >
           <View style={styles.view}>
             <GlobalText style={globalStyles.heading}>
               {t('my_profile')}
@@ -204,7 +249,9 @@ const Profile = () => {
             style={styles.gradient}
           >
             <GlobalText style={[globalStyles.subHeading, { fontWeight: 700 }]}>
-              {capitalizeName(`${userData?.firstName} ${userData?.lastName}`)}
+              {capitalizeName(
+                `${userData?.firstName} ${userData?.lastName ? userData?.lastName : ''}`
+              )}
             </GlobalText>
             <View
               style={[
@@ -287,6 +334,13 @@ const Profile = () => {
           </GlobalText>
         </ScrollView>
       )}
+      <NetworkAlert
+        onTryAgain={fetchData}
+        isConnected={networkstatus}
+        closeModal={() => {
+          setNetworkstatus(!networkstatus);
+        }}
+      />
     </SafeAreaView>
   );
 };

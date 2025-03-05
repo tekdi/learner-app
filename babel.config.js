@@ -13,5 +13,6 @@ module.exports = {
         },
       },
     ],
+    'react-native-reanimated/plugin', // Ensure this is the LAST plugin
   ],
 };

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
   BackHandler,
   Image,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -48,6 +49,7 @@ const SCPDashboard = (props) => {
   const [allEventData, setAllEventData] = useState();
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
   const monthNames = [
     'January',
     'February',
@@ -193,17 +195,42 @@ const SCPDashboard = (props) => {
     }, []) // Make sure to include the dependencies
   );
 
+  // Refresh the component.
+  const handleRefresh = async () => {
+    setLoading(true); // Start Refresh Indicator
+
+    try {
+      console.log('Fetching Data...');
+      // fetchData();
+      // fetchCompleteWeekData();
+      setRefreshKey((prevKey) => prevKey + 1);
+      // navigation.navigate('SCPUserTabScreen');
+    } catch (error) {
+      console.log('Error fetching data:', error);
+    } finally {
+      setLoading(false); // Stop Refresh Indicator
+    }
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView
+      key={refreshKey}
+      style={{ flex: 1, backgroundColor: 'white' }}
+    >
       <SecondaryHeader logo />
       <AppUpdatePopup />
-      <ScrollView style={styles.view2}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+        }
+        style={styles.view2}
+      >
         <View style={globalStyles.flexrow}>
           <Image source={wave} resizeMode="contain" />
           <GlobalText style={styles.text2}>
             {t('welcome')},
             {capitalizeName(
-              `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
+              `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName || ''}!`
             )}
           </GlobalText>
         </View>

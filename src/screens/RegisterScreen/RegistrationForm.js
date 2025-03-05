@@ -98,6 +98,7 @@ const RegistrationForm = ({ fields }) => {
   const [suggestedUsernames, setSuggestedUsernames] = useState([]);
   const [OTP, setOTP] = useState();
   const [OTPError, setOTPError] = useState();
+  const [hashCode, setHashCode] = useState('');
   const { isConnected } = useInternet();
 
   const RegisterLogin = async (loginData) => {
@@ -163,10 +164,12 @@ const RegistrationForm = ({ fields }) => {
     } else {
       if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
         await setDataInStorage('userType', 'youthnet');
+        // navigation.navigate('YouthNetTabScreen');
+        navigation.navigate('Dashboard');
       } else {
         await setDataInStorage('userType', 'public');
+        navigation.navigate('Dashboard');
       }
-      navigation.navigate('Dashboard');
     }
     setModal(false);
     const obj = {
@@ -237,8 +240,8 @@ const RegistrationForm = ({ fields }) => {
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'districts',
-      controllingfieldfk: state || formData['states']?.value,
+      fieldName: 'district',
+      controllingfieldfk: state || formData['state']?.value,
     };
 
     const data = await getGeoLocation({ payload });
@@ -251,8 +254,8 @@ const RegistrationForm = ({ fields }) => {
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'villages',
-      controllingfieldfk: block || formData['blocks']?.value,
+      fieldName: 'village',
+      controllingfieldfk: block || formData['block']?.value,
     };
 
     const data = await getGeoLocation({ payload });
@@ -266,8 +269,8 @@ const RegistrationForm = ({ fields }) => {
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'blocks',
-      controllingfieldfk: district || formData['districts']?.value,
+      fieldName: 'block',
+      controllingfieldfk: district || formData['district']?.value,
     };
 
     const data = await getGeoLocation({ payload });
@@ -294,14 +297,14 @@ const RegistrationForm = ({ fields }) => {
 
     const updatedFormData = {
       ...formData,
-      ['states']: { value: foundState?.value, label: foundState?.label },
-      ['districts']: {
+      ['state']: { value: foundState?.value, label: foundState?.label },
+      ['district']: {
         value: foundDistrict?.value,
         label: foundDistrict?.label,
       },
     };
     setFormData(updatedFormData);
-    if (formData['states']?.label !== undefined) {
+    if (formData['state']?.label !== undefined) {
       setEnable(false);
       setUpdateEnable(false);
     }
@@ -310,17 +313,17 @@ const RegistrationForm = ({ fields }) => {
 
   useEffect(() => {
     setLoading(true);
-    if (formData?.states) {
+    if (formData?.state) {
       fetchDistricts();
     }
-    if (formData?.districts) {
+    if (formData?.district) {
       fetchBlocks();
     }
-    if (formData?.blocks) {
+    if (formData?.block) {
       fetchvillages();
     }
     setLoading(false);
-  }, [formData['states'], formData['districts'], formData['blocks']]);
+  }, [formData['state'], formData['district'], formData['block']]);
 
   useEffect(() => {
     const defaultPages = groupFieldsByOrder(schema);
@@ -386,6 +389,10 @@ const RegistrationForm = ({ fields }) => {
 
   // let pages = groupFieldsByOrder(schema);
 
+  function updateOrder(fields, newOrder = 7) {
+    return fields.map((field) => ({ ...field, order: newOrder }));
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       if (formData?.program) {
@@ -396,7 +403,8 @@ const RegistrationForm = ({ fields }) => {
         const tenantId = formData?.program?.value;
         const data = await getStudentForm(tenantId);
 
-        const fields = data?.fields || [];
+        const field = data?.fields || [];
+        const fields = updateOrder(field) || [];
         setDataInStorage('studentProgramForm', JSON.stringify(fields));
         // Remove existing fields with the same order (7) before merging
         const filteredSchema = orginalSchema?.filter(
@@ -471,7 +479,9 @@ const RegistrationForm = ({ fields }) => {
         }
 
         if (
-          ['guardian_name', 'guardian_relation'].includes(field.name) &&
+          ['guardian_name', 'guardian_relation', 'parent_phone'].includes(
+            field.name
+          ) &&
           age &&
           parseInt(age, 10) >= 18
         ) {
@@ -637,13 +647,13 @@ const RegistrationForm = ({ fields }) => {
             <DropdownSelect
               field={field}
               options={
-                field.name === 'states'
+                field.name === 'state'
                   ? stateData
-                  : field.name === 'districts'
+                  : field.name === 'district'
                     ? districtData
-                    : field.name === 'blocks'
+                    : field.name === 'block'
                       ? blockData
-                      : field.name === 'villages'
+                      : field.name === 'village'
                         ? villageData
                         : field?.options
               }
@@ -717,16 +727,18 @@ const RegistrationForm = ({ fields }) => {
       reason: 'signup',
     };
     const data = await sendOtp(payload);
+    setHashCode(data?.result?.data?.hash);
     setOTPError(data?.params?.err);
   };
   const verifyOTPFunction = async () => {
     const payload = {
-      mobile: formData?.phone_number,
-      otp: '100308',
+      mobile: formData?.mobile,
+      otp: OTP?.value,
       reason: 'signup',
-      hash: '5f8a218e4a676369ace6de324390fc9ab58d4a89ace1b88bb94580460fcd2205.1734678776526',
+      hash: hashCode,
     };
-    await verifyOtp(payload);
+    const data = await verifyOtp(payload);
+    return data?.params?.status;
   };
 
   const handleNext = async () => {
@@ -778,8 +790,8 @@ const RegistrationForm = ({ fields }) => {
   };
 
   const handleOtpVerification = async () => {
-    const isValidOtp = true;
-    if (isValidOtp) {
+    const isValidOtp = await verifyOTPFunction();
+    if (isValidOtp !== 'failed') {
       setOtpModalVisible(false);
       setUserModalVisible(false);
       setCurrentPage(currentPage + 1);
@@ -1160,7 +1172,7 @@ const RegistrationForm = ({ fields }) => {
                 <Icon name={'close'} color="#000" size={30} />
               </TouchableOpacity>
             </View>
-            {!OTPError ? (
+            {OTPError ? (
               <GlobalText style={[globalStyles.heading2, { fontWeight: 650 }]}>
                 {OTPError}
               </GlobalText>
@@ -1177,7 +1189,7 @@ const RegistrationForm = ({ fields }) => {
                 <View>
                   <GlobalText style={[globalStyles.subHeading]}>
                     {t('we_sent_an_otp_to_verify_your_number')} :{' '}
-                    {formData?.phone_number}
+                    {formData?.mobile}
                   </GlobalText>
                 </View>
 
@@ -1231,14 +1243,16 @@ const RegistrationForm = ({ fields }) => {
                       },
                     ]}
                   >
-                    {t('resend_otp_in').replace(`{count}`, count)}
+                    {count !== 0
+                      ? t('resend_otp_in').replace(`{count}`, count)
+                      : t('resend_otp')}
                   </GlobalText>
                 </TouchableOpacity>
               </View>
             )}
             <View style={styles.btnbox}>
               <PrimaryButton
-                // isDisabled={OTPError || !OTP?.value ? true : false}
+                isDisabled={OTPError || !OTP?.value ? true : false}
                 text={t('verify_otp')}
                 onPress={handleOtpVerification}
               />

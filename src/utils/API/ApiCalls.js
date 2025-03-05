@@ -509,7 +509,9 @@ export const courseTrackingStatus = async (userId, courseId) => {
 };
 
 //course in progress
-export const CourseInProgress = async (userId) => {
+export const CourseInProgress = async () => {
+  // console.log('userId===>', userId);
+  const userId = await getDataFromStorage('userId');
   try {
     const url = EndUrls.CourseInProgress;
 
@@ -528,6 +530,16 @@ export const CourseInProgress = async (userId) => {
       headers: headers || {},
       data: data,
     };
+
+    // Generate the cURL command
+    const curlCommand = `curl -X POST "${url}" \\
+      -H "Content-Type: application/json" \\
+      ${Object.entries(headers || {})
+        .map(([key, value]) => `-H "${key}: ${value}" \\`)
+        .join('\n')} 
+      --data '${data}'`;
+
+    console.log('Generated cURL Command:', curlCommand);
 
     try {
       const response = await axios.request(config);

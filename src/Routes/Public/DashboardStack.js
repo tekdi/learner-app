@@ -8,8 +8,6 @@ import UnitList from '../../screens/Dashboard/Courses/UnitList';
 const Stack = createNativeStackNavigator();
 
 const DashboardStack = ({ CopilotStopped }) => {
-  console.log('CopilotSopped', CopilotStopped);
-
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Courses" options={{ lazy: true }}>

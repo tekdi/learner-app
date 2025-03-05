@@ -6,6 +6,7 @@ export const transformPayload = async (data) => {
   const studentProgramForm = JSON.parse(
     await getDataFromStorage('studentProgramForm')
   );
+  console.log('data', JSON.stringify(data));
 
   const mergedForm = [...studentForm, ...studentProgramForm];
 
@@ -37,7 +38,8 @@ export const transformPayload = async (data) => {
           result['tenantCohortRoleMapping'] = [
             {
               tenantId: data[keyName]?.value,
-              roleId: data[keyName]?.roleId,
+              roleId:
+                data[keyName]?.roleId || 'eea7ddab-bdf9-4db1-a1bb-43ef503d65ef',
             },
           ];
         } else {

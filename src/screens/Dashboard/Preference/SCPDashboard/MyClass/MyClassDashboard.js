@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import {
+  RefreshControl,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -22,6 +24,8 @@ const MyClassDashboard = () => {
   const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedIds, setSelectedIds] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   // console.log({ selectedIds });
 
@@ -40,24 +44,50 @@ const MyClassDashboard = () => {
     },
   ];
 
-  return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <SecondaryHeader logo />
-      <View style={{ padding: 0 }}>
-        <GlobalText
-          style={[globalStyles.heading, { paddingLeft: 20, marginTop: 20 }]}
-        >
-          {t('my_class')}
-        </GlobalText>
+  // Refresh the component.
+  const handleRefresh = async () => {
+    setLoading(true); // Start Refresh Indicator
 
-        <CustomTabView
-          tabs={tabs}
-          activeTabStyle={{ borderBottomWidth: 2, borderColor: '#FDBE16' }}
-          inactiveTabStyle={{ borderBottomWidth: 1, borderColor: '#EBE1D4' }}
-          tabTextStyle={{ color: '#888' }}
-          // activeTextStyle={{ color: 'black', fontWeight: 'bold' }}
-        />
-      </View>
+    try {
+      console.log('Fetching Data...');
+      // fetchData();
+      // fetchCompleteWeekData();
+      setRefreshKey((prevKey) => prevKey + 1);
+      // navigation.navigate('SCPUserTabScreen');
+    } catch (error) {
+      console.log('Error fetching data:', error);
+    } finally {
+      setLoading(false); // Stop Refresh Indicator
+    }
+  };
+
+  return (
+    <SafeAreaView
+      key={refreshKey}
+      style={{ flex: 1, backgroundColor: 'white' }}
+    >
+      <SecondaryHeader logo />
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+        }
+      >
+        <View style={{ padding: 0 }}>
+          <GlobalText
+            style={[globalStyles.heading, { paddingLeft: 20, marginTop: 20 }]}
+          >
+            {t('my_class')}
+          </GlobalText>
+
+          <CustomTabView
+            tabs={tabs}
+            activeTabStyle={{ borderBottomWidth: 2, borderColor: '#FDBE16' }}
+            inactiveTabStyle={{ borderBottomWidth: 1, borderColor: '#EBE1D4' }}
+            tabTextStyle={{ color: '#888' }}
+            // activeTextStyle={{ color: 'black', fontWeight: 'bold' }}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   Image,
@@ -10,7 +9,6 @@ import {
   StatusBar,
 } from 'react-native';
 import { useState, React, useEffect } from 'react';
-import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -22,13 +20,11 @@ import {
   setAcademicYear,
 } from '../../utils/API/AuthService';
 import {
-  getAcademicYearId,
   getActiveCohortData,
   getActiveCohortIds,
   getDataFromStorage,
   getDeviceId,
   getuserDetails,
-  getUserId,
   saveAccessToken,
   saveRefreshToken,
   setDataInStorage,
@@ -36,7 +32,6 @@ import {
 } from '../../utils/JsHelper/Helper';
 import LoginTextField from '../../components/LoginTextField/LoginTextField';
 import UserNameField from '../../components/LoginTextField/UserNameField';
-import CustomCheckbox from '../../components/CustomCheckbox/CustomCheckbox';
 import { useTranslation } from '../../context/LanguageContext';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import Logo from '../../assets/images/png/logo.png';
@@ -51,7 +46,7 @@ const LoginScreen = () => {
   const { isConnected } = useInternet();
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [acceptTerms] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [errmsg, setErrmsg] = useState('');
   const [loading, setLoading] = useState(false);
@@ -81,14 +76,15 @@ const LoginScreen = () => {
         const userDetails = await getuserDetails();
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
-
+        // console.log('tenantData', JSON.stringify(tenantData));
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
-        await setDataInStorage('userId', user_id);
+        await setDataInStorage('userId', user_id || '');
 
         const academicyear = await setAcademicYear({ tenantid });
         const academicYearId = academicyear?.[0]?.id;
         await setDataInStorage('academicYearId', academicYearId || '');
+        await setDataInStorage('userTenantid', tenantid || '');
         const cohort = await getCohort({ user_id, tenantid, academicYearId });
         const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
         const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
@@ -104,7 +100,7 @@ const LoginScreen = () => {
         await setDataInStorage('profileData', JSON.stringify(profileData));
         await setDataInStorage(
           'Username',
-          profileData?.getUserDetails?.[0]?.username
+          profileData?.getUserDetails?.[0]?.username || ''
         );
         await storeUsername(profileData?.getUserDetails?.[0]?.username);
 
@@ -113,10 +109,11 @@ const LoginScreen = () => {
           cohort_id || '00000000-0000-0000-0000-000000000000'
         );
         const tenantDetails = (await getProgramDetails()) || [];
+        console.log('tenantDetails', JSON.stringify(tenantDetails));
 
         const youthnetTenantIds = tenantDetails
-          ?.filter((item) => item.name === 'YouthNet')
-          ?.map((item) => item.tenantId);
+          ?.filter((item) => item?.name === 'YouthNet')
+          ?.map((item) => item?.tenantId);
 
         const scp = tenantDetails
           ?.filter((item) => item.name === 'Second Chance Program')
@@ -133,7 +130,10 @@ const LoginScreen = () => {
               navigation.navigate('Dashboard');
             }
           } else {
-            if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
+            console.log('tentn', tenantid);
+            console.log('youthnetTenantIds?.[0]?.tenantId', youthnetTenantIds);
+
+            if (tenantid === youthnetTenantIds?.[0]) {
               await setDataInStorage('userType', 'youthnet');
               // navigation.navigate('YouthNetTabScreen');
               navigation.navigate('Dashboard');
