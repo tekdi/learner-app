@@ -24,10 +24,11 @@ export const transformPayload = async (data) => {
         if (field.fieldId) {
           // Push to customFields if fieldId is present
           if (type === 'drop_down') {
-            result.customFields.push({
-              value: [data[keyName].value],
-              fieldId: field.fieldId,
-            });
+            data[keyName].value &&
+              result.customFields.push({
+                value: [data[keyName].value],
+                fieldId: field.fieldId,
+              });
           } else {
             result.customFields.push({
               value: data[keyName].value || data[keyName],

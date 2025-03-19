@@ -72,8 +72,8 @@ const ProfileUpdateForm = ({ fields }) => {
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'districts',
-      controllingfieldfk: state || formData['states']?.value,
+      fieldName: 'district',
+      controllingfieldfk: [state || formData['state']?.value],
     };
 
     const data = await getGeoLocation({ payload });
@@ -86,8 +86,8 @@ const ProfileUpdateForm = ({ fields }) => {
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'villages',
-      controllingfieldfk: block || formData['blocks']?.value,
+      fieldName: 'village',
+      controllingfieldfk: [block || formData['block']?.value],
     };
 
     const data = await getGeoLocation({ payload });
@@ -101,8 +101,8 @@ const ProfileUpdateForm = ({ fields }) => {
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'blocks',
-      controllingfieldfk: district || formData['districts']?.value,
+      fieldName: 'block',
+      controllingfieldfk: [district || formData['district']?.value],
     };
 
     const data = await getGeoLocation({ payload });
@@ -118,18 +118,18 @@ const ProfileUpdateForm = ({ fields }) => {
     const geoData = JSON.parse(await getDataFromStorage('geoData'));
     setStateData(stateAPIdata);
     const foundState = stateAPIdata?.find(
-      (item) => item?.label === geoData?.state
+      (item) => item?.label.toLowerCase() === geoData?.state.toLowerCase()
     );
     const districtAll = await fetchDistricts(foundState?.value);
 
     const foundDistrict = districtAll?.find(
-      (item) => item?.label === geoData?.district
+      (item) => item?.label.toLowerCase() === geoData?.district.toLowerCase()
     );
 
     const updatedFormData = {
       ...data,
-      ['states']: { value: foundState?.value, label: foundState?.label },
-      ['districts']: {
+      ['state']: { value: foundState?.value, label: foundState?.label },
+      ['district']: {
         value: foundDistrict?.value,
         label: foundDistrict?.label,
       },
@@ -238,17 +238,17 @@ const ProfileUpdateForm = ({ fields }) => {
 
   useEffect(() => {
     setLoading(true);
-    if (formData?.states) {
+    if (formData?.state) {
       fetchDistricts();
     }
-    if (formData?.districts) {
+    if (formData?.district) {
       fetchBlocks();
     }
-    if (formData?.blocks) {
+    if (formData?.block) {
       fetchvillages();
     }
     setLoading(false);
-  }, [formData['states'], formData['districts'], formData['blocks']]);
+  }, [formData['state'], formData['district'], formData['block']]);
 
   useEffect(() => {}, []);
 
@@ -290,11 +290,13 @@ const ProfileUpdateForm = ({ fields }) => {
         if (field.isRequired && !value) {
           newErrors[field.name] = `${t(field.name)} ${t('is_required')}`;
         } else if (field.minLength && value.length < field.minLength && value) {
-          newErrors[field.name] =
-            `${t('min_validation').replace('{field}', t(field.name)).replace('{length}', field.minLength)}`;
+          newErrors[field.name] = `${t('min_validation')
+            .replace('{field}', t(field.name))
+            .replace('{length}', field.minLength)}`;
         } else if (field.maxLength && value.length > field.maxLength && value) {
-          newErrors[field.name] =
-            `${t('max_validation').replace('{field}', t(field.name)).replace('{length}', field.maxLength)}`;
+          newErrors[field.name] = `${t('max_validation')
+            .replace('{field}', t(field.name))
+            .replace('{length}', field.maxLength)}`;
         } else if (
           field.pattern &&
           value &&
@@ -329,10 +331,10 @@ const ProfileUpdateForm = ({ fields }) => {
         'username',
         'password',
         'confirm_password',
-        'states',
-        'districts',
-        'blocks',
-        'villages',
+        // 'state',
+        // 'district',
+        // 'block',
+        // 'village',
       ].includes(field.name)
     ) {
       return null;
@@ -404,15 +406,15 @@ const ProfileUpdateForm = ({ fields }) => {
             <DropdownSelect
               field={field}
               options={
-                field.name === 'states'
+                field.name === 'state'
                   ? stateData
-                  : field.name === 'districts'
-                    ? districtData
-                    : field.name === 'blocks'
-                      ? blockData
-                      : field.name === 'villages'
-                        ? villageData
-                        : field?.options
+                  : field.name === 'district'
+                  ? districtData
+                  : field.name === 'block'
+                  ? blockData
+                  : field.name === 'village'
+                  ? villageData
+                  : field?.options
               }
               errors={errors}
               formData={formData}

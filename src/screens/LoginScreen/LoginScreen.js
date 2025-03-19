@@ -76,7 +76,7 @@ const LoginScreen = () => {
         const userDetails = await getuserDetails();
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
-        // console.log('tenantData', JSON.stringify(tenantData));
+        console.log('tenantData', JSON.stringify(userDetails));
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
         await setDataInStorage('userId', user_id || '');

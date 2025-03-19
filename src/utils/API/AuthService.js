@@ -37,6 +37,11 @@ export const login = async (params = {}) => {
         Accept: 'application/json',
       },
     });
+    const dataString = JSON.stringify(params).replace(/"/g, '\\"'); // Escape quotes for cURL
+    console.log(`curl -X POST "${EndUrls.login}" \\
+    -H "Content-Type: application/json" \\
+    -H "Accept: application/json" \\
+    -d "${dataString}"`);
     if (result?.data) {
       return result?.data?.result;
     } else {
@@ -1814,7 +1819,9 @@ export const CourseEnrollStatus = async ({ course_id }) => {
     courseId: course_id,
   };
   try {
-    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+      payload
+    )}' ${url}`;
 
     console.log('cURL Command:', curlCommand);
 
@@ -1854,7 +1861,9 @@ export const courseEnroll = async ({ course_id }) => {
     courseId: course_id,
   };
   try {
-    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+      payload
+    )}' ${url}`;
 
     console.log('cURL Command:', curlCommand);
 
@@ -1883,7 +1892,9 @@ export const updateCourseStatus = async ({ course_id }) => {
     courseId: course_id,
   };
   try {
-    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+      payload
+    )}' ${url}`;
 
     console.log('cURL Command:', curlCommand);
 
@@ -1907,7 +1918,9 @@ export const issueCertificate = async ({ payload }) => {
     .join(' ');
 
   try {
-    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+      payload
+    )}' ${url}`;
 
     console.log('cURL Command:', curlCommand);
 
@@ -1937,7 +1950,9 @@ export const viewCertificate = async ({ certificateId }) => {
   };
 
   try {
-    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+      payload
+    )}' ${url}`;
 
     console.log('cURL Command:', curlCommand);
 
@@ -2003,7 +2018,9 @@ export const enrollInterest = async () => {
     village: customFields?.VILLAGE ? customFields?.VILLAGE : '',
     blood_group: '',
   };
-  const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(payload)}' ${url}`;
+  const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+    payload
+  )}' ${url}`;
   console.log('cURL Command:', curlCommand);
   try {
     // Make the actual request
