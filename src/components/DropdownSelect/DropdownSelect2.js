@@ -43,8 +43,8 @@ const DropdownSelect = ({
     // setSelectedValue({ name: item?.label, value: item?.value });
     setSelectedIds((prevSelectedIds) => ({
       ...prevSelectedIds,
-      label: item?.label,
-      value: item?.value,
+      label: item?.label || item?.name,
+      value: item?.value || item?.code,
     }));
 
     setIsDropdownOpen(false);
@@ -56,7 +56,11 @@ const DropdownSelect = ({
         <GlobalText style={globalStyles.text}>{t(name)}</GlobalText>
       </View>
       <TouchableOpacity onPress={toggleDropdown} style={styles.dropdownButton}>
-        <GlobalText style={[globalStyles.text]}>
+        <GlobalText
+          numberOfLines={2}
+          ellipsizeMode="tail"
+          style={[globalStyles.text, { width: '90%' }]}
+        >
           {selectedIds?.label || t('select')}
         </GlobalText>
         <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
@@ -70,7 +74,9 @@ const DropdownSelect = ({
                 onPress={() => handleSelect(item)}
                 style={styles.dropdownOption}
               >
-                <GlobalText style={styles.optionText}>{item?.label}</GlobalText>
+                <GlobalText style={styles.optionText}>
+                  {item?.label || item?.name}
+                </GlobalText>
               </TouchableOpacity>
             ))}
           </ScrollView>

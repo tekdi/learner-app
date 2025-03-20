@@ -67,6 +67,17 @@ const ProfileUpdateForm = ({ fields }) => {
     await logEventFunction(obj);
   };
 
+  const fetchstate = async () => {
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'state',
+    };
+    const data = await getGeoLocation({ payload });
+    setDataInStorage('states', JSON.stringify(data?.values || []));
+    return data?.values;
+  };
+
   const fetchDistricts = async (state) => {
     setLoading(true);
     const payload = {
@@ -113,7 +124,9 @@ const ProfileUpdateForm = ({ fields }) => {
 
   const fetchStates = async (data) => {
     setLoading(true);
-    const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
+    const stateData = await fetchstate();
+    const stateAPIdata = stateData;
+    console.log('stateAPIdata', JSON.stringify(stateAPIdata));
 
     const geoData = JSON.parse(await getDataFromStorage('geoData'));
     setStateData(stateAPIdata);
@@ -165,8 +178,8 @@ const ProfileUpdateForm = ({ fields }) => {
       });
       const customFields = finalResult?.customFields;
       const userDetails = createNewObject(customFields, requiredLabels);
-      console.log('userDetails', JSON.stringify(userDetails));
-      // console.log('customFields', JSON.stringify(customFields));
+      // console.log('userDetails', JSON.stringify(userDetails));
+      console.log('customFields', JSON.stringify(customFields));
 
       const newUpdatedObj = { ...userDetails, ...filteredResult };
 
@@ -195,6 +208,8 @@ const ProfileUpdateForm = ({ fields }) => {
 
   const onSubmit = async (data) => {
     setLoading(true);
+    // console.log('data', JSON.stringify(data));
+
     const payload = await transformPayload(data);
     const user_id = await getDataFromStorage('userId');
 
@@ -270,10 +285,15 @@ const ProfileUpdateForm = ({ fields }) => {
 
       if (field) {
         const value = formData[field.name] || '';
+
         if (
-          ['confirm_password', 'password', 'program', 'username'].includes(
-            field.name
-          )
+          [
+            'confirm_password',
+            'password',
+            'program',
+            'username',
+            'is_volunteer',
+          ].includes(field.name)
         ) {
           return; // Skip validation for these fields
         }
@@ -331,6 +351,7 @@ const ProfileUpdateForm = ({ fields }) => {
         'username',
         'password',
         'confirm_password',
+        'is_volunteer',
         // 'state',
         // 'district',
         // 'block',

@@ -136,7 +136,7 @@ const Profile = () => {
 
     // Convert location data into a single formatted string
     const formattedLocation =
-      `${locationData.states}, ${locationData.districts}, ${locationData.blocks}, ${locationData.village}`.trim();
+      `${locationData.states} ${locationData.districts} ${locationData.blocks}  ${locationData.village}`.trim();
 
     // Remove states, districts, and blocks from userDetails
     delete userDetails.state;
@@ -149,8 +149,12 @@ const Profile = () => {
     const UpdatedObj = { ...userDetails, ...filteredResult };
     const newUpdatedObj = convertObjectToArray(UpdatedObj);
     setUserData(result?.getUserDetails?.[0]);
+    // console.log('newUpdatedObj', JSON.stringify(newUpdatedObj));
+    const filteredArray = newUpdatedObj.filter(
+      (item) => item.name !== 'is_volunteer'
+    );
 
-    setUserDetails(newUpdatedObj);
+    setUserDetails(filteredArray);
 
     // const tenantData = await getTentantId();
 
@@ -158,11 +162,11 @@ const Profile = () => {
     setNetworkstatus(true);
   };
 
-  console.log('userdetails', JSON.stringify(userDetails.length));
+  // console.log('userdetails', JSON.stringify(userDetails.length));
 
   useFocusEffect(
     useCallback(() => {
-      console.log('isConnected', isConnected);
+      // console.log('isConnected', isConnected);
 
       if (isConnected) {
         fetchData();
@@ -250,7 +254,9 @@ const Profile = () => {
           >
             <GlobalText style={[globalStyles.subHeading, { fontWeight: 700 }]}>
               {capitalizeName(
-                `${userData?.firstName} ${userData?.lastName ? userData?.lastName : ''}`
+                `${userData?.firstName} ${
+                  userData?.lastName ? userData?.lastName : ''
+                }`
               )}
             </GlobalText>
             <View

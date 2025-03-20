@@ -22,6 +22,7 @@ import ContinueLearning from '../../../components/ContinueLearning/ContinueLearn
 import {
   courseListApi_New,
   enrollInterest,
+  filterContent,
 } from '../../../utils/API/AuthService';
 import SyncCard from '../../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
@@ -43,6 +44,7 @@ import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../components/AppUpdate/AppUpdatePopup';
 import PrimaryButton from '../../../components/PrimaryButton/PrimaryButton';
 import InterestModal from './InterestModal';
+import InterestTopicModal from './InterestTopicModal';
 import {
   restoreScrollPosition,
   storeScrollPosition,
@@ -76,7 +78,9 @@ const Courses = () => {
   const [restoreScroll, setRestoreScroll] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [interestModal, setInterestModal] = useState(false);
+  const [isTopicModal, setIsTopicModal] = useState(false);
   const [interestContent, setInterestContent] = useState(false);
+  const [topicList, setTopicList] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Function to store the scroll position
@@ -111,7 +115,8 @@ const Courses = () => {
   );
 
   const fetchInterestStatus = async () => {
-    const data = (await getDataFromStorage(`Enrolled_to_l2${userId}`)) || '';
+    let user_Id = await getDataFromStorage('userId');
+    const data = (await getDataFromStorage(`Enrolled_to_l2${user_Id}`)) || '';
     if (data === 'yes') {
       setInterestContent(false);
     }
@@ -135,8 +140,8 @@ const Courses = () => {
         userType === 'youthnet'
           ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
           : userType === 'scp'
-            ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-            : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
       setInstant(instant);
     };
     fetch();
@@ -206,9 +211,19 @@ const Courses = () => {
     }, []) // Make sure to include the dependencies
   );
 
+  const fetchTopics = async () => {
+    const instantId = instant?.frameworkId;
+    const data = await filterContent({ instantId });
+    const newData = data?.framework?.categories?.filter((item) => {
+      return item?.code === 'stream';
+    });
+
+    setTopicList(newData);
+  };
+
   const fetchData = async (offset, append = false) => {
     setLoading(true);
-
+    fetchTopics();
     const mergedFilter = { ...parentFormData, ...parentStaticFormData };
     let userType = await getDataFromStorage('userType');
 
@@ -216,8 +231,8 @@ const Courses = () => {
       userType === 'youthnet'
         ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
         : userType === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+        ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+        : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
 
     let data = await courseListApi_New({
       searchText,
@@ -262,8 +277,11 @@ const Courses = () => {
   };
 
   async function updateInterestStatus(trackData) {
+    let user_Id = await getDataFromStorage('userId');
+
     const isInterested = trackData.some((course) => course.completed);
-    const data = (await getDataFromStorage(`Enrolled_to_l2${userId}`)) || '';
+    const data = (await getDataFromStorage(`Enrolled_to_l2${user_Id}`)) || '';
+
     if (data === 'yes') {
       setInterestContent(false);
     } else if (isInterested && data !== 'yes') {
@@ -293,7 +311,6 @@ const Courses = () => {
     setLoading(true); // Start Refresh Indicator
 
     try {
-      // console.log('Fetching Data...');
       setRefreshKey((prevKey) => prevKey + 1);
       fetchData(0, false); // Reset course data
     } catch (error) {
@@ -303,13 +320,16 @@ const Courses = () => {
     }
   };
 
-  const handleInterest = async () => {
-    const data = await enrollInterest();
+  const handleInterest = async (selectedIds) => {
+    setLoading(true);
+    const data = await enrollInterest(selectedIds);
     if (data?.params?.status === 'successful') {
+      setIsTopicModal(false);
       setInterestModal(true);
       setInterestContent(false);
       await setDataInStorage(`Enrolled_to_l2${userId}`, 'yes');
     }
+    setLoading(false);
   };
 
   return (
@@ -372,7 +392,9 @@ const Courses = () => {
                     </GlobalText>
                     <View style={{ width: 180, marginVertical: 10 }}>
                       <PrimaryButton
-                        onPress={handleInterest}
+                        onPress={() => {
+                          setIsTopicModal(true);
+                        }}
                         text={t('Im_interested')}
                       />
                     </View>
@@ -493,6 +515,12 @@ const Courses = () => {
           <InterestModal
             setIsModal={setInterestModal}
             isModal={interestModal}
+          />
+          <InterestTopicModal
+            setIsTopicModal={setIsTopicModal}
+            isTopicModal={isTopicModal}
+            topicList={topicList}
+            handleInterest={handleInterest}
           />
         </View>
       </ScrollView>

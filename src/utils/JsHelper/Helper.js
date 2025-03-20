@@ -430,38 +430,40 @@ export const createNewObject = (customFields, labels, profileView) => {
 
     labels.map((item) => {
       if (item?.label === cleanedFieldLabel) {
-        const selectedValues = field?.selectedValues?.[0];
+        const selectedValues = field?.selectedValues;
+        // console.log('selectedValues', selectedValues?.[0].id);
+
         if (field.type === 'drop_down') {
           if (profileView) {
             result[item.label.toLowerCase()] = {
-              label: selectedValues.value || '-',
-              value: selectedValues.value || '-',
+              label: selectedValues?.[0].value || '-',
+              value: selectedValues?.[0].value || '-',
             };
           } else {
             result[item.name] = {
-              label: selectedValues.value || '-',
-              value: selectedValues.value || '-',
+              label: selectedValues?.[0].value || '-',
+              value: selectedValues?.[0].value || '-',
             };
           }
 
           if (['STATE', 'DISTRICT', 'BLOCK', 'VILLAGE'].includes(field.label)) {
             if (profileView) {
               result[item.label.toLowerCase()] = {
-                label: selectedValues.value || '-',
-                value: selectedValues.value || '-',
+                label: selectedValues?.[0].value || '-',
+                value: selectedValues?.[0].value || '-',
               };
             } else {
               result[item.name] = {
-                label: selectedValues.value || '-',
-                value: selectedValues.id || '-',
+                label: selectedValues?.[0].value || '-',
+                value: selectedValues?.[0].id || '-',
               };
             }
           }
         } else {
           if (profileView) {
-            result[item.label.toLowerCase()] = selectedValues.id || '';
+            result[item.label.toLowerCase()] = selectedValues || '';
           } else {
-            result[item.name] = selectedValues.id || '';
+            result[item.name] = selectedValues || '';
           }
         }
       }

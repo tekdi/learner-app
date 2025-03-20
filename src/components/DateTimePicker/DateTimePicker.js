@@ -26,6 +26,8 @@ const DateTimePicker = ({
   const { t } = useTranslation();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
+  console.log('isDatePickerVisible', isDatePickerVisible);
+
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -35,9 +37,16 @@ const DateTimePicker = ({
   };
 
   const handleConfirm = (date) => {
+    setDatePickerVisibility(false);
+
+    if (!date) return; // Prevent unnecessary execution
     const selectedDate = moment(date).format('YYYY-MM-DD');
-    handleValue(field?.name, selectedDate);
-    hideDatePicker();
+    // Check if the date is actually changing
+    if (formData[field.name] !== selectedDate) {
+      handleValue(field?.name, selectedDate);
+    }
+
+    hideDatePicker(); // Ensure modal closes properly
   };
 
   const minDate = new Date(1995, 0, 1); // January 1, 1995
@@ -71,11 +80,17 @@ const DateTimePicker = ({
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
+        date={
+          formData[field.name]
+            ? moment(formData[field.name], 'YYYY-MM-DD').toDate()
+            : new Date()
+        } // Set previously selected date or default to today
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
-        minimumDate={minDate} // Set minimum date
-        maximumDate={maxDate} // Set maximum date
+        minimumDate={minDate}
+        maximumDate={maxDate}
       />
+
       <View style={styles.overlap}>
         <GlobalText
           style={[

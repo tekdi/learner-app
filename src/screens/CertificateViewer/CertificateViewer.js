@@ -1,14 +1,32 @@
 import GlobalText from '@components/GlobalText/GlobalText';
 import globalStyles from '@src/utils/Helper/Style';
-import React, { useRef } from 'react';
-import { Modal, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Modal, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from '@context/LanguageContext';
+import { downloadCertificate } from '@src/utils/API/AuthService';
+import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 
-const CertificateViewer = ({ visible, setVisible, certificateHtml }) => {
+const CertificateViewer = ({
+  visible,
+  setVisible,
+  certificateHtml,
+  certificateId,
+  certificateName,
+}) => {
   const webViewRef = useRef(null);
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
+
+  const handleDownload = async () => {
+    setLoading(true);
+    const data = await downloadCertificate({ certificateId, certificateName });
+    console.log('data', data);
+    if (data) {
+      setLoading(false);
+    }
+  };
 
   return (
     <Modal visible={visible} transparent={true} animationType="slide">
@@ -32,18 +50,30 @@ const CertificateViewer = ({ visible, setVisible, certificateHtml }) => {
               onPress={() => {
                 setVisible(false);
               }}
+              style={{ flexDirection: 'row', alignItems: 'center' }}
             >
+              <TouchableOpacity
+                style={{ marginRight: 20 }}
+                onPress={handleDownload}
+              >
+                <Icon name={'download-outline'} color="#000" size={30} />
+              </TouchableOpacity>
               <Icon name={'close'} color="#000" size={30} />
             </TouchableOpacity>
           </View>
-          <View style={styles.webViewContainer}>
-            <WebView
-              originWhitelist={['*']}
-              source={{ html: certificateHtml }}
-              ref={webViewRef}
-              style={styles.webview} // Ensures full width & scrollability
-            />
-          </View>
+          {loading ? (
+            <ActiveLoading />
+          ) : (
+            <View style={styles.webViewContainer}>
+              <WebView
+                originWhitelist={['*']}
+                source={{ html: certificateHtml }}
+                ref={webViewRef}
+                style={styles.webview} // Ensures full width & scrollability
+              />
+            </View>
+          )}
+
           {/* Close Button */}
         </View>
       </View>

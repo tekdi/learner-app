@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
   createNewObject,
   getDataFromStorage,
@@ -8,6 +9,8 @@ import EndUrls from './EndUrls';
 import { get, handleResponseException, patch, post } from './RestClient';
 //for react native config env : dev uat prod
 import Config from 'react-native-config';
+import RNFS from 'react-native-fs';
+import { Alert, PermissionsAndroid, Platform } from 'react-native';
 
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
@@ -459,7 +462,7 @@ export const courseListApi_New = async ({
   curlCommand += `-d '${JSON.stringify(payload)}'`;
 
   // Output the cURL command to the console
-  console.log('Equivalent cURL command:\n', curlCommand);
+  // console.log('Equivalent cURL command:\n', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -847,9 +850,9 @@ export const getProfileDetails = async (params = {}) => {
     const payloadString = JSON.stringify(payload);
 
     // Construct cURL command
-    const curlCommand = `curl -X POST "${url}" ${headerString} -H "Content-Type: application/json" -d '${payloadString}'`;
+    // const curlCommand = `curl -X POST "${url}" ${headerString} -H "Content-Type: application/json" -d '${payloadString}'`;
 
-    console.log('Generated cURL Command:', curlCommand);
+    // console.log('Generated cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1950,11 +1953,11 @@ export const viewCertificate = async ({ certificateId }) => {
   };
 
   try {
-    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
-      payload
-    )}' ${url}`;
+    // const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+    //   payload
+    // )}' ${url}`;
 
-    console.log('cURL Command:', curlCommand);
+    // console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1979,21 +1982,22 @@ export const viewCertificate = async ({ certificateId }) => {
     return result_offline;
   }
 };
-export const enrollInterest = async () => {
+export const enrollInterest = async (selectedIds) => {
   const url = `${EndUrls.enrollInterest}`; // Define the URL
   const headers = await getHeaders();
   const profileDetails = JSON.parse(await getDataFromStorage('profileData'))
     ?.getUserDetails?.[0];
+
   const customFields = profileDetails?.customFields.reduce(
     (acc, { label, selectedValues }) => {
-      acc[label] = selectedValues.map((item) => item.value).join(', '); // Extract values from selectedValues
+      acc[label] = Array.isArray(selectedValues)
+        ? selectedValues.map((item) => item?.value).join(', ')
+        : selectedValues; // If not an array, assign directly
+
       return acc;
     },
     {}
   );
-  console.log('sssssssss======>', JSON.stringify(profileDetails?.customFields));
-  console.log('customFields', JSON.stringify(customFields));
-
   const headersString = Object.entries(headers)
     .map(([key, value]) => `-H "${key}: ${value}"`)
     .join(' ');
@@ -2017,6 +2021,10 @@ export const enrollInterest = async () => {
     block: customFields?.BLOCK ? customFields?.BLOCK : '',
     village: customFields?.VILLAGE ? customFields?.VILLAGE : '',
     blood_group: '',
+    userId: profileDetails?.userId,
+    courseId: '',
+    courseName: '',
+    topicName: selectedIds?.label,
   };
   const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
     payload
@@ -2032,5 +2040,37 @@ export const enrollInterest = async () => {
     }
   } catch (e) {
     console.log('e', e);
+  }
+};
+
+export const downloadCertificate = async ({
+  certificateId,
+  certificateName,
+}) => {
+  const url = `${EndUrls.downloadCertificate}`; // Define the URL
+  const headers = await getHeaders();
+  const payload = {
+    credentialId: certificateId,
+    templateId: 'cm7nbogii000moc3gth63l863',
+  };
+
+  try {
+    const response = await axios.post(url, payload, {
+      headers: headers || {},
+      responseType: 'arraybuffer', // Ensures we get binary data
+    });
+    const data = response?.request?._response;
+    const base64Data = data; // Base64 string from API
+    const fileName = `${certificateName}.pdf`;
+    const path = `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+    await RNFS.writeFile(path, base64Data, 'base64');
+    Alert.alert('Success', `PDF saved at ${path}`);
+    console.log('PDF downloaded to:', path);
+    return true;
+  } catch (error) {
+    console.error('Error downloading PDF:', error);
+    Alert.alert('Error', 'Failed to download PDF');
+    return true;
   }
 };

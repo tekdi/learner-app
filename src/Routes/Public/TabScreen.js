@@ -14,6 +14,8 @@ import ProfileStack from './ProfileStack';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
 import explore_FILL from '@src/assets/images/png/explore_FILL.png';
+import survey_filled from '@src/assets/images/png/survey_filled.png';
+import survey_unfilled from '@src/assets/images/png/survey_unfilled.png';
 import explore_UNFILLED from '@src/assets/images/png/explore_UNFILLED.png';
 
 const Tab = createBottomTabNavigator();
@@ -142,6 +144,32 @@ const TabScreen = () => {
           }}
         />
       )} */}
+      {!contentShow && (
+        <Tab.Screen
+          name="surveys"
+          component={ExploreStack}
+          options={{
+            tabBarLabel: t('surveys'),
+            tabBarButton: (props) => (
+              <CopilotStep
+                text="This is the Content tab. Tap here to explore Content!"
+                order={4}
+                name="explore"
+              >
+                <WalkthroughableView style={{ flex: 1 }}>
+                  <TouchableOpacity {...props} />
+                </WalkthroughableView>
+              </CopilotStep>
+            ),
+            tabBarIcon: ({ focused }) => (
+              <Image
+                source={focused ? survey_filled : survey_unfilled}
+                style={{ width: 30, height: 30 }}
+              />
+            ),
+          }}
+        />
+      )}
 
       <Tab.Screen
         name="Profile"
