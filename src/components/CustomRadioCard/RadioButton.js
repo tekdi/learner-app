@@ -28,6 +28,7 @@ const RadioButton = ({ field, formData, handleValue, errors }) => {
     handleValue(field.name, selectedValue);
     setSelectedIndex(selectedValue);
   };
+  console.log('selectedValue', formData?.[field.name]?.value);
 
   return (
     <>
@@ -52,17 +53,18 @@ const RadioButton = ({ field, formData, handleValue, errors }) => {
                 style={[
                   styles.card,
                   {
-                    backgroundColor:
-                      formData?.[field.name]?.value === option?.tenantId
-                        ? '#FFEFD5'
-                        : 'white',
+                    backgroundColor: '#FFEFD5',
                   },
                 ]}
                 onPress={() => handlePress(index)}
               >
                 <View style={styles.radioContainer}>
                   <Radio
-                    checked={formData?.[field.name] === option?.value}
+                    checked={
+                      formData?.[field.name]?.value === undefined
+                        ? formData?.[field.name] === option?.value
+                        : formData?.[field.name].value === option?.value
+                    }
                     style={styles.radio}
                     onChange={() => handlePress(index)}
                   >

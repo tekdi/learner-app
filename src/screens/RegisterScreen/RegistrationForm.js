@@ -196,9 +196,8 @@ const RegistrationForm = ({ fields }) => {
 
   const onSubmit = async (data) => {
     setLoading(true);
-
-    const payload = await transformPayload(data);
-
+    const isVoluteerPayload = { ...data, is_volunteer: 'no' };
+    const payload = await transformPayload(isVoluteerPayload);
     await getAccessToken();
     const register = await registerUser(payload);
 
@@ -493,6 +492,9 @@ const RegistrationForm = ({ fields }) => {
         ) {
           return; // Skip validation for these fields
         }
+        if (['is_volunteer'].includes(field.name)) {
+          return; // Skip validation for these fields
+        }
         if (
           (field.isRequired && !value) ||
           // (field.name === 'blocks' && !value) ||
@@ -536,6 +538,10 @@ const RegistrationForm = ({ fields }) => {
       parseInt(age, 10) >= 18
     ) {
       return null;
+    }
+
+    if (['is_volunteer'].includes(field.name)) {
+      return null; // Skip validation for these fields
     }
 
     const UsernameText = () => {

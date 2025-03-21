@@ -221,6 +221,8 @@ const Courses = () => {
     setTopicList(newData);
   };
 
+  console.log('offset', offset);
+
   const fetchData = async (offset, append = false) => {
     setLoading(true);
     fetchTopics();
@@ -266,6 +268,8 @@ const Courses = () => {
     }
 
     const result = JSON.parse(await getDataFromStorage('profileData'));
+    console.log('result', JSON.stringify(result));
+
     setUserInfo(result?.getUserDetails);
     setCount(data?.count);
     // Append new data only if handleViewMore is triggered
@@ -299,6 +303,8 @@ const Courses = () => {
   };
 
   const handleViewMore = () => {
+    console.log('offset', offset);
+
     const newOffset = offset + 5; // Increase offset by 5
     setOffset(newOffset); // Update state
     fetchData(newOffset, true); // Append new data
@@ -312,6 +318,7 @@ const Courses = () => {
 
     try {
       setRefreshKey((prevKey) => prevKey + 1);
+      setOffset(0);
       fetchData(0, false); // Reset course data
     } catch (error) {
       console.log('Error fetching data:', error);
@@ -327,7 +334,7 @@ const Courses = () => {
       setIsTopicModal(false);
       setInterestModal(true);
       setInterestContent(false);
-      await setDataInStorage(`Enrolled_to_l2${userId}`, 'yes');
+      // await setDataInStorage(`Enrolled_to_l2${userId}`, 'yes');
     }
     setLoading(false);
   };

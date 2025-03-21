@@ -462,7 +462,7 @@ export const courseListApi_New = async ({
   curlCommand += `-d '${JSON.stringify(payload)}'`;
 
   // Output the cURL command to the console
-  // console.log('Equivalent cURL command:\n', curlCommand);
+  console.log('Equivalent cURL command:\n', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -2009,7 +2009,7 @@ export const enrollInterest = async (selectedIds) => {
     gender: profileDetails?.gender,
     email_address: profileDetails?.email
       ? profileDetails?.email
-      : 'swapnil.phalke@tekditechnologies.com',
+      : 'test@tekditechnologies.com',
     dob: profileDetails?.dob,
     qualification:
       customFields?.HIGHEST_EDCATIONAL_QUALIFICATION_OR_LAST_PASSED_GRADE

@@ -20,6 +20,8 @@ export const transformPayload = async (data) => {
       const keyName = field.name; // Get field name from studentForm
       const type = field.type;
 
+      console.log({ keyName });
+
       if (data.hasOwnProperty(keyName)) {
         if (field.fieldId) {
           // Push to customFields if fieldId is present

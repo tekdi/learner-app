@@ -122,11 +122,25 @@ const ProfileUpdateForm = ({ fields }) => {
     return data?.values;
   };
 
+  const transformData = (data) => {
+    return Object.keys(data).reduce((acc, key) => {
+      if (Array.isArray(data[key]) && data[key].length > 0) {
+        acc[key] = {
+          label: data[key].map((item) => item.label).join(', '),
+          value: data[key].map((item) => item.value).join(', '),
+        };
+      } else {
+        acc[key] = data[key];
+      }
+      return acc;
+    }, {});
+  };
+
   const fetchStates = async (data) => {
     setLoading(true);
     const stateData = await fetchstate();
     const stateAPIdata = stateData;
-    console.log('stateAPIdata', JSON.stringify(stateAPIdata));
+    // console.log('stateAPIdata', JSON.stringify(stateAPIdata));
 
     const geoData = JSON.parse(await getDataFromStorage('geoData'));
     setStateData(stateAPIdata);
@@ -147,7 +161,9 @@ const ProfileUpdateForm = ({ fields }) => {
         label: foundDistrict?.label,
       },
     };
-    setFormData(updatedFormData);
+    const newData = transformData(updatedFormData);
+
+    setFormData(newData);
 
     setLoading(false);
   };
@@ -179,7 +195,7 @@ const ProfileUpdateForm = ({ fields }) => {
       const customFields = finalResult?.customFields;
       const userDetails = createNewObject(customFields, requiredLabels);
       // console.log('userDetails', JSON.stringify(userDetails));
-      console.log('customFields', JSON.stringify(customFields));
+      // console.log('customFields', JSON.stringify(customFields));
 
       const newUpdatedObj = { ...userDetails, ...filteredResult };
 
