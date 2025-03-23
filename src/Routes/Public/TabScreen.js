@@ -24,6 +24,7 @@ const TabScreen = () => {
   const [contentShow, setContentShow] = useState(true);
   const [CopilotStarted, setCopilotStarted] = useState(false);
   const [CopilotStopped, setCopilotStopped] = useState(false);
+  const [isVolunteer, setIsVolunteer] = useState(false);
   const { start, goToNth, unregisterStep, copilotEvents } = useCopilot();
 
   // useEffect(() => {
@@ -41,7 +42,13 @@ const TabScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       let userType = await getDataFromStorage('userType');
-      console.log('userType', userType);
+      const result = JSON.parse(await getDataFromStorage('profileData'));
+      // console.log('getUserDetails', result?.getUserDetails?.[0]?.customFields);
+      const volunteer = result?.getUserDetails?.[0]?.customFields.filter(
+        (item) => item?.label === 'IS_VOLUNTEER'
+      );
+      setIsVolunteer(volunteer?.[0]?.selectedValues);
+
       if (userType === 'youthnet') {
         setContentShow(false);
       }
@@ -142,7 +149,7 @@ const TabScreen = () => {
           }}
         />
       )} */}
-      {!contentShow && (
+      {!contentShow && isVolunteer === 'yes' && (
         <Tab.Screen
           name="surveys"
           component={SurveyStack}

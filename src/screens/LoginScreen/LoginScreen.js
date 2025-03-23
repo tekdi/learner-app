@@ -76,7 +76,7 @@ const LoginScreen = () => {
         const userDetails = await getuserDetails();
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
-        console.log('tenantData', JSON.stringify(userDetails));
+        // console.log('tenantData', JSON.stringify(userDetails));
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
         await setDataInStorage('userId', user_id || '');
@@ -242,7 +242,13 @@ const LoginScreen = () => {
 
             {errmsg !== '' && (
               <GlobalText
-                style={{ color: 'red', top: -10, left: 20, width: '90%' }}
+                style={{
+                  color: 'red',
+                  top: -10,
+                  left: 20,
+                  width: '90%',
+                  zIndex: -1,
+                }}
               >
                 {t(errmsg || 'invalid_username_or_password')}
               </GlobalText>
