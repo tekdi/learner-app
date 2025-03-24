@@ -15,6 +15,7 @@ import { Alert, PermissionsAndroid, Platform } from 'react-native';
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
   let tenantId = await getTentantId();
+  console.log('token', token);
 
   return {
     'Content-Type': 'application/json',
@@ -2049,6 +2050,9 @@ export const downloadCertificate = async ({
 }) => {
   const url = `${EndUrls.downloadCertificate}`; // Define the URL
   const headers = await getHeaders();
+  // console.log('certificateId', certificateId);
+  const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+
   const payload = {
     credentialId: certificateId,
     templateId: 'cm7nbogii000moc3gth63l863',
@@ -2061,7 +2065,7 @@ export const downloadCertificate = async ({
     });
     const data = response?.request?._response;
     const base64Data = data; // Base64 string from API
-    const fileName = `${certificateName}.pdf`;
+    const fileName = `${certificateName}_${user_id}.pdf`;
     const path = `${RNFS.DownloadDirectoryPath}/${fileName}`;
 
     await RNFS.writeFile(path, base64Data, 'base64');

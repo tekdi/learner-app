@@ -285,6 +285,7 @@ const Courses = () => {
 
     const isInterested = trackData.some((course) => course.completed);
     const data = (await getDataFromStorage(`Enrolled_to_l2${user_Id}`)) || '';
+    console.log('data==>', data);
 
     if (data === 'yes') {
       setInterestContent(false);
@@ -292,6 +293,8 @@ const Courses = () => {
       setInterestContent(true);
     }
   }
+
+  console.log('intereest', interestContent);
 
   useEffect(() => {
     fetchData(0, false);
@@ -334,7 +337,7 @@ const Courses = () => {
       setIsTopicModal(false);
       setInterestModal(true);
       setInterestContent(false);
-      // await setDataInStorage(`Enrolled_to_l2${userId}`, 'yes');
+      await setDataInStorage(`Enrolled_to_l2${userId}`, 'yes');
     }
     setLoading(false);
   };

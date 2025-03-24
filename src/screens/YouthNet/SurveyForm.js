@@ -63,20 +63,20 @@ const SurveyForm = (props) => {
   }, []);
 
   // Refresh the component.
-  const handleRefresh = async () => {
-    setLoading(true); // Start Refresh Indicator
+  // const handleRefresh = async () => {
+  //   setLoading(true); // Start Refresh Indicator
 
-    try {
-      setRefreshKey((prevKey) => prevKey + 1);
-      fetchData(); // Reset course data
-    } catch (error) {
-      console.log('Error fetching data:', error);
-    } finally {
-      setLoading(false); // Stop Refresh Indicator
-    }
-  };
+  //   try {
+  //     setRefreshKey((prevKey) => prevKey + 1);
+  //     fetchData(); // Reset course data
+  //   } catch (error) {
+  //     console.log('Error fetching data:', error);
+  //   } finally {
+  //     setLoading(false); // Stop Refresh Indicator
+  //   }
+  // };
 
-  console.log('injectedJS', injectedJS);
+  // console.log('injectedJS', injectedJS);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -84,10 +84,10 @@ const SurveyForm = (props) => {
 
       <View style={{ flex: 1 }}>
         <ScrollView
-          key={refreshKey}
-          refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
-          }
+          // key={refreshKey}
+          // refreshControl={
+          //   <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
+          // }
           contentContainerStyle={{ flexGrow: 1 }}
         >
           <View style={styles.webViewContainer}>
