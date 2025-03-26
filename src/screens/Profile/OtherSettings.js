@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import {
   Modal,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -137,7 +138,7 @@ const OtherSettings = ({ route }) => {
   return (
     <>
       <SecondaryHeader logo />
-      <SafeAreaView style={globalStyles.container}>
+      <ScrollView style={globalStyles.container}>
         <BackHeader title={'settings'} />
         <View style={styles.view}>
           <TouchableOpacity
@@ -154,14 +155,14 @@ const OtherSettings = ({ route }) => {
             >
               <View>
                 <GlobalText
-                  style={[globalStyles.subHeading, { color: '#4D4639' }]}
+                  style={[globalStyles.h6, { color: '#4D4639' }]}
                   numberOfLines={2}
                   ellipsizeMode="tail"
                 >
                   {t('remove_all_offline_content')}
                 </GlobalText>
                 <GlobalText
-                  style={[globalStyles.subHeading]}
+                  style={[globalStyles.h6]}
                   numberOfLines={2}
                   ellipsizeMode="tail"
                 >
@@ -195,7 +196,7 @@ const OtherSettings = ({ route }) => {
                   ]}
                 >
                   <GlobalText
-                    style={[globalStyles.subHeading, { color: '#4D4639' }]}
+                    style={[globalStyles.h6, { color: '#4D4639' }]}
                     numberOfLines={2}
                     ellipsizeMode="tail"
                   >
@@ -222,7 +223,7 @@ const OtherSettings = ({ route }) => {
                   ]}
                 >
                   <GlobalText
-                    style={[globalStyles.subHeading, { color: '#4D4639' }]}
+                    style={[globalStyles.h6, { color: '#4D4639' }]}
                     numberOfLines={2}
                     ellipsizeMode="tail"
                   >
@@ -249,7 +250,7 @@ const OtherSettings = ({ route }) => {
                   ]}
                 >
                   <GlobalText
-                    style={[globalStyles.subHeading, { color: '#4D4639' }]}
+                    style={[globalStyles.h6, { color: '#4D4639' }]}
                     numberOfLines={2}
                     ellipsizeMode="tail"
                   >
@@ -276,7 +277,7 @@ const OtherSettings = ({ route }) => {
               ]}
             >
               <GlobalText
-                style={[globalStyles.subHeading, { color: '#4D4639' }]}
+                style={[globalStyles.h6, { color: '#4D4639' }]}
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
@@ -303,7 +304,7 @@ const OtherSettings = ({ route }) => {
               ]}
             >
               <GlobalText
-                style={[globalStyles.subHeading, { color: '#4D4639' }]}
+                style={[globalStyles.h6, { color: '#4D4639' }]}
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
@@ -334,7 +335,7 @@ const OtherSettings = ({ route }) => {
               ]}
             >
               <GlobalText
-                style={[globalStyles.subHeading, { color: '#4D4639' }]}
+                style={[globalStyles.h6, { color: '#4D4639' }]}
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
@@ -362,7 +363,7 @@ const OtherSettings = ({ route }) => {
             style={styles.icon}
           />
 
-          <GlobalText style={[globalStyles.subHeading, { marginLeft: 15 }]}>
+          <GlobalText style={[globalStyles.h6, { marginLeft: 15 }]}>
             {t('logout')}
           </GlobalText>
         </TouchableOpacity>
@@ -428,7 +429,7 @@ const OtherSettings = ({ route }) => {
             </View>
           </View>
         </Modal>
-      </SafeAreaView>
+      </ScrollView>
     </>
   );
 };

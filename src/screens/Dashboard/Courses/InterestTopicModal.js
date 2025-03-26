@@ -19,7 +19,6 @@ const InterestTopicModal = ({
 }) => {
   const { t } = useTranslation();
   const [selectedIds, setSelectedIds] = useState(null);
-  console.log('selectedIds', selectedIds);
 
   return (
     <Modal visible={isTopicModal} transparent={true} animationType="slide">

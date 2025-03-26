@@ -195,10 +195,10 @@ const CourseCard = ({
               trackCompleted >= 100
                 ? 'completed'
                 : trackCompleted > 0
-                  ? 'inprogress'
-                  : trackProgress > 0
-                    ? 'progress'
-                    : 'not_started'
+                ? 'inprogress'
+                : trackProgress > 0
+                ? 'progress'
+                : 'not_started'
             }
             trackCompleted={trackCompleted}
             viewStyle={{
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     alignItems: 'center',
     borderWidth: 1,
-    margin: 10,
+    margin: 5,
     borderColor: '#aaaaaa',
   },
   cardBackground: {

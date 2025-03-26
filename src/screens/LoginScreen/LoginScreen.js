@@ -213,9 +213,7 @@ const LoginScreen = () => {
             </GlobalText>
           </TouchableOpacity> */}
           <View style={{ paddingVertical: 5 }}>
-            <GlobalText
-              style={[globalStyles.heading, { marginTop: 15, color: 'black' }]}
-            >
+            <GlobalText style={[globalStyles.h3, { marginTop: 15 }]}>
               {t('login')}
             </GlobalText>
             {/* <GlobalText
@@ -242,13 +240,16 @@ const LoginScreen = () => {
 
             {errmsg !== '' && (
               <GlobalText
-                style={{
-                  color: 'red',
-                  top: -10,
-                  left: 20,
-                  width: '90%',
-                  zIndex: -1,
-                }}
+                style={[
+                  globalStyles.h6,
+                  {
+                    color: 'red',
+                    top: -10,
+                    left: 20,
+                    width: '90%',
+                    zIndex: -1,
+                  },
+                ]}
               >
                 {t(errmsg || 'invalid_username_or_password')}
               </GlobalText>
@@ -261,11 +262,12 @@ const LoginScreen = () => {
             style={{ paddingLeft: 20, marginBottom: 30 }}
           >
             <GlobalText
-              style={{
-                color: '#0D599E',
-                fontFamily: 'Poppins-Medium',
-                fontSize: 15,
-              }}
+              style={[
+                globalStyles.h6,
+                {
+                  color: '#0D599E',
+                },
+              ]}
             >
               {t('forgot_password')}?
             </GlobalText>

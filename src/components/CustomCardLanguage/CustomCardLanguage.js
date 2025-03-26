@@ -3,7 +3,8 @@ import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import globalStyles from '../../utils/Helper/Style';
 
 const CustomCardLanguage = ({
   title,
@@ -22,10 +23,9 @@ const CustomCardLanguage = ({
       <View style={active ? [styles.cardActive, style] : [styles.card, style]}>
         <GlobalText
           style={[
-            styles.title,
+            globalStyles.h5,
             {
-              fontFamily:
-                bold === 'bold' ? 'Poppins-Medium' : 'Poppins-Regular',
+              fontFamily: active ? 'Poppins-Medium' : 'Poppins-Regular',
             },
           ]}
         >
@@ -62,12 +62,20 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 60,
     justifyContent: 'center', // Center vertically
-    backgroundColor: '#FEEDA1',
+    backgroundColor: '#FFEFD5',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#D0C5B4',
     margin: 10,
+    // Box Shadow for iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    // Box Shadow for Android
+    elevation: 5,
   },
+
   title: {
     paddingTop: 10,
     fontSize: 20,

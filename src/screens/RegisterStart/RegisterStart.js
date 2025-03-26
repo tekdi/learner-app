@@ -17,14 +17,15 @@ import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../context/NetworkContext';
 import DeviceInfo from 'react-native-device-info';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import globalStyles from '../../utils/Helper/Style';
 
 const RegisterStart = () => {
   // Multi-language setup
   const { t } = useTranslation();
   const { isConnected } = useInternet();
   const navigation = useNavigation();
-  const [locationStatus, setLocationStatus] = useState(null);
+  // const [locationStatus, setLocationStatus] = useState(null);
 
   const navigate = () => {
     navigation.goBack();
@@ -90,7 +91,12 @@ const RegisterStart = () => {
           resizeMode={FastImage.resizeMode.contain}
           priority={FastImage.priority.high} // Set the priority here
         />
-        <GlobalText style={styles.title}>{t('form_start_lable')}</GlobalText>
+        <GlobalText style={[globalStyles.h5, { marginTop: 10 }]}>
+          {t('lets_create_your_acc')}
+        </GlobalText>
+        <GlobalText style={[globalStyles.h5, { textAlign: 'center' }]}>
+          {t('create_acc_desp')}
+        </GlobalText>
       </View>
 
       <View style={styles.buttonContainer}>
@@ -121,8 +127,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   gif_image: {
-    height: 80,
-    width: 80,
+    height: 50,
+    width: 50,
   },
   container_image: {
     marginTop: 300,

@@ -155,7 +155,6 @@ export const questionsetRead = async (content_do_id) => {
 export const courseDetails = async (content_do_id) => {
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
   const url = `${EndUrls.course_details}${content_do_id}`;
-  let api_response = null;
 
   let config = {
     method: 'get',
@@ -167,9 +166,17 @@ export const courseDetails = async (content_do_id) => {
     },
   };
 
+  // Construct cURL Command
+  const curlCommand = `curl -X GET "${url}" \\
+  -H "accept: */*" \\
+  -H "Content-Type: application/json"`;
+
+  console.log('Generated cURL Command:', curlCommand);
+
   try {
     const response = await axios.request(config);
-    api_response = response.data;
+    const api_response = response.data;
+
     if (api_response) {
       await storeApiResponse(user_id, url, 'get', null, api_response);
       return api_response;
@@ -183,6 +190,7 @@ export const courseDetails = async (content_do_id) => {
     return result_offline;
   }
 };
+
 //list question
 export const listQuestion = async (url, identifiers) => {
   let data = JSON.stringify({

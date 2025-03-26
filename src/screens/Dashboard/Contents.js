@@ -128,8 +128,8 @@ const Contents = () => {
       userType === 'youthnet'
         ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
         : userType === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+        ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+        : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
 
     const data = await contentListApi_Pratham({ searchText, instant, offset });
     //found content progress
@@ -151,7 +151,10 @@ const Contents = () => {
       //get course track data
       let userId = await getDataFromStorage('userId');
       let course_track_data = await courseTrackingStatus(userId, contentIdList);
-      //console.log('########## course_track_data', course_track_data?.data);
+      console.log(
+        '########## course_track_data',
+        JSON.stringify(course_track_data?.data)
+      );
       let courseTrackData = [];
       if (course_track_data?.data) {
         courseTrackData =

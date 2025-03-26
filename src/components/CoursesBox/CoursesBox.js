@@ -45,7 +45,7 @@ const CoursesBox = ({
       onPress={() => handlePress(item)}
       appIcon={item?.appIcon}
       index={index}
-      cardWidth={isHorizontal ? 200 : '44%'}
+      cardWidth={isHorizontal ? 200 : '47%'}
       item={item}
       TrackData={TrackData}
       navigation={navigation}
@@ -53,13 +53,13 @@ const CoursesBox = ({
   );
 
   return (
-    <SafeAreaView style={[styles.container]}>
+    <SafeAreaView>
       {/* {title && (
         <GlobalText style={[styles.title, { color: style.titlecolor }]}>
           {t(title)}
         </GlobalText>
       )} */}
-      <View style={styles.view}>
+      {/* <View style={styles.view}>
         <GlobalText style={[styles.description, { color: 'black' }]}>
           {t(description)}
         </GlobalText>
@@ -78,7 +78,7 @@ const CoursesBox = ({
             />
           </View>
         )}
-      </View>
+      </View> */}
       <View>
         {isHorizontal ? (
           <FlatList
@@ -101,6 +101,8 @@ const CoursesBox = ({
             numColumns={2}
             windowSize={21} // Controls the number of items rendered around the current index
             scrollEnabled={false}
+            columnWrapperStyle={styles.columnWrapper}
+            contentContainerStyle={styles.listContainer}
           />
         )}
       </View>
@@ -124,6 +126,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    borderWidth: 1,
+  },
+  columnWrapper: {
+    justifyContent: 'space-between', // Ensures equal spacing between columns
   },
 });
 

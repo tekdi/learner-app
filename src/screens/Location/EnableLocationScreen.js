@@ -79,13 +79,13 @@ const EnableLocationScreen = () => {
       />
       <Image style={{ width: '100%' }} source={location} resizeMode="cover" />
       <View style={{ width: '80%', marginTop: 50 }}>
-        <GlobalText style={[globalStyles.heading2, { textAlign: 'center' }]}>
+        <GlobalText style={[globalStyles.h5, { textAlign: 'center' }]}>
           {t(
             'enable_location_to_discover_nearby_skilling_centers_and_more_opportunities_tailored_just_for_you'
           )}
         </GlobalText>
       </View>
-      <View style={{ margin: 50 }}>
+      <View style={{ width: '90%', marginVertical: 30 }}>
         <PrimaryButton onPress={requestLocationPermission} text={t('enable')} />
       </View>
       <TouchableOpacity style={styles.button} onPress={disableLocation}>
@@ -99,8 +99,9 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#0D599E', // Black text color
     fontSize: 16,
-    fontWeight: '600',
-    marginTop: -30,
+    fontWeight: '700',
+    // marginTop: -30,
+    fontFamily: 'Poppins-Medium',
   },
 });
 

@@ -35,7 +35,8 @@ import {
 import GlobalText from '@components/GlobalText/GlobalText';
 
 const UnitList = ({ route }) => {
-  const { children, name, course_id, unit_id, headingName } = route.params;
+  const { children, name, course_id, unit_id, headingName, description } =
+    route.params;
   // console.log('########## UnitList');
   // console.log('course_id', course_id);
   // console.log('unit_id', unit_id);
@@ -156,6 +157,13 @@ const UnitList = ({ route }) => {
               ellipsizeMode="tail"
             >
               {name}
+            </GlobalText>
+            <GlobalText
+              style={[globalStyles.heading2]}
+              numberOfLines={5}
+              ellipsizeMode="tail"
+            >
+              {description}
             </GlobalText>
           </View>
           <View

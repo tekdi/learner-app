@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import { useTranslation } from '../../context/LanguageContext';
 import { StyleSheet, Text } from 'react-native';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import globalStyles from '../../utils/Helper/Style';
 
 const TextField = ({ text, style }) => {
   const { t } = useTranslation();
-  const textStyle = style || styles.text;
+  const textStyle = style || globalStyles.text;
 
   return <GlobalText style={textStyle}> {text ? t(text) : '-'} </GlobalText>;
 };

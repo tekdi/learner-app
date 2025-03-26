@@ -1,7 +1,7 @@
 {
   "welcome": "Welcome",
-  "choose_language": "Let's choose your language",
-  "select_language": "Select the language you're most comfortable with to get started",
+  "choose_language": "Start by selecting a language of App",
+  "select_language": "Choose the language for menus and navigation",
   "english": "English",
   "hindi": "हिंदी",
   "marathi": "मराठी",
@@ -410,5 +410,7 @@
   "which_topic_are_you_most_interested_in": "Which topic are you most interested in?",
   "select_course_desp": "Once you select a course, our expert will contact you with more information!",
   "submit": "Submit",
-  "topics": "Topics"
+  "topics": "Topics",
+  "lets_create_your_acc": "Let's create your account!",
+  "create_acc_desp": "Answer a few questions so we can get to know you better"
 }

@@ -108,6 +108,7 @@ const Profile = () => {
       'firstName',
       'middleName',
       'lastName',
+      'tenantId',
     ];
 
     const filteredResult = Object.keys(finalResult)
@@ -143,6 +144,7 @@ const Profile = () => {
     delete userDetails.state;
     delete userDetails.district;
     delete userDetails.block;
+    delete userDetails.village;
 
     // Add formatted location as a new field
     userDetails.location = formattedLocation;
@@ -236,9 +238,7 @@ const Profile = () => {
           style={[globalStyles.container, { padding: 0 }]}
         >
           <View style={styles.view}>
-            <GlobalText style={globalStyles.heading}>
-              {t('my_profile')}
-            </GlobalText>
+            <GlobalText style={globalStyles.h3}>{t('my_profile')}</GlobalText>
 
             <TouchableOpacity
               onPress={() => {
@@ -256,7 +256,7 @@ const Profile = () => {
             end={{ x: 1, y: 1.5 }} // Gradient ending point
             style={styles.gradient}
           >
-            <GlobalText style={[globalStyles.subHeading, { fontWeight: 700 }]}>
+            <GlobalText style={[globalStyles.h5, { fontWeight: 700 }]}>
               {capitalizeName(
                 `${userData?.firstName} ${
                   userData?.lastName ? userData?.lastName : ''
@@ -266,21 +266,23 @@ const Profile = () => {
             <View
               style={[
                 globalStyles.flexrow,
-                { justifyContent: 'space-between' },
+                // { justifyContent: 'space-between' },
               ]}
             >
               <GlobalText style={globalStyles.text}>
                 {userData?.username}
               </GlobalText>
-              <View
-                style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: 20,
-                  backgroundColor: '#CDC5BD',
-                }}
-              />
+
               <View style={[globalStyles.flexrow]}>
+                <View
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 20,
+                    backgroundColor: '#CDC5BD',
+                    marginHorizontal: 15,
+                  }}
+                />
                 <GlobalText style={globalStyles.text}>
                   {t('joined_on')}
                 </GlobalText>
@@ -294,8 +296,6 @@ const Profile = () => {
               {userDetailss?.map((item, key) => {
                 return (
                   <View key={key} style={{ paddingVertical: 10 }}>
-                    {console.log('item', item)}
-
                     <Label text={`${t(item?.name)}`} />
                     <TextField text={item?.value?.[0]?.value || item?.value} />
                   </View>

@@ -212,7 +212,9 @@ const Courses = () => {
   );
 
   const fetchTopics = async () => {
-    const instantId = instant?.frameworkId;
+    console.log('hi');
+
+    const instantId = `youthnet-framework`;
     const data = await filterContent({ instantId });
     const newData = data?.framework?.categories?.filter((item) => {
       return item?.code === 'stream';
@@ -221,7 +223,7 @@ const Courses = () => {
     setTopicList(newData);
   };
 
-  console.log('offset', offset);
+  // console.log('offset', offset);
 
   const fetchData = async (offset, append = false) => {
     setLoading(true);
@@ -268,7 +270,7 @@ const Courses = () => {
     }
 
     const result = JSON.parse(await getDataFromStorage('profileData'));
-    console.log('result', JSON.stringify(result));
+    // console.log('result', JSON.stringify(result));
 
     setUserInfo(result?.getUserDetails);
     setCount(data?.count);
@@ -285,7 +287,7 @@ const Courses = () => {
 
     const isInterested = trackData.some((course) => course.completed);
     const data = (await getDataFromStorage(`Enrolled_to_l2${user_Id}`)) || '';
-    console.log('data==>', data);
+    // console.log('data==>', data);
 
     if (data === 'yes') {
       setInterestContent(false);
@@ -294,7 +296,7 @@ const Courses = () => {
     }
   }
 
-  console.log('intereest', interestContent);
+  // console.log('intereest', interestContent);
 
   useEffect(() => {
     fetchData(0, false);
@@ -306,7 +308,7 @@ const Courses = () => {
   };
 
   const handleViewMore = () => {
-    console.log('offset', offset);
+    // console.log('offset', offset);
 
     const newOffset = offset + 5; // Increase offset by 5
     setOffset(newOffset); // Update state
@@ -365,24 +367,25 @@ const Courses = () => {
             <>
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
-                <GlobalText style={styles.text2}>
-                  {t('welcome')},
+                <GlobalText style={globalStyles.h6}>
+                  {t('welcome')},{' '}
                   {capitalizeName(
                     `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
                   )}
                 </GlobalText>
               </View>
-
-              <GlobalText style={styles.text}>
-                {!youthnet && t('courses')}
-              </GlobalText>
+              {/* {!youthnet && (
+                <GlobalText style={globalStyles.text}>
+                  {t('courses')}
+                </GlobalText>
+              )} */}
               <ContinueLearning youthnet={youthnet} t={t} userId={userId} />
               {youthnet && interestContent && (
                 <View>
                   <GlobalText
                     style={[
-                      globalStyles.heading2,
-                      { fontWeight: 'bold', color: '#78590C' },
+                      globalStyles.h4,
+                      { color: '#78590C', marginTop: 5 },
                     ]}
                   >
                     {youthnet && t('l2_courses')}
@@ -395,7 +398,9 @@ const Courses = () => {
                       marginTop: 10,
                     }}
                   >
-                    <GlobalText style={[globalStyles.text]}>
+                    <GlobalText
+                      style={[globalStyles.text, { color: '#1F1B13' }]}
+                    >
                       {t(
                         'you_can_boost_your_skills_and_unlock_new_job_opportunities_with_our_L2_course'
                       )}
@@ -420,10 +425,7 @@ const Courses = () => {
                 </View>
               )}
               <GlobalText
-                style={[
-                  globalStyles.heading2,
-                  { fontWeight: 'bold', color: '#78590C' },
-                ]}
+                style={[globalStyles.h4, { color: '#78590C', top: 10 }]}
               >
                 {youthnet && t('l1_courses')}
               </GlobalText>
@@ -439,7 +441,7 @@ const Courses = () => {
                         setSearchText={setSearchText}
                         searchText={searchText}
                         handleSearch={handleSearch}
-                        placeholder={t('Search Courses')}
+                        placeholder={t('Search...')}
                       />
                     </View>
                   </CopilotView>
@@ -581,7 +583,6 @@ const styles = StyleSheet.create({
   view2: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
   },
   image: {
     height: 30,
