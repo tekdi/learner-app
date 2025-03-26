@@ -7,6 +7,7 @@ import { useTranslation } from '../../context/LanguageContext';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
+import globalStyles from '../../utils/Helper/Style';
 
 const CopilotView = walkthroughable(View);
 
@@ -22,17 +23,6 @@ const CustomBottomCard = ({
   return (
     <View style={styles.overlap}>
       <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <GlobalText
-          category="p2"
-          style={{
-            marginBottom: 10,
-            color: '#635E57',
-            fontFamily: 'Poppins-Regular',
-            textAlign: 'center',
-          }}
-        >
-          {t('language_help')}
-        </GlobalText>
         <CopilotStep
           text={t(copilotStepText)}
           order={copilotStepOrder}
@@ -42,6 +32,17 @@ const CustomBottomCard = ({
             <PrimaryButton onPress={onPress} text="Continue" />
           </CopilotView>
         </CopilotStep>
+        <GlobalText
+          category="p2"
+          style={[
+            globalStyles.text,
+            {
+              marginTop: 10,
+            },
+          ]}
+        >
+          {t('language_help')}
+        </GlobalText>
       </Layout>
     </View>
   );
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    top: 0,
+    top: 10,
     padding: 5,
   },
 });

@@ -426,7 +426,7 @@ export const courseListApi_New = async ({
         primaryCategory: ['Course'],
         ...(mergedFilter && mergedFilter),
       },
-      limit: 5,
+      limit: 10,
       sort_by: {
         lastPublishedOn: 'desc',
       },
@@ -511,7 +511,7 @@ export const contentListApi_Pratham = async ({
         primaryCategory: ['Learning Resource', 'Practice Question Set'],
         visibility: ['Default', 'Parent'],
       },
-      limit: 5,
+      limit: 10,
       sort_by: {
         lastPublishedOn: 'desc',
       },

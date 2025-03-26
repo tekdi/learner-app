@@ -61,8 +61,8 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
                   channelId: 'youthnet-channel',
                 }
               : userType === 'scp'
-                ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-                : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+              ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+              : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
           const offset = 0;
           let data = await courseListApi_New({
             inprogress_do_ids,
@@ -138,31 +138,33 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
   );
 
   return (
-    <View style={styles.searchContainer}>
-      <GlobalText style={[globalStyles.heading2, { color: '#06A816' }]}>
-        {t('Inprogress')}
-      </GlobalText>
-      <GlobalText style={[globalStyles.text]}>
-        {t('you_have_ongoing').replace('{value}', data?.length)}
-      </GlobalText>
-
-      {data.length > 0 ? (
-        //
-        <FlatList
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={(item) => item?.identifier}
-          horizontal={true} // Enable horizontal scrolling
-          initialNumToRender={10} // Adjust the number of items to render initially
-          maxToRenderPerBatch={10} // Number of items rendered per batch
-          windowSize={21} // Controls the number of items rendered around the current index
-        />
-      ) : (
-        <GlobalText style={globalStyles.heading2}>
-          {t('no_data_found')}
+    data.length > 0 && (
+      <View style={styles.searchContainer}>
+        <GlobalText style={[globalStyles.heading2, { color: '#06A816' }]}>
+          {t('Inprogress')}
         </GlobalText>
-      )}
-    </View>
+        <GlobalText style={[globalStyles.text]}>
+          {t('you_have_ongoing').replace('{value}', data?.length)}
+        </GlobalText>
+
+        {data.length > 0 ? (
+          //
+          <FlatList
+            data={data}
+            renderItem={renderItem}
+            keyExtractor={(item) => item?.identifier}
+            horizontal={true} // Enable horizontal scrolling
+            initialNumToRender={10} // Adjust the number of items to render initially
+            maxToRenderPerBatch={10} // Number of items rendered per batch
+            windowSize={21} // Controls the number of items rendered around the current index
+          />
+        ) : (
+          <GlobalText style={globalStyles.heading2}>
+            {t('no_data_found')}
+          </GlobalText>
+        )}
+      </View>
+    )
   );
 };
 

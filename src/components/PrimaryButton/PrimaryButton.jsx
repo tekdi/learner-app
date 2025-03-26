@@ -3,7 +3,8 @@ import { View, Text, StyleSheet } from 'react-native';
 import React from 'react';
 import { Button } from '@ui-kitten/components';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
+import globalStyles from '../../utils/Helper/Style';
 
 const PrimaryButton = ({ text, onPress, isDisabled, color }) => {
   return (
@@ -22,7 +23,7 @@ const PrimaryButton = ({ text, onPress, isDisabled, color }) => {
         disabled={isDisabled}
       >
         {(props) => (
-          <GlobalText {...props} style={styles.buttontext}>
+          <GlobalText {...props} style={[globalStyles.h6, styles.buttontext]}>
             {text}
           </GlobalText>
         )}
@@ -39,10 +40,9 @@ PrimaryButton.propTypes = {
 const styles = StyleSheet.create({
   buttontext: {
     textAlign: 'center',
-    fontSize: 14.5,
-    color: 'black',
     width: '100%',
-    fontFamily: 'Poppins-Medium',
+    fontWeight: 700,
+    fontFamily: 'Roboto-Black',
   },
 });
 
