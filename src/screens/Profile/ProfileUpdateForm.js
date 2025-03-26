@@ -67,13 +67,24 @@ const ProfileUpdateForm = ({ fields }) => {
     await logEventFunction(obj);
   };
 
+  const fetchstate = async () => {
+    const payload = {
+      // limit: 10,
+      offset: 0,
+      fieldName: 'state',
+    };
+    const data = await getGeoLocation({ payload });
+    setDataInStorage('states', JSON.stringify(data?.values || []));
+    return data?.values;
+  };
+
   const fetchDistricts = async (state) => {
     setLoading(true);
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'districts',
-      controllingfieldfk: state || formData['states']?.value,
+      fieldName: 'district',
+      controllingfieldfk: [state || formData['state']?.value],
     };
 
     const data = await getGeoLocation({ payload });
@@ -86,8 +97,8 @@ const ProfileUpdateForm = ({ fields }) => {
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'villages',
-      controllingfieldfk: block || formData['blocks']?.value,
+      fieldName: 'village',
+      controllingfieldfk: [block || formData['block']?.value],
     };
 
     const data = await getGeoLocation({ payload });
@@ -101,8 +112,8 @@ const ProfileUpdateForm = ({ fields }) => {
     const payload = {
       // limit: 10,
       offset: 0,
-      fieldName: 'blocks',
-      controllingfieldfk: district || formData['districts']?.value,
+      fieldName: 'block',
+      controllingfieldfk: [district || formData['district']?.value],
     };
 
     const data = await getGeoLocation({ payload });
@@ -111,30 +122,48 @@ const ProfileUpdateForm = ({ fields }) => {
     return data?.values;
   };
 
+  const transformData = (data) => {
+    return Object.keys(data).reduce((acc, key) => {
+      if (Array.isArray(data[key]) && data[key].length > 0) {
+        acc[key] = {
+          label: data[key].map((item) => item.label).join(', '),
+          value: data[key].map((item) => item.value).join(', '),
+        };
+      } else {
+        acc[key] = data[key];
+      }
+      return acc;
+    }, {});
+  };
+
   const fetchStates = async (data) => {
     setLoading(true);
-    const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
+    const stateData = await fetchstate();
+    const stateAPIdata = stateData;
+    // console.log('stateAPIdata', JSON.stringify(stateAPIdata));
 
     const geoData = JSON.parse(await getDataFromStorage('geoData'));
     setStateData(stateAPIdata);
     const foundState = stateAPIdata?.find(
-      (item) => item?.label === geoData?.state
+      (item) => item?.label.toLowerCase() === geoData?.state.toLowerCase()
     );
     const districtAll = await fetchDistricts(foundState?.value);
 
     const foundDistrict = districtAll?.find(
-      (item) => item?.label === geoData?.district
+      (item) => item?.label.toLowerCase() === geoData?.district.toLowerCase()
     );
 
     const updatedFormData = {
       ...data,
-      ['states']: { value: foundState?.value, label: foundState?.label },
-      ['districts']: {
+      ['state']: { value: foundState?.value, label: foundState?.label },
+      ['district']: {
         value: foundDistrict?.value,
         label: foundDistrict?.label,
       },
     };
-    setFormData(updatedFormData);
+    const newData = transformData(updatedFormData);
+
+    setFormData(newData);
 
     setLoading(false);
   };
@@ -165,7 +194,7 @@ const ProfileUpdateForm = ({ fields }) => {
       });
       const customFields = finalResult?.customFields;
       const userDetails = createNewObject(customFields, requiredLabels);
-      console.log('userDetails', JSON.stringify(userDetails));
+      // console.log('userDetails', JSON.stringify(userDetails));
       // console.log('customFields', JSON.stringify(customFields));
 
       const newUpdatedObj = { ...userDetails, ...filteredResult };
@@ -195,6 +224,8 @@ const ProfileUpdateForm = ({ fields }) => {
 
   const onSubmit = async (data) => {
     setLoading(true);
+    // console.log('data', JSON.stringify(data));
+
     const payload = await transformPayload(data);
     const user_id = await getDataFromStorage('userId');
 
@@ -238,17 +269,17 @@ const ProfileUpdateForm = ({ fields }) => {
 
   useEffect(() => {
     setLoading(true);
-    if (formData?.states) {
+    if (formData?.state) {
       fetchDistricts();
     }
-    if (formData?.districts) {
+    if (formData?.district) {
       fetchBlocks();
     }
-    if (formData?.blocks) {
+    if (formData?.block) {
       fetchvillages();
     }
     setLoading(false);
-  }, [formData['states'], formData['districts'], formData['blocks']]);
+  }, [formData['state'], formData['district'], formData['block']]);
 
   useEffect(() => {}, []);
 
@@ -270,10 +301,15 @@ const ProfileUpdateForm = ({ fields }) => {
 
       if (field) {
         const value = formData[field.name] || '';
+
         if (
-          ['confirm_password', 'password', 'program', 'username'].includes(
-            field.name
-          )
+          [
+            'confirm_password',
+            'password',
+            'program',
+            'username',
+            'is_volunteer',
+          ].includes(field.name)
         ) {
           return; // Skip validation for these fields
         }
@@ -290,11 +326,13 @@ const ProfileUpdateForm = ({ fields }) => {
         if (field.isRequired && !value) {
           newErrors[field.name] = `${t(field.name)} ${t('is_required')}`;
         } else if (field.minLength && value.length < field.minLength && value) {
-          newErrors[field.name] =
-            `${t('min_validation').replace('{field}', t(field.name)).replace('{length}', field.minLength)}`;
+          newErrors[field.name] = `${t('min_validation')
+            .replace('{field}', t(field.name))
+            .replace('{length}', field.minLength)}`;
         } else if (field.maxLength && value.length > field.maxLength && value) {
-          newErrors[field.name] =
-            `${t('max_validation').replace('{field}', t(field.name)).replace('{length}', field.maxLength)}`;
+          newErrors[field.name] = `${t('max_validation')
+            .replace('{field}', t(field.name))
+            .replace('{length}', field.maxLength)}`;
         } else if (
           field.pattern &&
           value &&
@@ -329,10 +367,11 @@ const ProfileUpdateForm = ({ fields }) => {
         'username',
         'password',
         'confirm_password',
-        'states',
-        'districts',
-        'blocks',
-        'villages',
+        'is_volunteer',
+        // 'state',
+        // 'district',
+        // 'block',
+        // 'village',
       ].includes(field.name)
     ) {
       return null;
@@ -404,15 +443,15 @@ const ProfileUpdateForm = ({ fields }) => {
             <DropdownSelect
               field={field}
               options={
-                field.name === 'states'
+                field.name === 'state'
                   ? stateData
-                  : field.name === 'districts'
-                    ? districtData
-                    : field.name === 'blocks'
-                      ? blockData
-                      : field.name === 'villages'
-                        ? villageData
-                        : field?.options
+                  : field.name === 'district'
+                  ? districtData
+                  : field.name === 'block'
+                  ? blockData
+                  : field.name === 'village'
+                  ? villageData
+                  : field?.options
               }
               errors={errors}
               formData={formData}

@@ -196,9 +196,8 @@ const RegistrationForm = ({ fields }) => {
 
   const onSubmit = async (data) => {
     setLoading(true);
-
-    const payload = await transformPayload(data);
-
+    const isVoluteerPayload = { ...data, is_volunteer: 'no' };
+    const payload = await transformPayload(isVoluteerPayload);
     await getAccessToken();
     const register = await registerUser(payload);
 
@@ -241,7 +240,7 @@ const RegistrationForm = ({ fields }) => {
       // limit: 10,
       offset: 0,
       fieldName: 'district',
-      controllingfieldfk: state || formData['state']?.value,
+      controllingfieldfk: [state || formData['state']?.value],
     };
 
     const data = await getGeoLocation({ payload });
@@ -255,7 +254,7 @@ const RegistrationForm = ({ fields }) => {
       // limit: 10,
       offset: 0,
       fieldName: 'village',
-      controllingfieldfk: block || formData['block']?.value,
+      controllingfieldfk: [block || formData['block']?.value],
     };
 
     const data = await getGeoLocation({ payload });
@@ -270,7 +269,7 @@ const RegistrationForm = ({ fields }) => {
       // limit: 10,
       offset: 0,
       fieldName: 'block',
-      controllingfieldfk: district || formData['district']?.value,
+      controllingfieldfk: [district || formData['district']?.value],
     };
 
     const data = await getGeoLocation({ payload });
@@ -287,12 +286,12 @@ const RegistrationForm = ({ fields }) => {
     setCurrentGeoData(geoData);
     setStateData(stateAPIdata);
     const foundState = stateAPIdata?.find(
-      (item) => item?.label === geoData?.state
+      (item) => item?.label.toLowerCase() === geoData?.state.toLowerCase()
     );
     const districtAll = await fetchDistricts(foundState?.value);
 
     const foundDistrict = districtAll?.find(
-      (item) => item?.label === geoData?.district
+      (item) => item?.label.toLowerCase() === geoData?.district.toLowerCase()
     );
 
     const updatedFormData = {
@@ -303,6 +302,12 @@ const RegistrationForm = ({ fields }) => {
         label: foundDistrict?.label,
       },
     };
+    console.log('geoData', geoData);
+    console.log('stateAPIdata', stateAPIdata);
+    console.log('updatedFormData', updatedFormData);
+    console.log('foundState', foundState);
+    console.log('foundDistrict', foundDistrict);
+
     setFormData(updatedFormData);
     if (formData['state']?.label !== undefined) {
       setEnable(false);
@@ -487,6 +492,9 @@ const RegistrationForm = ({ fields }) => {
         ) {
           return; // Skip validation for these fields
         }
+        if (['is_volunteer'].includes(field.name)) {
+          return; // Skip validation for these fields
+        }
         if (
           (field.isRequired && !value) ||
           // (field.name === 'blocks' && !value) ||
@@ -495,14 +503,17 @@ const RegistrationForm = ({ fields }) => {
           (field.name === 'guardian_name' && !value) ||
           (field.name === 'guardian_relation' && !value)
         ) {
-          newErrors[field.name] =
-            `${t(field.label.toLowerCase())} ${t('is_required')}`;
+          newErrors[field.name] = `${t(field.label.toLowerCase())} ${t(
+            'is_required'
+          )}`;
         } else if (field.minLength && value.length < field.minLength && value) {
-          newErrors[field.name] =
-            `${t('min_validation').replace('{field}', t(field.label.toLowerCase())).replace('{length}', field.minLength)}`;
+          newErrors[field.name] = `${t('min_validation')
+            .replace('{field}', t(field.label.toLowerCase()))
+            .replace('{length}', field.minLength)}`;
         } else if (field.maxLength && value.length > field.maxLength && value) {
-          newErrors[field.name] =
-            `${t('max_validation').replace('{field}', t(field.label.toLowerCase())).replace('{length}', field.maxLength)}`;
+          newErrors[field.name] = `${t('max_validation')
+            .replace('{field}', t(field.label.toLowerCase()))
+            .replace('{length}', field.maxLength)}`;
         } else if (
           field.pattern &&
           value &&
@@ -527,6 +538,10 @@ const RegistrationForm = ({ fields }) => {
       parseInt(age, 10) >= 18
     ) {
       return null;
+    }
+
+    if (['is_volunteer'].includes(field.name)) {
+      return null; // Skip validation for these fields
     }
 
     const UsernameText = () => {
@@ -650,12 +665,12 @@ const RegistrationForm = ({ fields }) => {
                 field.name === 'state'
                   ? stateData
                   : field.name === 'district'
-                    ? districtData
-                    : field.name === 'block'
-                      ? blockData
-                      : field.name === 'village'
-                        ? villageData
-                        : field?.options
+                  ? districtData
+                  : field.name === 'block'
+                  ? blockData
+                  : field.name === 'village'
+                  ? villageData
+                  : field?.options
               }
               errors={errors}
               formData={formData}

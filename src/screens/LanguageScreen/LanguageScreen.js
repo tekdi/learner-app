@@ -36,6 +36,7 @@ import { NotificationUnsubscribe } from '../../utils/Helper/JSHelper';
 
 import {
   getCohort,
+  getProfileDetails,
   getProgramDetails,
   refreshToken,
 } from '../../utils/API/AuthService';
@@ -223,6 +224,14 @@ const LanguageScreen = () => {
             } else {
               if (userType === 'youthnet') {
                 // navigation.navigate('YouthNetTabScreen');
+                const user_id = await getDataFromStorage('userId');
+                const profileData = await getProfileDetails({
+                  userId: user_id,
+                });
+                await setDataInStorage(
+                  'profileData',
+                  JSON.stringify(profileData)
+                );
                 navigation.navigate('Dashboard');
               } else {
                 navigation.navigate('Dashboard');

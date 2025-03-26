@@ -109,14 +109,14 @@ const UnitList = ({ route }) => {
   const fetchDataTrack = async () => {
     //found course progress
     try {
-      // console.log('########## fetchDataTrack');
+      console.log('########## fetchDataTrack');
       //console.log('########## contentList', contentList);
       let courseList = [course_id];
       //console.log('########## courseList', courseList);
       //get course track data
       let userId = await getDataFromStorage('userId');
       let course_track_data = await courseTrackingStatus(userId, courseList);
-      //console.log('########## course_track_data', course_track_data?.data);
+      console.log('########## course_track_data', course_track_data?.data);
       let courseTrackData = [];
       if (course_track_data?.data) {
         courseTrackData =
@@ -124,7 +124,7 @@ const UnitList = ({ route }) => {
             ?.course || [];
       }
       setTrackData(courseTrackData);
-      // console.log('########## courseTrackData', courseTrackData);
+      console.log('########## courseTrackData', courseTrackData);
       // console.log('##########');
       setLoading(false); // Ensure to stop loading when data fetch completes
     } catch (e) {

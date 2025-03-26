@@ -22,7 +22,7 @@ const RegisterScreen = () => {
 
   const fetchstates = async () => {
     const payload = {
-      limit: 10,
+      // limit: 10,
       offset: 0,
       fieldName: 'state',
     };

@@ -504,10 +504,10 @@ const CourseContentList = ({ route }) => {
                             trackCompleted >= 100
                               ? 'completed'
                               : trackCompleted > 0
-                                ? 'inprogress'
-                                : trackProgress > 0
-                                  ? 'progress'
-                                  : 'not_started'
+                              ? 'inprogress'
+                              : trackProgress > 0
+                              ? 'progress'
+                              : 'not_started'
                           }
                           trackCompleted={trackCompleted}
                           viewStyle={{
@@ -548,6 +548,8 @@ const CourseContentList = ({ route }) => {
                 visible={visible}
                 setVisible={setVisible}
                 certificateHtml={certificateHtml}
+                certificateId={certificateId}
+                certificateName={coursesContent?.name}
               />
 
               <Modal visible={isModal} transparent={true} animationType="slide">

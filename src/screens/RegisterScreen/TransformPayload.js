@@ -20,14 +20,17 @@ export const transformPayload = async (data) => {
       const keyName = field.name; // Get field name from studentForm
       const type = field.type;
 
+      console.log({ keyName });
+
       if (data.hasOwnProperty(keyName)) {
         if (field.fieldId) {
           // Push to customFields if fieldId is present
           if (type === 'drop_down') {
-            result.customFields.push({
-              value: [data[keyName].value],
-              fieldId: field.fieldId,
-            });
+            data[keyName].value &&
+              result.customFields.push({
+                value: [data[keyName].value],
+                fieldId: field.fieldId,
+              });
           } else {
             result.customFields.push({
               value: data[keyName].value || data[keyName],

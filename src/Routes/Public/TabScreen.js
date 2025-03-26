@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import DashboardStack from './DashboardStack';
-import ExploreStack from '../Youthnet/ExploreStack';
+import SurveyStack from '../Youthnet/SurveyStack';
 import Contents from '../../screens/Dashboard/Contents';
 import Coursesfilled from '../../assets/images/png/Coursesfilled.png';
 import profile from '../../assets/images/png/profile.png';
@@ -13,8 +13,8 @@ import Coursesunfilled from '../../assets/images/png/Coursesunfilled.png';
 import ProfileStack from './ProfileStack';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
-import explore_FILL from '@src/assets/images/png/explore_FILL.png';
-import explore_UNFILLED from '@src/assets/images/png/explore_UNFILLED.png';
+import survey_filled from '@src/assets/images/png/survey_filled.png';
+import survey_unfilled from '@src/assets/images/png/survey_unfilled.png';
 
 const Tab = createBottomTabNavigator();
 const WalkthroughableView = walkthroughable(View); // Wrap Image component
@@ -24,6 +24,7 @@ const TabScreen = () => {
   const [contentShow, setContentShow] = useState(true);
   const [CopilotStarted, setCopilotStarted] = useState(false);
   const [CopilotStopped, setCopilotStopped] = useState(false);
+  const [isVolunteer, setIsVolunteer] = useState(false);
   const { start, goToNth, unregisterStep, copilotEvents } = useCopilot();
 
   // useEffect(() => {
@@ -41,7 +42,13 @@ const TabScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       let userType = await getDataFromStorage('userType');
-      console.log('userType', userType);
+      const result = JSON.parse(await getDataFromStorage('profileData'));
+      // console.log('getUserDetails', result?.getUserDetails?.[0]?.customFields);
+      const volunteer = result?.getUserDetails?.[0]?.customFields.filter(
+        (item) => item?.label === 'IS_VOLUNTEER'
+      );
+      setIsVolunteer(volunteer?.[0]?.selectedValues);
+
       if (userType === 'youthnet') {
         setContentShow(false);
       }
@@ -142,6 +149,32 @@ const TabScreen = () => {
           }}
         />
       )} */}
+      {!contentShow && isVolunteer === 'yes' && (
+        <Tab.Screen
+          name="surveys"
+          component={SurveyStack}
+          options={{
+            tabBarLabel: t('surveys'),
+            tabBarButton: (props) => (
+              <CopilotStep
+                text="This is the Content tab. Tap here to explore Content!"
+                order={4}
+                name="explore"
+              >
+                <WalkthroughableView style={{ flex: 1 }}>
+                  <TouchableOpacity {...props} />
+                </WalkthroughableView>
+              </CopilotStep>
+            ),
+            tabBarIcon: ({ focused }) => (
+              <Image
+                source={focused ? survey_filled : survey_unfilled}
+                style={{ width: 30, height: 30 }}
+              />
+            ),
+          }}
+        />
+      )}
 
       <Tab.Screen
         name="Profile"

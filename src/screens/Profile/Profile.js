@@ -37,7 +37,7 @@ import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 const Profile = () => {
   const { t, language } = useTranslation();
   const [userData, setUserData] = useState();
-  const [userDetails, setUserDetails] = useState([]);
+  const [userDetailss, setUserDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const { isConnected } = useInternet();
@@ -125,6 +125,7 @@ const Profile = () => {
       requiredLabels,
       (profileView = true)
     );
+    console.log('finalResult', JSON.stringify(finalResult));
 
     // Extract state, district, and block
     const locationData = {
@@ -136,7 +137,7 @@ const Profile = () => {
 
     // Convert location data into a single formatted string
     const formattedLocation =
-      `${locationData.states}, ${locationData.districts}, ${locationData.blocks}, ${locationData.village}`.trim();
+      `${locationData.states} ${locationData.districts} ${locationData.blocks}  ${locationData.village}`.trim();
 
     // Remove states, districts, and blocks from userDetails
     delete userDetails.state;
@@ -149,8 +150,13 @@ const Profile = () => {
     const UpdatedObj = { ...userDetails, ...filteredResult };
     const newUpdatedObj = convertObjectToArray(UpdatedObj);
     setUserData(result?.getUserDetails?.[0]);
+    console.log('newUpdatedObj', JSON.stringify(newUpdatedObj));
+    const filteredArray = newUpdatedObj.filter(
+      (item) => item.name !== 'is_volunteer'
+    );
+    console.log(JSON.stringify(filteredArray));
 
-    setUserDetails(newUpdatedObj);
+    setUserDetails(filteredArray);
 
     // const tenantData = await getTentantId();
 
@@ -158,16 +164,16 @@ const Profile = () => {
     setNetworkstatus(true);
   };
 
-  console.log('userdetails', JSON.stringify(userDetails.length));
+  // console.log('userdetails', JSON.stringify(userDetails.length));
 
   useFocusEffect(
     useCallback(() => {
-      console.log('isConnected', isConnected);
+      // console.log('isConnected', isConnected);
 
       if (isConnected) {
         fetchData();
         setNetworkstatus(true);
-      } else if (!isConnected && userDetails.length === 0) {
+      } else if (!isConnected && userDetailss.length === 0) {
         setNetworkstatus(false);
       } else {
         setNetworkstatus(true);
@@ -215,6 +221,8 @@ const Profile = () => {
     }
   };
 
+  console.log('userDetailss', JSON.stringify(userDetailss));
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <SecondaryHeader logo />
@@ -235,7 +243,7 @@ const Profile = () => {
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('OtherSettings', {
-                  age: userDetails?.AGE,
+                  age: userDetailss?.AGE,
                 });
               }}
             >
@@ -250,7 +258,9 @@ const Profile = () => {
           >
             <GlobalText style={[globalStyles.subHeading, { fontWeight: 700 }]}>
               {capitalizeName(
-                `${userData?.firstName} ${userData?.lastName ? userData?.lastName : ''}`
+                `${userData?.firstName} ${
+                  userData?.lastName ? userData?.lastName : ''
+                }`
               )}
             </GlobalText>
             <View
@@ -281,11 +291,13 @@ const Profile = () => {
           {/* <NoCertificateBox userType={userType} /> */}
           <View style={{ backgroundColor: '#FFF8F2', paddingVertical: 20 }}>
             <View style={styles.viewBox}>
-              {userDetails?.map((item, key) => {
+              {userDetailss?.map((item, key) => {
                 return (
                   <View key={key} style={{ paddingVertical: 10 }}>
+                    {console.log('item', item)}
+
                     <Label text={`${t(item?.name)}`} />
-                    <TextField text={item?.value} />
+                    <TextField text={item?.value?.[0]?.value || item?.value} />
                   </View>
                 );
               })}

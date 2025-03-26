@@ -539,7 +539,7 @@ export const CourseInProgress = async () => {
         .join('\n')} 
       --data '${data}'`;
 
-    console.log('Generated cURL Command:', curlCommand);
+    // console.log('Generated cURL Command:', curlCommand);
 
     try {
       const response = await axios.request(config);

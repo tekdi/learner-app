@@ -51,6 +51,7 @@ const EndUrls = {
   updateCourseStatus: `${API_URL}/interface/v1/tracking/user_certificate/status/update`,
   issueCertificate: `${API_URL}/interface/v1/tracking/certificate/issue`,
   viewCertificate: `${API_URL}/interface/v1/tracking/certificate/render`,
+  downloadCertificate: `${API_URL}/interface/v1/tracking/certificate/render-PDF`,
 
   // SalesForce APis (L2 Interest)
   enrollInterest: `https://dev-middleware.prathamdigital.org/prathamservice/v1/save-user-salesforce`,
