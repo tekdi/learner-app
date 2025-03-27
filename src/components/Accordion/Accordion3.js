@@ -30,8 +30,9 @@ const Accordion3 = ({ title, children, index, openDropDown, description }) => {
             globalStyles.flexrow,
             {
               justifyContent: 'space-between',
-              padding: 10,
+              padding: 15,
               backgroundColor: '#F7ECDF',
+              borderRadius: 10,
             },
           ]}
           onPress={() => setAccordionOpen(!isAccordionOpen)}
@@ -39,7 +40,12 @@ const Accordion3 = ({ title, children, index, openDropDown, description }) => {
           <View style={globalStyles.flexrow}>
             <Icon name="circle" color={'black'} />
             <GlobalText
-              style={[globalStyles.text, { color: '#7C766F', marginLeft: 10 }]}
+              numberOfLines={4}
+              ellipsizeMode="tail"
+              style={[
+                globalStyles.text,
+                { color: '#7C766F', marginLeft: 10, width: '90%' },
+              ]}
             >
               {t('unit')} {index + 1} - {title}
             </GlobalText>

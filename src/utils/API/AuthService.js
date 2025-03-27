@@ -851,9 +851,9 @@ export const getProfileDetails = async (params = {}) => {
     const payloadString = JSON.stringify(payload);
 
     // Construct cURL command
-    // const curlCommand = `curl -X POST "${url}" ${headerString} -H "Content-Type: application/json" -d '${payloadString}'`;
+    const curlCommand = `curl -X POST "${url}" ${headerString} -H "Content-Type: application/json" -d '${payloadString}'`;
 
-    // console.log('Generated cURL Command:', curlCommand);
+    console.log('Generated cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
