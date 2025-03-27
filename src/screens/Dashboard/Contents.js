@@ -57,6 +57,7 @@ const Contents = () => {
   const scrollViewRef = useRef(null);
   // const [scrollPosition, setScrollPosition] = useState(0);
   const [restoreScroll, setRestoreScroll] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0); // State for re-rendering
 
   // Save scroll position when user scrolls
   const handleScroll = (event) => {
@@ -93,19 +94,18 @@ const Contents = () => {
     setShowExitModal(false); // Close the modal
   };
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     setSearchText('');
-  //     // console.log('########## in focus course');
-  //     // setLoading(true);
-  //     //bug fix for not realtime tracking
-  //     //fetchData();
-  //     setTimeout(() => {
-  //       // Code to run after 1 second
-  //       // fetchData();
-  //     }, 500); // 1000 milliseconds = 1 second
-  //   }, []) // Make sure to include the dependencies
-  // );
+  useFocusEffect(
+    useCallback(() => {
+      setSearchText('');
+      console.log('########## in focus course');
+      setLoading(true);
+      //bug fix for not realtime tracking
+      const append = offset > 0 ? true : false;
+      fetchData(offset, append);
+      setRefreshKey((prev) => prev + 1); // Force component reload
+    }, []) // Make sure to include the dependencies
+  );
+
   useEffect(() => {
     const logEvent = async () => {
       const obj = {
@@ -162,13 +162,10 @@ const Contents = () => {
             ?.course || [];
       }
 
-      setTrackData(courseTrackData);
-      // console.log('########## courseTrackData', courseTrackData);
-      // console.log('##########');
+      setTrackData((prevData) => [...prevData, ...(courseTrackData || [])]);
+
       const result = JSON.parse(await getDataFromStorage('profileData'));
       setUserInfo(result?.getUserDetails);
-      console.log('data', JSON.stringify(data));
-      console.log('contentList', JSON.stringify(contentList));
       setCount(data?.count);
       // setData(contentList);
       setData((prevData) =>
@@ -225,7 +222,10 @@ const Contents = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView
+      key={refreshKey}
+      style={{ flex: 1, backgroundColor: 'white' }}
+    >
       <SecondaryHeader logo />
       <ScrollView
         nestedScrollEnabled
