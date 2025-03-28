@@ -67,7 +67,7 @@ export const questionsData = {
 export const contentPlayerConfig = {
   context: {},
   config: {
-    showEndPage: true,
+    showEndPage: false,
     sideMenu: {
       showShare: false,
       showDownload: false,
