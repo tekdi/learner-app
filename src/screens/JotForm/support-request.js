@@ -16,7 +16,7 @@ const SupportRequest = () => {
         ?.getUserDetails?.[0];
       console.log('profileData', JSON.stringify(profileData));
 
-      const name = `${profileData?.username} ${profileData?.lastName} `;
+      const name = `${profileData?.firstName} ${profileData?.lastName} `;
       const loginUserName = profileData?.username;
       const userid = profileData?.userId;
       const email = profileData?.email || '';

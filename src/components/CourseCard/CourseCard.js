@@ -195,10 +195,10 @@ const CourseCard = ({
               trackCompleted >= 100
                 ? 'completed'
                 : trackCompleted > 0
-                ? 'inprogress'
-                : trackProgress > 0
-                ? 'progress'
-                : 'not_started'
+                  ? 'inprogress'
+                  : trackProgress > 0
+                    ? 'progress'
+                    : 'not_started'
             }
             trackCompleted={trackCompleted}
             viewStyle={{
@@ -214,7 +214,7 @@ const CourseCard = ({
           numberOfLines={2}
           ellipsizeMode="tail"
         >
-          {item?.name}
+          {item?.identifier}
         </GlobalText>
         <GlobalText
           style={[

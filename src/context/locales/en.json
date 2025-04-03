@@ -412,5 +412,6 @@
   "submit": "Submit",
   "topics": "Topics",
   "lets_create_your_acc": "Let's create your account!",
-  "create_acc_desp": "Answer a few questions so we can get to know you better"
+  "create_acc_desp": "Answer a few questions so we can get to know you better",
+  "completed_on": "Completed on"
 }

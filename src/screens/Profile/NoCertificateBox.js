@@ -54,7 +54,7 @@ const NoCertificateBox = ({ userType }) => {
               </GlobalText>
               <Icon
                 name="arrow-right"
-                style={{ marginHorizontal: 10 }}
+                style={{ marginHorizontal: 10, color: 'black' }}
                 size={20}
               />
             </SafeAreaView>

@@ -24,15 +24,20 @@ import {
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
-
+import CompletedCourse from '../../components/CourseCard/CompletedCourse';
 import LinearGradient from 'react-native-linear-gradient';
 import NoCertificateBox from './NoCertificateBox';
 import GlobalText from '@components/GlobalText/GlobalText';
 import DeviceInfo from 'react-native-device-info';
 import Config from 'react-native-config';
-import { getProfileDetails, getStudentForm } from '../../utils/API/AuthService';
+import {
+  getProfileDetails,
+  getStudentForm,
+  profileCourseListApi,
+} from '../../utils/API/AuthService';
 import { useInternet } from '../../context/NetworkContext';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
+import { courseTrackingStatus } from '@src/utils/API/ApiCalls';
 
 const Profile = () => {
   const { t, language } = useTranslation();
@@ -75,6 +80,11 @@ const Profile = () => {
     return transformedArray;
   };
 
+  const fetchCourseStatus = async () => {
+    const data = await profileCourseListApi();
+    console.log('data===/>', JSON.stringify(data?.data));
+  };
+
   const fetchData = async () => {
     const data = await getStudentForm();
     setDataInStorage('studentForm', JSON.stringify(data?.fields));
@@ -92,6 +102,7 @@ const Profile = () => {
     });
     const result = profileData;
     await setDataInStorage('profileData', JSON.stringify(profileData));
+    console.log('profileData===>', JSON.stringify(profileData));
 
     const finalResult = result?.getUserDetails?.[0];
     const keysToRemove = [
@@ -126,7 +137,6 @@ const Profile = () => {
       requiredLabels,
       (profileView = true)
     );
-    console.log('finalResult', JSON.stringify(finalResult));
 
     // Extract state, district, and block
     const locationData = {
@@ -152,11 +162,9 @@ const Profile = () => {
     const UpdatedObj = { ...userDetails, ...filteredResult };
     const newUpdatedObj = convertObjectToArray(UpdatedObj);
     setUserData(result?.getUserDetails?.[0]);
-    console.log('newUpdatedObj', JSON.stringify(newUpdatedObj));
     const filteredArray = newUpdatedObj.filter(
       (item) => item.name !== 'is_volunteer'
     );
-    console.log(JSON.stringify(filteredArray));
 
     setUserDetails(filteredArray);
 
@@ -166,14 +174,11 @@ const Profile = () => {
     setNetworkstatus(true);
   };
 
-  // console.log('userdetails', JSON.stringify(userDetails.length));
-
   useFocusEffect(
     useCallback(() => {
-      // console.log('isConnected', isConnected);
-
       if (isConnected) {
         fetchData();
+        fetchCourseStatus();
         setNetworkstatus(true);
       } else if (!isConnected && userDetailss.length === 0) {
         setNetworkstatus(false);
@@ -222,8 +227,6 @@ const Profile = () => {
       setLoading(false); // Stop Refresh Indicator
     }
   };
-
-  console.log('userDetailss', JSON.stringify(userDetailss));
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -290,7 +293,8 @@ const Profile = () => {
               </View>
             </View>
           </LinearGradient>
-          {/* <NoCertificateBox userType={userType} /> */}
+          <NoCertificateBox userType={userType} />
+          <CompletedCourse />
           <View style={{ backgroundColor: '#FFF8F2', paddingVertical: 20 }}>
             <View style={styles.viewBox}>
               {userDetailss?.map((item, key) => {

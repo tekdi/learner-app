@@ -28,6 +28,8 @@ const LearningMaterial = () => {
 
       const cohortData = JSON.parse(await getDataFromStorage('cohortData'));
 
+      console.log('cohortData', JSON.stringify(cohortData));
+
       const frameworks = boardData?.result?.framework;
 
       const board = cohortData?.customField.find(
@@ -41,6 +43,8 @@ const LearningMaterial = () => {
       );
 
       console.log('board', board);
+      console.log('medium', medium);
+      console.log('grade', grade);
 
       // const getStates = getOptionsByCategory(frameworks, 'state');
       // const matchState = getStates.find((item) => item.name === state?.value);
@@ -48,13 +52,19 @@ const LearningMaterial = () => {
       const getBoards = getOptionsByCategory(frameworks, 'board');
       console.log('getBoards', JSON.stringify(getBoards));
 
-      const matchBoard = getBoards.find((item) => item.name === board?.value);
+      const matchBoard = getBoards.find(
+        (item) => item.name === board?.selectedValues[0]
+      );
 
       const getMedium = getOptionsByCategory(frameworks, 'medium');
-      const matchMedium = getMedium.find((item) => item.name === medium?.value);
+      const matchMedium = getMedium.find(
+        (item) => item.name === medium?.selectedValues[0]
+      );
 
       const getGrades = getOptionsByCategory(frameworks, 'gradeLevel');
-      const matchGrade = getGrades.find((item) => item.name === grade?.value);
+      const matchGrade = getGrades.find(
+        (item) => item.name === grade?.selectedValues[0]
+      );
 
       const getCourseTypes = getOptionsByCategory(frameworks, 'courseType');
       // const getCourseTypes = getOptionsByCategory(frameworks, 'board');
@@ -76,7 +86,7 @@ const LearningMaterial = () => {
       // );
 
       // console.log('getBoards', JSON.stringify(getBoards));
-      // console.log('matchBoard', matchBoard);
+      console.log('matchBoard', matchBoard);
 
       const commonAssociations = matchBoard?.associations?.filter(
         (assoc) =>
@@ -85,6 +95,8 @@ const LearningMaterial = () => {
           matchMedium?.associations.some((item) => item.code === assoc.code) &&
           matchGrade?.associations.some((item) => item.code === assoc.code)
       );
+
+      console.log('commonAssociations', commonAssociations);
 
       const getSubjects = getOptionsByCategory(frameworks, 'subject');
       const subjectAssociations = commonAssociations

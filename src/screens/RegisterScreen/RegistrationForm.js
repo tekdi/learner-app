@@ -665,12 +665,12 @@ const RegistrationForm = ({ fields }) => {
                 field.name === 'state'
                   ? stateData
                   : field.name === 'district'
-                  ? districtData
-                  : field.name === 'block'
-                  ? blockData
-                  : field.name === 'village'
-                  ? villageData
-                  : field?.options
+                    ? districtData
+                    : field.name === 'block'
+                      ? blockData
+                      : field.name === 'village'
+                        ? villageData
+                        : field?.options
               }
               errors={errors}
               formData={formData}
@@ -1227,6 +1227,9 @@ const RegistrationForm = ({ fields }) => {
                     onTextChange={(text) => setOTP({ ...OTP, value: text })}
                     textInputProps={{
                       accessibilityLabel: 'One-Time Password',
+                      textContentType: 'oneTimeCode', // Enables OTP autofill on iOS
+                      keyboardType: 'number-pad', // Displays numeric keyboard
+                      autoComplete: 'sms-otp',
                     }}
                     theme={{
                       containerStyle: styles.pinContainer,

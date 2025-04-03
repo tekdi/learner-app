@@ -140,8 +140,8 @@ const Courses = () => {
         userType === 'youthnet'
           ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
           : userType === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+            ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+            : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
       setInstant(instant);
     };
     fetch();
@@ -235,8 +235,8 @@ const Courses = () => {
       userType === 'youthnet'
         ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
         : userType === 'scp'
-        ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-        : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
 
     let data = await courseListApi_New({
       searchText,
@@ -310,7 +310,7 @@ const Courses = () => {
   const handleViewMore = () => {
     // console.log('offset', offset);
 
-    const newOffset = offset + 5; // Increase offset by 5
+    const newOffset = offset + 10; // Increase offset by 5
     setOffset(newOffset); // Update state
     fetchData(newOffset, true); // Append new data
     const page = 'courses';

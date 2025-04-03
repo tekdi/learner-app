@@ -496,6 +496,16 @@ export const courseTrackingStatus = async (userId, courseId) => {
       data: data,
     };
 
+    // Generate cURL command
+    const curlCommand = `curl -X POST "${url}" \\
+     -H "Content-Type: application/json" \\
+     ${Object.entries(headers)
+       .map(([key, value]) => `-H "${key}: ${value}" \\`)
+       .join('\n  ')}
+     --data '${data}'`;
+
+    // console.log('Generated cURL Command:\n', curlCommand);
+
     try {
       const response = await axios.request(config);
       api_response = response.data;

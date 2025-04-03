@@ -86,8 +86,9 @@ const LoginScreen = () => {
         await setDataInStorage('academicYearId', academicYearId || '');
         await setDataInStorage('userTenantid', tenantid || '');
         const cohort = await getCohort({ user_id, tenantid, academicYearId });
-        const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
-        const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
+        console.log('cohort=>', JSON.stringify(cohort));
+        const getActiveCohort = await getActiveCohortData(cohort);
+        const getActiveCohortId = await getActiveCohortIds(cohort);
         await setDataInStorage(
           'cohortData',
           JSON.stringify(getActiveCohort?.[0]) || ''
@@ -97,6 +98,7 @@ const LoginScreen = () => {
         const profileData = await getProfileDetails({
           userId: user_id,
         });
+
         await setDataInStorage('profileData', JSON.stringify(profileData));
         await setDataInStorage(
           'Username',
@@ -109,7 +111,7 @@ const LoginScreen = () => {
           cohort_id || '00000000-0000-0000-0000-000000000000'
         );
         const tenantDetails = (await getProgramDetails()) || [];
-        console.log('tenantDetails', JSON.stringify(tenantDetails));
+        // console.log('tenantDetails', JSON.stringify(tenantDetails));
 
         const youthnetTenantIds = tenantDetails
           ?.filter((item) => item?.name === 'YouthNet')
@@ -120,6 +122,10 @@ const LoginScreen = () => {
           ?.map((item) => item.tenantId);
 
         const role = tenantData?.[0]?.roleName;
+
+        console.log('scp', scp);
+        console.log('cohort_id', cohort_id);
+        console.log('tenantid', tenantid);
 
         if (role == 'Learner' || role == 'Student') {
           if (tenantid === scp?.[0]) {

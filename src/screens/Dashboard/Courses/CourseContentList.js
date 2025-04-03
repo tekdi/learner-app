@@ -425,124 +425,126 @@ const CourseContentList = ({ route }) => {
                     text={t('enroll_now')}
                   />
                 </View>
-              ) : certificateId ? (
-                <View style={{ width: '90%', alignSelf: 'center' }}>
-                  <PrimaryButton
-                    onPress={handleViewCertificate}
-                    text={t('view_certificate')}
-                  />
-                </View>
               ) : (
-                <>
+                certificateId && (
+                  <View style={{ width: '90%', alignSelf: 'center' }}>
+                    <PrimaryButton
+                      onPress={handleViewCertificate}
+                      text={t('view_certificate')}
+                    />
+                  </View>
+                )
+              )}
+
+              <>
+                <View
+                  style={[
+                    globalStyles.flexrow,
+                    {
+                      justifyContent: 'space-between',
+                      backgroundColor: '#3B383E',
+                      paddingHorizontal: 25,
+                      paddingVertical: 10,
+                      borderRadius: 20,
+                      width: '90%',
+                      alignSelf: 'center',
+                    },
+                  ]}
+                >
+                  {trackCompleted != 0 || trackProgress != 0 ? (
+                    <View style={[globalStyles.flexrow]}>
+                      <TextField
+                        style={[
+                          globalStyles.text,
+                          { fontSize: 12, color: 'white' },
+                        ]}
+                        text={'started_on'}
+                      />
+                      <TextField
+                        style={[
+                          globalStyles.text,
+                          { fontSize: 12, color: 'white' },
+                        ]}
+                        text={`${translateDate(startedOn, language)}`}
+                      />
+                    </View>
+                  ) : (
+                    <></>
+                  )}
                   <View
                     style={[
                       globalStyles.flexrow,
-                      {
-                        justifyContent: 'space-between',
-                        backgroundColor: '#3B383E',
-                        paddingHorizontal: 25,
-                        paddingVertical: 10,
-                        borderRadius: 20,
-                        width: '90%',
-                        alignSelf: 'center',
-                      },
+                      { flex: 1, justifyContent: 'flex-end' },
                     ]}
                   >
-                    {trackCompleted != 0 || trackProgress != 0 ? (
-                      <View style={[globalStyles.flexrow]}>
+                    {trackCompleted < 100 && trackCompleted > 0 ? (
+                      <>
+                        <CircularProgressBarCustom
+                          size={30}
+                          strokeWidth={5}
+                          progress={trackCompleted / 100}
+                          color="green"
+                          backgroundColor="#e6e6e6"
+                          textStyle={{ fontSize: 8, color: 'white' }}
+                        />
+                        <GlobalText
+                          style={{ marginLeft: 10, color: 'white' }}
+                        >{`${translateDigits(
+                          Math.round((trackCompleted / 100) * 100),
+                          language
+                        )}%`}</GlobalText>
                         <TextField
                           style={[
                             globalStyles.text,
                             { fontSize: 12, color: 'white' },
                           ]}
-                          text={'started_on'}
+                          text={'completed'}
                         />
-                        <TextField
-                          style={[
-                            globalStyles.text,
-                            { fontSize: 12, color: 'white' },
-                          ]}
-                          text={`${translateDate(startedOn, language)}`}
-                        />
-                      </View>
+                      </>
                     ) : (
-                      <></>
-                    )}
-                    <View
-                      style={[
-                        globalStyles.flexrow,
-                        { flex: 1, justifyContent: 'flex-end' },
-                      ]}
-                    >
-                      {trackCompleted < 100 && trackCompleted > 0 ? (
-                        <>
-                          <CircularProgressBarCustom
-                            size={30}
-                            strokeWidth={5}
-                            progress={trackCompleted / 100}
-                            color="green"
-                            backgroundColor="#e6e6e6"
-                            textStyle={{ fontSize: 8, color: 'white' }}
-                          />
-                          <GlobalText
-                            style={{ marginLeft: 10, color: 'white' }}
-                          >{`${translateDigits(
-                            Math.round((trackCompleted / 100) * 100),
-                            language
-                          )}%`}</GlobalText>
-                          <TextField
-                            style={[
-                              globalStyles.text,
-                              { fontSize: 12, color: 'white' },
-                            ]}
-                            text={'completed'}
-                          />
-                        </>
-                      ) : (
-                        <StatusCardCourse
-                          status={
-                            trackCompleted >= 100
-                              ? 'completed'
-                              : trackCompleted > 0
+                      <StatusCardCourse
+                        status={
+                          trackCompleted >= 100
+                            ? 'completed'
+                            : trackCompleted > 0
                               ? 'inprogress'
                               : trackProgress > 0
-                              ? 'progress'
-                              : 'not_started'
-                          }
-                          trackCompleted={trackCompleted}
-                          viewStyle={{
-                            borderTopLeftRadius: 10,
-                            borderTopRightRadius: 10,
-                          }}
-                        />
-                      )}
-                    </View>
+                                ? 'progress'
+                                : 'not_started'
+                        }
+                        trackCompleted={trackCompleted}
+                        viewStyle={{
+                          borderTopLeftRadius: 10,
+                          borderTopRightRadius: 10,
+                        }}
+                      />
+                    )}
                   </View>
-                  <View
-                    style={{
-                      padding: 20,
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      flexDirection: 'row',
-                      minHeight: 300,
-                      // borderWidth: 1,
-                    }}
-                  >
-                    {coursesContent?.children?.map((item) => {
-                      return (
-                        <UnitCard
-                          key={item?.name}
-                          item={item}
-                          headingName={coursesContent?.name}
-                          course_id={course_id}
-                          unit_id={item?.identifier}
-                          TrackData={trackData}
-                        />
-                      );
-                    })}
-                  </View>
-                </>
-              )}
+                </View>
+                <View
+                  style={{
+                    padding: 20,
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    flexDirection: 'row',
+                    minHeight: 300,
+                    // borderWidth: 1,
+                  }}
+                >
+                  {coursesContent?.children?.map((item) => {
+                    return (
+                      <UnitCard
+                        key={item?.name}
+                        item={item}
+                        headingName={coursesContent?.name}
+                        course_id={course_id}
+                        unit_id={item?.identifier}
+                        TrackData={trackData}
+                      />
+                    );
+                  })}
+                </View>
+              </>
 
               <CertificateViewer
                 visible={visible}

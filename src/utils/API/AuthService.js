@@ -15,7 +15,6 @@ import { Alert, PermissionsAndroid, Platform } from 'react-native';
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
   let tenantId = await getTentantId();
-  console.log('token', token);
 
   return {
     'Content-Type': 'application/json',
@@ -464,6 +463,58 @@ export const courseListApi_New = async ({
 
   // Output the cURL command to the console
   console.log('Equivalent cURL command:\n', curlCommand);
+  try {
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      // store result
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
+      return result?.data?.result;
+    } else {
+      let result_offline = await getApiResponse(user_id, url, 'post', payload);
+      return result_offline;
+    }
+  } catch (e) {
+    let result_offline = await getApiResponse(user_id, url, 'post', payload);
+    return result_offline;
+  }
+};
+export const profileCourseListApi = async () => {
+  const user_id = await getDataFromStorage('userId');
+  const url = `${EndUrls.getCourseCompletedList}`; // Define the URL
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  const payload = {
+    filters: {
+      status: [
+        'completed',
+        // "viewCertificate"
+      ],
+      userId: user_id,
+    },
+    limit: 100,
+    offset: 0,
+  };
+  // Construct the cURL command
+  let curlCommand = `curl -X POST '${url}' \\\n`;
+  for (const [key, value] of Object.entries(headers)) {
+    curlCommand += `-H '${key}: ${value}' \\\n`;
+  }
+  curlCommand += `-d '${JSON.stringify(payload)}'`;
+
+  // Output the cURL command to the console
+  // console.log('Equivalent cURL command:\n', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -1762,7 +1813,7 @@ export const filterContent = async ({ instantId }) => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
-    console.log('curlCom', curlCommand);
+    // console.log('curlCom', curlCommand);
 
     // Make the actual request
     const result = await get(url, {
@@ -1954,11 +2005,11 @@ export const viewCertificate = async ({ certificateId }) => {
   };
 
   try {
-    // const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
-    //   payload
-    // )}' ${url}`;
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+      payload
+    )}' ${url}`;
 
-    // console.log('cURL Command:', curlCommand);
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
