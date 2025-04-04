@@ -87,13 +87,16 @@ const LoginScreen = () => {
         await setDataInStorage('userTenantid', tenantid || '');
         const cohort = await getCohort({ user_id, tenantid, academicYearId });
         console.log('cohort=>', JSON.stringify(cohort));
-        const getActiveCohort = await getActiveCohortData(cohort);
-        const getActiveCohortId = await getActiveCohortIds(cohort);
-        await setDataInStorage(
-          'cohortData',
-          JSON.stringify(getActiveCohort?.[0]) || ''
-        );
-        const cohort_id = getActiveCohortId?.[0];
+        let cohort_id;
+        if (cohort.params?.status !== 'failed') {
+          const getActiveCohort = await getActiveCohortData(cohort);
+          const getActiveCohortId = await getActiveCohortIds(cohort);
+          await setDataInStorage(
+            'cohortData',
+            JSON.stringify(getActiveCohort?.[0]) || ''
+          );
+          cohort_id = getActiveCohortId?.[0];
+        }
 
         const profileData = await getProfileDetails({
           userId: user_id,

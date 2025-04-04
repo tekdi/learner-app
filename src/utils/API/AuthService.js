@@ -10,7 +10,7 @@ import { get, handleResponseException, patch, post } from './RestClient';
 //for react native config env : dev uat prod
 import Config from 'react-native-config';
 import RNFS from 'react-native-fs';
-import { Alert, PermissionsAndroid, Platform } from 'react-native';
+import { Alert } from 'react-native';
 
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
