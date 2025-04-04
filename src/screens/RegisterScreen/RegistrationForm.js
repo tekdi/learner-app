@@ -335,7 +335,8 @@ const RegistrationForm = ({ fields }) => {
     setPages(defaultPages);
     const getProgramData = async () => {
       const data = await getProgramDetails();
-      setProgramData(data);
+      const newData = data.filter((item) => item?.name === 'YouthNet');
+      setProgramData(newData);
     };
     getProgramData();
     fetchStates();
