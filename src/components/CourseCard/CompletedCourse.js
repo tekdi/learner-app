@@ -13,20 +13,36 @@ import { useTranslation } from '../../context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
 import Octicons from 'react-native-vector-icons/Octicons';
 import CertificateViewer from '../../screens/CertificateViewer/CertificateViewer';
+import moment from 'moment';
+import { viewCertificate } from '../../utils/API/AuthService';
 
-const CompletedCourse = ({ name }) => {
+const CompletedCourse = ({ data }) => {
   const backgroundImage = require('../../assets/images/png/Course.png');
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false); // State to track which item is expanded
-  const [certificateId, setCertificateId] = useState(null); // State to track which item is expanded
   const [certificateHtml, setCertificateHtml] = useState(null); // State to track which item is expanded
+  let certificateId = data?.certificateId;
+
+  const handleViewCertificate = async () => {
+    const data = await viewCertificate({ certificateId });
+    // console.log('data', JSON.stringify(data?.result));
+    setCertificateHtml(data?.result);
+    setVisible(true);
+  };
 
   return (
     <SafeAreaView style={[globalStyles.container]}>
       <View style={[globalStyles.flexrow, styles.view]}>
         <FastImage
           style={styles.cardBackgroundImage}
-          source={backgroundImage}
+          source={
+            data?.posterImage
+              ? {
+                  uri: data?.posterImage,
+                  priority: FastImage.priority.high,
+                }
+              : backgroundImage
+          }
           resizeMode={FastImage.resizeMode.cover}
           priority={FastImage.priority.high}
         />
@@ -36,13 +52,16 @@ const CompletedCourse = ({ name }) => {
             <GlobalText
               style={[globalStyles.text, { color: '#06A816', top: 1 }]}
             >
-              {t('completed_on')}:24/04/2024
+              {t('completed_on')}: {moment(data?.issuedOn).format('DD/MM/YYYY')}
             </GlobalText>
           </View>
           <GlobalText style={[globalStyles.text, { marginLeft: 5 }]}>
-            Course Name
+            {data?.name}
           </GlobalText>
-          <TouchableOpacity style={globalStyles.flexrow}>
+          <TouchableOpacity
+            onPress={handleViewCertificate}
+            style={globalStyles.flexrow}
+          >
             <GlobalText
               style={[globalStyles.text, { marginLeft: 5, color: '#0D599E' }]}
             >
@@ -60,8 +79,8 @@ const CompletedCourse = ({ name }) => {
         visible={visible}
         setVisible={setVisible}
         certificateHtml={certificateHtml}
-        certificateId={certificateId}
-        certificateName={name}
+        certificateId={data?.certificateId}
+        certificateName={data?.name}
       />
     </SafeAreaView>
   );

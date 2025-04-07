@@ -312,7 +312,7 @@ const CourseContentList = ({ route }) => {
 
   const updateCourseStatusFun = async () => {
     const data = await updateCourseStatus({ course_id });
-    // console.log('data', JSON.stringify(data));
+    console.log('data', JSON.stringify(data));
     const result = JSON.parse(await getDataFromStorage('profileData'));
     const userDetails = result?.getUserDetails?.[0];
     let userId = await getDataFromStorage('userId');
@@ -343,7 +343,7 @@ const CourseContentList = ({ route }) => {
     setLoading(true);
 
     if (trackCompleted >= 100) {
-      // console.log('completed====>');
+      console.log('completed====>', certificateId);
       if (!certificateId) {
         updateCourseStatusFun();
       }
@@ -429,7 +429,13 @@ const CourseContentList = ({ route }) => {
                 </View>
               ) : (
                 certificateId && (
-                  <View style={{ width: '90%', alignSelf: 'center' }}>
+                  <View
+                    style={{
+                      width: '90%',
+                      alignSelf: 'center',
+                      marginBottom: 10,
+                    }}
+                  >
                     <PrimaryButton
                       onPress={handleViewCertificate}
                       text={t('view_certificate')}

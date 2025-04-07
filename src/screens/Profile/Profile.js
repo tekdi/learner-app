@@ -31,6 +31,7 @@ import GlobalText from '@components/GlobalText/GlobalText';
 import DeviceInfo from 'react-native-device-info';
 import Config from 'react-native-config';
 import {
+  courseListApi_New,
   getProfileDetails,
   getStudentForm,
   profileCourseListApi,
@@ -49,6 +50,8 @@ const Profile = () => {
   const [networkstatus, setNetworkstatus] = useState(true);
   const [userType, setUserType] = useState();
   const [cohortId, setCohortId] = useState();
+  const [courseList, setCourseList] = useState([]);
+
   const version = DeviceInfo.getVersion(); // e.g., "1.0.1"
   const buildNumber = DeviceInfo.getBuildNumber(); // e.g., "2"
   const convertObjectToArray = (data) => {
@@ -80,13 +83,47 @@ const Profile = () => {
     return transformedArray;
   };
 
+  const mergeCourseDetails = (content, data) => {
+    return data.map((item) => {
+      const matchedContent = content?.find(
+        (c) => c.identifier === item.courseId
+      );
+      return {
+        ...item,
+        name: matchedContent?.name || '',
+        posterImage: matchedContent?.posterImage || '',
+        description: matchedContent?.description || '',
+      };
+    });
+  };
+
   const fetchCourseStatus = async () => {
     const data = await profileCourseListApi();
-    console.log('data===/>', JSON.stringify(data?.data));
+    let userTypes = await getDataFromStorage('userType');
+    const instant =
+      userTypes === 'youthnet'
+        ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+        : userTypes === 'scp'
+          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+
+    const inprogress_do_ids = data?.data?.map((item) => item?.courseId);
+
+    const content = await courseListApi_New({
+      instant,
+      inprogress_do_ids,
+    });
+    console.log('content===>', JSON.stringify(content));
+    const newData = mergeCourseDetails(content?.content, data?.data);
+    console.log('newData===>', newData);
+
+    setCourseList(newData);
   };
 
   const fetchData = async () => {
     const data = await getStudentForm();
+    let userType = await getDataFromStorage('userType');
+    setUserType(userType);
     setDataInStorage('studentForm', JSON.stringify(data?.fields));
     const tenantId = await getDataFromStorage('userTenantid');
 
@@ -102,7 +139,7 @@ const Profile = () => {
     });
     const result = profileData;
     await setDataInStorage('profileData', JSON.stringify(profileData));
-    console.log('profileData===>', JSON.stringify(profileData));
+    // console.log('profileData===>', JSON.stringify(profileData));
 
     const finalResult = result?.getUserDetails?.[0];
     const keysToRemove = [
@@ -293,8 +330,26 @@ const Profile = () => {
               </View>
             </View>
           </LinearGradient>
-          <NoCertificateBox userType={userType} />
-          <CompletedCourse />
+          <View style={{ padding: 10 }}>
+            <GlobalText style={[globalStyles.h6, { color: '#78590C' }]}>
+              {userType == 'youthnet'
+                ? t('YouthNet')
+                : userType == 'scp'
+                  ? t('Second Chance Program')
+                  : t('Public')}
+            </GlobalText>
+            <GlobalText
+              numberOfLines={4}
+              ellipsizeMode="tail"
+              style={[globalStyles.h5, { color: '#78590C' }]}
+            >
+              {t('completed_courses_certificates')}
+            </GlobalText>
+          </View>
+          {courseList.length === 0 && <NoCertificateBox userType={userType} />}
+          {courseList?.map((item, i) => {
+            return <CompletedCourse key={i} data={item} />;
+          })}
           <View style={{ backgroundColor: '#FFF8F2', paddingVertical: 20 }}>
             <View style={styles.viewBox}>
               {userDetailss?.map((item, key) => {

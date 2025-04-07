@@ -14,21 +14,6 @@ const NoCertificateBox = ({ userType }) => {
 
   return (
     <SafeAreaView style={globalStyles.container}>
-      <GlobalText style={[globalStyles.text, { color: '#78590C' }]}>
-        {' '}
-        {userType == 'youthnet'
-          ? t('YouthNet')
-          : userType == 'scp'
-            ? t('Second Chance Program')
-            : t('Public')}
-      </GlobalText>
-      <GlobalText
-        numberOfLines={4}
-        ellipsizeMode="tail"
-        style={[globalStyles.subHeading, { color: '#78590C' }]}
-      >
-        {t('completed_courses_certificates')}
-      </GlobalText>
       <GlobalText
         numberOfLines={4}
         ellipsizeMode="tail"

@@ -214,7 +214,7 @@ const CourseCard = ({
           numberOfLines={2}
           ellipsizeMode="tail"
         >
-          {item?.name}
+          {item?.identifier}
         </GlobalText>
         <GlobalText
           style={[

@@ -126,7 +126,7 @@ ${Object.entries(headers || {})
   .map(([key, value]) => `-H '${key}: ${value}' \\`)
   .join('\n')}`;
 
-    console.log(curlCommand);
+    // console.log(curlCommand);
 
     // Make the API request
     const result = await get(url, {
@@ -488,6 +488,7 @@ export const courseListApi_New = async ({
     return result_offline;
   }
 };
+
 export const profileCourseListApi = async () => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.getCourseCompletedList}`; // Define the URL
@@ -497,10 +498,7 @@ export const profileCourseListApi = async () => {
   };
   const payload = {
     filters: {
-      status: [
-        'completed',
-        // "viewCertificate"
-      ],
+      status: ['completed', 'viewCertificate'],
       userId: user_id,
     },
     limit: 100,
@@ -514,7 +512,7 @@ export const profileCourseListApi = async () => {
   curlCommand += `-d '${JSON.stringify(payload)}'`;
 
   // Output the cURL command to the console
-  // console.log('Equivalent cURL command:\n', curlCommand);
+  console.log('Equivalent cURL command:\n', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -2001,7 +1999,7 @@ export const viewCertificate = async ({ certificateId }) => {
 
   const payload = {
     credentialId: certificateId,
-    templateId: 'cm7nbogii000moc3gth63l863',
+    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
   };
 
   try {
@@ -2106,7 +2104,7 @@ export const downloadCertificate = async ({
 
   const payload = {
     credentialId: certificateId,
-    templateId: 'cm7nbogii000moc3gth63l863',
+    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
   };
 
   try {
@@ -2115,6 +2113,8 @@ export const downloadCertificate = async ({
       responseType: 'arraybuffer', // Ensures we get binary data
     });
     const data = response?.request?._response;
+    console.log('data', data);
+
     const base64Data = data; // Base64 string from API
     const fileName = `${certificateName}_${user_id}.pdf`;
     const path = `${RNFS.DownloadDirectoryPath}/${fileName}`;
@@ -2126,6 +2126,26 @@ export const downloadCertificate = async ({
   } catch (error) {
     console.error('Error downloading PDF:', error);
     Alert.alert('Error', 'Failed to download PDF');
+    return true;
+  }
+};
+export const shareCertificate = async ({ certificateId }) => {
+  const url = `${EndUrls.downloadCertificate}`; // Define the URL
+  const headers = await getHeaders();
+  const payload = {
+    credentialId: certificateId,
+    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
+  };
+
+  try {
+    const response = await axios.post(url, payload, {
+      headers: headers || {},
+      responseType: 'arraybuffer', // Ensures we get binary data
+    });
+    const data = response?.request?._response;
+    return data;
+  } catch (error) {
+    console.error('Error downloading PDF:', error);
     return true;
   }
 };

@@ -212,8 +212,6 @@ const Courses = () => {
   );
 
   const fetchTopics = async () => {
-    console.log('hi');
-
     const instantId = `youthnet-framework`;
     const data = await filterContent({ instantId });
     const newData = data?.framework?.categories?.filter((item) => {
@@ -223,7 +221,7 @@ const Courses = () => {
     setTopicList(newData);
   };
 
-  // console.log('offset', offset);
+  console.log('offset', offset);
 
   const fetchData = async (offset, append = false) => {
     setLoading(true);
