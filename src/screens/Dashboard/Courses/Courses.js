@@ -300,10 +300,22 @@ const Courses = () => {
     fetchData(0, false);
   }, [parentFormData, parentStaticFormData]);
 
-  const handleSearch = async () => {
-    setOffset(0); // Reset offset when searching
-    await fetchData(0, false); // Reset course data
-  };
+  // const handleSearch = async () => {
+  //   setOffset(0); // Reset offset when searching
+  //   await fetchData(0, false); // Reset course data
+  // };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setOffset(0); // Reset offset when searching
+      fetchData(0, false); // Fetch with reset data
+    }, 500);
+
+    // Cleanup timeout on unmount or when searchText changes
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchText]);
 
   const handleViewMore = () => {
     // console.log('offset', offset);
@@ -438,7 +450,7 @@ const Courses = () => {
                       <CustomSearchBox
                         setSearchText={setSearchText}
                         searchText={searchText}
-                        handleSearch={handleSearch}
+                        // handleSearch={handleSearch}
                         placeholder={t('Search...')}
                       />
                     </View>

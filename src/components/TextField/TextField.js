@@ -8,7 +8,7 @@ import globalStyles from '../../utils/Helper/Style';
 
 const TextField = ({ text, style }) => {
   const { t } = useTranslation();
-  const textStyle = style || globalStyles.text;
+  const textStyle = style || globalStyles.h6;
 
   return <GlobalText style={textStyle}> {text ? t(text) : '-'} </GlobalText>;
 };

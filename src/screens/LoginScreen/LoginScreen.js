@@ -18,6 +18,7 @@ import {
   login,
   notificationSubscribe,
   setAcademicYear,
+  telemetryTrackingData,
 } from '../../utils/API/AuthService';
 import {
   getActiveCohortData,
@@ -39,6 +40,7 @@ import globalStyles from '../../utils/Helper/Style';
 import { useInternet } from '../../context/NetworkContext';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import GlobalText from '@components/GlobalText/GlobalText';
+import moment from 'moment';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -126,9 +128,9 @@ const LoginScreen = () => {
 
         const role = tenantData?.[0]?.roleName;
 
-        console.log('scp', scp);
-        console.log('cohort_id', cohort_id);
-        console.log('tenantid', tenantid);
+        // console.log('scp', scp);
+        // console.log('cohort_id', cohort_id);
+        // console.log('tenantid', tenantid);
 
         if (role == 'Learner' || role == 'Student') {
           if (tenantid === scp?.[0]) {
@@ -158,6 +160,16 @@ const LoginScreen = () => {
         } else {
           setErrmsg('invalid_username_or_password');
         }
+        const now = moment();
+
+        const telemetryPayloadData = {
+          event: 'login',
+          type: 'click',
+          ets: now.unix(),
+        };
+        await telemetryTrackingData({
+          telemetryPayloadData,
+        });
         setLoading(false);
       } else {
         setLoading(false);

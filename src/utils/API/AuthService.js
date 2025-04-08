@@ -2092,6 +2092,85 @@ export const enrollInterest = async (selectedIds) => {
     console.log('e', e);
   }
 };
+export const telemetryTrackingData = async ({ telemetryPayloadData }) => {
+  const url = `${EndUrls.telemetryTrackingData}`; // Define the URL
+  const headers = await getHeaders();
+  const profileDetails = JSON.parse(await getDataFromStorage('profileData'))
+    ?.getUserDetails?.[0];
+
+  console.log('profileDetails===>', JSON.stringify(profileDetails));
+
+  const headersString = Object.entries(headers)
+    .map(([key, value]) => `-H "${key}: ${value}"`)
+    .join(' ');
+  const payload = {
+    id: 'api.sunbird.telemetry',
+    ver: '3.0',
+    params: {
+      msgid: '35cfea6c3cf2b3de56fd03c9b52a8de1',
+    },
+    ets: telemetryPayloadData?.ets,
+    events: [
+      {
+        eid: 'IMPRESSION',
+        ets: telemetryPayloadData?.ets,
+        ver: '3.0',
+        mid: 'IMPRESSION:fc44e5d5f9549938db7cce963cc0d6ad',
+        actor: {
+          id: 'Anonymous',
+          type: 'User',
+        },
+        context: {
+          channel: 'pratham-learner-app',
+          pdata: {
+            id: 'pratham-learner-app',
+            pid: '0.0.1',
+            ver: 'pratham-learner-app',
+          },
+          env: telemetryPayloadData?.event,
+          sid: profileDetails?.userId,
+          did: '86d25010904db7eed2c034cfc7109b4c',
+          cdata: [
+            {
+              id: profileDetails?.userId,
+              type: 'UserSession',
+            },
+            {
+              id: 'uuid',
+              type: 'Device',
+            },
+          ],
+          rollup: {},
+          uid: profileDetails?.userId,
+          userName: profileDetails?.username,
+        },
+        object: {},
+        tags: [],
+        edata: {
+          type: telemetryPayloadData?.type,
+          subtype: '',
+          pageid: telemetryPayloadData?.event,
+          uri: telemetryPayloadData?.event,
+        },
+      },
+    ],
+  };
+  const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+    payload
+  )}' ${url}`;
+  console.log('cURL Command:', curlCommand);
+  try {
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+    if (result) {
+      return result?.data;
+    }
+  } catch (e) {
+    console.log('e', e);
+  }
+};
 
 export const downloadCertificate = async ({
   certificateId,

@@ -62,32 +62,24 @@ const MyClassDashboard = () => {
   };
 
   return (
-    <SafeAreaView
-      key={refreshKey}
-      style={{ flex: 1, backgroundColor: 'white' }}
-    >
+    <SafeAreaView key={refreshKey} style={{ backgroundColor: 'white' }}>
       <SecondaryHeader logo />
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
-        }
-      >
-        <View style={{ padding: 0 }}>
-          <GlobalText
-            style={[globalStyles.heading, { paddingLeft: 20, marginTop: 20 }]}
-          >
-            {t('my_class')}
-          </GlobalText>
 
-          <CustomTabView
-            tabs={tabs}
-            activeTabStyle={{ borderBottomWidth: 2, borderColor: '#FDBE16' }}
-            inactiveTabStyle={{ borderBottomWidth: 1, borderColor: '#EBE1D4' }}
-            tabTextStyle={{ color: '#888' }}
-            // activeTextStyle={{ color: 'black', fontWeight: 'bold' }}
-          />
-        </View>
-      </ScrollView>
+      <View style={{ padding: 0 }}>
+        <GlobalText
+          style={[globalStyles.heading, { paddingLeft: 20, marginTop: 20 }]}
+        >
+          {t('my_class')}
+        </GlobalText>
+
+        <CustomTabView
+          tabs={tabs}
+          activeTabStyle={{ borderBottomWidth: 2, borderColor: '#FDBE16' }}
+          inactiveTabStyle={{ borderBottomWidth: 1, borderColor: '#EBE1D4' }}
+          tabTextStyle={{ color: '#888' }}
+          // activeTextStyle={{ color: 'black', fontWeight: 'bold' }}
+        />
+      </View>
     </SafeAreaView>
   );
 };

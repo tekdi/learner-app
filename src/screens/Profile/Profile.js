@@ -113,12 +113,23 @@ const Profile = () => {
       instant,
       inprogress_do_ids,
     });
-    console.log('content===>', JSON.stringify(content));
     const newData = mergeCourseDetails(content?.content, data?.data);
-    console.log('newData===>', newData);
 
     setCourseList(newData);
   };
+
+  function formatDob(userDetails) {
+    return userDetails.map((item) => {
+      if (item.name === 'dob' && typeof item.value === 'string') {
+        const [year, month, day] = item.value.split('-');
+        return {
+          ...item,
+          value: `${day}/${month}/${year}`,
+        };
+      }
+      return item;
+    });
+  }
 
   const fetchData = async () => {
     const data = await getStudentForm();
@@ -139,7 +150,6 @@ const Profile = () => {
     });
     const result = profileData;
     await setDataInStorage('profileData', JSON.stringify(profileData));
-    // console.log('profileData===>', JSON.stringify(profileData));
 
     const finalResult = result?.getUserDetails?.[0];
     const keysToRemove = [
@@ -157,6 +167,7 @@ const Profile = () => {
       'middleName',
       'lastName',
       'tenantId',
+      'center',
     ];
 
     const filteredResult = Object.keys(finalResult)
@@ -185,13 +196,14 @@ const Profile = () => {
 
     // Convert location data into a single formatted string
     const formattedLocation =
-      `${locationData.states} ${locationData.districts} ${locationData.blocks}  ${locationData.village}`.trim();
+      `${locationData.states}, ${locationData.districts}, ${locationData.blocks}, ${locationData.village}`.trim();
 
     // Remove states, districts, and blocks from userDetails
     delete userDetails.state;
     delete userDetails.district;
     delete userDetails.block;
     delete userDetails.village;
+    delete userDetails.center;
 
     // Add formatted location as a new field
     userDetails.location = formattedLocation;
@@ -202,8 +214,10 @@ const Profile = () => {
     const filteredArray = newUpdatedObj.filter(
       (item) => item.name !== 'is_volunteer'
     );
-
-    setUserDetails(filteredArray);
+    console.log('userDetails==>', JSON.stringify(filteredArray));
+    const newArray = formatDob(filteredArray);
+    console.log('newArray==>', JSON.stringify(newArray));
+    setUserDetails(newArray);
 
     // const tenantData = await getTentantId();
 
@@ -338,18 +352,26 @@ const Profile = () => {
                   ? t('Second Chance Program')
                   : t('Public')}
             </GlobalText>
-            <GlobalText
-              numberOfLines={4}
-              ellipsizeMode="tail"
-              style={[globalStyles.h5, { color: '#78590C' }]}
-            >
-              {t('completed_courses_certificates')}
-            </GlobalText>
           </View>
-          {courseList.length === 0 && <NoCertificateBox userType={userType} />}
-          {courseList?.map((item, i) => {
-            return <CompletedCourse key={i} data={item} />;
-          })}
+
+          {userType == 'youthnet' && (
+            <>
+              <GlobalText
+                numberOfLines={4}
+                ellipsizeMode="tail"
+                style={[globalStyles.h5, { color: '#78590C' }]}
+              >
+                {t('completed_courses_certificates')}
+              </GlobalText>
+              {courseList.length === 0 && (
+                <NoCertificateBox userType={userType} />
+              )}
+              {courseList?.map((item, i) => {
+                return <CompletedCourse key={i} data={item} />;
+              })}
+            </>
+          )}
+
           <View style={{ backgroundColor: '#FFF8F2', paddingVertical: 20 }}>
             <View style={styles.viewBox}>
               {userDetailss?.map((item, key) => {

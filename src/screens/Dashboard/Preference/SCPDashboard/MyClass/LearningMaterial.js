@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import DropdownSelect2 from '../../../../../components/DropdownSelect/DropdownSelect2';
 import { View } from 'react-native';
 import MaterialCard from './MaterialCard';
@@ -96,12 +96,13 @@ const LearningMaterial = () => {
           matchGrade?.associations.some((item) => item.code === assoc.code)
       );
 
-      console.log('commonAssociations', commonAssociations);
-
       const getSubjects = getOptionsByCategory(frameworks, 'subject');
+
       const subjectAssociations = commonAssociations
         ?.filter((assoc) =>
-          getSubjects.some((item) => assoc.code === item?.code)
+          getSubjects.some(
+            (item) => assoc.code === item?.code && assoc?.category === 'subject'
+          )
         )
         ?.map((assoc) => assoc.name);
 
@@ -134,7 +135,7 @@ const LearningMaterial = () => {
   return loading ? (
     <ActiveLoading />
   ) : (
-    <SafeAreaView>
+    <ScrollView style={globalStyles.container}>
       <DropdownSelect2
         field={courseTypes}
         name={'course_type'}
@@ -160,7 +161,7 @@ const LearningMaterial = () => {
           )}
         </View>
       )}
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -168,8 +169,10 @@ const styles = StyleSheet.create({
   viewbox: {
     // borderWidth: 1,
     padding: 15,
+    // height: 100,
     borderRadius: 20,
-    // paddingBottom: 50,
+    // paddingBottom: 150,
+    marginBottom: 0,
     backgroundColor: '#FBF4E4',
   },
 });

@@ -43,6 +43,7 @@ const EndUrls = {
   EventDetails: `${EVENT_DETAILS}/userProjects/details`,
   SolutionEvent: `${EVENT_DETAILS}/solutions/details`,
   telemetryTracking: TELEMETRY_URL,
+  telemetryTrackingData: `${API_URL}/interface/v1/tracking/telemetry`,
 
   // Certificate APis
 

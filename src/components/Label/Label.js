@@ -8,7 +8,11 @@ import globalStyles from '../../utils/Helper/Style';
 const Label = ({ text }) => {
   const { t } = useTranslation();
 
-  return <GlobalText style={globalStyles.h6}>{t(text)}</GlobalText>;
+  return (
+    <GlobalText style={[globalStyles.text, { color: '#969088' }]}>
+      {t(text)}
+    </GlobalText>
+  );
 };
 
 Label.propTypes = {

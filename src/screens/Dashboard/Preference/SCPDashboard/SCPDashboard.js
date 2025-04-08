@@ -121,9 +121,9 @@ const SCPDashboard = (props) => {
 
     // Fetch the data within the specified date range
     const data = await eventList({ startDate, endDate });
-    if (!data) {
-      setNetworkstatus(false);
-    }
+    // if (!data) {
+    //   setNetworkstatus(false);
+    // }
     const finalData = await categorizeEvents(data?.events);
 
     setEventData(finalData);
@@ -228,7 +228,7 @@ const SCPDashboard = (props) => {
         <View style={globalStyles.flexrow}>
           <Image source={wave} resizeMode="contain" />
           <GlobalText style={styles.text2}>
-            {t('welcome')},
+            {t('welcome')},{' '}
             {capitalizeName(
               `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName || ''}!`
             )}
