@@ -76,6 +76,8 @@ const LoginScreen = () => {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
         const userDetails = await getuserDetails();
+        console.log('userDetails===>', JSON.stringify(userDetails));
+
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
         // console.log('tenantData', JSON.stringify(userDetails));

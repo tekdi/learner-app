@@ -320,8 +320,10 @@ export const courseListApi_testing = async ({
   searchText,
   inprogress_do_ids,
 }) => {
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
   const user_id = await getDataFromStorage('userId');
-  const url = `${EndUrls.contentList_testing}`;
+  const url = `${EndUrls.contentList_testing}${collectionFramework}`;
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -405,17 +407,22 @@ export const courseListApi_New = async ({
   offset,
   inprogress_do_ids,
 }) => {
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const channelId = tenantData?.[0]?.channelId;
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
+
   const user_id = await getDataFromStorage('userId');
-  const url = `${EndUrls.contentList_testing}`; // Define the URL
+  const url = `${EndUrls.contentList_testing}${collectionFramework}`; // Define the URL
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
   let userType = await getDataFromStorage('userType');
+
   const payload = {
     request: {
       filters: {
-        channel: instant?.channelId,
+        channel: channelId,
         // program:
         //   userType == 'scp'
         //     ? ['secondchance', 'Second Chance', 'SCP']
@@ -545,17 +552,21 @@ export const contentListApi_Pratham = async ({
   instant,
   offset,
 }) => {
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
+  const channelId = tenantData?.[0]?.channelId;
   const user_id = await getDataFromStorage('userId');
-  const url = `${EndUrls.contentList}`; // Define the URL
+  const url = `${EndUrls.contentList}${collectionFramework}`; // Define the URL
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
   let userType = await getDataFromStorage('userType');
+
   let payload = {
     request: {
       filters: {
-        channel: instant?.channelId,
+        channel: channelId,
 
         primaryCategory: ['Learning Resource', 'Practice Question Set'],
         visibility: ['Default', 'Parent'],
@@ -1732,7 +1743,10 @@ export const getAttendance = async ({ todate, fromDate }) => {
 };
 export const LearningMaterialAPI = async () => {
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
-  const url = `${EndUrls.framework}`; // Define the URL
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
+  const channelId = tenantData?.[0]?.channelId;
+  const url = `${EndUrls.framework}${collectionFramework}`; // Define the URL
   try {
     const method = 'get'; // Define the HTTP method
     const headers = await getHeaders();
@@ -1801,7 +1815,10 @@ export const notificationSubscribe = async ({ deviceId, user_id, action }) => {
 };
 
 export const filterContent = async ({ instantId }) => {
-  const url = `${EndUrls.filterContent}/${instantId}`; // Define the URL
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
+  const channelId = tenantData?.[0]?.channelId;
+  const url = `${EndUrls.filterContent}/${collectionFramework}`; // Define the URL
   try {
     const method = 'get'; // Define the HTTP method
     const headers = await getHeaders();
@@ -1811,7 +1828,7 @@ export const filterContent = async ({ instantId }) => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
-    // console.log('curlCom', curlCommand);
+    console.log('curlCom', curlCommand);
 
     // Make the actual request
     const result = await get(url, {
@@ -1827,6 +1844,9 @@ export const filterContent = async ({ instantId }) => {
 };
 
 export const staticFilterContent = async ({ instantId }) => {
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
+  const channelId = tenantData?.[0]?.channelId;
   const url = `${EndUrls.staticFilterContent}`; // Define the URL
   const headers = await getHeaders();
   const payload = {
@@ -1834,7 +1854,7 @@ export const staticFilterContent = async ({ instantId }) => {
       objectCategoryDefinition: {
         objectType: 'Collection',
         name: 'Course',
-        channel: instantId,
+        channel: channelId,
       },
     },
   };
