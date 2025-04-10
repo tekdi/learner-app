@@ -328,7 +328,7 @@ const LoginScreen = () => {
               isDisabled={!isDisabled}
             />
           </View>
-          <Pressable
+          {/* <Pressable
             onPress={() => {
               navigation.navigate('RegisterStart');
             }}
@@ -337,7 +337,7 @@ const LoginScreen = () => {
             <GlobalText style={[globalStyles.text, { color: '#0D599E' }]}>
               {t('dont_have_account')}
             </GlobalText>
-          </Pressable>
+          </Pressable> */}
         </ScrollView>
       )}
 

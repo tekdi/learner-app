@@ -50,6 +50,8 @@ const Assessment = ({ header, background }) => {
     //console.log('########### cohort', cohort);
     let board = null;
     // let state = null;
+    console.log('cohort==>', JSON.stringify(cohort));
+
     try {
       board = cohort?.customField?.find((field) => field.label === 'BOARD');
       // state = cohort?.customField?.find((field) => field.label === 'STATES');
@@ -62,10 +64,10 @@ const Assessment = ({ header, background }) => {
       board = { value: 'maharashtra' };
     }*/
 
-    // console.log('########### board', board);
+    console.log('########### board', board);
 
     if (board) {
-      const boardName = board.value;
+      const boardName = board?.selectedValues?.[0];
       // const stateName = state.value;
 
       const assessmentList = await assessmentListApi({

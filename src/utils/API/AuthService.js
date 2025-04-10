@@ -66,7 +66,7 @@ export const refreshToken = async (params = {}) => {
 
     const dataString = JSON.stringify(params);
     const curlCommand = `curl -X POST ${headersString} -d '${dataString}' ${url}`;
-    // console.log('cURL command:', curlCommand);
+    console.log('cURL command:', curlCommand);
 
     const result = await post(url, params, { headers });
 
@@ -753,7 +753,7 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? ['SCP'] : ['YouthNet'],
+        program: userType == 'scp' ? ['SCP', 'Second Chance'] : ['YouthNet'],
         board: `${params?.boardName}`,
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
@@ -766,7 +766,7 @@ export const assessmentListApi = async (params = {}) => {
         lastUpdatedOn: 'desc',
       },
       query: '',
-      limit: 10,
+      limit: 100,
       offset: 0,
     },
   };
