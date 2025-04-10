@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
 import DropdownSelect2 from '../../../../../components/DropdownSelect/DropdownSelect2';
 import { View } from 'react-native';
 import MaterialCard from './MaterialCard';
@@ -28,6 +28,8 @@ const LearningMaterial = () => {
 
       const cohortData = JSON.parse(await getDataFromStorage('cohortData'));
 
+      console.log('cohortData', JSON.stringify(cohortData));
+
       const frameworks = boardData?.result?.framework;
 
       const board = cohortData?.customField.find(
@@ -41,6 +43,8 @@ const LearningMaterial = () => {
       );
 
       console.log('board', board);
+      console.log('medium', medium);
+      console.log('grade', grade);
 
       // const getStates = getOptionsByCategory(frameworks, 'state');
       // const matchState = getStates.find((item) => item.name === state?.value);
@@ -48,13 +52,19 @@ const LearningMaterial = () => {
       const getBoards = getOptionsByCategory(frameworks, 'board');
       console.log('getBoards', JSON.stringify(getBoards));
 
-      const matchBoard = getBoards.find((item) => item.name === board?.value);
+      const matchBoard = getBoards.find(
+        (item) => item.name === board?.selectedValues[0]
+      );
 
       const getMedium = getOptionsByCategory(frameworks, 'medium');
-      const matchMedium = getMedium.find((item) => item.name === medium?.value);
+      const matchMedium = getMedium.find(
+        (item) => item.name === medium?.selectedValues[0]
+      );
 
       const getGrades = getOptionsByCategory(frameworks, 'gradeLevel');
-      const matchGrade = getGrades.find((item) => item.name === grade?.value);
+      const matchGrade = getGrades.find(
+        (item) => item.name === grade?.selectedValues[0]
+      );
 
       const getCourseTypes = getOptionsByCategory(frameworks, 'courseType');
       // const getCourseTypes = getOptionsByCategory(frameworks, 'board');
@@ -76,7 +86,7 @@ const LearningMaterial = () => {
       // );
 
       // console.log('getBoards', JSON.stringify(getBoards));
-      // console.log('matchBoard', matchBoard);
+      console.log('matchBoard', matchBoard);
 
       const commonAssociations = matchBoard?.associations?.filter(
         (assoc) =>
@@ -87,9 +97,12 @@ const LearningMaterial = () => {
       );
 
       const getSubjects = getOptionsByCategory(frameworks, 'subject');
+
       const subjectAssociations = commonAssociations
         ?.filter((assoc) =>
-          getSubjects.some((item) => assoc.code === item?.code)
+          getSubjects.some(
+            (item) => assoc.code === item?.code && assoc?.category === 'subject'
+          )
         )
         ?.map((assoc) => assoc.name);
 
@@ -122,7 +135,7 @@ const LearningMaterial = () => {
   return loading ? (
     <ActiveLoading />
   ) : (
-    <SafeAreaView>
+    <ScrollView style={globalStyles.container}>
       <DropdownSelect2
         field={courseTypes}
         name={'course_type'}
@@ -148,7 +161,7 @@ const LearningMaterial = () => {
           )}
         </View>
       )}
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -156,8 +169,10 @@ const styles = StyleSheet.create({
   viewbox: {
     // borderWidth: 1,
     padding: 15,
+    // height: 100,
     borderRadius: 20,
-    // paddingBottom: 50,
+    // paddingBottom: 150,
+    marginBottom: 0,
     backgroundColor: '#FBF4E4',
   },
 });

@@ -5,8 +5,12 @@ import { Modal, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from '@context/LanguageContext';
-import { downloadCertificate } from '@src/utils/API/AuthService';
+import {
+  downloadCertificate,
+  shareCertificate,
+} from '@src/utils/API/AuthService';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
+import Share from 'react-native-share';
 
 const CertificateViewer = ({
   visible,
@@ -21,10 +25,33 @@ const CertificateViewer = ({
 
   const handleDownload = async () => {
     setLoading(true);
-    const data = await downloadCertificate({ certificateId, certificateName });
-    console.log('data', data);
-    if (data) {
-      setLoading(false);
+    // const data = await downloadCertificate({ certificateId, certificateName });
+
+    // if (data) {
+    //   setLoading(false);
+    // }
+  };
+
+  const handleShare = async () => {
+    const shareCerti = await shareCertificate({
+      certificateId,
+      certificateName,
+    });
+    sharePDF(shareCerti);
+  };
+
+  const sharePDF = async (base64Data) => {
+    const options = {
+      title: 'Share PDF',
+      url: `data:application/pdf;base64,${base64Data}`,
+      type: 'application/pdf',
+      failOnCancel: false, // Optional
+    };
+
+    try {
+      await Share.open(options);
+    } catch (error) {
+      console.log('Share error:', error);
     }
   };
 
@@ -46,11 +73,12 @@ const CertificateViewer = ({
             <GlobalText style={globalStyles.heading2}>
               {t('certificate')}
             </GlobalText>
-            <TouchableOpacity
-              onPress={() => {
-                setVisible(false);
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
-              style={{ flexDirection: 'row', alignItems: 'center' }}
             >
               <TouchableOpacity
                 style={{ marginRight: 20 }}
@@ -58,8 +86,29 @@ const CertificateViewer = ({
               >
                 <Icon name={'download-outline'} color="#000" size={30} />
               </TouchableOpacity>
-              <Icon name={'close'} color="#000" size={30} />
-            </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  setVisible(false);
+                }}
+                style={{ flexDirection: 'row', alignItems: 'center' }}
+              >
+                <TouchableOpacity
+                  style={{ marginRight: 20 }}
+                  onPress={handleShare}
+                >
+                  <Icon name={'share-social-outline'} color="#000" size={30} />
+                </TouchableOpacity>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setVisible(false);
+                }}
+                style={{ flexDirection: 'row', alignItems: 'center' }}
+              >
+                <Icon name={'close'} color="#000" size={30} />
+              </TouchableOpacity>
+            </View>
           </View>
           {loading ? (
             <ActiveLoading />
@@ -69,7 +118,10 @@ const CertificateViewer = ({
                 originWhitelist={['*']}
                 source={{ html: certificateHtml }}
                 ref={webViewRef}
-                style={styles.webview} // Ensures full width & scrollability
+                style={styles.webview}
+                scalesPageToFit={true} // Helps auto-scale for Android
+                javaScriptEnabled={true}
+                useWebKit={true}
               />
             </View>
           )}
@@ -97,10 +149,10 @@ const styles = StyleSheet.create({
   },
   webViewContainer: {
     flex: 1, // Makes WebView take most of the space
-    // width: '100%',
+    width: '100%',
     // height: 550,
     // marginVertical: 20,
-    // borderWidth: 1,
+    borderWidth: 1,
     // padding: -10,
   },
   webview: {

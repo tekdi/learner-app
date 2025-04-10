@@ -95,8 +95,10 @@ const LanguageScreen = () => {
       tenantid,
       academicYearId,
     });
-    const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
-    const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
+
+    const getActiveCohort = await getActiveCohortData(cohort);
+    const getActiveCohortId = await getActiveCohortIds(cohort);
+
     const cohort_id = getActiveCohortId?.[0];
 
     await setDataInStorage(

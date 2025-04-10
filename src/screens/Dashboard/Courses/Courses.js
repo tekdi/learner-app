@@ -140,8 +140,8 @@ const Courses = () => {
         userType === 'youthnet'
           ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
           : userType === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+            ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+            : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
       setInstant(instant);
     };
     fetch();
@@ -212,8 +212,6 @@ const Courses = () => {
   );
 
   const fetchTopics = async () => {
-    console.log('hi');
-
     const instantId = `youthnet-framework`;
     const data = await filterContent({ instantId });
     const newData = data?.framework?.categories?.filter((item) => {
@@ -223,7 +221,7 @@ const Courses = () => {
     setTopicList(newData);
   };
 
-  // console.log('offset', offset);
+  console.log('offset', offset);
 
   const fetchData = async (offset, append = false) => {
     setLoading(true);
@@ -235,8 +233,8 @@ const Courses = () => {
       userType === 'youthnet'
         ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
         : userType === 'scp'
-        ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-        : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
 
     let data = await courseListApi_New({
       searchText,
@@ -302,15 +300,27 @@ const Courses = () => {
     fetchData(0, false);
   }, [parentFormData, parentStaticFormData]);
 
-  const handleSearch = async () => {
-    setOffset(0); // Reset offset when searching
-    await fetchData(0, false); // Reset course data
-  };
+  // const handleSearch = async () => {
+  //   setOffset(0); // Reset offset when searching
+  //   await fetchData(0, false); // Reset course data
+  // };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setOffset(0); // Reset offset when searching
+      fetchData(0, false); // Fetch with reset data
+    }, 500);
+
+    // Cleanup timeout on unmount or when searchText changes
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchText]);
 
   const handleViewMore = () => {
     // console.log('offset', offset);
 
-    const newOffset = offset + 5; // Increase offset by 5
+    const newOffset = offset + 10; // Increase offset by 5
     setOffset(newOffset); // Update state
     fetchData(newOffset, true); // Append new data
     const page = 'courses';
@@ -440,7 +450,7 @@ const Courses = () => {
                       <CustomSearchBox
                         setSearchText={setSearchText}
                         searchText={searchText}
-                        handleSearch={handleSearch}
+                        // handleSearch={handleSearch}
                         placeholder={t('Search...')}
                       />
                     </View>

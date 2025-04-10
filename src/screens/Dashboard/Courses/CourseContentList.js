@@ -91,6 +91,8 @@ const CourseContentList = ({ route }) => {
     setLoading(true);
     setEnrollStatus(true);
     const data = await CourseEnrollStatus({ course_id });
+    console.log('data', data);
+
     if (data?.params?.status === 'successful') {
       setEnrollStatus(true);
       if (data?.result?.certificateId) {
@@ -310,7 +312,7 @@ const CourseContentList = ({ route }) => {
 
   const updateCourseStatusFun = async () => {
     const data = await updateCourseStatus({ course_id });
-    // console.log('data', JSON.stringify(data));
+    console.log('data', JSON.stringify(data));
     const result = JSON.parse(await getDataFromStorage('profileData'));
     const userDetails = result?.getUserDetails?.[0];
     let userId = await getDataFromStorage('userId');
@@ -341,7 +343,7 @@ const CourseContentList = ({ route }) => {
     setLoading(true);
 
     if (trackCompleted >= 100) {
-      // console.log('completed====>');
+      console.log('completed====>', certificateId);
       if (!certificateId) {
         updateCourseStatusFun();
       }
@@ -425,14 +427,23 @@ const CourseContentList = ({ route }) => {
                     text={t('enroll_now')}
                   />
                 </View>
-              ) : certificateId ? (
-                <View style={{ width: '90%', alignSelf: 'center' }}>
-                  <PrimaryButton
-                    onPress={handleViewCertificate}
-                    text={t('view_certificate')}
-                  />
-                </View>
               ) : (
+                certificateId && (
+                  <View
+                    style={{
+                      width: '90%',
+                      alignSelf: 'center',
+                      marginBottom: 10,
+                    }}
+                  >
+                    <PrimaryButton
+                      onPress={handleViewCertificate}
+                      text={t('view_certificate')}
+                    />
+                  </View>
+                )
+              )}
+              {enrollStatus && (
                 <>
                   <View
                     style={[
@@ -504,10 +515,10 @@ const CourseContentList = ({ route }) => {
                             trackCompleted >= 100
                               ? 'completed'
                               : trackCompleted > 0
-                              ? 'inprogress'
-                              : trackProgress > 0
-                              ? 'progress'
-                              : 'not_started'
+                                ? 'inprogress'
+                                : trackProgress > 0
+                                  ? 'progress'
+                                  : 'not_started'
                           }
                           trackCompleted={trackCompleted}
                           viewStyle={{
@@ -543,7 +554,6 @@ const CourseContentList = ({ route }) => {
                   </View>
                 </>
               )}
-
               <CertificateViewer
                 visible={visible}
                 setVisible={setVisible}

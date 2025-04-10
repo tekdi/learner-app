@@ -400,5 +400,18 @@
   "which_topic_are_you_most_interested_in": "आप किस विषय में सबसे ज्यादा रुचि रखते हैं?",
   "select_course_desp": "जैसे ही आप कोई कोर्स चुनेंगे, हमारे विशेषज्ञ आपको अधिक जानकारी के लिए संपर्क करेंगे!",
   "submit": "सबमिट करें",
-  "topics": "विषय"
+  "topics": "विषय",
+
+  "get_started_with_l1_courses": "L1 कोर्स के साथ शुरुआत करें",
+  "explore": "खोजें",
+  "joined_on": "शामिल हुए",
+  "need_help_reach_out_to_your_mentor": "मदद के लिए अपने मार्गदर्शक से संपर्क करें!",
+  "if_you_stuck_or_need_guidance_your_mentor_is_just_a_message_away": "यदि आप अटक गए हैं या मार्गदर्शन चाहते हैं, तो आपका मार्गदर्शक बस एक संदेश दूर है",
+  "explore_additional_resources_and_nearby_skilling_centers": "अतिरिक्त संसाधन और निकटतम कौशल केंद्र खोजें",
+  "explore_additional_courses": "अतिरिक्त कोर्स खोजें",
+  "skilling_center_near_you": "आपके निकटतम कौशल केंद्र",
+  "open_on_maps": "मानचित्र पर खोलें",
+  "lets_create_your_acc": "चलिए, आपका खाता बनाते हैं!",
+  "create_acc_desp": "कुछ सवालों के जवाब दें ताकि हम आपको बेहतर जान सकें।",
+  "completed_on": "पूरा हुआ"
 }

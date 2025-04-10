@@ -32,8 +32,8 @@ const PrimaryButton = ({ text, onPress, isDisabled, color }) => {
   );
 };
 PrimaryButton.propTypes = {
-  text: PropTypes.string,
-  onPress: PropTypes.func,
+  text: PropTypes.any,
+  onPress: PropTypes.any,
   isDisabled: PropTypes.bool,
   color: PropTypes.string,
 };

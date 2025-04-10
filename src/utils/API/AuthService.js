@@ -10,12 +10,11 @@ import { get, handleResponseException, patch, post } from './RestClient';
 //for react native config env : dev uat prod
 import Config from 'react-native-config';
 import RNFS from 'react-native-fs';
-import { Alert, PermissionsAndroid, Platform } from 'react-native';
+import { Alert } from 'react-native';
 
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
   let tenantId = await getTentantId();
-  console.log('token', token);
 
   return {
     'Content-Type': 'application/json',
@@ -67,7 +66,7 @@ export const refreshToken = async (params = {}) => {
 
     const dataString = JSON.stringify(params);
     const curlCommand = `curl -X POST ${headersString} -d '${dataString}' ${url}`;
-    // console.log('cURL command:', curlCommand);
+    console.log('cURL command:', curlCommand);
 
     const result = await post(url, params, { headers });
 
@@ -127,7 +126,7 @@ ${Object.entries(headers || {})
   .map(([key, value]) => `-H '${key}: ${value}' \\`)
   .join('\n')}`;
 
-    console.log(curlCommand);
+    // console.log(curlCommand);
 
     // Make the API request
     const result = await get(url, {
@@ -490,6 +489,56 @@ export const courseListApi_New = async ({
   }
 };
 
+export const profileCourseListApi = async () => {
+  const user_id = await getDataFromStorage('userId');
+  const url = `${EndUrls.getCourseCompletedList}`; // Define the URL
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  const payload = {
+    filters: {
+      status: ['completed', 'viewCertificate'],
+      userId: user_id,
+    },
+    limit: 100,
+    offset: 0,
+  };
+  // Construct the cURL command
+  let curlCommand = `curl -X POST '${url}' \\\n`;
+  for (const [key, value] of Object.entries(headers)) {
+    curlCommand += `-H '${key}: ${value}' \\\n`;
+  }
+  curlCommand += `-d '${JSON.stringify(payload)}'`;
+
+  // Output the cURL command to the console
+  console.log('Equivalent cURL command:\n', curlCommand);
+  try {
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      // store result
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
+      return result?.data?.result;
+    } else {
+      let result_offline = await getApiResponse(user_id, url, 'post', payload);
+      return result_offline;
+    }
+  } catch (e) {
+    let result_offline = await getApiResponse(user_id, url, 'post', payload);
+    return result_offline;
+  }
+};
+
 export const contentListApi_Pratham = async ({
   searchText,
   // mergedFilter,
@@ -704,7 +753,7 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? ['SCP'] : ['YouthNet'],
+        program: userType == 'scp' ? ['SCP', 'Second Chance'] : ['YouthNet'],
         board: `${params?.boardName}`,
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
@@ -717,7 +766,7 @@ export const assessmentListApi = async (params = {}) => {
         lastUpdatedOn: 'desc',
       },
       query: '',
-      limit: 10,
+      limit: 100,
       offset: 0,
     },
   };
@@ -1762,7 +1811,7 @@ export const filterContent = async ({ instantId }) => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
-    console.log('curlCom', curlCommand);
+    // console.log('curlCom', curlCommand);
 
     // Make the actual request
     const result = await get(url, {
@@ -1950,15 +1999,15 @@ export const viewCertificate = async ({ certificateId }) => {
 
   const payload = {
     credentialId: certificateId,
-    templateId: 'cm7nbogii000moc3gth63l863',
+    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
   };
 
   try {
-    // const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
-    //   payload
-    // )}' ${url}`;
+    const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+      payload
+    )}' ${url}`;
 
-    // console.log('cURL Command:', curlCommand);
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -2043,6 +2092,85 @@ export const enrollInterest = async (selectedIds) => {
     console.log('e', e);
   }
 };
+export const telemetryTrackingData = async ({ telemetryPayloadData }) => {
+  const url = `${EndUrls.telemetryTrackingData}`; // Define the URL
+  const headers = await getHeaders();
+  const profileDetails = JSON.parse(await getDataFromStorage('profileData'))
+    ?.getUserDetails?.[0];
+
+  console.log('profileDetails===>', JSON.stringify(profileDetails));
+
+  const headersString = Object.entries(headers)
+    .map(([key, value]) => `-H "${key}: ${value}"`)
+    .join(' ');
+  const payload = {
+    id: 'api.sunbird.telemetry',
+    ver: '3.0',
+    params: {
+      msgid: '35cfea6c3cf2b3de56fd03c9b52a8de1',
+    },
+    ets: telemetryPayloadData?.ets,
+    events: [
+      {
+        eid: 'IMPRESSION',
+        ets: telemetryPayloadData?.ets,
+        ver: '3.0',
+        mid: 'IMPRESSION:fc44e5d5f9549938db7cce963cc0d6ad',
+        actor: {
+          id: 'Anonymous',
+          type: 'User',
+        },
+        context: {
+          channel: 'pratham-learner-app',
+          pdata: {
+            id: 'pratham-learner-app',
+            pid: '0.0.1',
+            ver: 'pratham-learner-app',
+          },
+          env: telemetryPayloadData?.event,
+          sid: profileDetails?.userId,
+          did: '86d25010904db7eed2c034cfc7109b4c',
+          cdata: [
+            {
+              id: profileDetails?.userId,
+              type: 'UserSession',
+            },
+            {
+              id: 'uuid',
+              type: 'Device',
+            },
+          ],
+          rollup: {},
+          uid: profileDetails?.userId,
+          userName: profileDetails?.username,
+        },
+        object: {},
+        tags: [],
+        edata: {
+          type: telemetryPayloadData?.type,
+          subtype: '',
+          pageid: telemetryPayloadData?.event,
+          uri: telemetryPayloadData?.event,
+        },
+      },
+    ],
+  };
+  const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+    payload
+  )}' ${url}`;
+  console.log('cURL Command:', curlCommand);
+  try {
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+    if (result) {
+      return result?.data;
+    }
+  } catch (e) {
+    console.log('e', e);
+  }
+};
 
 export const downloadCertificate = async ({
   certificateId,
@@ -2055,7 +2183,7 @@ export const downloadCertificate = async ({
 
   const payload = {
     credentialId: certificateId,
-    templateId: 'cm7nbogii000moc3gth63l863',
+    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
   };
 
   try {
@@ -2064,6 +2192,8 @@ export const downloadCertificate = async ({
       responseType: 'arraybuffer', // Ensures we get binary data
     });
     const data = response?.request?._response;
+    console.log('data', data);
+
     const base64Data = data; // Base64 string from API
     const fileName = `${certificateName}_${user_id}.pdf`;
     const path = `${RNFS.DownloadDirectoryPath}/${fileName}`;
@@ -2075,6 +2205,26 @@ export const downloadCertificate = async ({
   } catch (error) {
     console.error('Error downloading PDF:', error);
     Alert.alert('Error', 'Failed to download PDF');
+    return true;
+  }
+};
+export const shareCertificate = async ({ certificateId }) => {
+  const url = `${EndUrls.downloadCertificate}`; // Define the URL
+  const headers = await getHeaders();
+  const payload = {
+    credentialId: certificateId,
+    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
+  };
+
+  try {
+    const response = await axios.post(url, payload, {
+      headers: headers || {},
+      responseType: 'arraybuffer', // Ensures we get binary data
+    });
+    const data = response?.request?._response;
+    return data;
+  } catch (error) {
+    console.error('Error downloading PDF:', error);
     return true;
   }
 };

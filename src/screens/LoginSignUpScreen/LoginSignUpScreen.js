@@ -74,11 +74,11 @@ const LoginSignUpScreen = () => {
           name="create_account"
         >
           <CopilotView>
-            <SecondaryButton
+            {/* <SecondaryButton
               text={'create_new_account'}
               onPress={() => nav.navigate('RegisterStart')}
               style={{ fontSize: 14.5 }}
-            />
+            /> */}
           </CopilotView>
         </CopilotStep>
       </View>

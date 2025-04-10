@@ -33,6 +33,7 @@ import {
 } from '../../../utils/JsHelper/Helper';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import { useTranslation } from '@context/LanguageContext';
 
 const UnitList = ({ route }) => {
   const { children, name, course_id, unit_id, headingName, description } =
@@ -49,6 +50,7 @@ const UnitList = ({ route }) => {
 
   //set progress and start date
   const [trackData, setTrackData] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const logEvent = async () => {
@@ -152,14 +154,14 @@ const UnitList = ({ route }) => {
               </GlobalText>
             )}
             <GlobalText
-              style={[globalStyles.heading2]}
-              numberOfLines={2}
+              style={[globalStyles.h5, { marginBottom: 10 }]}
+              numberOfLines={4}
               ellipsizeMode="tail"
             >
-              {name}
+              {t('unit')} : {name}
             </GlobalText>
             <GlobalText
-              style={[globalStyles.heading2]}
+              style={[globalStyles.text]}
               numberOfLines={5}
               ellipsizeMode="tail"
             >

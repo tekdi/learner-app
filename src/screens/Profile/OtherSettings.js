@@ -28,13 +28,14 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
+import moment from 'moment';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 import InAppBrowser from 'react-native-inappbrowser-reborn';
 import FullPagePdfModal from '../RegisterScreen/FullPagePdfModal';
 import PropTypes from 'prop-types';
 import { NotificationUnsubscribe } from '../../utils/Helper/JSHelper';
 import { useInternet } from '../../context/NetworkContext';
+import { telemetryTrackingData } from '../../utils/API/AuthService';
 
 const OtherSettings = ({ route }) => {
   const { age } = route.params;
@@ -119,6 +120,15 @@ const OtherSettings = ({ route }) => {
           routes: [{ name: 'LoginScreen' }],
         })
       );
+      const now = moment();
+      const telemetryPayloadData = {
+        event: 'logout',
+        type: 'click',
+        ets: now.unix(),
+      };
+      await telemetryTrackingData({
+        telemetryPayloadData,
+      });
     };
 
     fetchData();

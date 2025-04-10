@@ -24,15 +24,21 @@ import {
 } from '../../utils/JsHelper/Helper';
 import globalStyles from '../../utils/Helper/Style';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
-
+import CompletedCourse from '../../components/CourseCard/CompletedCourse';
 import LinearGradient from 'react-native-linear-gradient';
 import NoCertificateBox from './NoCertificateBox';
 import GlobalText from '@components/GlobalText/GlobalText';
 import DeviceInfo from 'react-native-device-info';
 import Config from 'react-native-config';
-import { getProfileDetails, getStudentForm } from '../../utils/API/AuthService';
+import {
+  courseListApi_New,
+  getProfileDetails,
+  getStudentForm,
+  profileCourseListApi,
+} from '../../utils/API/AuthService';
 import { useInternet } from '../../context/NetworkContext';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
+import { courseTrackingStatus } from '@src/utils/API/ApiCalls';
 
 const Profile = () => {
   const { t, language } = useTranslation();
@@ -44,6 +50,8 @@ const Profile = () => {
   const [networkstatus, setNetworkstatus] = useState(true);
   const [userType, setUserType] = useState();
   const [cohortId, setCohortId] = useState();
+  const [courseList, setCourseList] = useState([]);
+
   const version = DeviceInfo.getVersion(); // e.g., "1.0.1"
   const buildNumber = DeviceInfo.getBuildNumber(); // e.g., "2"
   const convertObjectToArray = (data) => {
@@ -75,8 +83,58 @@ const Profile = () => {
     return transformedArray;
   };
 
+  const mergeCourseDetails = (content, data) => {
+    return data.map((item) => {
+      const matchedContent = content?.find(
+        (c) => c.identifier === item.courseId
+      );
+      return {
+        ...item,
+        name: matchedContent?.name || '',
+        posterImage: matchedContent?.posterImage || '',
+        description: matchedContent?.description || '',
+      };
+    });
+  };
+
+  const fetchCourseStatus = async () => {
+    const data = await profileCourseListApi();
+    let userTypes = await getDataFromStorage('userType');
+    const instant =
+      userTypes === 'youthnet'
+        ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+        : userTypes === 'scp'
+          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+
+    const inprogress_do_ids = data?.data?.map((item) => item?.courseId);
+
+    const content = await courseListApi_New({
+      instant,
+      inprogress_do_ids,
+    });
+    const newData = mergeCourseDetails(content?.content, data?.data);
+
+    setCourseList(newData);
+  };
+
+  function formatDob(userDetails) {
+    return userDetails.map((item) => {
+      if (item.name === 'dob' && typeof item.value === 'string') {
+        const [year, month, day] = item.value.split('-');
+        return {
+          ...item,
+          value: `${day}/${month}/${year}`,
+        };
+      }
+      return item;
+    });
+  }
+
   const fetchData = async () => {
     const data = await getStudentForm();
+    let userType = await getDataFromStorage('userType');
+    setUserType(userType);
     setDataInStorage('studentForm', JSON.stringify(data?.fields));
     const tenantId = await getDataFromStorage('userTenantid');
 
@@ -109,6 +167,7 @@ const Profile = () => {
       'middleName',
       'lastName',
       'tenantId',
+      'center',
     ];
 
     const filteredResult = Object.keys(finalResult)
@@ -126,7 +185,6 @@ const Profile = () => {
       requiredLabels,
       (profileView = true)
     );
-    console.log('finalResult', JSON.stringify(finalResult));
 
     // Extract state, district, and block
     const locationData = {
@@ -138,13 +196,14 @@ const Profile = () => {
 
     // Convert location data into a single formatted string
     const formattedLocation =
-      `${locationData.states} ${locationData.districts} ${locationData.blocks}  ${locationData.village}`.trim();
+      `${locationData.states}, ${locationData.districts}, ${locationData.blocks}, ${locationData.village}`.trim();
 
     // Remove states, districts, and blocks from userDetails
     delete userDetails.state;
     delete userDetails.district;
     delete userDetails.block;
     delete userDetails.village;
+    delete userDetails.center;
 
     // Add formatted location as a new field
     userDetails.location = formattedLocation;
@@ -152,13 +211,13 @@ const Profile = () => {
     const UpdatedObj = { ...userDetails, ...filteredResult };
     const newUpdatedObj = convertObjectToArray(UpdatedObj);
     setUserData(result?.getUserDetails?.[0]);
-    console.log('newUpdatedObj', JSON.stringify(newUpdatedObj));
     const filteredArray = newUpdatedObj.filter(
       (item) => item.name !== 'is_volunteer'
     );
-    console.log(JSON.stringify(filteredArray));
-
-    setUserDetails(filteredArray);
+    console.log('userDetails==>', JSON.stringify(filteredArray));
+    const newArray = formatDob(filteredArray);
+    console.log('newArray==>', JSON.stringify(newArray));
+    setUserDetails(newArray);
 
     // const tenantData = await getTentantId();
 
@@ -166,14 +225,11 @@ const Profile = () => {
     setNetworkstatus(true);
   };
 
-  // console.log('userdetails', JSON.stringify(userDetails.length));
-
   useFocusEffect(
     useCallback(() => {
-      // console.log('isConnected', isConnected);
-
       if (isConnected) {
         fetchData();
+        fetchCourseStatus();
         setNetworkstatus(true);
       } else if (!isConnected && userDetailss.length === 0) {
         setNetworkstatus(false);
@@ -222,8 +278,6 @@ const Profile = () => {
       setLoading(false); // Stop Refresh Indicator
     }
   };
-
-  console.log('userDetailss', JSON.stringify(userDetailss));
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -290,7 +344,34 @@ const Profile = () => {
               </View>
             </View>
           </LinearGradient>
-          {/* <NoCertificateBox userType={userType} /> */}
+          <View style={{ padding: 10 }}>
+            <GlobalText style={[globalStyles.h6, { color: '#78590C' }]}>
+              {userType == 'youthnet'
+                ? t('YouthNet')
+                : userType == 'scp'
+                  ? t('Second Chance Program')
+                  : t('Public')}
+            </GlobalText>
+          </View>
+
+          {userType == 'youthnet' && (
+            <>
+              <GlobalText
+                numberOfLines={4}
+                ellipsizeMode="tail"
+                style={[globalStyles.h5, { color: '#78590C' }]}
+              >
+                {t('completed_courses_certificates')}
+              </GlobalText>
+              {courseList.length === 0 && (
+                <NoCertificateBox userType={userType} />
+              )}
+              {courseList?.map((item, i) => {
+                return <CompletedCourse key={i} data={item} />;
+              })}
+            </>
+          )}
+
           <View style={{ backgroundColor: '#FFF8F2', paddingVertical: 20 }}>
             <View style={styles.viewBox}>
               {userDetailss?.map((item, key) => {

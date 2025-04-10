@@ -7,20 +7,11 @@ import debounce from 'lodash.debounce';
 const CustomSearchBox = ({
   setSearchText,
   searchText,
-  handleSearch,
+  // handleSearch,
   placeholder,
 }) => {
-  const debouncedSearch = useCallback(
-    debounce(() => {}, 2000), // Adjust debounce time in milliseconds as needed
-    []
-  );
-
   const onChangeText = (text) => {
     setSearchText(text);
-
-    if (text == '') {
-      handleSearch();
-    }
   };
 
   return (
@@ -32,9 +23,14 @@ const CustomSearchBox = ({
         value={searchText}
         onChangeText={onChangeText}
       />
-      <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-        <Ionicons name="search" size={24} color="#4D4639" />
-      </TouchableOpacity>
+      {/* <TouchableOpacity style={styles.searchButton} onPress={handleSearch}> */}
+      <Ionicons
+        name="search"
+        style={styles.searchButton}
+        size={24}
+        color="#4D4639"
+      />
+      {/* </TouchableOpacity> */}
     </View>
   );
 };
@@ -53,8 +49,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   searchButton: {
-    height: 40,
-    width: 40,
+    // height: 40,
+    // width: 40,
     backgroundColor: 'transparent',
     // borderWidth: 1,
     borderColor: '#ccc',

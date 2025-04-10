@@ -49,8 +49,8 @@ const DateTimePicker = ({
     hideDatePicker(); // Ensure modal closes properly
   };
 
-  const minDate = new Date(1995, 0, 1); // January 1, 1995
-  const maxDate = new Date(2015, 11, 31); // December 31, 2005
+  const minDate = new Date(1985, 0, 1); // January 1, 1995
+  const maxDate = new Date(2024, 11, 31); // December 31, 2005
 
   return (
     <View style={styles.container}>

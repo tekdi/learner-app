@@ -128,8 +128,8 @@ const Contents = () => {
       userType === 'youthnet'
         ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
         : userType === 'scp'
-        ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-        : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
 
     const data = await contentListApi_Pratham({ searchText, instant, offset });
     //found content progress
@@ -177,10 +177,22 @@ const Contents = () => {
     }
   };
 
-  const handleSearch = async () => {
-    setOffset(0); // Reset offset when searching
-    await fetchData(0, false); // Reset course data
-  };
+  // const handleSearch = async () => {
+  //   setOffset(0); // Reset offset when searching
+  //   await fetchData(0, false); // Reset course data
+  // };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setOffset(0); // Reset offset when searching
+      fetchData(0, false); // Fetch with reset data
+    }, 500);
+
+    // Cleanup timeout on unmount or when searchText changes
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchText]);
 
   const handleViewMore = () => {
     const newOffset = offset + 5; // Increase offset by 5
@@ -256,7 +268,7 @@ const Contents = () => {
               <CustomSearchBox
                 setSearchText={setSearchText}
                 searchText={searchText}
-                handleSearch={handleSearch}
+                // handleSearch={handleSearch}
                 placeholder={t('Search Content')}
               />
               <SyncCard doneSync={fetchData} />

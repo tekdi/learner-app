@@ -76,7 +76,7 @@ const MaterialCardView = ({ route }) => {
       {loading ? (
         <ActiveLoading />
       ) : (
-        <ScrollView style={{ maxHeight: '85%' }}>
+        <ScrollView style={[globalStyles.container, { maxHeight: '85%' }]}>
           <View style={{ padding: 20 }}>
             <GlobalText style={globalStyles.heading}>{subjectName}</GlobalText>
             <GlobalText style={globalStyles.text}>{type}</GlobalText>
@@ -102,7 +102,7 @@ const MaterialCardView = ({ route }) => {
               );
             })
           ) : (
-            <GlobalText style={globalStyles.heading}>
+            <GlobalText style={[globalStyles.h3, { marginLeft: 10 }]}>
               {t('no_topics')}
             </GlobalText>
           )}
