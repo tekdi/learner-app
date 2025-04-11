@@ -151,7 +151,7 @@ const LoginScreen = () => {
               // navigation.navigate('YouthNetTabScreen');
               navigation.navigate('Dashboard');
             } else {
-              await setDataInStorage('userType', 'public');
+              await setDataInStorage('userType', 'pragyanpath');
               navigation.navigate('Dashboard');
             }
           }

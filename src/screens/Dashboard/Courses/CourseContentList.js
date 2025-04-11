@@ -54,9 +54,7 @@ import { useInternet } from '../../../context/NetworkContext';
 const CourseContentList = ({ route }) => {
   const { language, t } = useTranslation();
   const { do_id, course_id, content_list_node } = route.params;
-  // console.log('########## CourseContentList');
-  // console.log('course_id', course_id);
-  // console.log('##########');
+
   const navigation = useNavigation();
   const [coursesContent, setCoursesContent] = useState();
   const [identifiers, setIdentifiers] = useState([]);
@@ -67,6 +65,7 @@ const CourseContentList = ({ route }) => {
   const [certificateModal, setCertificateModal] = useState(false); // State to track which item is expanded
   const [certificateHtml, setCertificateHtml] = useState(null); // State to track which item is expanded
   const [isModal, setIsModal] = useState(false); // State to track which item is expanded
+  const [userType, setuserType] = useState(false); // State to track which item is expanded
 
   useFocusEffect(
     useCallback(() => {
@@ -91,7 +90,7 @@ const CourseContentList = ({ route }) => {
     setLoading(true);
     setEnrollStatus(true);
     const data = await CourseEnrollStatus({ course_id });
-    console.log('data', data);
+    // console.log('data', data);
 
     if (data?.params?.status === 'successful') {
       setEnrollStatus(true);
@@ -123,17 +122,14 @@ const CourseContentList = ({ route }) => {
 
   const fetchData = async () => {
     setLoading(true);
-    // const content_do_id = 'do_1141503830938746881180';
-    // const content_do_id = 'do_11415396442603520013';
+
+    let usertype = await getDataFromStorage('userType');
+    setuserType(usertype);
     const content_do_id = do_id;
     // Fetch course details
     const data = await courseDetails(content_do_id);
     // Set courses
     const coursescontent = data?.result?.content;
-
-    // console.log('########## coursescontent');
-    // console.log('coursescontent', JSON.stringify(coursescontent));
-    // console.log('##########');
 
     const coursesData = data?.result?.content?.children;
     setCoursesContent(coursescontent);
@@ -144,7 +140,6 @@ const CourseContentList = ({ route }) => {
 
     setLoading(false);
 
-    // console.log('############ in focus');
     setLoading(true);
     fetchDataTrack();
   };
@@ -156,19 +151,14 @@ const CourseContentList = ({ route }) => {
   const [trackProgress, setTrackProgress] = useState(0);
   const [startedOn, setStartedOn] = useState('');
   const [networkstatus, setNetworkstatus] = useState(true);
-  console.log('isConnected', isConnected);
 
   const fetchDataTrack = async () => {
     //found course progress
     try {
-      // console.log('########## contentListApi');
-      //console.log('########## contentList', contentList);
       let courseList = [course_id];
-      //console.log('########## courseList', courseList);
       //get course track data
       let userId = await getDataFromStorage('userId');
       let course_track_data = await courseTrackingStatus(userId, courseList);
-      //console.log('########## course_track_data', course_track_data?.data);
       let courseTrackData = [];
       if (course_track_data?.data) {
         courseTrackData =
@@ -176,11 +166,9 @@ const CourseContentList = ({ route }) => {
             ?.course || [];
       }
       setTrackData(courseTrackData);
-      // console.log('########## courseTrackData', courseTrackData);
-      // console.log('##########');
+
       setLoading(false); // Ensure to stop loading when data fetch completes
     } catch (e) {
-      // console.log('e', e);
       setLoading(false); // Stop loading even on error
     }
   };
@@ -198,16 +186,12 @@ const CourseContentList = ({ route }) => {
             let offline_in_progress = [];
             let offline_completed = [];
             let lastAccessOn = '';
-            // console.log(
-            //   '############ offlineTrack',
-            //   JSON.stringify(offlineTrack)
-            // );
+
             if (offlineTrack) {
               for (let jj = 0; jj < offlineTrack.length; jj++) {
                 let offlineTrackItem = offlineTrack[jj];
                 let content_id = offlineTrackItem?.content_id;
                 lastAccessOn = offlineTrack[0]?.lastAccessOn;
-                //console.log('############ lastAccessOn', lastAccessOn);
                 try {
                   let detailsObject = JSON.parse(
                     offlineTrackItem?.detailsObject
@@ -221,10 +205,6 @@ const CourseContentList = ({ route }) => {
                     if (eid == 'END') {
                       status = 'completed';
                     }
-                    // console.log(
-                    //   '##### detailsObject length',
-                    //   detailsObject[k]?.eid
-                    // );
                   }
                   if (status == 'in_progress') {
                     offline_in_progress.push(content_id);
@@ -237,24 +217,18 @@ const CourseContentList = ({ route }) => {
                 }
               }
             }
-            // console.log(
-            //   '############ offline_in_progress',
-            //   offline_in_progress
-            // );
-            // console.log('############ offline_completed', offline_completed);
+
             if (trackData[i]?.started_on) {
               let temp_startedOn = trackData[i].started_on;
               const formattedDate =
                 moment(temp_startedOn).format('DD MMM YYYY');
               setStartedOn(formattedDate);
-              // console.log('########### formattedDate', formattedDate);
             } else if (lastAccessOn !== '') {
               //get offlien time
               let temp_startedOn = lastAccessOn;
               const formattedDate =
                 moment(temp_startedOn).format('DD MMM YYYY');
               setStartedOn(formattedDate);
-              // console.log('########### formattedDate', formattedDate);
             }
 
             //merge offlien and online
@@ -281,10 +255,7 @@ const CourseContentList = ({ route }) => {
             }
             let percentageCompleted = (completed / totalContent) * 100;
             percentageCompleted = Math.round(percentageCompleted);
-            // console.log('########### completed', completed);
-            // console.log('########### leafNodes', totalContent);
-            // console.log('########### content_list_node', content_list_node);
-            // console.log('########### percentageCompleted', percentageCompleted);
+
             setTrackCompleted(percentageCompleted);
 
             //get unique in progress content list
@@ -312,7 +283,6 @@ const CourseContentList = ({ route }) => {
 
   const updateCourseStatusFun = async () => {
     const data = await updateCourseStatus({ course_id });
-    console.log('data', JSON.stringify(data));
     const result = JSON.parse(await getDataFromStorage('profileData'));
     const userDetails = result?.getUserDetails?.[0];
     let userId = await getDataFromStorage('userId');
@@ -331,19 +301,17 @@ const CourseContentList = ({ route }) => {
       courseName: coursesContent?.name,
     };
     const certificate = await issueCertificate({ payload });
-    // console.log(
-    //   'certificate',
-    //   JSON.stringify(certificate?.result?.credential?.id)
-    // );
+
     setCertificateId(certificate?.result?.credential?.id);
-    setCertificateModal(true);
+    if (userType !== 'pragyanpath') {
+      setCertificateModal(true);
+    }
   };
 
   useEffect(() => {
     setLoading(true);
 
     if (trackCompleted >= 100) {
-      console.log('completed====>', certificateId);
       if (!certificateId) {
         updateCourseStatusFun();
       }
@@ -353,12 +321,9 @@ const CourseContentList = ({ route }) => {
 
   const handleViewCertificate = async () => {
     const data = await viewCertificate({ certificateId });
-    // console.log('data', JSON.stringify(data?.result));
     setCertificateHtml(data?.result);
     setVisible(true);
   };
-
-  // console.log('coursesContent',  JSON.stringify(coursesContent?.children));
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -428,7 +393,8 @@ const CourseContentList = ({ route }) => {
                   />
                 </View>
               ) : (
-                certificateId && (
+                certificateId &&
+                userType !== 'pragyanpath' && (
                   <View
                     style={{
                       width: '90%',
@@ -515,10 +481,10 @@ const CourseContentList = ({ route }) => {
                             trackCompleted >= 100
                               ? 'completed'
                               : trackCompleted > 0
-                                ? 'inprogress'
-                                : trackProgress > 0
-                                  ? 'progress'
-                                  : 'not_started'
+                              ? 'inprogress'
+                              : trackProgress > 0
+                              ? 'progress'
+                              : 'not_started'
                           }
                           trackCompleted={trackCompleted}
                           viewStyle={{

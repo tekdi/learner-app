@@ -10,6 +10,8 @@ import profile from '../../assets/images/png/profile.png';
 import profile_filled from '../../assets/images/png/profile_filled.png';
 
 import Coursesunfilled from '../../assets/images/png/Coursesunfilled.png';
+import contentunfilled from '../../assets/images/png/content.png';
+import contentfilled from '../../assets/images/png/content2.png';
 import ProfileStack from './ProfileStack';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
@@ -116,7 +118,7 @@ const TabScreen = () => {
             ),
             tabBarIcon: ({ focused }) => (
               <Image
-                source={focused ? profile_filled : profile}
+                source={focused ? contentfilled : contentunfilled}
                 style={{ width: 30, height: 30 }}
               />
             ),

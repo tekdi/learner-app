@@ -193,33 +193,36 @@ const OtherSettings = ({ route }) => {
             <></>
           ) : (
             <>
-              <TouchableOpacity
-                style={[globalStyles.flexrow, styles.borderColor]}
-                onPress={() => {
-                  navigation.navigate('ProfileUpdateScreen');
-                }}
-              >
-                <View
-                  style={[
-                    globalStyles.flexrow,
-                    { justifyContent: 'space-between', width: '100%' },
-                  ]}
+              {userType !== 'pragyanpath' && (
+                <TouchableOpacity
+                  style={[globalStyles.flexrow, styles.borderColor]}
+                  onPress={() => {
+                    navigation.navigate('ProfileUpdateScreen');
+                  }}
                 >
-                  <GlobalText
-                    style={[globalStyles.h6, { color: '#4D4639' }]}
-                    numberOfLines={2}
-                    ellipsizeMode="tail"
+                  <View
+                    style={[
+                      globalStyles.flexrow,
+                      { justifyContent: 'space-between', width: '100%' },
+                    ]}
                   >
-                    {t('edit_profile')}
-                  </GlobalText>
-                  <Icon
-                    name="angle-right"
-                    style={{ marginHorizontal: 10 }}
-                    color={'#000'}
-                    size={30}
-                  />
-                </View>
-              </TouchableOpacity>
+                    <GlobalText
+                      style={[globalStyles.h6, { color: '#4D4639' }]}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      {t('edit_profile')}
+                    </GlobalText>
+                    <Icon
+                      name="angle-right"
+                      style={{ marginHorizontal: 10 }}
+                      color={'#000'}
+                      size={30}
+                    />
+                  </View>
+                </TouchableOpacity>
+              )}
+
               <TouchableOpacity
                 style={[globalStyles.flexrow, styles.borderColor]}
                 onPress={() => {

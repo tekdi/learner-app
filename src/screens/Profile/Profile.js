@@ -104,8 +104,8 @@ const Profile = () => {
       userTypes === 'youthnet'
         ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
         : userTypes === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+        ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+        : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
 
     const inprogress_do_ids = data?.data?.map((item) => item?.courseId);
 
@@ -349,8 +349,8 @@ const Profile = () => {
               {userType == 'youthnet'
                 ? t('YouthNet')
                 : userType == 'scp'
-                  ? t('Second Chance Program')
-                  : t('Public')}
+                ? t('Second Chance Program')
+                : t('Pragyanpath')}
             </GlobalText>
           </View>
 
