@@ -421,8 +421,8 @@ export const translateDate = (dateStr, lang) => {
 
 export const createNewObject = (customFields, labels, profileView) => {
   const result = {};
-  // console.log('customFields', JSON.stringify(customFields));
-  // console.log('requiredLabelsfROMsCHEMA', JSON.stringify(labels));
+  console.log('customFields', JSON.stringify(customFields));
+  console.log('requiredLabelsfROMsCHEMA', JSON.stringify(labels));
 
   customFields?.forEach((field) => {
     const cleanedFieldLabel = field?.label?.replace(/[^a-zA-Z0-9_ ]/g, '');
@@ -431,31 +431,31 @@ export const createNewObject = (customFields, labels, profileView) => {
     labels.map((item) => {
       if (item?.label === cleanedFieldLabel) {
         const selectedValues = field?.selectedValues;
-        // console.log('selectedValues', selectedValues?.[0].id);
+        console.log('selectedValues', selectedValues);
 
         if (field.type === 'drop_down') {
           if (profileView) {
             result[item.label.toLowerCase()] = {
-              label: selectedValues?.[0].value || '-',
-              value: selectedValues?.[0].value || '-',
+              label: selectedValues?.[0]?.value || '-',
+              value: selectedValues?.[0]?.value || '-',
             };
           } else {
             result[item.name] = {
-              label: selectedValues?.[0].value || '-',
-              value: selectedValues?.[0].value || '-',
+              label: selectedValues?.[0]?.value || '-',
+              value: selectedValues?.[0]?.value || '-',
             };
           }
 
           if (['STATE', 'DISTRICT', 'BLOCK', 'VILLAGE'].includes(field.label)) {
             if (profileView) {
               result[item.label.toLowerCase()] = {
-                label: selectedValues?.[0].value || '-',
-                value: selectedValues?.[0].value || '-',
+                label: selectedValues?.[0]?.value || '-',
+                value: selectedValues?.[0]?.value || '-',
               };
             } else {
               result[item.name] = {
-                label: selectedValues?.[0].value || '-',
-                value: selectedValues?.[0].id || '-',
+                label: selectedValues?.[0]?.value || '-',
+                value: selectedValues?.[0]?.id || '-',
               };
             }
           }

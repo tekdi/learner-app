@@ -214,9 +214,9 @@ const Profile = () => {
     const filteredArray = newUpdatedObj.filter(
       (item) => item.name !== 'is_volunteer'
     );
-    console.log('userDetails==>', JSON.stringify(filteredArray));
+    // console.log('userDetails==>', JSON.stringify(filteredArray));
     const newArray = formatDob(filteredArray);
-    console.log('newArray==>', JSON.stringify(newArray));
+    // console.log('newArray==>', JSON.stringify(newArray));
     setUserDetails(newArray);
 
     // const tenantData = await getTentantId();
