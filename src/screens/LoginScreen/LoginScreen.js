@@ -72,25 +72,23 @@ const LoginScreen = () => {
       };
       const data = await login(payload);
 
-      if (data?.params?.status !== 'failed' && !data?.error) {
+      if (data?.access_token) {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
         const userDetails = await getuserDetails();
-        console.log('userDetails===>', JSON.stringify(userDetails));
 
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
-        // console.log('tenantData', JSON.stringify(userDetails));
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
         await setDataInStorage('userId', user_id || '');
 
         const academicyear = await setAcademicYear({ tenantid });
         const academicYearId = academicyear?.[0]?.id;
+        console.log('cohort=>', academicYearId);
         await setDataInStorage('academicYearId', academicYearId || '');
         await setDataInStorage('userTenantid', tenantid || '');
         const cohort = await getCohort({ user_id, tenantid, academicYearId });
-        console.log('cohort=>', JSON.stringify(cohort));
         let cohort_id;
         if (cohort.params?.status !== 'failed') {
           const getActiveCohort = await getActiveCohortData(cohort);
@@ -118,7 +116,6 @@ const LoginScreen = () => {
           cohort_id || '00000000-0000-0000-0000-000000000000'
         );
         const tenantDetails = (await getProgramDetails()) || [];
-        // console.log('tenantDetails', JSON.stringify(tenantDetails));
 
         const youthnetTenantIds = tenantDetails
           ?.filter((item) => item?.name === 'YouthNet')
@@ -130,10 +127,6 @@ const LoginScreen = () => {
 
         const role = tenantData?.[0]?.roleName;
 
-        // console.log('scp', scp);
-        // console.log('cohort_id', cohort_id);
-        // console.log('tenantid', tenantid);
-
         if (role == 'Learner' || role == 'Student') {
           if (tenantid === scp?.[0]) {
             await setDataInStorage('userType', 'scp');
@@ -143,9 +136,6 @@ const LoginScreen = () => {
               navigation.navigate('Dashboard');
             }
           } else {
-            console.log('tentn', tenantid);
-            console.log('youthnetTenantIds?.[0]?.tenantId', youthnetTenantIds);
-
             if (tenantid === youthnetTenantIds?.[0]) {
               await setDataInStorage('userType', 'youthnet');
               // navigation.navigate('YouthNetTabScreen');
@@ -330,7 +320,7 @@ const LoginScreen = () => {
               isDisabled={!isDisabled}
             />
           </View>
-          {/* <Pressable
+          <Pressable
             onPress={() => {
               navigation.navigate('RegisterStart');
             }}
@@ -339,7 +329,7 @@ const LoginScreen = () => {
             <GlobalText style={[globalStyles.text, { color: '#0D599E' }]}>
               {t('dont_have_account')}
             </GlobalText>
-          </Pressable> */}
+          </Pressable>
         </ScrollView>
       )}
 

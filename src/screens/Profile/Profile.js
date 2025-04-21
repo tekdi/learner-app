@@ -100,17 +100,16 @@ const Profile = () => {
   const fetchCourseStatus = async () => {
     const data = await profileCourseListApi();
     let userTypes = await getDataFromStorage('userType');
-    const instant =
-      userTypes === 'youthnet'
-        ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
-        : userTypes === 'scp'
-        ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-        : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+    // const instant =
+    //   userTypes === 'youthnet'
+    //     ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+    //     : userTypes === 'scp'
+    //     ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+    //     : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
 
     const inprogress_do_ids = data?.data?.map((item) => item?.courseId);
 
     const content = await courseListApi_New({
-      instant,
       inprogress_do_ids,
     });
     const newData = mergeCourseDetails(content?.content, data?.data);

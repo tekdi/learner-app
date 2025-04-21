@@ -4,6 +4,7 @@ import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import DashboardStack from './DashboardStack';
 import SurveyStack from '../Youthnet/SurveyStack';
+import ExploreStack from '../Youthnet/ExploreStack';
 import Contents from '../../screens/Dashboard/Contents';
 import Coursesfilled from '../../assets/images/png/Coursesfilled.png';
 import profile from '../../assets/images/png/profile.png';
@@ -17,6 +18,8 @@ import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
 import survey_filled from '@src/assets/images/png/survey_filled.png';
 import survey_unfilled from '@src/assets/images/png/survey_unfilled.png';
+import explore_FILL from '@src/assets/images/png/explore_FILL.png';
+import explore_UNFILLED from '@src/assets/images/png/explore_UNFILLED.png';
 
 const Tab = createBottomTabNavigator();
 const WalkthroughableView = walkthroughable(View); // Wrap Image component
@@ -125,7 +128,7 @@ const TabScreen = () => {
           }}
         />
       )}
-      {/* {!contentShow && (
+      {!contentShow && (
         <Tab.Screen
           name="explore"
           component={ExploreStack}
@@ -150,7 +153,7 @@ const TabScreen = () => {
             ),
           }}
         />
-      )} */}
+      )}
       {!contentShow && isVolunteer === 'yes' && (
         <Tab.Screen
           name="surveys"

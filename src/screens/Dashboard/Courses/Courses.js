@@ -140,8 +140,8 @@ const Courses = () => {
         userType === 'youthnet'
           ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
           : userType === 'scp'
-            ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-            : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
       setInstant(instant);
     };
     fetch();
@@ -190,7 +190,6 @@ const Courses = () => {
 
   useFocusEffect(
     useCallback(() => {
-      // console.log('########## in focus course');
       const onBackPress = () => {
         if (routeName === 'Courses') {
           setShowExitModal(true);
@@ -201,7 +200,6 @@ const Courses = () => {
 
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
       // const newOffset = offset; // Increase offset by 5
-      // console.log('newOffset', newOffset);
 
       // setOffset(newOffset); // Update state
       // fetchData(newOffset, false); // Append new data
@@ -221,25 +219,22 @@ const Courses = () => {
     setTopicList(newData);
   };
 
-  console.log('offset', offset);
-
   const fetchData = async (offset, append = false) => {
     setLoading(true);
     fetchTopics();
     const mergedFilter = { ...parentFormData, ...parentStaticFormData };
     let userType = await getDataFromStorage('userType');
 
-    const instant =
-      userType === 'youthnet'
-        ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
-        : userType === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+    // const instant =
+    //   userType === 'youthnet'
+    //     ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+    //     : userType === 'scp'
+    //       ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+    //       : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
 
     let data = await courseListApi_New({
       searchText,
       mergedFilter,
-      instant,
       offset,
     });
 
@@ -268,7 +263,6 @@ const Courses = () => {
     }
 
     const result = JSON.parse(await getDataFromStorage('profileData'));
-    // console.log('result', JSON.stringify(result));
 
     setUserInfo(result?.getUserDetails);
     setCount(data?.count);
@@ -285,7 +279,6 @@ const Courses = () => {
 
     const isInterested = trackData.some((course) => course.completed);
     const data = (await getDataFromStorage(`Enrolled_to_l2${user_Id}`)) || '';
-    // console.log('data==>', data);
 
     if (data === 'yes') {
       setInterestContent(false);
@@ -293,8 +286,6 @@ const Courses = () => {
       setInterestContent(true);
     }
   }
-
-  // console.log('intereest', interestContent);
 
   useEffect(() => {
     fetchData(0, false);
@@ -318,8 +309,6 @@ const Courses = () => {
   }, [searchText]);
 
   const handleViewMore = () => {
-    // console.log('offset', offset);
-
     const newOffset = offset + 10; // Increase offset by 5
     setOffset(newOffset); // Update state
     fetchData(newOffset, true); // Append new data

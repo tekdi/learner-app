@@ -34,24 +34,31 @@ const getHeaderswithoutTenant = async () => {
 
 export const login = async (params = {}) => {
   try {
-    const result = await post(`${EndUrls.login}`, params, {
+    const url = `${EndUrls.login}`;
+
+    // console.log('Calling login API...');
+    // console.log(
+    //   `curl -X POST ${url} \\\n` +
+    //     `  -H "Content-Type: application/json" \\\n` +
+    //     `  -H "Accept: application/json" \\\n` +
+    //     `  -d '${JSON.stringify(params, null, 2)}'`
+    // );
+
+    const result = await post(url, params, {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
     });
-    const dataString = JSON.stringify(params).replace(/"/g, '\\"'); // Escape quotes for cURL
-    console.log(`curl -X POST "${EndUrls.login}" \\
-    -H "Content-Type: application/json" \\
-    -H "Accept: application/json" \\
-    -d "${dataString}"`);
+
     if (result?.data) {
       return result?.data?.result;
     } else {
       return {};
     }
   } catch (e) {
-    return console.log('e', e);
+    console.error('Login error:', e);
+    return {};
   }
 };
 
@@ -422,7 +429,7 @@ export const courseListApi_New = async ({
   const payload = {
     request: {
       filters: {
-        channel: channelId,
+        channel: instant?.channelId || channelId,
         // program:
         //   userType == 'scp'
         //     ? ['secondchance', 'Second Chance', 'SCP']
@@ -469,7 +476,7 @@ export const courseListApi_New = async ({
   curlCommand += `-d '${JSON.stringify(payload)}'`;
 
   // Output the cURL command to the console
-  console.log('Equivalent cURL command:\n', curlCommand);
+  // console.log('Equivalent cURL command:\n', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -690,13 +697,13 @@ export const getProgramDetails = async () => {
     const url = `${EndUrls.tenantRead}`;
 
     // Log the curl command
-    console.log(
-      `curl -X GET '${url}' -H 'Content-Type: application/json'${
-        headers.Authorization
-          ? ` -H 'Authorization: ${headers.Authorization}'`
-          : ''
-      }`
-    );
+    // console.log(
+    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${
+    //     headers.Authorization
+    //       ? ` -H 'Authorization: ${headers.Authorization}'`
+    //       : ''
+    //   }`
+    // );
 
     const result = await get(url, {
       headers: headers || {},
@@ -913,7 +920,7 @@ export const getProfileDetails = async (params = {}) => {
     // Construct cURL command
     const curlCommand = `curl -X POST "${url}" ${headerString} -H "Content-Type: application/json" -d '${payloadString}'`;
 
-    console.log('Generated cURL Command:', curlCommand);
+    // console.log('Generated cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1828,7 +1835,7 @@ export const filterContent = async ({ instantId }) => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
-    console.log('curlCom', curlCommand);
+    // console.log('curlCom', curlCommand);
 
     // Make the actual request
     const result = await get(url, {
@@ -2099,7 +2106,7 @@ export const enrollInterest = async (selectedIds) => {
   const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
     payload
   )}' ${url}`;
-  console.log('cURL Command:', curlCommand);
+  // console.log('cURL Command:', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -2117,8 +2124,6 @@ export const telemetryTrackingData = async ({ telemetryPayloadData }) => {
   const headers = await getHeaders();
   const profileDetails = JSON.parse(await getDataFromStorage('profileData'))
     ?.getUserDetails?.[0];
-
-  console.log('profileDetails===>', JSON.stringify(profileDetails));
 
   const headersString = Object.entries(headers)
     .map(([key, value]) => `-H "${key}: ${value}"`)
@@ -2178,7 +2183,7 @@ export const telemetryTrackingData = async ({ telemetryPayloadData }) => {
   const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
     payload
   )}' ${url}`;
-  console.log('cURL Command:', curlCommand);
+  // console.log('cURL Command:', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -2189,6 +2194,50 @@ export const telemetryTrackingData = async ({ telemetryPayloadData }) => {
     }
   } catch (e) {
     console.log('e', e);
+  }
+};
+export const cohortSearch = async ({ customFields }) => {
+  const token = await getDataFromStorage('Accesstoken');
+  const academicYearId = await getDataFromStorage('academicYearId');
+  const tenantId = await getDataFromStorage('userTenantid');
+
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: `Bearer ${token}`,
+    tenantid: tenantId,
+    academicyearid: academicYearId,
+  };
+
+  const url = `${EndUrls.cohortSearch}`;
+  const headersString = Object.entries(headers)
+    .map(([key, value]) => `-H "${key}: ${value}"`)
+    .join(' ');
+  const payload = {
+    limit: 10,
+    offset: 0,
+    filters: {
+      state: customFields?.STATE,
+      district: customFields?.DISTRICT,
+      // block: customFields?.BLOCK,
+      // village: customFields?.VILLAGE,
+    },
+  };
+
+  const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+    payload
+  )}' ${url}`;
+  console.log('cURL Command:', curlCommand);
+
+  try {
+    const result = await post(url, payload, { headers });
+    return result?.data?.result;
+  } catch (e) {
+    if (e?.response?.data) {
+      return e.response.data;
+    }
+
+    return { error: true, message: e.message || 'Unknown error' };
   }
 };
 

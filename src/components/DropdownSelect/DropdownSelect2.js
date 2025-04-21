@@ -133,6 +133,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     marginTop: 5,
     maxHeight: 200, // Set a maximum height for the options box
+    position: 'absolute',
+    top: 60,
+    zIndex: 2,
   },
   dropdownOption: {
     padding: 10,

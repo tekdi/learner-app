@@ -38,6 +38,7 @@ const EndUrls = {
   sendOTP: `${API_URL}/interface/v1/user/send-otp`,
   verifyOTP: `${API_URL}/interface/v1/user/verify-otp`,
   userExist: API_URL + `/interface/v1/user/check`,
+  cohortSearch: API_URL + `/interface/v1/cohort/search`,
 
   targetedSolutions: `${EVENT_DETAILS}/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
   EventDetails: `${EVENT_DETAILS}/userProjects/details`,
