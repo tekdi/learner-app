@@ -413,6 +413,7 @@ export const courseListApi_New = async ({
   instant,
   offset,
   inprogress_do_ids,
+  contentFilter,
 }) => {
   const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
   const channelId = tenantData?.[0]?.channelId;
@@ -434,6 +435,8 @@ export const courseListApi_New = async ({
         //   userType == 'scp'
         //     ? ['secondchance', 'Second Chance', 'SCP']
         //     : ['Youthnet', 'youthnet', 'YouthNet'],
+        domain: contentFilter?.domain,
+        program: contentFilter?.program,
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
         status: ['Live'],
         primaryCategory: ['Course'],
@@ -476,7 +479,7 @@ export const courseListApi_New = async ({
   curlCommand += `-d '${JSON.stringify(payload)}'`;
 
   // Output the cURL command to the console
-  // console.log('Equivalent cURL command:\n', curlCommand);
+  console.log('Equivalent cURL command:\n', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -1872,7 +1875,7 @@ export const staticFilterContent = async ({ instantId }) => {
     -H 'Accept: application/json' \\
     -d '${JSON.stringify(payload)}'
         `;
-    // console.log('cURL Command:', curlCommand);
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {

@@ -151,12 +151,16 @@ const ExploreTab = () => {
     let userType = await getDataFromStorage('userType');
 
     const instant = { frameworkId: 'pos-framework', channelId: 'pos-channel' };
-
+    // let contentFilter = {
+    //   domain: 'Learning for Work',
+    //   program: 'Vocational Training',
+    // };
     let data = await courseListApi_New({
       searchText,
       mergedFilter,
       instant,
       offset,
+      // contentFilter,
     });
     const profileDetails = JSON.parse(await getDataFromStorage('profileData'))
       ?.getUserDetails?.[0];
@@ -171,7 +175,10 @@ const ExploreTab = () => {
       {}
     );
     const skillcenter = await cohortSearch({ customFields });
-    console.log('skillcenter===>', skillcenter?.results?.cohortDetails);
+    console.log(
+      'skillcenter===>',
+      JSON.stringify(skillcenter?.results?.cohortDetails)
+    );
 
     setSkillCenterData(skillcenter?.results?.cohortDetails);
 
@@ -271,7 +278,7 @@ const ExploreTab = () => {
                   order={6}
                   name="start"
                 >
-                  <CopilotView style={{ width: '70%' }}>
+                  <CopilotView style={{ width: '100%' }}>
                     <View>
                       <CustomSearchBox
                         setSearchText={setSearchText}
@@ -283,7 +290,7 @@ const ExploreTab = () => {
                   </CopilotView>
                 </CopilotStep>
 
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={[
                     globalStyles.flexrow,
                     {
@@ -308,7 +315,7 @@ const ExploreTab = () => {
                     color="#000"
                     // style={{ marginLeft: 10 }}
                   />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
 
               <SyncCard doneSync={fetchData} />

@@ -231,11 +231,13 @@ const Courses = () => {
     //     : userType === 'scp'
     //       ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
     //       : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+    let contentFilter = JSON.parse(await getDataFromStorage('contentFilter'));
 
     let data = await courseListApi_New({
       searchText,
       mergedFilter,
       offset,
+      contentFilter,
     });
 
     try {
@@ -434,7 +436,7 @@ const Courses = () => {
                   order={6}
                   name="start"
                 >
-                  <CopilotView style={{ width: '70%' }}>
+                  <CopilotView style={{ width: '100%' }}>
                     <View>
                       <CustomSearchBox
                         setSearchText={setSearchText}
@@ -445,7 +447,7 @@ const Courses = () => {
                     </View>
                   </CopilotView>
                 </CopilotStep>
-
+                {/* 
                 <TouchableOpacity
                   style={[
                     globalStyles.flexrow,
@@ -471,7 +473,7 @@ const Courses = () => {
                     color="#000"
                     // style={{ marginLeft: 10 }}
                   />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
 
               <SyncCard doneSync={fetchData} />

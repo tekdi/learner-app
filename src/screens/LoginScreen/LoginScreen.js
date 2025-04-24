@@ -85,7 +85,6 @@ const LoginScreen = () => {
 
         const academicyear = await setAcademicYear({ tenantid });
         const academicYearId = academicyear?.[0]?.id;
-        console.log('cohort=>', academicYearId);
         await setDataInStorage('academicYearId', academicYearId || '');
         await setDataInStorage('userTenantid', tenantid || '');
         const cohort = await getCohort({ user_id, tenantid, academicYearId });
@@ -116,6 +115,21 @@ const LoginScreen = () => {
           cohort_id || '00000000-0000-0000-0000-000000000000'
         );
         const tenantDetails = (await getProgramDetails()) || [];
+
+        const MatchedTenant = tenantDetails.filter(
+          (item) => item?.tenantId === tenantid
+        );
+
+        // console.log('tenantDetails===>', JSON.stringify(tenantDetails));
+        // console.log(
+        //   'MatchedTenant===>',
+        //   JSON.stringify(MatchedTenant?.[0]?.contentFilter)
+        // );
+
+        await setDataInStorage(
+          'contentFilter',
+          JSON.stringify(MatchedTenant?.[0]?.contentFilter)
+        );
 
         const youthnetTenantIds = tenantDetails
           ?.filter((item) => item?.name === 'YouthNet')
