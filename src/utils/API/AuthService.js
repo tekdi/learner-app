@@ -1715,8 +1715,9 @@ export const getAttendance = async ({ todate, fromDate }) => {
     limit: 300,
     page: 0,
     filters: {
+      context: 'cohort',
       contextId: cohortId,
-      scope: 'student',
+      scope: 'Learner',
       toDate: todate,
       fromDate: fromDate,
       userId: userId,

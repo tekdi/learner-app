@@ -128,7 +128,7 @@ const LoginScreen = () => {
 
         await setDataInStorage(
           'contentFilter',
-          JSON.stringify(MatchedTenant?.[0]?.contentFilter)
+          JSON.stringify(MatchedTenant?.[0]?.contentFilter || {})
         );
 
         const youthnetTenantIds = tenantDetails

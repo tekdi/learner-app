@@ -102,6 +102,8 @@ const SkillCenter = () => {
     setSelectedVillage(null);
   };
   const fetchVillages = async () => {
+    console.log('selectedDistrict', selectedDistrict);
+
     const payload = {
       limit: 1000,
       offset: 0,

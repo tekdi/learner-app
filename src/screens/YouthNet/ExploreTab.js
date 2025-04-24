@@ -175,10 +175,6 @@ const ExploreTab = () => {
       {}
     );
     const skillcenter = await cohortSearch({ customFields });
-    console.log(
-      'skillcenter===>',
-      JSON.stringify(skillcenter?.results?.cohortDetails)
-    );
 
     setSkillCenterData(skillcenter?.results?.cohortDetails);
 
