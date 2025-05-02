@@ -132,9 +132,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: 'white',
     marginTop: 5,
-    maxHeight: 200, // Set a maximum height for the options box
-    position: 'absolute',
-    top: 60,
+    maxHeight: 250, // Set a maximum height for the options box
+    // position: 'absolute',
+    // top: 0,
     zIndex: 2,
   },
   dropdownOption: {

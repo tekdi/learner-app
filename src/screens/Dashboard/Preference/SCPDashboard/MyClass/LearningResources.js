@@ -15,6 +15,8 @@ const LearningResources = ({ route }) => {
   const [trackData, setTrackData] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // console.log('resources===>', resources);
+
   function separatePrerequisitesAndPostrequisites(data) {
     let prerequisites = [];
     let postrequisites = [];
@@ -36,7 +38,7 @@ const LearningResources = ({ route }) => {
   }
 
   const getDoitsDetails = async (contentList) => {
-    console.log({ contentList });
+    // console.log({ contentList });
 
     const payload = {
       request: {
@@ -86,7 +88,7 @@ const LearningResources = ({ route }) => {
         try {
           // Separate prerequisites and postrequisites from resources
           const data = separatePrerequisitesAndPostrequisites(resources);
-          console.log({ data });
+          // console.log({ data });
 
           // Track the data
           await trackingData(data);

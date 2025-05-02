@@ -274,7 +274,7 @@ const ExploreTab = () => {
                   order={6}
                   name="start"
                 >
-                  <CopilotView style={{ width: '100%' }}>
+                  <CopilotView style={{ width: '70%' }}>
                     <View>
                       <CustomSearchBox
                         setSearchText={setSearchText}
@@ -286,7 +286,7 @@ const ExploreTab = () => {
                   </CopilotView>
                 </CopilotStep>
 
-                {/* <TouchableOpacity
+                <TouchableOpacity
                   style={[
                     globalStyles.flexrow,
                     {
@@ -311,7 +311,7 @@ const ExploreTab = () => {
                     color="#000"
                     // style={{ marginLeft: 10 }}
                   />
-                </TouchableOpacity> */}
+                </TouchableOpacity>
               </View>
 
               <SyncCard doneSync={fetchData} />

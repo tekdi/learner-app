@@ -82,6 +82,7 @@ const Courses = () => {
   const [interestContent, setInterestContent] = useState(false);
   const [topicList, setTopicList] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [contentFilter, setContentFilter] = useState({});
 
   // Function to store the scroll position
 
@@ -232,7 +233,8 @@ const Courses = () => {
     //       ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
     //       : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
     let contentFilter = JSON.parse(await getDataFromStorage('contentFilter'));
-
+    console.log('contentFilter', contentFilter);
+    setContentFilter(contentFilter);
     let data = await courseListApi_New({
       searchText,
       mergedFilter,
@@ -436,7 +438,7 @@ const Courses = () => {
                   order={6}
                   name="start"
                 >
-                  <CopilotView style={{ width: '100%' }}>
+                  <CopilotView style={{ width: '70%' }}>
                     <View>
                       <CustomSearchBox
                         setSearchText={setSearchText}
@@ -447,7 +449,7 @@ const Courses = () => {
                     </View>
                   </CopilotView>
                 </CopilotStep>
-                {/* 
+
                 <TouchableOpacity
                   style={[
                     globalStyles.flexrow,
@@ -473,7 +475,7 @@ const Courses = () => {
                     color="#000"
                     // style={{ marginLeft: 10 }}
                   />
-                </TouchableOpacity> */}
+                </TouchableOpacity>
               </View>
 
               <SyncCard doneSync={fetchData} />
@@ -567,6 +569,7 @@ const Courses = () => {
             orginalFormData={orginalFormData}
             instant={instant}
             setIsDrawerOpen={setIsDrawerOpen}
+            contentFilter={contentFilter}
           />
         </FilterDrawer>
       )}

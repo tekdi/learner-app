@@ -29,6 +29,8 @@ const ContentAccordion = ({ title, resourceData, trackData, openDropDown }) => {
     });
   };
 
+  // console.log('resourceData===>', JSON.stringify(resourceData));
+
   return (
     <>
       <TouchableOpacity
@@ -43,6 +45,9 @@ const ContentAccordion = ({ title, resourceData, trackData, openDropDown }) => {
       >
         <GlobalText style={[globalStyles.text, { color: '#7C766F' }]}>
           {t(title)}
+          {title === 'pre_requisites_2'
+            ? `(${resourceData?.prerequisites?.length})`
+            : `(${resourceData?.postrequisites?.length})`}
         </GlobalText>
         <Icon
           name={isAccordionOpen ? 'angle-up' : 'angle-down'}

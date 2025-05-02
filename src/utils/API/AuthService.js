@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {
   createNewObject,
+  createNewObjectTarget,
   getDataFromStorage,
   getTentantId,
 } from '../JsHelper/Helper';
@@ -1542,9 +1543,12 @@ export const targetedSolutions = async ({ subjectName, type }) => {
     'x-auth-token': token,
   };
   const cohort = JSON.parse(await getDataFromStorage('cohortData'));
+  console.log('cohort==>', JSON.stringify(cohort));
+
   const requiredLabels = ['GRADE', 'STATES', 'MEDIUM', 'BOARD'];
   const customFields = cohort?.customField;
-  const data = createNewObject(customFields, requiredLabels);
+  const data = createNewObjectTarget(customFields, requiredLabels);
+  console.log('data==>', JSON.stringify(data));
 
   const payload = {
     subject: subjectName,
@@ -1601,11 +1605,11 @@ export const EventDetails = async ({ id }) => {
   };
 
   try {
-    // console.log(
-    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-    //     headers['x-auth-token']
-    //   }' -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {

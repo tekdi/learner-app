@@ -19,6 +19,7 @@ const FilterList = ({
   orginalFormData,
   instant,
   setIsDrawerOpen,
+  contentFilter,
 }) => {
   const { t } = useTranslation();
   const [filterData, setFilterData] = useState([]);
@@ -35,7 +36,7 @@ const FilterList = ({
   //   setParentStaticFormData(staticFormData);
   // }, [formData, staticFormData]);
 
-  console.log('formData', formData);
+  // console.log('formData', formData);
 
   var maxIndex = renderForm.length;
   //convert transformCategoriesto array of obj
@@ -147,11 +148,75 @@ const FilterList = ({
       }
     });
 
+    console.log(
+      'transformRenderFormOutput===>',
+      JSON.stringify(transformRenderFormOutput)
+    );
+
     setrenderForm(transformRenderFormOutput);
     fetchStaticForm(transformRenderFormOutput);
     setFilterData(result);
-    setFormData(defaultFormData); // ✅ Set default selections
+
+    if (contentFilter) {
+      const filterData = transformRenderFormOutput.filter(
+        (item) => item?.name === 'Domain'
+      );
+      const selectedDomain = filterData?.[0]?.options.filter((item) => {
+        return item?.name == contentFilter?.domain;
+      });
+
+      setFormData((prev) => ({
+        ...prev,
+        domain: selectedDomain,
+      }));
+    }
+
+    // setFormData(defaultFormData); // ✅ Set default selections
   };
+
+  useEffect(() => {
+    if (renderForm && contentFilter) {
+      const filterData = renderForm.filter((item) => item?.name === 'Domain');
+      const selectedDomain = filterData?.[0]?.options.filter((item) => {
+        return item?.name == contentFilter?.domain;
+      });
+      // console.log('selectedDomain==>', selectedDomain);
+      // console.log('formData?.domain==>', formData?.domain);
+      // console.log('.length==>', formData?.domain?.length);
+
+      if (
+        formData?.domain?.[0]?.code === selectedDomain?.[0]?.code &&
+        formData?.domain?.length === 1
+      ) {
+        // console.log('reached IN');
+        replaceOptionsWithAssoc({
+          category: 'domain',
+          index: 1,
+          newCategoryData: [
+            {
+              code: 'learningForWork',
+              identifier: 'pos-framework_domain_learningforwork',
+              index: 1,
+              name: 'Learning for Work',
+            },
+          ],
+        });
+      } else if (formData?.domain?.length === 0) {
+        replaceOptionsWithAssoc({
+          category: 'domain',
+          index: 1,
+          newCategoryData: [
+            {
+              code: 'learningForWork',
+              identifier: 'pos-framework_domain_learningforwork',
+              index: 1,
+              name: 'Learning for Work',
+            },
+          ],
+        });
+      }
+    }
+  }, [formData?.domain]);
 
   const fetchStaticForm = async (transformRenderFormOutput) => {
     const instantId = instant?.channelId;
@@ -161,6 +226,23 @@ const FilterList = ({
     const filteredForm = filterObjectsWithSourceCategory(form, filteredNames);
 
     setRenderStaticForm(filteredForm?.[0]?.fields);
+    if (contentFilter) {
+      const filterData = filteredForm?.[0]?.fields.filter(
+        (item) => item?.name === 'Program'
+      );
+      console.log('contentFilter===>', contentFilter);
+      const selectedProgram = filterData?.[0]?.range.filter((item) => {
+        return item == contentFilter?.program;
+      });
+
+      console.log('selectedDomain===>', selectedProgram);
+      // "program": ["Pragyanpath"]
+      setStaticFormData((prev) => ({
+        ...prev,
+        program: selectedProgram,
+      }));
+    }
+
     // setFilterData(result);
     setLoading(false);
   };
@@ -168,6 +250,7 @@ const FilterList = ({
   useEffect(() => {
     if (isConnected) {
       fetchData();
+
       setFormData(orginalFormData);
       setStaticFormData(parentStaticFormData);
     } else {
@@ -243,14 +326,14 @@ const FilterList = ({
   };
 
   const replaceOptionsWithAssoc = ({ category, index, newCategoryData }) => {
-    console.log('{ category, index, newCategoryData }', {
-      category,
-      index,
-      newCategoryData,
-    });
+    // console.log('########################', {
+    //   category,
+    //   index,
+    //   newCategoryData,
+    // });
 
     if (newCategoryData?.length === 0 && index === 1) {
-      fetchData();
+      // fetchData();
     } else {
       const data = findAndRemoveIndexes(index, maxIndex, renderForm);
 
@@ -362,25 +445,27 @@ const FilterList = ({
                 <View style={{ padding: 10 }}>
                   {renderForm?.map((item, key) => {
                     return (
-                      <View key={key}>
-                        <GlobalText
-                          style={[
-                            globalStyles.subHeading,
-                            { fontWeight: 600, marginLeft: 10 },
-                          ]}
-                        >
-                          {item?.name}
-                        </GlobalText>
+                      item?.name !== 'Domain' && (
+                        <View key={key}>
+                          <GlobalText
+                            style={[
+                              globalStyles.subHeading,
+                              { fontWeight: 600, marginLeft: 10 },
+                            ]}
+                          >
+                            {item?.name}
+                          </GlobalText>
 
-                        <CustomCheckbox
-                          setFormData={setFormData}
-                          formData={formData}
-                          options={item?.options}
-                          category={item?.code}
-                          index={item?.index}
-                          replaceOptionsWithAssoc={replaceOptionsWithAssoc}
-                        />
-                      </View>
+                          <CustomCheckbox
+                            setFormData={setFormData}
+                            formData={formData}
+                            options={item?.options}
+                            category={item?.code}
+                            index={item?.index}
+                            replaceOptionsWithAssoc={replaceOptionsWithAssoc}
+                          />
+                        </View>
+                      )
                     );
                   })}
                 </View>
@@ -395,23 +480,25 @@ const FilterList = ({
                 <View style={{ padding: 10 }}>
                   {renderStaticForm?.map((item, key) => {
                     return (
-                      <View key={key}>
-                        <GlobalText
-                          style={[
-                            globalStyles.subHeading,
-                            { fontWeight: 600, marginLeft: 10 },
-                          ]}
-                        >
-                          {item?.name}
-                        </GlobalText>
+                      item?.name !== 'Program' && (
+                        <View key={key}>
+                          <GlobalText
+                            style={[
+                              globalStyles.subHeading,
+                              { fontWeight: 600, marginLeft: 10 },
+                            ]}
+                          >
+                            {item?.name}
+                          </GlobalText>
 
-                        <CustomCheckbox2
-                          setStaticFormData={setStaticFormData}
-                          staticFormData={staticFormData}
-                          options={item?.range}
-                          category={item?.code}
-                        />
-                      </View>
+                          <CustomCheckbox2
+                            setStaticFormData={setStaticFormData}
+                            staticFormData={staticFormData}
+                            options={item?.range}
+                            category={item?.code}
+                          />
+                        </View>
+                      )
                     );
                   })}
                 </View>
