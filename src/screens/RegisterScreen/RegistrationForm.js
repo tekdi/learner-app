@@ -1215,7 +1215,7 @@ const RegistrationForm = ({ fields }) => {
 
                 <View style={styles.otpInputContainer}>
                   <OtpInput
-                    numberOfDigits={6}
+                    numberOfDigits={4}
                     focusColor="green"
                     autoFocus={false}
                     hideStick={true}

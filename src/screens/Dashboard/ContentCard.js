@@ -241,18 +241,18 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
                   priority: FastImage.priority.high,
                 }
               : mimeType === 'pdf'
-                ? PDFnoimg
-                : mimeType === 'vnd.ekstep.html-archive'
-                  ? Game
-                  : mimeType == 'vnd.ekstep.h5p-archive'
-                    ? HtmlNoimg
-                    : mimeType === 'mp4' || mimeType === 'webm'
-                      ? MP4Noimg
-                      : mimeType === 'epub'
-                        ? Epubnoimg
-                        : mimeType === 'x-youtube'
-                          ? YouTubeNoimg
-                          : mimeType === 'vnd.sunbird.questionset' && Question
+              ? PDFnoimg
+              : mimeType === 'vnd.ekstep.html-archive'
+              ? Game
+              : mimeType == 'vnd.ekstep.h5p-archive'
+              ? HtmlNoimg
+              : mimeType === 'mp4' || mimeType === 'webm'
+              ? MP4Noimg
+              : mimeType === 'epub'
+              ? Epubnoimg
+              : mimeType === 'x-youtube'
+              ? YouTubeNoimg
+              : mimeType === 'vnd.sunbird.questionset' && Question
           }
           style={{ borderRadius: 50 }}
           resizeMode="cover"
@@ -346,14 +346,14 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
             {mimeType === 'x-youtube'
               ? `YouTube`
               : mimeType === 'vnd.ekstep.html-archive'
-                ? `Web`
-                : mimeType == 'vnd.ekstep.h5p-archive'
-                  ? `H5P`
-                  : mimeType == 'vnd.ekstep.h5p-archive'
-                    ? `ECML`
-                    : mimeType == 'vnd.sunbird.questionset'
-                      ? `QUML`
-                      : capitalizeFirstLetter(mimeType)}
+              ? `Web`
+              : mimeType == 'vnd.ekstep.h5p-archive'
+              ? `H5P`
+              : mimeType == 'vnd.ekstep.h5p-archive'
+              ? `ECML`
+              : mimeType == 'vnd.sunbird.questionset'
+              ? `QUML`
+              : capitalizeFirstLetter(mimeType)}
           </GlobalText>
         </View>
         {mimeType !== 'x-youtube' && (

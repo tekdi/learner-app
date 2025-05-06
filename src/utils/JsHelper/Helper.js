@@ -483,13 +483,13 @@ export const createNewObjectTarget = (customFields, labels, profileView) => {
         if (field.type === 'drop_down') {
           if (profileView) {
             result[item.toLowerCase()] = {
-              label: selectedValues?.[0]?.value || '-',
-              value: selectedValues?.[0]?.value || '-',
+              label: selectedValues?.[0]?.value || selectedValues?.[0] || '-',
+              value: selectedValues?.[0]?.value || selectedValues?.[0] || '-',
             };
           } else {
             result[item] = {
-              label: selectedValues?.[0]?.value || '-',
-              value: selectedValues?.[0]?.value || '-',
+              label: selectedValues?.[0]?.value || selectedValues?.[0] || '-',
+              value: selectedValues?.[0]?.value || selectedValues?.[0] || '-',
             };
           }
 

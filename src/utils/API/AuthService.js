@@ -1543,19 +1543,19 @@ export const targetedSolutions = async ({ subjectName, type }) => {
     'x-auth-token': token,
   };
   const cohort = JSON.parse(await getDataFromStorage('cohortData'));
-  console.log('cohort==>', JSON.stringify(cohort));
+  // console.log('cohort==>', JSON.stringify(cohort));
 
   const requiredLabels = ['GRADE', 'STATES', 'MEDIUM', 'BOARD'];
   const customFields = cohort?.customField;
   const data = createNewObjectTarget(customFields, requiredLabels);
-  console.log('data==>', JSON.stringify(data));
+  // console.log('data==>', JSON.stringify(data));
 
   const payload = {
     subject: subjectName,
     // state: data?.STATES,
-    medium: data?.MEDIUM,
-    class: data?.GRADE,
-    board: data?.BOARD,
+    medium: data?.MEDIUM?.value,
+    class: data?.GRADE?.value,
+    board: data?.BOARD?.value,
     courseType: type,
   };
   try {

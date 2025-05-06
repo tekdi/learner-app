@@ -109,7 +109,7 @@ const PreviousClassMaterial = () => {
       <SecondaryHeader logo />
 
       <View style={styles.card}>
-        <ScrollView style={{ height: '85%' }}>
+        <ScrollView>
           <View style={styles.leftContainer}>
             <TouchableOpacity
               onPress={() => {
@@ -224,6 +224,7 @@ const styles = StyleSheet.create({
   card: {
     padding: 10,
     backgroundColor: 'white',
+    flex: 1,
   },
   leftContainer: {
     flexDirection: 'row',
