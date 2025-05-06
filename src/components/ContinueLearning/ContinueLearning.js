@@ -64,9 +64,13 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
           //     ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
           //     : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
           const offset = 0;
+          let contentFilter = JSON.parse(
+            await getDataFromStorage('contentFilter')
+          );
           let data = await courseListApi_New({
             inprogress_do_ids,
             offset,
+            contentFilter,
           });
           //found course progress
           console.log('data', JSON.stringify(data));

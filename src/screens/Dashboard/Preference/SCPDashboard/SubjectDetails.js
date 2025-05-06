@@ -30,12 +30,15 @@ import {
 import ContentAccordion from './MyClass/ContentAccordion';
 
 function getFilteredData(data, subTopic) {
+  console.log('data====>', JSON.stringify(data));
+  console.log('subTopic====>', JSON.stringify(subTopic));
   return data
     .map((item) => {
       // Check if any child has a name matching the subTopic
       const filteredChildren = item?.children?.filter((child) =>
         subTopic.includes(child.name)
       );
+      // console.log('filteredChildren===>', JSON.stringify(filteredChildren));
 
       if (!filteredChildren || filteredChildren.length === 0) {
         return null; // Skip items with no matching children
@@ -132,6 +135,8 @@ const SubjectDetails = ({ route }) => {
       result = await EventDetails({ id });
 
       const filterData = getFilteredData(result?.tasks || [], subTopic);
+      // console.log('getFilteredData==>', JSON.stringify(getFilteredData));
+
       // setTasks(filterData);
       const combinedData = {
         prerequisites: [
@@ -204,6 +209,8 @@ const SubjectDetails = ({ route }) => {
           }
         });
 
+        // console.log('result===>', JSON.stringify(result));
+
         setResourceData({ prerequisites, postrequisites });
       }
     }
@@ -231,7 +238,13 @@ const SubjectDetails = ({ route }) => {
             size={30}
           />
         </TouchableOpacity>
-        <GlobalText style={[globalStyles.heading2]}>{topic}</GlobalText>
+        <GlobalText
+          numberOfLines={2}
+          ellipsizeMode="tail"
+          style={[globalStyles.heading2, { width: '90%' }]}
+        >
+          {topic}
+        </GlobalText>
       </View>
       <View style={{ left: 50 }}>
         {subTopic?.map((item, key) => {

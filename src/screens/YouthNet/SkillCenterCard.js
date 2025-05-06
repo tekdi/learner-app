@@ -31,9 +31,14 @@ const SkillCenterCard = ({ data }) => {
   // console.log('data===>', JSON.stringify(data));
 
   const handleMaps = () => {
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      data?.address
-    )}`;
+    // const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    //   data?.address
+    // )}`;
+    const url = data?.customFields.find(
+      (item) => item.label === 'GOOGLE_MAP_LINK'
+    )?.selectedValues?.[0];
+    console.log('url==>', url);
+
     Linking.openURL(url); // Opens the email client
   };
   return (
@@ -69,25 +74,8 @@ const SkillCenterCard = ({ data }) => {
         </GlobalText> */}
       </View>
       <GlobalText style={[globalStyles.text, { marginVertical: 10 }]}>
-        {
-          data?.customFields.find((item) => item.label === 'STATE')
-            ?.selectedValues?.[0]?.value
-        }
-        ,{' '}
-        {
-          data?.customFields.find((item) => item.label === 'DISTRICT')
-            ?.selectedValues?.[0]?.value
-        }
-        ,{' '}
-        {
-          data?.customFields.find((item) => item.label === 'BLOCK')
-            ?.selectedValues?.[0]?.value
-        }
-        ,{' '}
-        {
-          data?.customFields.find((item) => item.label === 'VILLAGE')
-            ?.selectedValues?.[0]?.value
-        }
+        {data?.customFields.find((item) => item.label === 'ADDRESS')
+          ?.selectedValues?.[0] || '-'}
       </GlobalText>
       <TouchableOpacity style={globalStyles.flexrow} onPress={handleMaps}>
         <GlobalText style={[globalStyles.text, { color: '#0D599E' }]}>

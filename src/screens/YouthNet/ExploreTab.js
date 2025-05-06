@@ -151,12 +151,16 @@ const ExploreTab = () => {
     let userType = await getDataFromStorage('userType');
 
     const instant = { frameworkId: 'pos-framework', channelId: 'pos-channel' };
-
+    // let contentFilter = {
+    //   domain: 'Learning for Work',
+    //   program: 'Vocational Training',
+    // };
     let data = await courseListApi_New({
       searchText,
       mergedFilter,
       instant,
       offset,
+      // contentFilter,
     });
     const profileDetails = JSON.parse(await getDataFromStorage('profileData'))
       ?.getUserDetails?.[0];
@@ -171,7 +175,6 @@ const ExploreTab = () => {
       {}
     );
     const skillcenter = await cohortSearch({ customFields });
-    console.log('skillcenter===>', skillcenter?.results?.cohortDetails);
 
     setSkillCenterData(skillcenter?.results?.cohortDetails);
 

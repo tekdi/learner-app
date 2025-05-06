@@ -421,8 +421,6 @@ export const translateDate = (dateStr, lang) => {
 
 export const createNewObject = (customFields, labels, profileView) => {
   const result = {};
-  console.log('customFields', JSON.stringify(customFields));
-  console.log('requiredLabelsfROMsCHEMA', JSON.stringify(labels));
 
   customFields?.forEach((field) => {
     const cleanedFieldLabel = field?.label?.replace(/[^a-zA-Z0-9_ ]/g, '');
@@ -431,7 +429,6 @@ export const createNewObject = (customFields, labels, profileView) => {
     labels.map((item) => {
       if (item?.label === cleanedFieldLabel) {
         const selectedValues = field?.selectedValues;
-        console.log('selectedValues', selectedValues);
 
         if (field.type === 'drop_down') {
           if (profileView) {
@@ -463,7 +460,57 @@ export const createNewObject = (customFields, labels, profileView) => {
           if (profileView) {
             result[item.label.toLowerCase()] = selectedValues || '';
           } else {
-            result[item.name] = selectedValues || '';
+            result[item.name] = selectedValues?.[0] || '';
+          }
+        }
+      }
+    });
+  });
+
+  return result;
+};
+
+export const createNewObjectTarget = (customFields, labels, profileView) => {
+  const result = {};
+
+  customFields?.forEach((field) => {
+    const cleanedFieldLabel = field?.label?.replace(/[^a-zA-Z0-9_ ]/g, '');
+
+    labels.map((item) => {
+      if (item === cleanedFieldLabel) {
+        const selectedValues = field?.selectedValues;
+
+        if (field.type === 'drop_down') {
+          if (profileView) {
+            result[item.toLowerCase()] = {
+              label: selectedValues?.[0]?.value || selectedValues?.[0] || '-',
+              value: selectedValues?.[0]?.value || selectedValues?.[0] || '-',
+            };
+          } else {
+            result[item] = {
+              label: selectedValues?.[0]?.value || selectedValues?.[0] || '-',
+              value: selectedValues?.[0]?.value || selectedValues?.[0] || '-',
+            };
+          }
+
+          if (['STATE', 'DISTRICT', 'BLOCK', 'VILLAGE'].includes(field.label)) {
+            if (profileView) {
+              result[item.toLowerCase()] = {
+                label: selectedValues?.[0]?.value || '-',
+                value: selectedValues?.[0]?.value || '-',
+              };
+            } else {
+              result[item] = {
+                label: selectedValues?.[0]?.value || '-',
+                value: selectedValues?.[0]?.id || '-',
+              };
+            }
+          }
+        } else {
+          if (profileView) {
+            result[item.toLowerCase()] = selectedValues || '';
+          } else {
+            result[item] = selectedValues || '';
           }
         }
       }

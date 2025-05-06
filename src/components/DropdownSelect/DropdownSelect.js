@@ -31,6 +31,7 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
   };
 
   // console.log('options', options);
+  // console.log('formData==>', formData);
   return (
     <View style={styles.dropdownContainer}>
       <View style={styles.label}>

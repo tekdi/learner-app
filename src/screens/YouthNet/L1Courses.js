@@ -84,8 +84,8 @@ const L1Courses = () => {
         userType === 'youthnet'
           ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
           : userType === 'scp'
-            ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-            : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
       setInstant(instant);
     };
 
@@ -163,8 +163,12 @@ const L1Courses = () => {
     setLoading(true);
     const mergedFilter = { ...parentFormData, ...parentStaticFormData };
     console.log('mergedFilter', mergedFilter);
-
-    let data = await courseListApi_New({ searchText, mergedFilter });
+    let contentFilter = JSON.parse(await getDataFromStorage('contentFilter'));
+    let data = await courseListApi_New({
+      searchText,
+      mergedFilter,
+      contentFilter,
+    });
 
     //found course progress
     try {

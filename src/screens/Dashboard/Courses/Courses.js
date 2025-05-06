@@ -82,6 +82,7 @@ const Courses = () => {
   const [interestContent, setInterestContent] = useState(false);
   const [topicList, setTopicList] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [contentFilter, setContentFilter] = useState({});
 
   // Function to store the scroll position
 
@@ -231,11 +232,14 @@ const Courses = () => {
     //     : userType === 'scp'
     //       ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
     //       : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
-
+    let contentFilter = JSON.parse(await getDataFromStorage('contentFilter'));
+    console.log('contentFilter', contentFilter);
+    setContentFilter(contentFilter);
     let data = await courseListApi_New({
       searchText,
       mergedFilter,
       offset,
+      contentFilter,
     });
 
     try {
@@ -565,6 +569,7 @@ const Courses = () => {
             orginalFormData={orginalFormData}
             instant={instant}
             setIsDrawerOpen={setIsDrawerOpen}
+            contentFilter={contentFilter}
           />
         </FilterDrawer>
       )}

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {
   createNewObject,
+  createNewObjectTarget,
   getDataFromStorage,
   getTentantId,
 } from '../JsHelper/Helper';
@@ -413,6 +414,7 @@ export const courseListApi_New = async ({
   instant,
   offset,
   inprogress_do_ids,
+  contentFilter,
 }) => {
   const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
   const channelId = tenantData?.[0]?.channelId;
@@ -434,6 +436,8 @@ export const courseListApi_New = async ({
         //   userType == 'scp'
         //     ? ['secondchance', 'Second Chance', 'SCP']
         //     : ['Youthnet', 'youthnet', 'YouthNet'],
+        domain: contentFilter?.domain,
+        program: contentFilter?.program,
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
         status: ['Live'],
         primaryCategory: ['Course'],
@@ -476,7 +480,7 @@ export const courseListApi_New = async ({
   curlCommand += `-d '${JSON.stringify(payload)}'`;
 
   // Output the cURL command to the console
-  // console.log('Equivalent cURL command:\n', curlCommand);
+  console.log('Equivalent cURL command:\n', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -1539,16 +1543,19 @@ export const targetedSolutions = async ({ subjectName, type }) => {
     'x-auth-token': token,
   };
   const cohort = JSON.parse(await getDataFromStorage('cohortData'));
+  // console.log('cohort==>', JSON.stringify(cohort));
+
   const requiredLabels = ['GRADE', 'STATES', 'MEDIUM', 'BOARD'];
   const customFields = cohort?.customField;
-  const data = createNewObject(customFields, requiredLabels);
+  const data = createNewObjectTarget(customFields, requiredLabels);
+  // console.log('data==>', JSON.stringify(data));
 
   const payload = {
     subject: subjectName,
     // state: data?.STATES,
-    medium: data?.MEDIUM,
-    class: data?.GRADE,
-    board: data?.BOARD,
+    medium: data?.MEDIUM?.value,
+    class: data?.GRADE?.value,
+    board: data?.BOARD?.value,
     courseType: type,
   };
   try {
@@ -1598,11 +1605,11 @@ export const EventDetails = async ({ id }) => {
   };
 
   try {
-    // console.log(
-    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-    //     headers['x-auth-token']
-    //   }' -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1712,8 +1719,9 @@ export const getAttendance = async ({ todate, fromDate }) => {
     limit: 300,
     page: 0,
     filters: {
+      context: 'cohort',
       contextId: cohortId,
-      scope: 'student',
+      scope: 'Learner',
       toDate: todate,
       fromDate: fromDate,
       userId: userId,
@@ -1872,7 +1880,7 @@ export const staticFilterContent = async ({ instantId }) => {
     -H 'Accept: application/json' \\
     -d '${JSON.stringify(payload)}'
         `;
-    // console.log('cURL Command:', curlCommand);
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
