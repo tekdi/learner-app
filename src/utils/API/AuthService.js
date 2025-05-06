@@ -102,7 +102,7 @@ export const getAccessToken = async () => {
     ].join(' ');
 
     // Log the `curl` command
-    console.log('CURL Command:', curlCommand);
+    // console.log('CURL Command:', curlCommand);
 
     const result = await get(url, {
       headers: headers || {},
