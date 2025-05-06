@@ -282,19 +282,15 @@ const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
               resourceData?.prerequisites?.length > 0 ? (
                 <View
                   style={{
-                    width: '100%',
+                    padding: 10,
+                    // backgroundColor: '#F7ECDF',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    flexDirection: 'row',
                   }}
                 >
                   {!postrequisites ? (
-                    <View
-                      style={{
-                        padding: 10,
-                        // backgroundColor: '#F7ECDF',
-                        justifyContent: 'space-between',
-                        flexWrap: 'wrap',
-                        flexDirection: 'row',
-                      }}
-                    >
+                    <>
                       {resourceData?.prerequisites?.map((data, index) => {
                         return (
                           <ContentCard
@@ -307,28 +303,18 @@ const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
                           />
                         );
                       })}
-                    </View>
+                    </>
                   ) : resourceData?.postrequisites?.length > 0 ? (
                     resourceData?.postrequisites?.map((data, index) => {
                       return (
-                        <View
-                          style={{
-                            // backgroundColor: '#F7ECDF',
-                            justifyContent: 'space-between',
-                            flexWrap: 'wrap',
-                            flexDirection: 'row',
-                            paddingBottom: 50,
-                          }}
-                        >
-                          <ContentCard
-                            key={index}
-                            item={data}
-                            index={index}
-                            course_id={data?.identifier}
-                            unit_id={data?.identifier}
-                            TrackData={trackData}
-                          />
-                        </View>
+                        <ContentCard
+                          key={index}
+                          item={data}
+                          index={index}
+                          course_id={data?.identifier}
+                          unit_id={data?.identifier}
+                          TrackData={trackData}
+                        />
                       );
                     })
                   ) : (

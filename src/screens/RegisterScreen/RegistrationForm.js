@@ -335,8 +335,8 @@ const RegistrationForm = ({ fields }) => {
     setPages(defaultPages);
     const getProgramData = async () => {
       const data = await getProgramDetails();
-      const newData = data.filter((item) => item?.name === 'YouthNet');
-      setProgramData(newData);
+      // const newData = data.filter((item) => item?.name === 'YouthNet');
+      setProgramData(data);
     };
     getProgramData();
     fetchStates();
@@ -666,12 +666,12 @@ const RegistrationForm = ({ fields }) => {
                 field.name === 'state'
                   ? stateData
                   : field.name === 'district'
-                    ? districtData
-                    : field.name === 'block'
-                      ? blockData
-                      : field.name === 'village'
-                        ? villageData
-                        : field?.options
+                  ? districtData
+                  : field.name === 'block'
+                  ? blockData
+                  : field.name === 'village'
+                  ? villageData
+                  : field?.options
               }
               errors={errors}
               formData={formData}
@@ -1215,7 +1215,7 @@ const RegistrationForm = ({ fields }) => {
 
                 <View style={styles.otpInputContainer}>
                   <OtpInput
-                    numberOfDigits={6}
+                    numberOfDigits={4}
                     focusColor="green"
                     autoFocus={false}
                     hideStick={true}

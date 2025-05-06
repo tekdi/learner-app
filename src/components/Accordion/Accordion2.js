@@ -15,6 +15,8 @@ const Accordion2 = ({ title, children, index, openDropDown }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
+  // console.log('children===>', JSON.stringify(children));
+
   return (
     <View
       style={{
@@ -32,6 +34,7 @@ const Accordion2 = ({ title, children, index, openDropDown }) => {
               justifyContent: 'space-between',
               padding: 10,
               backgroundColor: '#F7ECDF',
+              borderRadius: 5,
             },
           ]}
           onPress={() => setAccordionOpen(!isAccordionOpen)}
@@ -39,7 +42,12 @@ const Accordion2 = ({ title, children, index, openDropDown }) => {
           <View style={globalStyles.flexrow}>
             <Icon name="circle" color={'black'} />
             <GlobalText
-              style={[globalStyles.text, { color: '#7C766F', marginLeft: 10 }]}
+              style={[
+                globalStyles.text,
+                { color: '#7C766F', marginLeft: 10, width: '90%' },
+              ]}
+              numberOfLines={2}
+              ellipsizeMode="tail"
             >
               {t('topic')} {index + 1} - {title}
             </GlobalText>

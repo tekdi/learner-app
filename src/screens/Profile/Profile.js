@@ -100,17 +100,16 @@ const Profile = () => {
   const fetchCourseStatus = async () => {
     const data = await profileCourseListApi();
     let userTypes = await getDataFromStorage('userType');
-    const instant =
-      userTypes === 'youthnet'
-        ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
-        : userTypes === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+    // const instant =
+    //   userTypes === 'youthnet'
+    //     ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+    //     : userTypes === 'scp'
+    //     ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+    //     : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
 
     const inprogress_do_ids = data?.data?.map((item) => item?.courseId);
 
     const content = await courseListApi_New({
-      instant,
       inprogress_do_ids,
     });
     const newData = mergeCourseDetails(content?.content, data?.data);
@@ -214,9 +213,9 @@ const Profile = () => {
     const filteredArray = newUpdatedObj.filter(
       (item) => item.name !== 'is_volunteer'
     );
-    console.log('userDetails==>', JSON.stringify(filteredArray));
+    // console.log('userDetails==>', JSON.stringify(filteredArray));
     const newArray = formatDob(filteredArray);
-    console.log('newArray==>', JSON.stringify(newArray));
+    // console.log('newArray==>', JSON.stringify(newArray));
     setUserDetails(newArray);
 
     // const tenantData = await getTentantId();
@@ -349,8 +348,8 @@ const Profile = () => {
               {userType == 'youthnet'
                 ? t('YouthNet')
                 : userType == 'scp'
-                  ? t('Second Chance Program')
-                  : t('Public')}
+                ? t('Second Chance Program')
+                : t('Pragyanpath')}
             </GlobalText>
           </View>
 

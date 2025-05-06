@@ -54,20 +54,23 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
           // console.log('########## inprogress_do_ids', inprogress_do_ids);
           let userType = await getDataFromStorage('userType');
 
-          const instant =
-            userType === 'youthnet'
-              ? {
-                  frameworkId: 'youthnet-framework',
-                  channelId: 'youthnet-channel',
-                }
-              : userType === 'scp'
-              ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-              : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+          // const instant =
+          //   userType === 'youthnet'
+          //     ? {
+          //         frameworkId: 'youthnet-framework',
+          //         channelId: 'youthnet-channel',
+          //       }
+          //     : userType === 'scp'
+          //     ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+          //     : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
           const offset = 0;
+          let contentFilter = JSON.parse(
+            await getDataFromStorage('contentFilter')
+          );
           let data = await courseListApi_New({
             inprogress_do_ids,
-            instant,
             offset,
+            contentFilter,
           });
           //found course progress
           console.log('data', JSON.stringify(data));

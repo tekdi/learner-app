@@ -6,6 +6,7 @@ import {
   Linking,
   SafeAreaView,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import globalStyles from '../../utils/Helper/Style';
 import GlobalText from '@components/GlobalText/GlobalText';
@@ -27,28 +28,54 @@ const SkillCenterCard = ({ data }) => {
     />
   );
 
+  // console.log('data===>', JSON.stringify(data));
+
   const handleMaps = () => {
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data?.address)}`;
+    // const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    //   data?.address
+    // )}`;
+    const url = data?.customFields.find(
+      (item) => item.label === 'GOOGLE_MAP_LINK'
+    )?.selectedValues?.[0];
+    console.log('url==>', url);
+
     Linking.openURL(url); // Opens the email client
   };
   return (
-    <SafeAreaView style={{ paddingVertical: 10 }}>
+    <SafeAreaView style={{ padding: 10 }}>
       <FlatList
-        data={data?.images}
+        data={data?.image}
         renderItem={renderItem}
-        keyExtractor={(item) => item?.identifier}
+        keyExtractor={(item, i) => i}
         horizontal={true} // Enable horizontal scrolling
         initialNumToRender={10} // Adjust the number of items to render initially
         maxToRenderPerBatch={10} // Number of items rendered per batch
         windowSize={21} // Controls the number of items rendered around the current index
       />
-      <GlobalText
-        style={[globalStyles.subHeading, { fontWeight: '700', marginTop: 10 }]}
-      >
-        {data?.title}
-      </GlobalText>
+      <View style={[globalStyles.flexrow, { justifyContent: 'space-between' }]}>
+        <GlobalText
+          style={[
+            globalStyles.subHeading,
+            { fontWeight: '700', marginTop: 10 },
+          ]}
+        >
+          {data?.name}
+        </GlobalText>
+        {/* <GlobalText
+          style={[
+            globalStyles.subHeading,
+            { fontWeight: '700', marginTop: 10 },
+          ]}
+        >
+          {
+            data?.customFields.find((item) => item.label === 'TYPE_OF_CENTER')
+              ?.selectedValues?.[0]?.value
+          }
+        </GlobalText> */}
+      </View>
       <GlobalText style={[globalStyles.text, { marginVertical: 10 }]}>
-        {data?.address}
+        {data?.customFields.find((item) => item.label === 'ADDRESS')
+          ?.selectedValues?.[0] || '-'}
       </GlobalText>
       <TouchableOpacity style={globalStyles.flexrow} onPress={handleMaps}>
         <GlobalText style={[globalStyles.text, { color: '#0D599E' }]}>

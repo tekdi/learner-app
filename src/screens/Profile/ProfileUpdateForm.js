@@ -153,12 +153,18 @@ const ProfileUpdateForm = ({ fields }) => {
       (item) => item?.label.toLowerCase() === geoData?.district.toLowerCase()
     );
 
+    console.log('foundState==>', foundState);
+    console.log('data==>', data);
+
     const updatedFormData = {
       ...data,
-      ['state']: { value: foundState?.value, label: foundState?.label },
+      ['state']: {
+        value: foundState?.value || data?.state?.value,
+        label: foundState?.label || data?.state?.label,
+      },
       ['district']: {
-        value: foundDistrict?.value,
-        label: foundDistrict?.label,
+        value: foundDistrict?.value || data?.district?.value,
+        label: foundDistrict?.label || data?.district?.label,
       },
     };
     const newData = transformData(updatedFormData);

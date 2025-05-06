@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {
   createNewObject,
+  createNewObjectTarget,
   getDataFromStorage,
   getTentantId,
 } from '../JsHelper/Helper';
@@ -34,24 +35,31 @@ const getHeaderswithoutTenant = async () => {
 
 export const login = async (params = {}) => {
   try {
-    const result = await post(`${EndUrls.login}`, params, {
+    const url = `${EndUrls.login}`;
+
+    // console.log('Calling login API...');
+    // console.log(
+    //   `curl -X POST ${url} \\\n` +
+    //     `  -H "Content-Type: application/json" \\\n` +
+    //     `  -H "Accept: application/json" \\\n` +
+    //     `  -d '${JSON.stringify(params, null, 2)}'`
+    // );
+
+    const result = await post(url, params, {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
     });
-    const dataString = JSON.stringify(params).replace(/"/g, '\\"'); // Escape quotes for cURL
-    console.log(`curl -X POST "${EndUrls.login}" \\
-    -H "Content-Type: application/json" \\
-    -H "Accept: application/json" \\
-    -d "${dataString}"`);
+
     if (result?.data) {
       return result?.data?.result;
     } else {
       return {};
     }
   } catch (e) {
-    return console.log('e', e);
+    console.error('Login error:', e);
+    return {};
   }
 };
 
@@ -320,8 +328,10 @@ export const courseListApi_testing = async ({
   searchText,
   inprogress_do_ids,
 }) => {
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
   const user_id = await getDataFromStorage('userId');
-  const url = `${EndUrls.contentList_testing}`;
+  const url = `${EndUrls.contentList_testing}${collectionFramework}`;
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -404,22 +414,30 @@ export const courseListApi_New = async ({
   instant,
   offset,
   inprogress_do_ids,
+  contentFilter,
 }) => {
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const channelId = tenantData?.[0]?.channelId;
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
+
   const user_id = await getDataFromStorage('userId');
-  const url = `${EndUrls.contentList_testing}`; // Define the URL
+  const url = `${EndUrls.contentList_testing}${collectionFramework}`; // Define the URL
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
   let userType = await getDataFromStorage('userType');
+
   const payload = {
     request: {
       filters: {
-        channel: instant?.channelId,
+        channel: instant?.channelId || channelId,
         // program:
         //   userType == 'scp'
         //     ? ['secondchance', 'Second Chance', 'SCP']
         //     : ['Youthnet', 'youthnet', 'YouthNet'],
+        domain: contentFilter?.domain,
+        program: contentFilter?.program,
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
         status: ['Live'],
         primaryCategory: ['Course'],
@@ -545,17 +563,21 @@ export const contentListApi_Pratham = async ({
   instant,
   offset,
 }) => {
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
+  const channelId = tenantData?.[0]?.channelId;
   const user_id = await getDataFromStorage('userId');
-  const url = `${EndUrls.contentList}`; // Define the URL
+  const url = `${EndUrls.contentList}${collectionFramework}`; // Define the URL
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
   };
   let userType = await getDataFromStorage('userType');
+
   let payload = {
     request: {
       filters: {
-        channel: instant?.channelId,
+        channel: channelId,
 
         primaryCategory: ['Learning Resource', 'Practice Question Set'],
         visibility: ['Default', 'Parent'],
@@ -679,13 +701,13 @@ export const getProgramDetails = async () => {
     const url = `${EndUrls.tenantRead}`;
 
     // Log the curl command
-    console.log(
-      `curl -X GET '${url}' -H 'Content-Type: application/json'${
-        headers.Authorization
-          ? ` -H 'Authorization: ${headers.Authorization}'`
-          : ''
-      }`
-    );
+    // console.log(
+    //   `curl -X GET '${url}' -H 'Content-Type: application/json'${
+    //     headers.Authorization
+    //       ? ` -H 'Authorization: ${headers.Authorization}'`
+    //       : ''
+    //   }`
+    // );
 
     const result = await get(url, {
       headers: headers || {},
@@ -902,7 +924,7 @@ export const getProfileDetails = async (params = {}) => {
     // Construct cURL command
     const curlCommand = `curl -X POST "${url}" ${headerString} -H "Content-Type: application/json" -d '${payloadString}'`;
 
-    console.log('Generated cURL Command:', curlCommand);
+    // console.log('Generated cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1521,16 +1543,19 @@ export const targetedSolutions = async ({ subjectName, type }) => {
     'x-auth-token': token,
   };
   const cohort = JSON.parse(await getDataFromStorage('cohortData'));
+  // console.log('cohort==>', JSON.stringify(cohort));
+
   const requiredLabels = ['GRADE', 'STATES', 'MEDIUM', 'BOARD'];
   const customFields = cohort?.customField;
-  const data = createNewObject(customFields, requiredLabels);
+  const data = createNewObjectTarget(customFields, requiredLabels);
+  // console.log('data==>', JSON.stringify(data));
 
   const payload = {
     subject: subjectName,
     // state: data?.STATES,
-    medium: data?.MEDIUM,
-    class: data?.GRADE,
-    board: data?.BOARD,
+    medium: data?.MEDIUM?.value,
+    class: data?.GRADE?.value,
+    board: data?.BOARD?.value,
     courseType: type,
   };
   try {
@@ -1580,11 +1605,11 @@ export const EventDetails = async ({ id }) => {
   };
 
   try {
-    // console.log(
-    //   `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
-    //     headers['x-auth-token']
-    //   }' -d '${JSON.stringify(payload)}'`
-    // );
+    console.log(
+      `curl -X ${method} '${url}' -H 'Content-Type: application/json' -H 'x-auth-token: ${
+        headers['x-auth-token']
+      }' -d '${JSON.stringify(payload)}'`
+    );
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -1694,8 +1719,9 @@ export const getAttendance = async ({ todate, fromDate }) => {
     limit: 300,
     page: 0,
     filters: {
+      context: 'cohort',
       contextId: cohortId,
-      scope: 'student',
+      scope: 'Learner',
       toDate: todate,
       fromDate: fromDate,
       userId: userId,
@@ -1732,7 +1758,10 @@ export const getAttendance = async ({ todate, fromDate }) => {
 };
 export const LearningMaterialAPI = async () => {
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
-  const url = `${EndUrls.framework}`; // Define the URL
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
+  const channelId = tenantData?.[0]?.channelId;
+  const url = `${EndUrls.framework}${collectionFramework}`; // Define the URL
   try {
     const method = 'get'; // Define the HTTP method
     const headers = await getHeaders();
@@ -1801,7 +1830,10 @@ export const notificationSubscribe = async ({ deviceId, user_id, action }) => {
 };
 
 export const filterContent = async ({ instantId }) => {
-  const url = `${EndUrls.filterContent}/${instantId}`; // Define the URL
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
+  const channelId = tenantData?.[0]?.channelId;
+  const url = `${EndUrls.filterContent}/${collectionFramework}`; // Define the URL
   try {
     const method = 'get'; // Define the HTTP method
     const headers = await getHeaders();
@@ -1827,6 +1859,9 @@ export const filterContent = async ({ instantId }) => {
 };
 
 export const staticFilterContent = async ({ instantId }) => {
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+  const collectionFramework = tenantData?.[0]?.collectionFramework;
+  const channelId = tenantData?.[0]?.channelId;
   const url = `${EndUrls.staticFilterContent}`; // Define the URL
   const headers = await getHeaders();
   const payload = {
@@ -1834,7 +1869,7 @@ export const staticFilterContent = async ({ instantId }) => {
       objectCategoryDefinition: {
         objectType: 'Collection',
         name: 'Course',
-        channel: instantId,
+        channel: channelId,
       },
     },
   };
@@ -1845,7 +1880,7 @@ export const staticFilterContent = async ({ instantId }) => {
     -H 'Accept: application/json' \\
     -d '${JSON.stringify(payload)}'
         `;
-    // console.log('cURL Command:', curlCommand);
+    console.log('cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -2079,7 +2114,7 @@ export const enrollInterest = async (selectedIds) => {
   const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
     payload
   )}' ${url}`;
-  console.log('cURL Command:', curlCommand);
+  // console.log('cURL Command:', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -2097,8 +2132,6 @@ export const telemetryTrackingData = async ({ telemetryPayloadData }) => {
   const headers = await getHeaders();
   const profileDetails = JSON.parse(await getDataFromStorage('profileData'))
     ?.getUserDetails?.[0];
-
-  console.log('profileDetails===>', JSON.stringify(profileDetails));
 
   const headersString = Object.entries(headers)
     .map(([key, value]) => `-H "${key}: ${value}"`)
@@ -2158,7 +2191,7 @@ export const telemetryTrackingData = async ({ telemetryPayloadData }) => {
   const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
     payload
   )}' ${url}`;
-  console.log('cURL Command:', curlCommand);
+  // console.log('cURL Command:', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -2169,6 +2202,50 @@ export const telemetryTrackingData = async ({ telemetryPayloadData }) => {
     }
   } catch (e) {
     console.log('e', e);
+  }
+};
+export const cohortSearch = async ({ customFields }) => {
+  const token = await getDataFromStorage('Accesstoken');
+  const academicYearId = await getDataFromStorage('academicYearId');
+  const tenantId = await getDataFromStorage('userTenantid');
+
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: `Bearer ${token}`,
+    tenantid: tenantId,
+    academicyearid: academicYearId,
+  };
+
+  const url = `${EndUrls.cohortSearch}`;
+  const headersString = Object.entries(headers)
+    .map(([key, value]) => `-H "${key}: ${value}"`)
+    .join(' ');
+  const payload = {
+    limit: 10,
+    offset: 0,
+    filters: {
+      state: customFields?.STATE,
+      district: customFields?.DISTRICT,
+      // block: customFields?.BLOCK,
+      // village: customFields?.VILLAGE,
+    },
+  };
+
+  const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
+    payload
+  )}' ${url}`;
+  console.log('cURL Command:', curlCommand);
+
+  try {
+    const result = await post(url, payload, { headers });
+    return result?.data?.result;
+  } catch (e) {
+    if (e?.response?.data) {
+      return e.response.data;
+    }
+
+    return { error: true, message: e.message || 'Unknown error' };
   }
 };
 

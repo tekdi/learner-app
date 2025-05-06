@@ -38,6 +38,7 @@ const EndUrls = {
   sendOTP: `${API_URL}/interface/v1/user/send-otp`,
   verifyOTP: `${API_URL}/interface/v1/user/verify-otp`,
   userExist: API_URL + `/interface/v1/user/check`,
+  cohortSearch: API_URL + `/interface/v1/cohort/search`,
 
   targetedSolutions: `${EVENT_DETAILS}/solutions/targetedSolutions?type=improvementProject&currentScopeOnly=true`,
   EventDetails: `${EVENT_DETAILS}/userProjects/details`,
@@ -73,10 +74,10 @@ const EndUrls = {
   course_details: `${API_URL}/interface/v1/api/course/v1/hierarchy/`, //pass do id at end
   quml_question_list: `${API_URL}/interface/v1/api/question/v2/list`,
   read_content: `${API_URL}/interface/v1/api/content/v1/read/`, //pass do id at end
-  contentList: `${API_URL}/interface/v1/action/composite/v3/search?orgdetails=orgName,email&framework=${FRAMEWORK_ID}`,
-  contentList_testing: `${API_URL}/interface/v1/action/composite/v3/search?orgdetails=orgName,email&framework=${FRAMEWORK_ID}`,
+  contentList: `${API_URL}/interface/v1/action/composite/v3/search?orgdetails=orgName,email&framework=`,
+  contentList_testing: `${API_URL}/interface/v1/action/composite/v3/search?orgdetails=orgName,email&framework=`,
   contentSearch: `${API_URL}/interface/v1/action/composite/v3/search`,
-  framework: `${API_URL}/interface/v1/api/framework/v1/read/${FRAMEWORK_ID}`,
+  framework: `${API_URL}/interface/v1/api/framework/v1/read/`,
   question_set_read: `${API_URL}/interface/v1/action/questionset/v2/read/`, //pass do id at end ?fields=instructions,outcomeDeclaration
   // filterContent: `https://lap.prathamdigital.org/api/framework/v1/read/scp-framework`,
   filterContent: `${API_URL}/interface/v1/api/framework/v1/read`,

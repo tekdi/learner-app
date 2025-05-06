@@ -95,8 +95,8 @@ android {
         applicationId "com.pratham.learning"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 72
-        versionName "0.0.72"
+        versionCode 74
+        versionName "0.0.74"
     }
     signingConfigs {
         debug {
@@ -166,6 +166,13 @@ dependencies {
     implementation("com.facebook.fresco:fresco:2.0.0")
     implementation("com.facebook.fresco:animated-gif:2.0.0")
     //gif image show end
+
+     //bug build error fix for target sdk 35 version error
+    configurations.all {
+        resolutionStrategy {
+            force 'androidx.browser:browser:1.7.0'
+        }
+    }
 
 }
 

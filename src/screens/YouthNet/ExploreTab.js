@@ -11,15 +11,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useFocusEffect, useNavigationState } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useNavigationState,
+} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/AntDesign';
+import Octicons from 'react-native-vector-icons/Octicons';
 
 import { useTranslation } from '../../context/LanguageContext';
 import wave from '../../assets/images/png/wave.png';
 import CoursesBox from '../../components/CoursesBox/CoursesBox';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import ContinueLearning from '../../components/ContinueLearning/ContinueLearning';
-import { courseListApi_New } from '../../utils/API/AuthService';
+import { cohortSearch, courseListApi_New } from '../../utils/API/AuthService';
 import SyncCard from '../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 import FilterModal from '@components/FilterModal/FilterModal';
@@ -42,11 +47,13 @@ import {
   restoreScrollPosition,
   storeScrollPosition,
 } from '../../utils/Helper/JSHelper';
+import SkillCenter from './SkillCenter';
+import SkillCenterCard from './SkillCenterCard';
 
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
 const ExploreTab = () => {
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
   const { t } = useTranslation();
   const [courseData, setCourseData] = useState([]);
   const [trackData, setTrackData] = useState([]);
@@ -67,6 +74,7 @@ const ExploreTab = () => {
   // const [scrollPosition, setScrollPosition] = useState(0);
   const [restoreScroll, setRestoreScroll] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [skillCenterData, setSkillCenterData] = useState([]);
 
   // Function to store the scroll position
 
@@ -143,13 +151,32 @@ const ExploreTab = () => {
     let userType = await getDataFromStorage('userType');
 
     const instant = { frameworkId: 'pos-framework', channelId: 'pos-channel' };
-
+    // let contentFilter = {
+    //   domain: 'Learning for Work',
+    //   program: 'Vocational Training',
+    // };
     let data = await courseListApi_New({
       searchText,
       mergedFilter,
       instant,
       offset,
+      // contentFilter,
     });
+    const profileDetails = JSON.parse(await getDataFromStorage('profileData'))
+      ?.getUserDetails?.[0];
+
+    const customFields = profileDetails?.customFields.reduce(
+      (acc, { label, selectedValues }) => {
+        acc[label] = Array.isArray(selectedValues)
+          ? selectedValues.map((item) => item?.id).join(', ')
+          : selectedValues;
+        return acc;
+      },
+      {}
+    );
+    const skillcenter = await cohortSearch({ customFields });
+
+    setSkillCenterData(skillcenter?.results?.cohortDetails);
 
     try {
       const contentList = data?.content || [];
@@ -209,6 +236,11 @@ const ExploreTab = () => {
     } finally {
       setLoading(false); // Stop Refresh Indicator
     }
+  };
+
+  const data = {
+    title: 'Testing Testing',
+    address: 'tesdfksdfdknfdskfn dkfndskfdsnf ',
   };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -332,6 +364,38 @@ const ExploreTab = () => {
             />
           )}
         </View>
+        {skillCenterData?.[0] && (
+          <>
+            <View
+              style={[
+                globalStyles.flexrow,
+                { justifyContent: 'space-between', padding: 10 },
+              ]}
+            >
+              <GlobalText style={globalStyles.h6}>
+                {t('skilling_center_near_you')}
+              </GlobalText>
+              <TouchableOpacity
+                style={globalStyles.flexrow}
+                onPress={() => {
+                  navigation.navigate('SkillCenter');
+                }}
+              >
+                <GlobalText style={[globalStyles.h6, { color: '#0D599E' }]}>
+                  {t('view_all')}
+                </GlobalText>
+                <Octicons
+                  name="arrow-right"
+                  style={{ marginHorizontal: 10, marginTop: -3 }}
+                  color={'#0D599E'}
+                  size={20}
+                />
+              </TouchableOpacity>
+            </View>
+
+            <SkillCenterCard data={skillCenterData?.[0]} />
+          </>
+        )}
       </ScrollView>
       {/* {isModal && (
         <FilterModal

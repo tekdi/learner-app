@@ -26,8 +26,6 @@ const DateTimePicker = ({
   const { t } = useTranslation();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
-  console.log('isDatePickerVisible', isDatePickerVisible);
-
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -49,8 +47,22 @@ const DateTimePicker = ({
     hideDatePicker(); // Ensure modal closes properly
   };
 
-  const minDate = new Date(1985, 0, 1); // January 1, 1995
-  const maxDate = new Date(2024, 11, 31); // December 31, 2005
+  // const minDate = new Date(1985, 0, 1); // January 1, 1995
+  // const maxDate = new Date(2024, 11, 31); // December 31, 2005
+
+  const today = new Date();
+
+  // validation values
+  const minValue = 10;
+  const maxValue = 100;
+
+  // minDate = today - minValue years
+  const minDate = new Date(today);
+  minDate.setFullYear(minDate.getFullYear() - field?.validation?.maxValue);
+
+  // maxDate = minDate + maxValue years
+  const maxDate = new Date(today);
+  minDate.setFullYear(minDate.getFullYear() - field?.validation?.minValue);
 
   return (
     <View style={styles.container}>
