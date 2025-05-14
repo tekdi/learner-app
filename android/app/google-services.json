@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "839139131975",
+    "project_id": "backend-e99c8",
+    "storage_bucket": "backend-e99c8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:839139131975:android:7a8ef53cbb3662f310e762",
+        "android_client_info": {
+          "package_name": "com.pratham.learning"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhbuUGRTJsXa3CVCg9YIVBxEntDsO7UCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:839139131975:android:9ba56ea9723dac8910e762",
+        "android_client_info": {
+          "package_name": "com.test1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhbuUGRTJsXa3CVCg9YIVBxEntDsO7UCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
