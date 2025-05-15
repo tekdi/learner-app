@@ -45,20 +45,26 @@ const fetchData = async () => {
   }
 };
 
+// for version upgrade API 35 app crash issue on android 9, 10, 11, 12
 async function requestUserPermission() {
-  try {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-    );
+  if (Platform.OS === 'android' && Platform.Version >= 33) {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+      );
 
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('Permission granted');
-      await fetchData();
-    } else {
-      console.log('Permission denied');
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Permission granted');
+        await fetchData();
+      } else {
+        console.log('Permission denied at start POST_NOTIFICATIONS');
+      }
+    } catch (error) {
+      console.error('Error requesting permission:', error);
     }
-  } catch (error) {
-    console.error('Error requesting permission:', error);
+  } else {
+    console.log('Permission granted');
+    await fetchData();
   }
 }
 
