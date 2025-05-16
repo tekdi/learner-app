@@ -49,6 +49,8 @@ const Contents = () => {
   const [trackData, setTrackData] = useState([]);
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingContent, setLoadingContent] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [instant, setInstant] = useState([]);
@@ -121,15 +123,19 @@ const Contents = () => {
   }, []);
 
   const fetchData = async (offset, append = false) => {
-    setLoading(true);
+    if (append === false) {
+      setLoadingContent(true);
+    } else {
+      setLoadingMore(true);
+    }
     console.log('refreshed');
     let userType = await getDataFromStorage('userType');
     const instant =
       userType === 'youthnet'
         ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
         : userType === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+        ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+        : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
 
     const data = await contentListApi_Pratham({ searchText, instant, offset });
     //found content progress
@@ -171,7 +177,11 @@ const Contents = () => {
       setData((prevData) =>
         append ? [...prevData, ...(contentList || [])] : contentList || []
       );
-      setLoading(false);
+      if (append === false) {
+        setLoadingContent(false);
+      } else {
+        setLoadingMore(false);
+      }
     } catch (e) {
       console.log('e', e);
     }
@@ -257,9 +267,11 @@ const Contents = () => {
                 <Image source={wave} resizeMode="contain" />
                 <GlobalText style={styles.text2}>
                   {t('welcome')},
-                  {capitalizeName(
-                    `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
-                  )}
+                  {userInfo?.[0]?.firstName &&
+                    userInfo?.[0]?.lastName &&
+                    capitalizeName(
+                      `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
+                    )}
                 </GlobalText>
               </View>
               <GlobalText style={styles.text}>
@@ -282,23 +294,31 @@ const Contents = () => {
                   flexDirection: 'row',
                 }}
               >
-                {data?.length > 0 ? (
-                  data?.map((item, index) => {
-                    return (
-                      <ContentCard
-                        key={index}
-                        item={item}
-                        index={index}
-                        course_id={item?.identifier}
-                        unit_id={item?.identifier}
-                        TrackData={trackData}
-                      />
-                    );
-                  })
+                {loadingContent === true ? (
+                  <View style={styles.loaderContainer}>
+                    <ActivityIndicator size="large" />
+                  </View>
                 ) : (
-                  <GlobalText style={globalStyles.heading2}>
-                    {t('no_data_found')}
-                  </GlobalText>
+                  <>
+                    {data?.length > 0 ? (
+                      data?.map((item, index) => {
+                        return (
+                          <ContentCard
+                            key={index}
+                            item={item}
+                            index={index}
+                            course_id={item?.identifier}
+                            unit_id={item?.identifier}
+                            TrackData={trackData}
+                          />
+                        );
+                      })
+                    ) : (
+                      <GlobalText style={globalStyles.heading2}>
+                        {t('no_data_found')}
+                      </GlobalText>
+                    )}
+                  </>
                 )}
                 {/* <FlatList
                   data={data}
@@ -312,10 +332,21 @@ const Contents = () => {
 
                 {data.length !== count && (
                   <View>
-                    <PrimaryButton
-                      onPress={handleViewMore}
-                      text={t('viewmore')}
-                    />
+                    {' '}
+                    {loadingContent === false && (
+                      <>
+                        {loadingMore === true ? (
+                          <View style={styles.loaderContainer}>
+                            <ActivityIndicator size="large" />
+                          </View>
+                        ) : (
+                          <PrimaryButton
+                            onPress={handleViewMore}
+                            text={t('viewmore')}
+                          />
+                        )}
+                      </>
+                    )}
                   </View>
                 )}
               </View>

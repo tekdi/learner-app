@@ -32,7 +32,7 @@ const EndUrls = {
   ContentCreate: `${API_URL}/interface/v1/tracking/content/create`,
   ContentTrackingStatus: `${API_URL}/interface/v1/tracking/content/search/status`,
   CourseTrackingStatus: `${API_URL}/interface/v1/tracking/content/course/status`,
-  CourseInProgress: `${API_URL}/interface/v1/tracking/content/course/inprogress`,
+  CourseInProgress: `${API_URL}/interface/v1/tracking/user_certificate/status/search`,
   eventList: `${API_URL}/interface/v1/event/list`,
   attendance: `${API_URL}/interface/v1/account/attendance/list`,
   sendOTP: `${API_URL}/interface/v1/user/send-otp`,

@@ -77,11 +77,16 @@ const LoginScreen = () => {
         await saveAccessToken(data?.access_token || '');
         const userDetails = await getuserDetails();
 
+        console.log('#### userDetails', userDetails);
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
         await setDataInStorage('userId', user_id || '');
+
+        //store dynamci templateId
+        const templateId = userDetails?.tenantData?.[0]?.templateId;
+        await setDataInStorage('templateId', templateId || '');
 
         const academicyear = await setAcademicYear({ tenantid });
         const academicYearId = academicyear?.[0]?.id;

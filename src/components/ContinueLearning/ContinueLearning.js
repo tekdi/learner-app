@@ -33,9 +33,13 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
 
   useEffect(() => {
     const fetch = async () => {
-      let course_in_progress = await CourseInProgress(userId);
+      let course_in_progress = await CourseInProgress();
 
-      let courseData = course_in_progress?.data;
+      console.log('###### CourseInProgress course_in_progress ', JSON.stringify(course_in_progress));
+
+      let courseData = course_in_progress?.result?.data;
+
+      console.log('###### CourseInProgress courseData ', JSON.stringify(courseData));
 
       if (courseData) {
         // console.log(
@@ -46,10 +50,10 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
         //   '########## course_in_progress?.[0]?.courseIdList',
         //   courseData?.[0]?.courseIdList
         // );
-        if (courseData?.[0]?.courseIdList?.length > 0) {
+        if (courseData.length > 0) {
           let inprogress_do_ids = [];
-          for (let i = 0; i < courseData?.[0]?.courseIdList.length; i++) {
-            inprogress_do_ids.push(courseData?.[0]?.courseIdList[i]?.courseId);
+          for (let i = 0; i < courseData.length; i++) {
+            inprogress_do_ids.push(courseData[i]?.courseId);
           }
           // console.log('########## inprogress_do_ids', inprogress_do_ids);
           let userType = await getDataFromStorage('userType');

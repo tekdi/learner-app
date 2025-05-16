@@ -1967,7 +1967,7 @@ export const courseEnroll = async ({ course_id }) => {
     console.log('e', e);
   }
 };
-export const updateCourseStatus = async ({ course_id }) => {
+export const updateCourseStatus = async ({ course_id, status }) => {
   const url = `${EndUrls.updateCourseStatus}`; // Define the URL
   const headers = await getHeaders();
   const headersString = Object.entries(headers)
@@ -1978,6 +1978,7 @@ export const updateCourseStatus = async ({ course_id }) => {
   const payload = {
     userId: user_id,
     courseId: course_id,
+    ...(status && { status: status }),
   };
   try {
     const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
@@ -1990,6 +1991,8 @@ export const updateCourseStatus = async ({ course_id }) => {
     const result = await post(url, payload, {
       headers: headers || {},
     });
+
+    console.log('######### course inprogress:', JSON.stringify(result));
 
     if (result) {
       return result?.data;
@@ -2031,10 +2034,11 @@ export const viewCertificate = async ({ certificateId }) => {
     .map(([key, value]) => `-H "${key}: ${value}"`)
     .join(' ');
   const user_id = await getDataFromStorage('userId');
+  const template_id = await getDataFromStorage('templateId');
 
   const payload = {
     credentialId: certificateId,
-    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
+    templateId: template_id,
   };
 
   try {
@@ -2255,12 +2259,13 @@ export const downloadCertificate = async ({
 }) => {
   const url = `${EndUrls.downloadCertificate}`; // Define the URL
   const headers = await getHeaders();
-  // console.log('certificateId', certificateId);
+  console.log('### certificate certificateId', certificateId);
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+  const template_id = await getDataFromStorage('templateId');
 
   const payload = {
     credentialId: certificateId,
-    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
+    templateId: template_id,
   };
 
   try {
@@ -2268,6 +2273,7 @@ export const downloadCertificate = async ({
       headers: headers || {},
       responseType: 'arraybuffer', // Ensures we get binary data
     });
+    console.log('### certificate response', response);
     const data = response?.request?._response;
     console.log('data', data);
 
@@ -2288,9 +2294,10 @@ export const downloadCertificate = async ({
 export const shareCertificate = async ({ certificateId }) => {
   const url = `${EndUrls.downloadCertificate}`; // Define the URL
   const headers = await getHeaders();
+  const template_id = await getDataFromStorage('templateId');
   const payload = {
     credentialId: certificateId,
-    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
+    templateId: template_id,
   };
 
   try {

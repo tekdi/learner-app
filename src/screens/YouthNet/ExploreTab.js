@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 
 import {
+  ActivityIndicator,
   BackHandler,
   Image,
   RefreshControl,
@@ -59,6 +60,8 @@ const ExploreTab = () => {
   const [trackData, setTrackData] = useState([]);
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingContent, setLoadingContent] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [isModal, setIsModal] = useState(false);
   const [youthnet, setYouthnet] = useState(false);
@@ -145,7 +148,11 @@ const ExploreTab = () => {
   };
 
   const fetchData = async (offset, append = false) => {
-    setLoading(true);
+    if (append === false) {
+      setLoadingContent(true);
+    } else {
+      setLoadingMore(true);
+    }
 
     const mergedFilter = { ...parentFormData, ...parentStaticFormData };
     let userType = await getDataFromStorage('userType');
@@ -204,7 +211,11 @@ const ExploreTab = () => {
       append ? [...prevData, ...(data?.content || [])] : data?.content || []
     );
 
-    setLoading(false);
+    if (append === false) {
+      setLoadingContent(false);
+    } else {
+      setLoadingMore(false);
+    }
   };
 
   useEffect(() => {
@@ -322,36 +333,54 @@ const ExploreTab = () => {
               >
                 <CopilotView style={{ width: '100%' }}>
                   <View>
-                    {courseData.length > 0 ? (
-                      <CoursesBox
-                        // title={'Continue_Learning'}
-                        // description={'Food_Production'}
-                        style={{ titlecolor: '#06A816' }}
-                        // viewAllLink={() =>
-                        //   navigation.navigate('ViewAll', {
-                        //     title: 'Continue_Learning',
-                        //     data: data,
-                        //   }
-                        // )
-                        // }
-                        ContentData={courseData}
-                        TrackData={trackData}
-                        isHorizontal={false}
-                      />
+                    {loadingContent === true ? (
+                      <View style={styles.loaderContainer}>
+                        <ActivityIndicator size="large" />
+                      </View>
                     ) : (
-                      <GlobalText style={globalStyles.heading2}>
-                        {t('no_data_found')}
-                      </GlobalText>
+                      <>
+                        {courseData.length > 0 ? (
+                          <CoursesBox
+                            // title={'Continue_Learning'}
+                            // description={'Food_Production'}
+                            style={{ titlecolor: '#06A816' }}
+                            // viewAllLink={() =>
+                            //   navigation.navigate('ViewAll', {
+                            //     title: 'Continue_Learning',
+                            //     data: data,
+                            //   }
+                            // )
+                            // }
+                            ContentData={courseData}
+                            TrackData={trackData}
+                            isHorizontal={false}
+                          />
+                        ) : (
+                          <GlobalText style={globalStyles.heading2}>
+                            {t('no_data_found')}
+                          </GlobalText>
+                        )}
+                      </>
                     )}
                   </View>
                 </CopilotView>
               </CopilotStep>
               {courseData.length !== count && (
                 <View>
-                  <PrimaryButton
-                    onPress={handleViewMore}
-                    text={t('viewmore')}
-                  />
+                  {loadingContent === false && (
+                    <>
+                      {loadingMore === true ? (
+                        <View style={styles.loaderContainer}>
+                          <ActivityIndicator size="large" />
+                        </View>
+                      ) : (
+                        <PrimaryButton
+                          onPress={handleViewMore}
+                          text={t('viewmore')}
+                        />
+                      )}
+                    </>
+                  )}
                 </View>
               )}
             </>
