@@ -86,6 +86,8 @@ const Courses = () => {
   const [topicList, setTopicList] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [contentFilter, setContentFilter] = useState({});
+  //refresh inprogress list
+  const [refreshKeyInProgress, setRefreshKeyInProgress] = useState(0);
 
   // Function to store the scroll position
 
@@ -112,6 +114,7 @@ const Courses = () => {
   useFocusEffect(
     useCallback(() => {
       setLoading(true);
+      setRefreshKeyInProgress((prevKey) => prevKey + 1);
       fetchData(0, false); // Reset course data
       fetchInterestStatus();
       setLoading(false);
@@ -217,7 +220,7 @@ const Courses = () => {
     const instantId = `youthnet-framework`;
     const data = await filterContent({ instantId });
     const newData = data?.framework?.categories?.filter((item) => {
-      return item?.code === 'stream';
+      return item?.code === 'subject';
     });
 
     setTopicList(newData);
@@ -348,6 +351,7 @@ const Courses = () => {
   const handleInterest = async (selectedIds) => {
     setLoading(true);
     const data = await enrollInterest(selectedIds);
+    const userId = await getDataFromStorage('userId');
     if (data?.params?.status === 'successful') {
       setIsTopicModal(false);
       setInterestModal(true);
@@ -394,7 +398,12 @@ const Courses = () => {
                   {t('courses')}
                 </GlobalText>
               )} */}
-              <ContinueLearning youthnet={youthnet} t={t} userId={userId} />
+              <ContinueLearning
+                youthnet={youthnet}
+                t={t}
+                userId={userId}
+                key={refreshKeyInProgress}
+              />
               {youthnet == true && interestContent == true ? (
                 <View>
                   <GlobalText
@@ -602,6 +611,7 @@ const Courses = () => {
             instant={instant}
             setIsDrawerOpen={setIsDrawerOpen}
             contentFilter={contentFilter}
+            isExplore={false}
           />
         </FilterDrawer>
       )}

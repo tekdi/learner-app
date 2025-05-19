@@ -20,6 +20,7 @@ const FilterList = ({
   instant,
   setIsDrawerOpen,
   contentFilter,
+  isExplore,
 }) => {
   const { t } = useTranslation();
   const [filterData, setFilterData] = useState([]);
@@ -445,7 +446,7 @@ const FilterList = ({
                 <View style={{ padding: 10 }}>
                   {renderForm?.map((item, key) => {
                     return (
-                      item?.name !== 'Domain' && (
+                      (item?.name !== 'Domain' || isExplore == true) && (
                         <View key={key}>
                           <GlobalText
                             style={[
@@ -480,7 +481,7 @@ const FilterList = ({
                 <View style={{ padding: 10 }}>
                   {renderStaticForm?.map((item, key) => {
                     return (
-                      item?.name !== 'Program' && (
+                      (item?.name !== 'Program' || isExplore == true) && (
                         <View key={key}>
                           <GlobalText
                             style={[

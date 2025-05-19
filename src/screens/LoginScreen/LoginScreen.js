@@ -81,8 +81,10 @@ const LoginScreen = () => {
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
+        const enrollmentId= userDetails?.enrollmentId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
         await setDataInStorage('userId', user_id || '');
+        await setDataInStorage('enrollmentId', enrollmentId || '');
 
         //store dynamci templateId
         const templateId = userDetails?.tenantData?.[0]?.templateId;

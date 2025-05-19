@@ -1843,7 +1843,7 @@ export const filterContent = async ({ instantId }) => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
-    // console.log('curlCom', curlCommand);
+    console.log('curlCom fetchTopics', curlCommand);
 
     // Make the actual request
     const result = await get(url, {
@@ -2111,6 +2111,7 @@ export const enrollInterest = async (selectedIds) => {
     village: customFields?.VILLAGE ? customFields?.VILLAGE : '',
     blood_group: '',
     userId: profileDetails?.userId,
+    enrollmentId: profileDetails?.enrollmentId || '',
     courseId: '',
     courseName: '',
     topicName: selectedIds?.label,
@@ -2118,7 +2119,7 @@ export const enrollInterest = async (selectedIds) => {
   const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
     payload
   )}' ${url}`;
-  // console.log('cURL Command:', curlCommand);
+  console.log('cURL enrollInterest Command:', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {

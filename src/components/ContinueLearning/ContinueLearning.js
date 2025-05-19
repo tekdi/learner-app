@@ -35,11 +35,17 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
     const fetch = async () => {
       let course_in_progress = await CourseInProgress();
 
-      console.log('###### CourseInProgress course_in_progress ', JSON.stringify(course_in_progress));
+      console.log(
+        '###### CourseInProgress course_in_progress ',
+        JSON.stringify(course_in_progress)
+      );
 
       let courseData = course_in_progress?.result?.data;
 
-      console.log('###### CourseInProgress courseData ', JSON.stringify(courseData));
+      console.log(
+        '###### CourseInProgress courseData ',
+        JSON.stringify(courseData)
+      );
 
       if (courseData) {
         // console.log(
@@ -82,32 +88,34 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
           try {
             // console.log('########## contentListApi');
             const contentList = data?.content;
-            //console.log('########## contentList', contentList);
+            // console.log('########## contentList', contentList);
             let courseList = [];
             if (contentList) {
               for (let i = 0; i < contentList.length; i++) {
                 courseList.push(contentList[i]?.identifier);
               }
             }
-            //console.log('########## courseList', courseList);
+            // console.log('########## courseList', courseList);
             //get course track data
+            const user_Id =
+              userId != '' ? userId : await getDataFromStorage('userId');
             let course_track_data = await courseTrackingStatus(
-              userId,
+              user_Id,
               courseList
             );
             // console.log(
-            //   '########## course_track_data',
+            //   '########## course_track_data inprogress',
             //   JSON.stringify(course_track_data?.data)
             // );
             let courseTrackData = [];
             if (course_track_data?.data) {
               courseTrackData =
                 course_track_data?.data.find(
-                  (course) => course.userId === userId
+                  (course) => course.userId === user_Id
                 )?.course || [];
             }
             setTrackData(courseTrackData);
-            // console.log('########## courseTrackData', courseTrackData);
+            console.log('########## courseTrackData', courseTrackData);
             // console.log('##########');
           } catch (e) {
             console.log('e', e);

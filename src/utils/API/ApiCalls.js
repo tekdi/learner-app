@@ -547,7 +547,7 @@ export const courseTrackingStatus = async (userId, courseId) => {
        .join('\n  ')}
      --data '${data}'`;
 
-    // console.log('Generated cURL Command:\n', curlCommand);
+    console.log('Generated cURL Command courseTrackingStatus:\n', curlCommand);
 
     try {
       const response = await axios.request(config);
