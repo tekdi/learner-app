@@ -26,6 +26,9 @@ import { notificationSubscribe } from './utils/API/AuthService';
 import GlobalText from '@components/GlobalText/GlobalText';
 import { CopilotProvider } from 'react-native-copilot';
 
+//fix for android version 15
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 const linking = {
   prefixes: ['pratham://'],
   config: {
@@ -199,26 +202,30 @@ const App = () => {
   }, []);
 
   return (
-    <NetworkProvider>
-      <ConfirmationProvider>
-        <LanguageProvider>
-          {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
+    <SafeAreaProvider>
+      <NetworkProvider>
+        <ConfirmationProvider>
+          <LanguageProvider>
+            {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
       work */}
-          <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
-            <CopilotProvider
-              tooltipStyle={{ backgroundColor: 'black' }}
-              androidStatusBarVisible={true}
-            >
-              <NavigationContainer linking={linking}>
-                <Suspense fallback={<GlobalText>Loading Screen...</GlobalText>}>
-                  <StackScreen />
-                </Suspense>
-              </NavigationContainer>
-            </CopilotProvider>
-          </ApplicationProvider>
-        </LanguageProvider>
-      </ConfirmationProvider>
-    </NetworkProvider>
+            <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+              <CopilotProvider
+                tooltipStyle={{ backgroundColor: 'black' }}
+                androidStatusBarVisible={true}
+              >
+                <NavigationContainer linking={linking}>
+                  <Suspense
+                    fallback={<GlobalText>Loading Screen...</GlobalText>}
+                  >
+                    <StackScreen />
+                  </Suspense>
+                </NavigationContainer>
+              </CopilotProvider>
+            </ApplicationProvider>
+          </LanguageProvider>
+        </ConfirmationProvider>
+      </NetworkProvider>
+    </SafeAreaProvider>
   );
 };
 

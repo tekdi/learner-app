@@ -48,7 +48,7 @@ const CourseCard = ({
 
   useEffect(() => {
     fetchDataTrack();
-  }, [item?.identifier]);
+  }, [item?.identifier, TrackData]);
 
   const fetchDataTrack = async () => {
     try {
@@ -195,10 +195,10 @@ const CourseCard = ({
               trackCompleted >= 100
                 ? 'completed'
                 : trackCompleted > 0
-                  ? 'inprogress'
-                  : trackProgress > 0
-                    ? 'progress'
-                    : 'not_started'
+                ? 'inprogress'
+                : trackProgress > 0
+                ? 'progress'
+                : 'not_started'
             }
             trackCompleted={trackCompleted}
             viewStyle={{

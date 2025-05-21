@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Button,
   Linking,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,

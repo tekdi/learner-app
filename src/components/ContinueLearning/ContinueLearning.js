@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   FlatList,
-  SafeAreaView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -133,7 +132,7 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
     //console.log('Card pressed!', item);
     // console.log('identifier', item?.identifier);
     // console.log('item', item?.leafNodes);
-    navigation.navigate('CourseContentList', {
+    navigation.push('CourseContentList', {
       do_id: item?.identifier,
       course_id: item?.identifier,
       content_list_node: item?.leafNodes,
@@ -145,7 +144,7 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
       onPress={() => handlePress(item)}
       appIcon={item?.appIcon}
       index={index}
-      cardWidth={260}
+      cardWidth={170}
       item={item}
       TrackData={trackData}
       navigation={navigation}

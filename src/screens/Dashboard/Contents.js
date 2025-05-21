@@ -205,7 +205,7 @@ const Contents = () => {
   }, [searchText]);
 
   const handleViewMore = () => {
-    const newOffset = offset + 5; // Increase offset by 5
+    const newOffset = offset + 10; // Increase offset by 5
     setOffset(newOffset); // Update state
     fetchData(newOffset, true); // Append new data
     const page = 'content';
@@ -235,6 +235,7 @@ const Contents = () => {
 
     try {
       console.log('Fetching Data...');
+      setOffset(0); // Reset offset when searching
       fetchData(0, false); // Reset course data
     } catch (error) {
       console.log('Error fetching data:', error);

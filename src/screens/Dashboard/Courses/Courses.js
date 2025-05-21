@@ -45,6 +45,7 @@ import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../components/AppUpdate/AppUpdatePopup';
 import PrimaryButton from '../../../components/PrimaryButton/PrimaryButton';
 import InterestModal from './InterestModal';
+import InterestModalError from './InterestModalError';
 import InterestTopicModal from './InterestTopicModal';
 import {
   restoreScrollPosition,
@@ -81,6 +82,7 @@ const Courses = () => {
   const [restoreScroll, setRestoreScroll] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [interestModal, setInterestModal] = useState(false);
+  const [interestModalError, setInterestModalError] = useState(false);
   const [isTopicModal, setIsTopicModal] = useState(false);
   const [interestContent, setInterestContent] = useState(false);
   const [topicList, setTopicList] = useState([]);
@@ -109,15 +111,41 @@ const Courses = () => {
 
       setRestoreScroll(true);
       setLoading(false);
+
+      // onFopcusTrackCourse
+      onFopcusTrackCourse();
     }, [restoreScroll])
   );
+
+  const onFopcusTrackCourse = async () => {
+    try {
+      const contentList = courseData || [];
+      let courseList = contentList.map((item) => item?.identifier);
+
+      let userId = await getDataFromStorage('userId');
+      let course_track_data = await courseTrackingStatus(userId, courseList);
+
+      let courseTrackData = [];
+      if (course_track_data?.data) {
+        courseTrackData =
+          course_track_data?.data.find((course) => course.userId === userId)
+            ?.course || [];
+      }
+      // setTrackData(courseTrackData);
+      setTrackData(courseTrackData);
+    } catch (e) {
+      console.log('Error:', e);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      setLoading(true);
+      // setLoading(true);
       setRefreshKeyInProgress((prevKey) => prevKey + 1);
-      fetchData(0, false); // Reset course data
+
+      // fetchData(0, false); // Reset course data
       fetchInterestStatus();
-      setLoading(false);
+      // setLoading(false);
     }, [])
   );
 
@@ -169,7 +197,7 @@ const Courses = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setSearchText('');
+      // setSearchText('');
       const onBackPress = () => {
         if (routeName === 'Courses') {
           setShowExitModal(true);
@@ -266,11 +294,12 @@ const Courses = () => {
             ?.course || [];
       }
       // setTrackData(courseTrackData);
-      setTrackData((prevData) =>
-        append
-          ? [...prevData, ...(courseTrackData || [])]
-          : courseTrackData || []
-      );
+      // setTrackData((prevData) =>
+      //   append
+      //     ? [...prevData, ...(courseTrackData || [])]
+      //     : courseTrackData || []
+      // );
+      setTrackData((pre) => [...pre, ...courseTrackData]);
       updateInterestStatus(courseTrackData);
     } catch (e) {
       console.log('Error:', e);
@@ -305,6 +334,7 @@ const Courses = () => {
   }
 
   useEffect(() => {
+    setOffset(0); // Reset offset when searching
     fetchData(0, false);
   }, [parentFormData, parentStaticFormData]);
 
@@ -339,8 +369,9 @@ const Courses = () => {
 
     try {
       setRefreshKey((prevKey) => prevKey + 1);
-      setOffset(0);
-      fetchData(0, false); // Reset course data
+      // setOffset(0); // Reset offset when searching
+      // fetchData(0, false); // Reset course data
+      setSearchText('');
     } catch (error) {
       console.log('Error fetching data:', error);
     } finally {
@@ -357,6 +388,10 @@ const Courses = () => {
       setInterestModal(true);
       setInterestContent(false);
       await setDataInStorage(`Enrolled_to_l2${userId}`, 'yes');
+    } else {
+      //error alert
+      // setInterestModalError(true);
+      setIsTopicModal(false);
     }
     setLoading(false);
   };
@@ -568,6 +603,10 @@ const Courses = () => {
               onExit={handleExitApp}
             />
           )}
+          <InterestModalError
+            setIsModal={setInterestModalError}
+            isModal={interestModalError}
+          />
           <InterestModal
             setIsModal={setInterestModal}
             isModal={interestModal}

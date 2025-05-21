@@ -10,6 +10,7 @@ import {
   StyleSheet,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Geolocation from 'react-native-geolocation-service'; // GeoLocation Comment
 import location from '../../assets/images/png/location.png';
 import { useTranslation } from '../../context/LanguageContext';
@@ -71,7 +72,7 @@ const EnableLocationScreen = () => {
   const disableLocation = () => navigation.navigate('RegisterScreen');
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
+    <SafeAreaView style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
       <StatusBar
         barStyle="dark-content"
         // translucent={true}
@@ -91,7 +92,7 @@ const EnableLocationScreen = () => {
       <TouchableOpacity style={styles.button} onPress={disableLocation}>
         <GlobalText style={styles.buttonText}>{t('not_now')}</GlobalText>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 

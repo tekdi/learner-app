@@ -2,6 +2,7 @@ import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import SecondaryButton from '../../components/SecondaryButton/SecondaryButton';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
@@ -37,7 +38,7 @@ const LoginSignUpScreen = () => {
   // }, [start, copilotEvents, CopilotStarted, unregisterStep, goToNth]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity
         style={styles.backbutton}
         onPress={() => nav.navigate('LanguageScreen')}
@@ -82,7 +83,7 @@ const LoginSignUpScreen = () => {
           </CopilotView>
         </CopilotStep>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
 import {
   FlatList,
-  SafeAreaView,
+  // SafeAreaView,
   StatusBar,
   StyleSheet,
   Image,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Layout } from '@ui-kitten/components';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import Logo from '../../assets/images/png/logo.png';

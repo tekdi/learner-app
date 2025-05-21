@@ -50,6 +50,7 @@ import {
 } from '../../utils/Helper/JSHelper';
 import SkillCenter from './SkillCenter';
 import SkillCenterCard from './SkillCenterCard';
+import { set } from 'react-hook-form';
 
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
@@ -99,8 +100,32 @@ const ExploreTab = () => {
 
       setRestoreScroll(true);
       setLoading(false);
+
+      // onFopcusTrackCourse
+      onFopcusTrackCourse();
     }, [restoreScroll])
   );
+
+  const onFopcusTrackCourse = async () => {
+    try {
+      const contentList = courseData || [];
+      let courseList = contentList.map((item) => item?.identifier);
+
+      let userId = await getDataFromStorage('userId');
+      let course_track_data = await courseTrackingStatus(userId, courseList);
+
+      let courseTrackData = [];
+      if (course_track_data?.data) {
+        courseTrackData =
+          course_track_data?.data.find((course) => course.userId === userId)
+            ?.course || [];
+      }
+      // setTrackData(courseTrackData);
+      setTrackData(courseTrackData);
+    } catch (e) {
+      console.log('Error:', e);
+    }
+  };
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -198,7 +223,8 @@ const ExploreTab = () => {
           course_track_data?.data.find((course) => course.userId === userId)
             ?.course || [];
       }
-      setTrackData(courseTrackData);
+      // setTrackData(courseTrackData);
+      setTrackData((pre) => [...pre, ...courseTrackData]);
     } catch (e) {
       console.log('Error:', e);
     }
@@ -240,7 +266,7 @@ const ExploreTab = () => {
   }, [searchText]);
 
   const handleViewMore = () => {
-    const newOffset = offset + 5; // Increase offset by 5
+    const newOffset = offset + 10; // Increase offset by 10
     setOffset(newOffset); // Update state
     fetchData(newOffset, true); // Append new data
     const page = 'ExploreCourses';
@@ -253,6 +279,7 @@ const ExploreTab = () => {
 
     try {
       console.log('Fetching Data...');
+      setOffset(0); // Reset offset when searching
       fetchData(0, false); // Reset course data
     } catch (error) {
       console.log('Error fetching data:', error);

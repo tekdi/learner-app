@@ -7,8 +7,9 @@ import {
   ScrollView,
   Image,
   BackHandler,
-  SafeAreaView,
+  // SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import CustomRadioCard from '@components/CustomRadioCard/CustomRadioCard';
 import RadioButton from '@components/CustomRadioCard/RadioButton';

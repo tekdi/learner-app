@@ -3,11 +3,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  SafeAreaView,
+  // SafeAreaView,
   Pressable,
   ScrollView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, React, useEffect } from 'react';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
@@ -81,7 +82,7 @@ const LoginScreen = () => {
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
-        const enrollmentId= userDetails?.enrollmentId;
+        const enrollmentId = userDetails?.enrollmentId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
         await setDataInStorage('userId', user_id || '');
         await setDataInStorage('enrollmentId', enrollmentId || '');

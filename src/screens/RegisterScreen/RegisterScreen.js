@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  // SafeAreaView,
+  StyleSheet,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   getGeoLocation,
   getStudentForm,
@@ -904,8 +909,14 @@ const RegisterScreen = () => {
     <Loading />
   ) : (
     <SafeAreaView style={styles.container}>
-      <RegistrationForm geoData={geoData} fields={mainSchema} />
-      <NetworkAlert onTryAgain={fetchData} isConnected={!networkError} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === 'android' ? 0 : 0}
+      >
+        <RegistrationForm geoData={geoData} fields={mainSchema} />
+        <NetworkAlert onTryAgain={fetchData} isConnected={!networkError} />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
