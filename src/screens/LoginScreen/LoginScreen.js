@@ -294,7 +294,7 @@ const LoginScreen = () => {
             onPress={() => {
               navigation.navigate('ForgotPassword', { enableLogin: true });
             }}
-            style={{ paddingLeft: 20, marginBottom: 30 }}
+            style={{ paddingLeft: 20, marginBottom: 30,zIndex:-1 }}
           >
             <GlobalText
               style={[

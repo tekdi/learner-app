@@ -30,6 +30,15 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
     setIsDropdownOpen(false);
   };
 
+  const labelArray = [
+    'STATES',
+    'DISTRICTS',
+    'BLOCKS',
+    'VILLAGE',
+    'STATE',
+    'DISTRICT',
+    'BLOCK',
+  ];
   // console.log('options', options);
   // console.log('formData==>', formData);
   return (
@@ -55,15 +64,7 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
           { borderColor: errors[field.name] ? 'red' : '#DADADA' },
         ]}
       >
-        {[
-          'STATES',
-          'DISTRICTS',
-          'BLOCKS',
-          'VILLAGE',
-          'STATE',
-          'DISTRICT',
-          'BLOCK',
-        ].includes(field.label) ? (
+        {labelArray.includes(field.label) ? (
           <GlobalText style={[globalStyles.text]}>
             {t(formData[field.name]?.label)}
           </GlobalText>
@@ -87,7 +88,15 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
                 style={styles.dropdownOption}
               >
                 <GlobalText style={styles.optionText}>
-                  {t(item?.label?.toLowerCase())}
+                  {labelArray.includes(field.label) ? (
+                    <GlobalText style={[globalStyles.text]}>
+                      {t(item?.label)}
+                    </GlobalText>
+                  ) : (
+                    <GlobalText style={[globalStyles.text]}>
+                      {t(item?.label?.toLowerCase())}
+                    </GlobalText>
+                  )}
                 </GlobalText>
               </TouchableOpacity>
             ))}

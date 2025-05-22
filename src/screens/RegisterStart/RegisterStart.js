@@ -76,34 +76,45 @@ const RegisterStart = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.backbutton} onPress={navigate}>
-        <Image
-          source={backIcon}
-          resizeMode="contain"
-          style={{ width: 30, height: 30 }}
-        />
-      </TouchableOpacity>
-
-      {/* Icon png here */}
-      <View style={styles.container_image}>
-        <FastImage
-          style={styles.gif_image}
-          source={require('../../assets/images/gif/face.gif')}
-          resizeMode={FastImage.resizeMode.contain}
-          priority={FastImage.priority.high} // Set the priority here
-        />
-        <GlobalText style={[globalStyles.h5, { marginTop: 10 }]}>
-          {t('lets_create_your_acc')}
-        </GlobalText>
-        <GlobalText style={[globalStyles.h5, { textAlign: 'center' }]}>
-          {t('create_acc_desp')}
-        </GlobalText>
+      <View style={{ flex: 1 }}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <TouchableOpacity style={styles.backbutton} onPress={navigate}>
+            <Image
+              source={backIcon}
+              resizeMode="contain"
+              style={{ width: 30, height: 30 }}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={{ flex: 2 }}>
+          {/* Icon png here */}
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
+            <FastImage
+              style={styles.gif_image}
+              source={require('../../assets/images/gif/face.gif')}
+              resizeMode={FastImage.resizeMode.contain}
+              priority={FastImage.priority.high} // Set the priority here
+            />
+            <GlobalText style={[globalStyles.h5, { marginTop: 10 }]}>
+              {t('lets_create_your_acc')}
+            </GlobalText>
+            <GlobalText style={[globalStyles.h5, { textAlign: 'center' }]}>
+              {t('create_acc_desp')}
+            </GlobalText>
+          </View>
+        </View>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <View style={styles.buttonContainer}>
+            <PrimaryButton text={t('continue')} onPress={handleClick} />
+          </View>
+        </View>
       </View>
-
-      <View style={styles.buttonContainer}>
-        <PrimaryButton text={t('continue')} onPress={handleClick} />
-      </View>
-
       <NetworkAlert onTryAgain={handleClick} isConnected={isConnected} />
     </SafeAreaView>
   );
@@ -112,20 +123,20 @@ const RegisterStart = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 10,
     backgroundColor: 'white',
   },
   backbutton: {
     position: 'absolute',
-    top: 95,
-    left: 20,
+    top: 60,
+    left: 0,
     zIndex: 1,
   },
   buttonContainer: {
     padding: 10,
     flex: 1,
     justifyContent: 'flex-end',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   gif_image: {
     height: 50,

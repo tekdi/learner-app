@@ -39,49 +39,62 @@ const LoginSignUpScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity
-        style={styles.backbutton}
-        onPress={() => nav.navigate('LanguageScreen')}
-      >
-        <Image
-          source={backIcon}
-          resizeMode="contain"
-          style={{ width: 30, height: 30 }}
-        />
-      </TouchableOpacity>
-      <View style={styles.container_image}>
-        <Image style={styles.image} source={Logo} resizeMode="contain" />
-        <GlobalText style={styles.title}>{t('let_log_in')}</GlobalText>
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <CopilotStep
-          text={t('click_here_to_login')}
-          isFirstStep={true}
-          order={3}
-          name="login"
+      <View style={{ flex: 1 }}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
-          <CopilotView>
-            <PrimaryButton
-              text={t('login')}
-              onPress={() => nav.navigate('LoginScreen')}
+          <TouchableOpacity
+            style={styles.backbutton}
+            onPress={() => nav.navigate('LanguageScreen')}
+          >
+            <Image
+              source={backIcon}
+              resizeMode="contain"
+              style={{ width: 30, height: 30 }}
             />
-          </CopilotView>
-        </CopilotStep>
-        <View style={{ padding: 10 }} />
-        <CopilotStep
-          text={t('click_here_to_create_new_account')}
-          order={4}
-          name="create_account"
+          </TouchableOpacity>
+        </View>
+        <View style={{ flex: 2 }}>
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Image style={styles.image} source={Logo} resizeMode="contain" />
+            <GlobalText style={styles.title}>{t('let_log_in')}</GlobalText>
+          </View>
+        </View>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         >
-          <CopilotView>
-            <SecondaryButton
-              text={'create_new_account'}
-              onPress={() => nav.navigate('RegisterStart')}
-              style={{ fontSize: 14.5 }}
-            />
-          </CopilotView>
-        </CopilotStep>
+          <View style={styles.buttonContainer}>
+            <CopilotStep
+              text={t('click_here_to_login')}
+              isFirstStep={true}
+              order={3}
+              name="login"
+            >
+              <CopilotView>
+                <PrimaryButton
+                  text={t('login')}
+                  onPress={() => nav.navigate('LoginScreen')}
+                />
+              </CopilotView>
+            </CopilotStep>
+            <View style={{ padding: 10 }} />
+            <CopilotStep
+              text={t('click_here_to_create_new_account')}
+              order={4}
+              name="create_account"
+            >
+              <CopilotView>
+                <SecondaryButton
+                  text={'create_new_account'}
+                  onPress={() => nav.navigate('RegisterStart')}
+                  style={{ fontSize: 14.5 }}
+                />
+              </CopilotView>
+            </CopilotStep>
+          </View>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -95,8 +108,8 @@ const styles = StyleSheet.create({
   },
   backbutton: {
     position: 'absolute',
-    top: 10,
-    left: 20,
+    top: 0,
+    left: 0,
     zIndex: 1,
   },
   buttonContainer: {

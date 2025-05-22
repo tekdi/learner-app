@@ -299,53 +299,64 @@ const LanguageScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       <AppUpdatePopup />
       <StatusBar barStyle="dark-content" backgroundColor="transparent" />
-
       <Layout style={styles.container}>
-        <Image style={styles.image} source={Logo} resizeMode="contain" />
-        {/* Text Samples here */}
-        <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-          <GlobalText category="s1" style={globalStyles.h3}>
-            {t('welcome')}!
-          </GlobalText>
-          {/* Use to load gif and images fast */}
-          <FastImage
-            style={styles.gif_image}
-            // eslint-disable-next-line no-undef
-            source={require('../../assets/images/gif/smile.gif')}
-            resizeMode={FastImage.resizeMode.contain}
-            priority={FastImage.priority.high} // Set the priority here
-          />
-        </View>
-        <GlobalText style={globalStyles.h5}>{t('choose_language')}</GlobalText>
-        <GlobalText category="p1" style={globalStyles.text}>
-          {t('select_language')}
-        </GlobalText>
-        <CopilotStep text={t('select_language')} order={1} name="start">
-          <CopilotView style={{ width: '100%' }}>
-            <View>
-              <FlatList
-                showsVerticalScrollIndicator={false}
-                style={styles.list}
-                data={languages}
-                renderItem={renderItem}
-                initialNumToRender={10} // Adjust the number of items to render initially
-                maxToRenderPerBatch={10} // Number of items rendered per batch
-                numColumns={2}
-                windowSize={21} // Controls the number of items rendered around the current index
+        <View style={{ flex: 1 }}>
+          <View style={{ flex: 0 }}>
+            {/* fixed top part */}
+            <Image style={styles.image} source={Logo} resizeMode="contain" />
+            {/* Text Samples here */}
+            <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+              <GlobalText category="s1" style={globalStyles.h3}>
+                {t('welcome')}!
+              </GlobalText>
+              {/* Use to load gif and images fast */}
+              <FastImage
+                style={styles.gif_image}
+                // eslint-disable-next-line no-undef
+                source={require('../../assets/images/gif/smile.gif')}
+                resizeMode={FastImage.resizeMode.contain}
+                priority={FastImage.priority.high} // Set the priority here
               />
             </View>
-          </CopilotView>
-        </CopilotStep>
-        <View style={{ top: 40 }}>
-          <HorizontalLine />
-          <CustomBottomCard
-            onPress={handlethis}
-            copilotStepText="click_here_to_continue"
-            copilotStepOrder={2}
-            copilotStepName="continueButton"
-          />
+            <GlobalText style={globalStyles.h5}>
+              {t('choose_language')}
+            </GlobalText>
+            <GlobalText category="p1" style={globalStyles.text}>
+              {t('select_language')}
+            </GlobalText>
+          </View>
+          <View style={{ flex: 1 }}>
+            {/* content will be here and will be ajustable within this space */}
+            <CopilotStep text={t('select_language')} order={1} name="start">
+              <CopilotView style={{ width: '100%' }}>
+                <View>
+                  <FlatList
+                    showsVerticalScrollIndicator={false}
+                    style={styles.list}
+                    data={languages}
+                    renderItem={renderItem}
+                    initialNumToRender={10} // Adjust the number of items to render initially
+                    maxToRenderPerBatch={10} // Number of items rendered per batch
+                    numColumns={2}
+                    windowSize={21} // Controls the number of items rendered around the current index
+                  />
+                </View>
+              </CopilotView>
+            </CopilotStep>
+          </View>
+          <View style={{ flex: 0 }}>
+            {/* fixed bottom part */}
+            <HorizontalLine />
+            <CustomBottomCard
+              onPress={handlethis}
+              copilotStepText="click_here_to_continue"
+              copilotStepOrder={2}
+              copilotStepName="continueButton"
+            />
+          </View>
         </View>
       </Layout>
+
     </SafeAreaView>
   );
 };
@@ -356,7 +367,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   container: {
-    flex: 4,
+    flex: 3,
     padding: 10,
     // borderWidth: 1,
   },
@@ -383,8 +394,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   list: {
-    height: '55%',
-    marginTop: 20,
+    marginTop: 10,
   },
   gif_image: {
     width: 25,
