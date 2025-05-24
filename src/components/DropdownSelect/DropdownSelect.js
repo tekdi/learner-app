@@ -51,7 +51,7 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
           ]}
         >
           {t(field.label.toLowerCase())}
-          {!field?.isRequired &&
+          {!field?.validation?.isRequired &&
             // && !['states', 'districts', 'blocks'].includes(field.name)
             `(${t('optional')})`}
         </GlobalText>

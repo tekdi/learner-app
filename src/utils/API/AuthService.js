@@ -199,6 +199,8 @@ export const sendOtp = async (payload) => {
       },
     });
 
+    console.log("########## otp sent",JSON.stringify(result));
+
     if (result?.data) {
       return result?.data;
     } else {
@@ -628,7 +630,7 @@ export const contentListApi_Pratham = async ({
   curlCommand += `-d '${JSON.stringify(payload)}'`;
 
   // Output the cURL command to the console
-  // console.log('Equivalent cURL command:\n', curlCommand);
+  console.log('Equivalent cURL command:\n', curlCommand);
 
   try {
     // Make the actual request

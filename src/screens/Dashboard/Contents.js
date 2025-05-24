@@ -79,8 +79,41 @@ const Contents = () => {
 
       setRestoreScroll(true);
       setLoading(false);
+
+      // onFopcusTrackCourse
+      onFopcusTrackCourse();
     }, [restoreScroll])
   );
+
+  const onFopcusTrackCourse = async () => {
+    try {
+      const contentList = data || [];
+      let contentIdList = [];
+      if (contentList) {
+        for (let i = 0; i < contentList.length; i++) {
+          contentIdList.push(contentList[i]?.identifier);
+        }
+      }
+      // console.log(
+      //   '########## contentIdList',
+      //   JSON.stringify(contentIdList)
+      // );
+      let userId = await getDataFromStorage('userId');
+      let course_track_data = await courseTrackingStatus(userId, contentIdList);
+
+      let courseTrackData = [];
+      if (course_track_data?.data) {
+        courseTrackData =
+          course_track_data?.data.find((course) => course.userId === userId)
+            ?.course || [];
+      }
+      // setTrackData(courseTrackData);
+      console.log('########## courseTrackData', JSON.stringify(courseTrackData));
+      setTrackData(courseTrackData);
+    } catch (e) {
+      console.log('Error:', e);
+    }
+  };
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -98,13 +131,13 @@ const Contents = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setSearchText('');
-      console.log('########## in focus course');
-      setLoading(true);
+      // setSearchText('');
+      // console.log('########## in focus course');
+      // setLoading(true);
       //bug fix for not realtime tracking
-      const append = offset > 0 ? true : false;
-      fetchData(offset, append);
-      setRefreshKey((prev) => prev + 1); // Force component reload
+      // const append = offset > 0 ? true : false;
+      // fetchData(offset, append);
+      // setRefreshKey((prev) => prev + 1); // Force component reload
     }, []) // Make sure to include the dependencies
   );
 
@@ -157,10 +190,10 @@ const Contents = () => {
       //get course track data
       let userId = await getDataFromStorage('userId');
       let course_track_data = await courseTrackingStatus(userId, contentIdList);
-      console.log(
-        '########## course_track_data',
-        JSON.stringify(course_track_data?.data)
-      );
+      // console.log(
+      //   '########## course_track_data',
+      //   JSON.stringify(course_track_data?.data)
+      // );
       let courseTrackData = [];
       if (course_track_data?.data) {
         courseTrackData =
@@ -168,7 +201,8 @@ const Contents = () => {
             ?.course || [];
       }
 
-      setTrackData((prevData) => [...prevData, ...(courseTrackData || [])]);
+      // setTrackData((prevData) => [...prevData, ...(courseTrackData || [])]);
+      setTrackData((pre) => [...pre, ...courseTrackData]);
 
       const result = JSON.parse(await getDataFromStorage('profileData'));
       setUserInfo(result?.getUserDetails);
@@ -234,9 +268,11 @@ const Contents = () => {
     setLoading(true); // Start Refresh Indicator
 
     try {
-      console.log('Fetching Data...');
-      setOffset(0); // Reset offset when searching
-      fetchData(0, false); // Reset course data
+      setRefreshKey((prevKey) => prevKey + 1);
+      // console.log('Fetching Data...');
+      // setOffset(0); // Reset offset when searching
+      // fetchData(0, false); // Reset course data
+      setSearchText('');
     } catch (error) {
       console.log('Error fetching data:', error);
     } finally {
@@ -267,7 +303,7 @@ const Contents = () => {
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
                 <GlobalText style={styles.text2}>
-                  {t('welcome')},
+                  {t('welcome')},{' '}
                   {userInfo?.[0]?.firstName &&
                     userInfo?.[0]?.lastName &&
                     capitalizeName(
@@ -333,7 +369,6 @@ const Contents = () => {
 
                 {data.length !== count && (
                   <View>
-                    {' '}
                     {loadingContent === false && (
                       <>
                         {loadingMore === true ? (
@@ -393,6 +428,11 @@ const styles = StyleSheet.create({
   columnWrapper: {
     justifyContent: 'space-between', // Spacing between columns
     paddingHorizontal: 10,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
