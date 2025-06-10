@@ -29,7 +29,7 @@ const CustomBottomCard = ({
           name={copilotStepName}
         >
           <CopilotView>
-            <PrimaryButton onPress={onPress} text="Continue" />
+            <PrimaryButton onPress={onPress} text={t('continue')} />
           </CopilotView>
         </CopilotStep>
         <GlobalText

@@ -49,7 +49,7 @@ const UnitList = ({ route }) => {
   const [expandedItem, setExpandedItem] = useState(null); // State to track which item is expanded
 
   //set progress and start date
-  const [trackData, setTrackData] = useState([]);
+  const [trackData, setTrackData] = useState(null);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -139,62 +139,62 @@ const UnitList = ({ route }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <SecondaryHeader />
-      {loading ? (
-        <ActivityIndicator style={{ top: 300 }} />
-      ) : (
-        <ScrollView>
-          <View style={{ padding: 20 }}>
-            {headingName && (
-              <GlobalText
-                style={[globalStyles.heading, { marginBottom: 10 }]}
-                numberOfLines={2}
-                ellipsizeMode="tail"
-              >
-                {headingName}
-              </GlobalText>
-            )}
+      {loading && <ActivityIndicator style={{ top: 300 }} />}
+      <ScrollView>
+        <View style={{ padding: 20 }}>
+          {headingName && (
             <GlobalText
-              style={[globalStyles.h5, { marginBottom: 10 }]}
-              numberOfLines={4}
+              style={[globalStyles.heading, { marginBottom: 10 }]}
+              numberOfLines={2}
               ellipsizeMode="tail"
             >
-              {t('unit')} : {name}
+              {headingName}
             </GlobalText>
-            <GlobalText
-              style={[globalStyles.text]}
-              numberOfLines={5}
-              ellipsizeMode="tail"
-            >
-              {description}
-            </GlobalText>
-          </View>
-          <View
-            style={{
-              padding: 20,
-              paddingTop: 0,
-              // backgroundColor: '#F7ECDF',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              flexDirection: 'row',
-            }}
+          )}
+          <GlobalText
+            style={[globalStyles.h5, { marginBottom: 10 }]}
+            numberOfLines={4}
+            ellipsizeMode="tail"
           >
-            {children?.map((item, index) => {
-              if (
-                item?.mimeType === 'application/vnd.ekstep.content-collection'
-              ) {
-                return (
-                  item?.children.length > 0 && (
-                    <UnitCard
-                      key={item?.name}
-                      item={item}
-                      course_id={course_id}
-                      unit_id={item?.identifier}
-                      TrackData={trackData}
-                    />
-                  )
-                );
-              } else {
-                return (
+            {t('unit')} : {name}
+          </GlobalText>
+          <GlobalText
+            style={[globalStyles.text]}
+            numberOfLines={5}
+            ellipsizeMode="tail"
+          >
+            {description}
+          </GlobalText>
+        </View>
+        <View
+          style={{
+            padding: 20,
+            paddingTop: 0,
+            // backgroundColor: '#F7ECDF',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            flexDirection: 'row',
+          }}
+        >
+          {children?.map((item, index) => {
+            if (
+              item?.mimeType === 'application/vnd.ekstep.content-collection'
+            ) {
+              return (
+                item?.children.length > 0 &&
+                trackData && (
+                  <UnitCard
+                    key={item?.name}
+                    item={item}
+                    course_id={course_id}
+                    unit_id={item?.identifier}
+                    TrackData={trackData}
+                  />
+                )
+              );
+            } else {
+              return (
+                trackData && (
                   <ContentCard
                     key={item?.name}
                     index={index}
@@ -203,12 +203,12 @@ const UnitList = ({ route }) => {
                     unit_id={unit_id}
                     TrackData={trackData}
                   />
-                );
-              }
-            })}
-          </View>
-        </ScrollView>
-      )}
+                )
+              );
+            }
+          })}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

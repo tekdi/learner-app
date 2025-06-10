@@ -4,6 +4,7 @@ import { BASE_URL_PROD } from './index';
 import Config from 'react-native-config';
 
 const API_URL = Config.API_URL;
+const API_URL_MIDDLEWARE = Config.API_URL_MIDDLEWARE;
 // const CONTENT_URL = Config.CONTENT_URL;
 // const TRACKING_MICROSERVICE = Config.TRACKING_MICROSERVICE;
 const TELEMETRY_URL = Config.TELEMETRY_URL;
@@ -32,7 +33,7 @@ const EndUrls = {
   ContentCreate: `${API_URL}/interface/v1/tracking/content/create`,
   ContentTrackingStatus: `${API_URL}/interface/v1/tracking/content/search/status`,
   CourseTrackingStatus: `${API_URL}/interface/v1/tracking/content/course/status`,
-  CourseInProgress: `${API_URL}/interface/v1/tracking/content/course/inprogress`,
+  CourseInProgress: `${API_URL}/interface/v1/tracking/user_certificate/status/search`,
   eventList: `${API_URL}/interface/v1/event/list`,
   attendance: `${API_URL}/interface/v1/account/attendance/list`,
   sendOTP: `${API_URL}/interface/v1/user/send-otp`,
@@ -57,7 +58,7 @@ const EndUrls = {
   getCourseCompletedList: `${API_URL}/interface/v1/tracking/user_certificate/status/search`,
 
   // SalesForce APis (L2 Interest)
-  enrollInterest: `https://dev-middleware.prathamdigital.org/prathamservice/v1/save-user-salesforce`,
+  enrollInterest: `${API_URL_MIDDLEWARE}/prathamservice/v1/save-user-salesforce`,
 
   //CMS sunbird saas
   // hierarchy_content: `${CONTENT_URL}/learner/questionset/v1/hierarchy/`, //pass do id at end

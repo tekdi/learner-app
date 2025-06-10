@@ -7,13 +7,14 @@ import {
   ScrollView,
   Keyboard,
   TouchableWithoutFeedback,
+  FlatList,
 } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 import globalStyles from '../../utils/Helper/Style';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const LoginTextField = ({
   text,
@@ -26,6 +27,8 @@ const LoginTextField = ({
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const { t } = useTranslation();
+
+  const inputRef = useRef(null);
 
   console.log({ suggestions });
 
@@ -48,10 +51,14 @@ const LoginTextField = ({
   const handleSuggestionSelect = (suggestion) => {
     onChangeText(suggestion);
     setShowSuggestions(false);
+    Keyboard.dismiss(); // manually dismiss keyboard
   };
-
+  const dismissKeyboardAndSuggestions = () => {
+    Keyboard.dismiss();
+    setShowSuggestions(false);
+  };
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.isVisible} accessible={false}>
+    <TouchableWithoutFeedback onPress={dismissKeyboardAndSuggestions}>
       <View style={styles.container}>
         <TextInput
           autoCapitalize="none"
@@ -66,8 +73,8 @@ const LoginTextField = ({
           <GlobalText style={styles.text}> {t(text)} </GlobalText>
         </View>
 
-        {showSuggestions && (
-          <ScrollView style={styles.suggestionsList}>
+        {showSuggestions && filteredSuggestions.length > 0 && (
+          <ScrollView style={styles.suggestionsList} nestedScrollEnabled={true}>
             {filteredSuggestions.map((item, index) => (
               <TouchableWithoutFeedback
                 key={index}
@@ -132,8 +139,9 @@ const styles = StyleSheet.create({
     borderColor: '#DADADA',
     borderWidth: 1,
     borderRadius: 7,
-    maxHeight: 150,
-    zIndex: 1000,
+    maxHeight: 160, // Set the maximum height
+    overflow: 'scroll',
+    elevation: 10, // for Android
     padding: 10,
   },
   suggestion: {

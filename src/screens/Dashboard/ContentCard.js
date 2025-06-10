@@ -4,7 +4,6 @@ import {
   Image,
   ImageBackground,
   Modal,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -80,7 +79,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 
   const handlePress = (data) => {
     logEvent();
-    navigation.navigate('StandAlonePlayer', {
+    navigation.push('StandAlonePlayer', {
       content_do_id: data?.identifier || data?.id,
       content_mime_type: data?.mimeType || data?.app,
       isOffline: false,
@@ -98,7 +97,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
 
   useEffect(() => {
     fetchDataTrack();
-  }, [navigation]);
+  }, [navigation, TrackData]);
 
   const fetchDataTrack = async () => {
     try {

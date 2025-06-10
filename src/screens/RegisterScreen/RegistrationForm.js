@@ -7,8 +7,9 @@ import {
   ScrollView,
   Image,
   BackHandler,
-  SafeAreaView,
+  // SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import CustomRadioCard from '@components/CustomRadioCard/CustomRadioCard';
 import RadioButton from '@components/CustomRadioCard/RadioButton';
@@ -236,6 +237,11 @@ const RegistrationForm = ({ fields }) => {
 
   const fetchDistricts = async (state) => {
     setLoading(true);
+
+    //reset data
+    setBlockData([]);
+    setVillageData([]);
+
     const payload = {
       // limit: 10,
       offset: 0,
@@ -250,6 +256,7 @@ const RegistrationForm = ({ fields }) => {
   };
   const fetchvillages = async (block) => {
     setLoading(true);
+
     const payload = {
       // limit: 10,
       offset: 0,
@@ -265,6 +272,10 @@ const RegistrationForm = ({ fields }) => {
   };
   const fetchBlocks = async (district) => {
     setLoading(true);
+
+    //reset data
+    setVillageData([]);
+
     const payload = {
       // limit: 10,
       offset: 0,
@@ -280,6 +291,12 @@ const RegistrationForm = ({ fields }) => {
 
   const fetchStates = async () => {
     setLoading(true);
+
+    //reset data
+    setDistrictData([]);
+    setBlockData([]);
+    setVillageData([]);
+
     const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
 
     const geoData = JSON.parse(await getDataFromStorage('geoData'));
@@ -459,8 +476,12 @@ const RegistrationForm = ({ fields }) => {
     if (name === 'state') {
       updatedFormData['district'] = '';
       updatedFormData['block'] = '';
+      updatedFormData['village'] = '';
     } else if (name === 'district') {
       updatedFormData['block'] = '';
+      updatedFormData['village'] = '';
+    } else if (name === 'block') {
+      updatedFormData['village'] = '';
     }
 
     setFormData(updatedFormData);
@@ -497,7 +518,7 @@ const RegistrationForm = ({ fields }) => {
           return; // Skip validation for these fields
         }
         if (
-          (field.isRequired && !value) ||
+          (field?.validation?.isRequired === true && !value) ||
           // (field.name === 'blocks' && !value) ||
           // (field.name === 'states' && !value) ||
           // (field.name === 'districts' && !value) ||

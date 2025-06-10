@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 
 import {
+  ActivityIndicator,
   BackHandler,
   Image,
   RefreshControl,
@@ -44,6 +45,7 @@ import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../components/AppUpdate/AppUpdatePopup';
 import PrimaryButton from '../../../components/PrimaryButton/PrimaryButton';
 import InterestModal from './InterestModal';
+import InterestModalError from './InterestModalError';
 import InterestTopicModal from './InterestTopicModal';
 import {
   restoreScrollPosition,
@@ -62,6 +64,8 @@ const Courses = () => {
   const [trackData, setTrackData] = useState([]);
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingContent, setLoadingContent] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [isModal, setIsModal] = useState(false);
   const [youthnet, setYouthnet] = useState(false);
@@ -78,11 +82,14 @@ const Courses = () => {
   const [restoreScroll, setRestoreScroll] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [interestModal, setInterestModal] = useState(false);
+  const [interestModalError, setInterestModalError] = useState(false);
   const [isTopicModal, setIsTopicModal] = useState(false);
   const [interestContent, setInterestContent] = useState(false);
   const [topicList, setTopicList] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [contentFilter, setContentFilter] = useState({});
+  //refresh inprogress list
+  const [refreshKeyInProgress, setRefreshKeyInProgress] = useState(0);
 
   // Function to store the scroll position
 
@@ -104,14 +111,41 @@ const Courses = () => {
 
       setRestoreScroll(true);
       setLoading(false);
+
+      // onFopcusTrackCourse
+      onFopcusTrackCourse();
     }, [restoreScroll])
   );
+
+  const onFopcusTrackCourse = async () => {
+    try {
+      const contentList = courseData || [];
+      let courseList = contentList.map((item) => item?.identifier);
+
+      let userId = await getDataFromStorage('userId');
+      let course_track_data = await courseTrackingStatus(userId, courseList);
+
+      let courseTrackData = [];
+      if (course_track_data?.data) {
+        courseTrackData =
+          course_track_data?.data.find((course) => course.userId === userId)
+            ?.course || [];
+      }
+      // setTrackData(courseTrackData);
+      setTrackData(courseTrackData);
+    } catch (e) {
+      console.log('Error:', e);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      setLoading(true);
-      fetchData(0, false); // Reset course data
+      // setLoading(true);
+      setRefreshKeyInProgress((prevKey) => prevKey + 1);
+
+      // fetchData(0, false); // Reset course data
       fetchInterestStatus();
-      setLoading(false);
+      // setLoading(false);
     }, [])
   );
 
@@ -163,7 +197,7 @@ const Courses = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setSearchText('');
+      // setSearchText('');
       const onBackPress = () => {
         if (routeName === 'Courses') {
           setShowExitModal(true);
@@ -214,14 +248,18 @@ const Courses = () => {
     const instantId = `youthnet-framework`;
     const data = await filterContent({ instantId });
     const newData = data?.framework?.categories?.filter((item) => {
-      return item?.code === 'stream';
+      return item?.code === 'subject';
     });
 
     setTopicList(newData);
   };
 
   const fetchData = async (offset, append = false) => {
-    setLoading(true);
+    if (append === false) {
+      setLoadingContent(true);
+    } else {
+      setLoadingMore(true);
+    }
     fetchTopics();
     const mergedFilter = { ...parentFormData, ...parentStaticFormData };
     let userType = await getDataFromStorage('userType');
@@ -256,11 +294,12 @@ const Courses = () => {
             ?.course || [];
       }
       // setTrackData(courseTrackData);
-      setTrackData((prevData) =>
-        append
-          ? [...prevData, ...(courseTrackData || [])]
-          : courseTrackData || []
-      );
+      // setTrackData((prevData) =>
+      //   append
+      //     ? [...prevData, ...(courseTrackData || [])]
+      //     : courseTrackData || []
+      // );
+      setTrackData((pre) => [...pre, ...courseTrackData]);
       updateInterestStatus(courseTrackData);
     } catch (e) {
       console.log('Error:', e);
@@ -274,8 +313,11 @@ const Courses = () => {
     setCourseData((prevData) =>
       append ? [...prevData, ...(data?.content || [])] : data?.content || []
     );
-
-    setLoading(false);
+    if (append === false) {
+      setLoadingContent(false);
+    } else {
+      setLoadingMore(false);
+    }
   };
 
   async function updateInterestStatus(trackData) {
@@ -292,6 +334,7 @@ const Courses = () => {
   }
 
   useEffect(() => {
+    setOffset(0); // Reset offset when searching
     fetchData(0, false);
   }, [parentFormData, parentStaticFormData]);
 
@@ -326,8 +369,9 @@ const Courses = () => {
 
     try {
       setRefreshKey((prevKey) => prevKey + 1);
-      setOffset(0);
-      fetchData(0, false); // Reset course data
+      // setOffset(0); // Reset offset when searching
+      // fetchData(0, false); // Reset course data
+      setSearchText('');
     } catch (error) {
       console.log('Error fetching data:', error);
     } finally {
@@ -338,11 +382,16 @@ const Courses = () => {
   const handleInterest = async (selectedIds) => {
     setLoading(true);
     const data = await enrollInterest(selectedIds);
+    const userId = await getDataFromStorage('userId');
     if (data?.params?.status === 'successful') {
       setIsTopicModal(false);
       setInterestModal(true);
       setInterestContent(false);
       await setDataInStorage(`Enrolled_to_l2${userId}`, 'yes');
+    } else {
+      //error alert
+      // setInterestModalError(true);
+      setIsTopicModal(false);
     }
     setLoading(false);
   };
@@ -372,9 +421,11 @@ const Courses = () => {
                 <Image source={wave} resizeMode="contain" />
                 <GlobalText style={globalStyles.h6}>
                   {t('welcome')},{' '}
-                  {capitalizeName(
-                    `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
-                  )}
+                  {userInfo?.[0]?.firstName &&
+                    userInfo?.[0]?.lastName &&
+                    capitalizeName(
+                      `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
+                    )}
                 </GlobalText>
               </View>
               {/* {!youthnet && (
@@ -382,8 +433,13 @@ const Courses = () => {
                   {t('courses')}
                 </GlobalText>
               )} */}
-              <ContinueLearning youthnet={youthnet} t={t} userId={userId} />
-              {youthnet && interestContent && (
+              <ContinueLearning
+                youthnet={youthnet}
+                t={t}
+                userId={userId}
+                key={refreshKeyInProgress}
+              />
+              {youthnet == true && interestContent == true ? (
                 <View>
                   <GlobalText
                     style={[
@@ -426,6 +482,8 @@ const Courses = () => {
                     </GlobalText>
                   </View>
                 </View>
+              ) : (
+                <></>
               )}
               <GlobalText
                 style={[globalStyles.h4, { color: '#78590C', top: 10 }]}
@@ -486,36 +544,54 @@ const Courses = () => {
               >
                 <CopilotView style={{ width: '100%' }}>
                   <View>
-                    {courseData.length > 0 ? (
-                      <CoursesBox
-                        // title={'Continue_Learning'}
-                        // description={'Food_Production'}
-                        style={{ titlecolor: '#06A816' }}
-                        // viewAllLink={() =>
-                        //   navigation.navigate('ViewAll', {
-                        //     title: 'Continue_Learning',
-                        //     data: data,
-                        //   }
-                        // )
-                        // }
-                        ContentData={courseData}
-                        TrackData={trackData}
-                        isHorizontal={false}
-                      />
+                    {loadingContent === true ? (
+                      <View style={styles.loaderContainer}>
+                        <ActivityIndicator size="large" />
+                      </View>
                     ) : (
-                      <GlobalText style={globalStyles.heading2}>
-                        {t('no_data_found')}
-                      </GlobalText>
+                      <>
+                        {courseData.length > 0 ? (
+                          <CoursesBox
+                            // title={'Continue_Learning'}
+                            // description={'Food_Production'}
+                            style={{ titlecolor: '#06A816' }}
+                            // viewAllLink={() =>
+                            //   navigation.navigate('ViewAll', {
+                            //     title: 'Continue_Learning',
+                            //     data: data,
+                            //   }
+                            // )
+                            // }
+                            ContentData={courseData}
+                            TrackData={trackData}
+                            isHorizontal={false}
+                          />
+                        ) : (
+                          <GlobalText style={globalStyles.heading2}>
+                            {t('no_data_found')}
+                          </GlobalText>
+                        )}
+                      </>
                     )}
                   </View>
                 </CopilotView>
               </CopilotStep>
               {courseData.length !== count && courseData.length > 0 && (
                 <View>
-                  <PrimaryButton
-                    onPress={handleViewMore}
-                    text={t('viewmore')}
-                  />
+                  {loadingContent === false && (
+                    <>
+                      {loadingMore === true ? (
+                        <View style={styles.loaderContainer}>
+                          <ActivityIndicator size="large" />
+                        </View>
+                      ) : (
+                        <PrimaryButton
+                          onPress={handleViewMore}
+                          text={t('viewmore')}
+                        />
+                      )}
+                    </>
+                  )}
                 </View>
               )}
             </>
@@ -527,6 +603,10 @@ const Courses = () => {
               onExit={handleExitApp}
             />
           )}
+          <InterestModalError
+            setIsModal={setInterestModalError}
+            isModal={interestModalError}
+          />
           <InterestModal
             setIsModal={setInterestModal}
             isModal={interestModal}
@@ -570,6 +650,7 @@ const Courses = () => {
             instant={instant}
             setIsDrawerOpen={setIsDrawerOpen}
             contentFilter={contentFilter}
+            isExplore={false}
           />
         </FilterDrawer>
       )}

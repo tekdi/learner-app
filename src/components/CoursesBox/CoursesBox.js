@@ -33,7 +33,7 @@ const CoursesBox = ({
     //console.log('Card pressed!', item);
     // console.log('identifier', item?.identifier);
     // console.log('item', item?.leafNodes);
-    navigation.navigate('CourseContentList', {
+    navigation.push('CourseContentList', {
       do_id: item?.identifier,
       course_id: item?.identifier,
       content_list_node: item?.leafNodes,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import DropdownSelect2 from '../../../../../components/DropdownSelect/DropdownSelect2';
 import { View } from 'react-native';
 import MaterialCard from './MaterialCard';

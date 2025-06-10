@@ -12,6 +12,10 @@ export const languages = [
     value: 'ma',
   },
   // {
+  //   title: 'odia',
+  //   value: 'odia',
+  // },
+  // {
   //   title: 'bengali',
   //   value: 'ba',
   // },
@@ -27,10 +31,10 @@ export const languages = [
   //   title: 'tamil',
   //   value: 'ta',
   // },
-  // // {
-  // //   title: 'gujarati',
-  // //   value: 'gu',
-  // // },
+  // {
+  //   title: 'gujarati',
+  //   value: 'gu',
+  // },
   // {
   //   title: 'urdu',
   //   value: 'ur',

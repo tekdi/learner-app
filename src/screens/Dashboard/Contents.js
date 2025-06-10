@@ -49,6 +49,8 @@ const Contents = () => {
   const [trackData, setTrackData] = useState([]);
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingContent, setLoadingContent] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [instant, setInstant] = useState([]);
@@ -77,8 +79,41 @@ const Contents = () => {
 
       setRestoreScroll(true);
       setLoading(false);
+
+      // onFopcusTrackCourse
+      onFopcusTrackCourse();
     }, [restoreScroll])
   );
+
+  const onFopcusTrackCourse = async () => {
+    try {
+      const contentList = data || [];
+      let contentIdList = [];
+      if (contentList) {
+        for (let i = 0; i < contentList.length; i++) {
+          contentIdList.push(contentList[i]?.identifier);
+        }
+      }
+      // console.log(
+      //   '########## contentIdList',
+      //   JSON.stringify(contentIdList)
+      // );
+      let userId = await getDataFromStorage('userId');
+      let course_track_data = await courseTrackingStatus(userId, contentIdList);
+
+      let courseTrackData = [];
+      if (course_track_data?.data) {
+        courseTrackData =
+          course_track_data?.data.find((course) => course.userId === userId)
+            ?.course || [];
+      }
+      // setTrackData(courseTrackData);
+      console.log('########## courseTrackData', JSON.stringify(courseTrackData));
+      setTrackData(courseTrackData);
+    } catch (e) {
+      console.log('Error:', e);
+    }
+  };
 
   const routeName = useNavigationState((state) => {
     const route = state.routes[state.index];
@@ -96,13 +131,13 @@ const Contents = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setSearchText('');
-      console.log('########## in focus course');
-      setLoading(true);
+      // setSearchText('');
+      // console.log('########## in focus course');
+      // setLoading(true);
       //bug fix for not realtime tracking
-      const append = offset > 0 ? true : false;
-      fetchData(offset, append);
-      setRefreshKey((prev) => prev + 1); // Force component reload
+      // const append = offset > 0 ? true : false;
+      // fetchData(offset, append);
+      // setRefreshKey((prev) => prev + 1); // Force component reload
     }, []) // Make sure to include the dependencies
   );
 
@@ -121,15 +156,19 @@ const Contents = () => {
   }, []);
 
   const fetchData = async (offset, append = false) => {
-    setLoading(true);
+    if (append === false) {
+      setLoadingContent(true);
+    } else {
+      setLoadingMore(true);
+    }
     console.log('refreshed');
     let userType = await getDataFromStorage('userType');
     const instant =
       userType === 'youthnet'
         ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
         : userType === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+        ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+        : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
 
     const data = await contentListApi_Pratham({ searchText, instant, offset });
     //found content progress
@@ -151,10 +190,10 @@ const Contents = () => {
       //get course track data
       let userId = await getDataFromStorage('userId');
       let course_track_data = await courseTrackingStatus(userId, contentIdList);
-      console.log(
-        '########## course_track_data',
-        JSON.stringify(course_track_data?.data)
-      );
+      // console.log(
+      //   '########## course_track_data',
+      //   JSON.stringify(course_track_data?.data)
+      // );
       let courseTrackData = [];
       if (course_track_data?.data) {
         courseTrackData =
@@ -162,7 +201,8 @@ const Contents = () => {
             ?.course || [];
       }
 
-      setTrackData((prevData) => [...prevData, ...(courseTrackData || [])]);
+      // setTrackData((prevData) => [...prevData, ...(courseTrackData || [])]);
+      setTrackData((pre) => [...pre, ...courseTrackData]);
 
       const result = JSON.parse(await getDataFromStorage('profileData'));
       setUserInfo(result?.getUserDetails);
@@ -171,7 +211,11 @@ const Contents = () => {
       setData((prevData) =>
         append ? [...prevData, ...(contentList || [])] : contentList || []
       );
-      setLoading(false);
+      if (append === false) {
+        setLoadingContent(false);
+      } else {
+        setLoadingMore(false);
+      }
     } catch (e) {
       console.log('e', e);
     }
@@ -195,7 +239,7 @@ const Contents = () => {
   }, [searchText]);
 
   const handleViewMore = () => {
-    const newOffset = offset + 5; // Increase offset by 5
+    const newOffset = offset + 10; // Increase offset by 5
     setOffset(newOffset); // Update state
     fetchData(newOffset, true); // Append new data
     const page = 'content';
@@ -224,8 +268,11 @@ const Contents = () => {
     setLoading(true); // Start Refresh Indicator
 
     try {
-      console.log('Fetching Data...');
-      fetchData(0, false); // Reset course data
+      setRefreshKey((prevKey) => prevKey + 1);
+      // console.log('Fetching Data...');
+      // setOffset(0); // Reset offset when searching
+      // fetchData(0, false); // Reset course data
+      setSearchText('');
     } catch (error) {
       console.log('Error fetching data:', error);
     } finally {
@@ -256,10 +303,12 @@ const Contents = () => {
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
                 <GlobalText style={styles.text2}>
-                  {t('welcome')},
-                  {capitalizeName(
-                    `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
-                  )}
+                  {t('welcome')},{' '}
+                  {userInfo?.[0]?.firstName &&
+                    userInfo?.[0]?.lastName &&
+                    capitalizeName(
+                      `${userInfo?.[0]?.firstName} ${userInfo?.[0]?.lastName}!`
+                    )}
                 </GlobalText>
               </View>
               <GlobalText style={styles.text}>
@@ -282,23 +331,31 @@ const Contents = () => {
                   flexDirection: 'row',
                 }}
               >
-                {data?.length > 0 ? (
-                  data?.map((item, index) => {
-                    return (
-                      <ContentCard
-                        key={index}
-                        item={item}
-                        index={index}
-                        course_id={item?.identifier}
-                        unit_id={item?.identifier}
-                        TrackData={trackData}
-                      />
-                    );
-                  })
+                {loadingContent === true ? (
+                  <View style={styles.loaderContainer}>
+                    <ActivityIndicator size="large" />
+                  </View>
                 ) : (
-                  <GlobalText style={globalStyles.heading2}>
-                    {t('no_data_found')}
-                  </GlobalText>
+                  <>
+                    {data?.length > 0 ? (
+                      data?.map((item, index) => {
+                        return (
+                          <ContentCard
+                            key={index}
+                            item={item}
+                            index={index}
+                            course_id={item?.identifier}
+                            unit_id={item?.identifier}
+                            TrackData={trackData}
+                          />
+                        );
+                      })
+                    ) : (
+                      <GlobalText style={globalStyles.heading2}>
+                        {t('no_data_found')}
+                      </GlobalText>
+                    )}
+                  </>
                 )}
                 {/* <FlatList
                   data={data}
@@ -312,10 +369,20 @@ const Contents = () => {
 
                 {data.length !== count && (
                   <View>
-                    <PrimaryButton
-                      onPress={handleViewMore}
-                      text={t('viewmore')}
-                    />
+                    {loadingContent === false && (
+                      <>
+                        {loadingMore === true ? (
+                          <View style={styles.loaderContainer}>
+                            <ActivityIndicator size="large" />
+                          </View>
+                        ) : (
+                          <PrimaryButton
+                            onPress={handleViewMore}
+                            text={t('viewmore')}
+                          />
+                        )}
+                      </>
+                    )}
                   </View>
                 )}
               </View>
@@ -361,6 +428,11 @@ const styles = StyleSheet.create({
   columnWrapper: {
     justifyContent: 'space-between', // Spacing between columns
     paddingHorizontal: 10,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

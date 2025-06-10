@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import BackHeader from '../../components/Layout/BackHeader';
 import DropdownSelect2 from '@components/DropdownSelect/DropdownSelect2';

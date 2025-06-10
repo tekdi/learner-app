@@ -1,7 +1,11 @@
 import EndUrls from './EndUrls';
 import axios from 'axios';
 import uuid from 'react-native-uuid';
-import { getApiResponse, storeApiResponse } from './AuthService';
+import {
+  getApiResponse,
+  storeApiResponse,
+  updateCourseStatus,
+} from './AuthService';
 import { getDataFromStorage, getTentantId } from '../JsHelper/Helper';
 //for react native config env : dev uat prod
 import Config from 'react-native-config';
@@ -417,6 +421,45 @@ export const contentTracking = async (
     //   .join(' \\\n')} \\\n-d '${data}'`;
 
     // // console.log('Curl Command:', curlCommand);
+    //in progress status update for course
+    const url_course = EndUrls.CourseInProgress;
+    let data_course = JSON.stringify({
+      filters: {
+        userId: [userId],
+        courseId: [courseId],
+      },
+      limit: 10,
+      offset: 0,
+    });
+    let config_course = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url_course,
+      headers: headers || {},
+      data: data_course,
+    };
+    try {
+      const response = await axios.request(config_course);
+      let courseData = response?.data?.result?.data;
+      console.log(
+        '######### course inprogress CourseInProgress:',
+        JSON.stringify(courseData)
+      );
+      if (courseData) {
+        if (courseData.length > 0) {
+          for (let i = 0; i < courseData.length; i++) {
+            if (courseData[i]?.status == 'enrolled') {
+              await updateCourseStatus({
+                course_id: courseId,
+                status: 'inprogress',
+              });
+            }
+          }
+        }
+      }
+    } catch (error) {}
+    //end course status update in progress
+
     return api_response;
   } catch (error) {
     throw new Error(
@@ -504,7 +547,7 @@ export const courseTrackingStatus = async (userId, courseId) => {
        .join('\n  ')}
      --data '${data}'`;
 
-    // console.log('Generated cURL Command:\n', curlCommand);
+    console.log('Generated cURL Command courseTrackingStatus:\n', curlCommand);
 
     try {
       const response = await axios.request(config);
@@ -534,7 +577,12 @@ export const CourseInProgress = async () => {
     const url = EndUrls.CourseInProgress;
 
     let data = JSON.stringify({
-      userId: [userId],
+      filters: {
+        userId: [userId],
+        status: ['inprogress'],
+      },
+      limit: 10,
+      offset: 0,
     });
 
     let api_response = null;

@@ -324,9 +324,7 @@ const Profile = () => {
             >
               <GlobalText style={globalStyles.text}>
                 {userData?.username}
-              </GlobalText>
-
-              <View style={[globalStyles.flexrow]}>
+                {'   '}
                 <View
                   style={{
                     width: 10,
@@ -336,11 +334,9 @@ const Profile = () => {
                     marginHorizontal: 15,
                   }}
                 />
-                <GlobalText style={globalStyles.text}>
-                  {t('joined_on')}
-                </GlobalText>
-                <GlobalText style={globalStyles.text}> {getDate()}</GlobalText>
-              </View>
+                {'  '}
+                {t('joined_on')} {getDate()}
+              </GlobalText>
             </View>
           </LinearGradient>
           <View style={{ padding: 10 }}>
@@ -355,16 +351,18 @@ const Profile = () => {
 
           {userType == 'youthnet' && (
             <>
-              <GlobalText
-                numberOfLines={4}
-                ellipsizeMode="tail"
-                style={[globalStyles.h5, { color: '#78590C' }]}
-              >
-                {t('completed_courses_certificates')}
-              </GlobalText>
-              {courseList.length === 0 && (
-                <NoCertificateBox userType={userType} />
-              )}
+              <View style={{ marginLeft: 10 }}>
+                <GlobalText
+                  numberOfLines={4}
+                  ellipsizeMode="tail"
+                  style={[globalStyles.h5, { color: '#78590C' }]}
+                >
+                  {t('completed_courses_certificates')}
+                </GlobalText>
+                {courseList.length === 0 && (
+                  <NoCertificateBox userType={userType} />
+                )}
+              </View>
               {courseList?.map((item, i) => {
                 return <CompletedCourse key={i} data={item} />;
               })}

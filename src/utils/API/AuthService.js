@@ -199,6 +199,8 @@ export const sendOtp = async (payload) => {
       },
     });
 
+    console.log("########## otp sent",JSON.stringify(result));
+
     if (result?.data) {
       return result?.data;
     } else {
@@ -628,7 +630,7 @@ export const contentListApi_Pratham = async ({
   curlCommand += `-d '${JSON.stringify(payload)}'`;
 
   // Output the cURL command to the console
-  // console.log('Equivalent cURL command:\n', curlCommand);
+  console.log('Equivalent cURL command:\n', curlCommand);
 
   try {
     // Make the actual request
@@ -1843,7 +1845,7 @@ export const filterContent = async ({ instantId }) => {
     for (const [key, value] of Object.entries(headers || {})) {
       curlCommand += `-H '${key}: ${value}' \\\n`;
     }
-    // console.log('curlCom', curlCommand);
+    console.log('curlCom fetchTopics', curlCommand);
 
     // Make the actual request
     const result = await get(url, {
@@ -1967,7 +1969,7 @@ export const courseEnroll = async ({ course_id }) => {
     console.log('e', e);
   }
 };
-export const updateCourseStatus = async ({ course_id }) => {
+export const updateCourseStatus = async ({ course_id, status }) => {
   const url = `${EndUrls.updateCourseStatus}`; // Define the URL
   const headers = await getHeaders();
   const headersString = Object.entries(headers)
@@ -1978,6 +1980,7 @@ export const updateCourseStatus = async ({ course_id }) => {
   const payload = {
     userId: user_id,
     courseId: course_id,
+    ...(status && { status: status }),
   };
   try {
     const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
@@ -1990,6 +1993,8 @@ export const updateCourseStatus = async ({ course_id }) => {
     const result = await post(url, payload, {
       headers: headers || {},
     });
+
+    console.log('######### course inprogress:', JSON.stringify(result));
 
     if (result) {
       return result?.data;
@@ -2031,10 +2036,11 @@ export const viewCertificate = async ({ certificateId }) => {
     .map(([key, value]) => `-H "${key}: ${value}"`)
     .join(' ');
   const user_id = await getDataFromStorage('userId');
+  const template_id = await getDataFromStorage('templateId');
 
   const payload = {
     credentialId: certificateId,
-    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
+    templateId: template_id,
   };
 
   try {
@@ -2107,6 +2113,7 @@ export const enrollInterest = async (selectedIds) => {
     village: customFields?.VILLAGE ? customFields?.VILLAGE : '',
     blood_group: '',
     userId: profileDetails?.userId,
+    enrollmentId: profileDetails?.enrollmentId || '',
     courseId: '',
     courseName: '',
     topicName: selectedIds?.label,
@@ -2114,7 +2121,7 @@ export const enrollInterest = async (selectedIds) => {
   const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
     payload
   )}' ${url}`;
-  // console.log('cURL Command:', curlCommand);
+  console.log('cURL enrollInterest Command:', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {
@@ -2255,12 +2262,13 @@ export const downloadCertificate = async ({
 }) => {
   const url = `${EndUrls.downloadCertificate}`; // Define the URL
   const headers = await getHeaders();
-  // console.log('certificateId', certificateId);
+  console.log('### certificate certificateId', certificateId);
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+  const template_id = await getDataFromStorage('templateId');
 
   const payload = {
     credentialId: certificateId,
-    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
+    templateId: template_id,
   };
 
   try {
@@ -2268,6 +2276,7 @@ export const downloadCertificate = async ({
       headers: headers || {},
       responseType: 'arraybuffer', // Ensures we get binary data
     });
+    console.log('### certificate response', response);
     const data = response?.request?._response;
     console.log('data', data);
 
@@ -2288,9 +2297,10 @@ export const downloadCertificate = async ({
 export const shareCertificate = async ({ certificateId }) => {
   const url = `${EndUrls.downloadCertificate}`; // Define the URL
   const headers = await getHeaders();
+  const template_id = await getDataFromStorage('templateId');
   const payload = {
     credentialId: certificateId,
-    templateId: 'cm96nsvuf0002lh0i0uonf2dd',
+    templateId: template_id,
   };
 
   try {
