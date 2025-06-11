@@ -5,7 +5,7 @@
   "english": "English",
   "hindi": "हिंदी",
   "marathi": "मराठी",
-  "odia":"ଓଡ଼ିଆ",
+  "odia": "ଓଡ଼ିଆ",
   "bengali": "বাংলা",
   "bangla": "বাংলা",
   "telugu": "తెలుగు",
@@ -415,5 +415,13 @@
   "lets_create_your_acc": "Let's create your account!",
   "create_acc_desp": "Answer a few questions so we can get to know you better",
   "completed_on": "Completed on",
-  "preview_certificate": "Preview Certificate"
+  "preview_certificate": "Preview Certificate",
+  "phone_type_accessible": "Type of Phone Accessible",
+  "PHONE_TYPE_ACCESSIBLE": "Type of Phone Accessible",
+  "WHAT_IS_YOUR_PRIMARY_WORK": "What is your primary work?",
+  "what_is_your_primary_work": "What is your primary work?",
+  "unemployed_housewife_domestic_work": "Unemployed, Housewife or Domestic Work",
+  "DROP_OUT_REASON": "Reason for Drop Out From School",
+  "self_employment_own_business_shop": "Self Employment, Own Business or Shop",
+  "student": "Student"
 }
