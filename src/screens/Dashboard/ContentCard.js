@@ -205,6 +205,8 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         contentMimeType == 'application/pdf' ||
         contentMimeType == 'video/mp4' ||
         contentMimeType == 'video/webm' ||
+        contentMimeType == 'audio/mp3' ||
+        contentMimeType == 'audio/wav' ||
         contentMimeType == 'application/epub' ||
         contentMimeType == 'application/vnd.sunbird.questionset'
       ) {

@@ -67,7 +67,14 @@ export const questionsData = {
 export const contentPlayerConfig = {
   context: {},
   config: {
-    showEndPage: false,
+    showEndPage: true,
+    plugins: [
+      {
+        id: 'org.sunbird.player.endpage',
+        ver: 1.1,
+        type: 'plugin',
+      },
+    ],
     sideMenu: {
       showShare: false,
       showDownload: false,
