@@ -30,13 +30,15 @@ const ForgotPassword = ({ route }) => {
   const [username, setusename] = useState('');
   const [modalError, setmodalError] = useState('');
   const [modal, setmodal] = useState(false);
-    const [successRedirection, setSuccessRedirection] = useState(false);
+  const [successRedirection, setSuccessRedirection] = useState(false);
 
   const [error, seterror] = useState(false);
   const { t } = useTranslation();
   const navigation = useNavigation();
   const webViewRef = useRef(null);
-  const [injectedJS, setinjectedJs] = useState();
+  // const [injectedJS, setinjectedJs] = useState();
+    const forgetPassUrl = Config.NEXT_FORGET_PASSWORD_URL ;
+  
   const handleInput = (e) => {
     console.log({ e });
     setvalue(e.trim());
@@ -88,47 +90,56 @@ const ForgotPassword = ({ route }) => {
     // Return the encrypted email
     return `${encryptedUsername}@${domain}`;
   }
-const getAllStoredData = async () => {
-  try {
-    const keys = await AsyncStorage.getAllKeys();
-    const result = await AsyncStorage.multiGet(keys);
+  const getAllStoredData = async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const result = await AsyncStorage.multiGet(keys);
 
-    const keyValuePairs = result.reduce((acc, [key, value]) => {
-      acc[key] = value;
-      return acc;
-    }, {});
+      const keyValuePairs = result.reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {});
 
-    console.log("All local storage key-value pairs:", keyValuePairs);
-    return keyValuePairs;
-  } catch (error) {
-    console.error("Error fetching AsyncStorage data:", error);
-  }
-};
- useEffect(() => {
+      console.log('All local storage key-value pairs:', keyValuePairs);
+      return keyValuePairs;
+    } catch (error) {
+      console.error('Error fetching AsyncStorage data:', error);
+    }
+  };
+  useEffect(() => {
     getAllStoredData();
   }, []);
   useEffect(() => {
-    if(successRedirection)
-    {
-       navigation.navigate('LoginScreen', { enableLogin: true });
-
+    if (successRedirection) {
+      navigation.navigate('LoginScreen', { enableLogin: true });
     }
   }, [successRedirection]);
-const getQueryParam = (url, key) => {
-  const queryString = url.split('?')[1];
-  if (!queryString) return null;
+  const getQueryParam = (url, key) => {
+    const queryString = url.split('?')[1];
+    if (!queryString) return null;
 
-  const params = queryString.split('&').reduce((acc, param) => {
-    const [k, v] = param.split('=');
-    acc[decodeURIComponent(k)] = decodeURIComponent(v || '');
-    return acc;
-  }, {});
+    const params = queryString.split('&').reduce((acc, param) => {
+      const [k, v] = param.split('=');
+      acc[decodeURIComponent(k)] = decodeURIComponent(v || '');
+      return acc;
+    }, {});
 
-  return params[key];
-};
+    return params[key];
+  };
+  const injectedJS = `  (function() {
+    try {
+      localStorage.setItem('appMode', 'androidALearnerApp');
+      console.log('appMode set in localStorage');
+    } catch (e) {
+      console.error('Failed to inject localStorage:', e);
+    }
+  })();
+  true; // Required for Android
+`;
+
   return (
     <>
-  {/* 
+      {/* 
 <SecondaryHeader />
 <KeyboardAvoidingView
   style={[globalStyles.container, { paddingTop: 50 }]}
@@ -227,50 +238,47 @@ const getQueryParam = (url, key) => {
 </KeyboardAvoidingView>
 */}
 
-            <WebView
-              originWhitelist={['*']}
-              source={{ uri: Config.API_URL.includes("://qa-")?'https://qa-plp.prathamdigital.org/password-forget' : Config.API_URL.includes("://dev-")?'https://dev-plp.prathamdigital.org/password-forget' : 'https://plp.prathamdigital.org/password-forget' }}
-              ref={webViewRef}
-              style={styles.webview}
-              injectedJavaScript={injectedJS}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-              scalesPageToFit={true}
-              startInLoadingState={true}
-              allowFileAccess={true}
-              allowUniversalAccessFromFileURLs={true}
-              allowingReadAccessToURL={true}
-              mixedContentMode={'always'}
-              allowsFullscreenVideo={true}
-              mediaPlaybackRequiresUserAction={false}
-                onNavigationStateChange={(navState) => {
-    console.log('Current URL:', navState.url);
-      const tab = getQueryParam(navState.url, 'tab');
+      <WebView
+        originWhitelist={['*']}
+        source={{
+          uri: forgetPassUrl,
+        }}
+        ref={webViewRef}
+        style={styles.webview}
+        injectedJavaScript={injectedJS}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        scalesPageToFit={true}
+        startInLoadingState={true}
+        allowFileAccess={true}
+        allowUniversalAccessFromFileURLs={true}
+        allowingReadAccessToURL={true}
+        mixedContentMode={'always'}
+        allowsFullscreenVideo={true}
+        mediaPlaybackRequiresUserAction={false}
+        onNavigationStateChange={(navState) => {
+          console.log('Current URL:', navState.url);
+          const tab = getQueryParam(navState.url, 'tab');
 
-   
-  console.log("tab:", tab);
-  if(tab)
-  {
- setSuccessRedirection(true)
-  }
-
-    // You can also update state if needed
-    // setCurrentUrl(navState.url);
-  }}
-            />
+          console.log('tab:', tab);
+          if (tab) {
+            navigation.goBack();
+          }
+        }}
+      />
     </>
   );
 };
 
 const styles = StyleSheet.create({
-   webViewContainer: {
+  webViewContainer: {
     flex: 1,
     height: '100%',
   },
   webview: {
     flex: 1,
   },
- 
+
   view: {
     alignItems: 'center',
     padding: 20,
