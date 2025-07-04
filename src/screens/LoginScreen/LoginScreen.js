@@ -42,7 +42,6 @@ import { useInternet } from '../../context/NetworkContext';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import GlobalText from '@components/GlobalText/GlobalText';
 import moment from 'moment';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -198,16 +197,8 @@ const LoginScreen = () => {
   // const handleLogin = async () => {
   //   navigation.navigate('Dashboard');
   // };
-  const setAppMode = async () => {
-  try {
-    await AsyncStorage.setItem('appMode', 'androidALearnerApp');
-  } catch (error) {
-    console.error('Failed to save appMode:', error);
-  }
-};
 
   useEffect(() => {
-     setAppMode();
     if (userName.length > 0 && password.length > 0 && acceptTerms) {
       setIsDisabled(false);
     } else {
