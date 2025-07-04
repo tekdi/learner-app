@@ -72,6 +72,10 @@ const VideoPlayerOffline = () => {
         filePath = `${content_file}.mp4`;
       } else if (contentObj?.mimeType == 'video/webm') {
         filePath = `${content_file}.webm`;
+      } else if (contentObj?.mimeType == 'audio/mp3') {
+        filePath = `${content_file}.mp3`;
+      } else if (contentObj?.mimeType == 'audio/wav') {
+        filePath = `${content_file}.wav`;
       }
       if (filePath != '') {
         try {
@@ -135,6 +139,10 @@ const VideoPlayerOffline = () => {
         filePath = `${content_file}.mp4`;
       } else if (contentObj?.mimeType == 'video/webm') {
         filePath = `${content_file}.webm`;
+      } else if (contentObj?.mimeType == 'audio/mp3') {
+        filePath = `${content_file}.mp3`;
+      } else if (contentObj?.mimeType == 'audio/wav') {
+        filePath = `${content_file}.wav`;
       }
       if (filePath != '') {
         //download file and store object in local
