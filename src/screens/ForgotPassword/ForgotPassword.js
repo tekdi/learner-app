@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Image,
@@ -20,6 +20,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import GlobalText from '@components/GlobalText/GlobalText';
+import WebView from 'react-native-webview';
+import Config from 'react-native-config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ForgotPassword = ({ route }) => {
   const { enableLogin } = route.params;
@@ -27,10 +30,15 @@ const ForgotPassword = ({ route }) => {
   const [username, setusename] = useState('');
   const [modalError, setmodalError] = useState('');
   const [modal, setmodal] = useState(false);
+  const [successRedirection, setSuccessRedirection] = useState(false);
+
   const [error, seterror] = useState(false);
   const { t } = useTranslation();
   const navigation = useNavigation();
-
+  const webViewRef = useRef(null);
+  // const [injectedJS, setinjectedJs] = useState();
+    const forgetPassUrl = Config.NEXT_FORGET_PASSWORD_URL ;
+  
   const handleInput = (e) => {
     console.log({ e });
     setvalue(e.trim());
@@ -82,114 +90,195 @@ const ForgotPassword = ({ route }) => {
     // Return the encrypted email
     return `${encryptedUsername}@${domain}`;
   }
+  const getAllStoredData = async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const result = await AsyncStorage.multiGet(keys);
+
+      const keyValuePairs = result.reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {});
+
+      console.log('All local storage key-value pairs:', keyValuePairs);
+      return keyValuePairs;
+    } catch (error) {
+      console.error('Error fetching AsyncStorage data:', error);
+    }
+  };
+  useEffect(() => {
+    getAllStoredData();
+  }, []);
+  useEffect(() => {
+    if (successRedirection) {
+      navigation.navigate('LoginScreen', { enableLogin: true });
+    }
+  }, [successRedirection]);
+  const getQueryParam = (url, key) => {
+    const queryString = url.split('?')[1];
+    if (!queryString) return null;
+
+    const params = queryString.split('&').reduce((acc, param) => {
+      const [k, v] = param.split('=');
+      acc[decodeURIComponent(k)] = decodeURIComponent(v || '');
+      return acc;
+    }, {});
+
+    return params[key];
+  };
+  const injectedJS = `  (function() {
+    try {
+      localStorage.setItem('appMode', 'androidALearnerApp');
+      console.log('appMode set in localStorage');
+    } catch (e) {
+      console.error('Failed to inject localStorage:', e);
+    }
+  })();
+  true; // Required for Android
+`;
 
   return (
     <>
-      <SecondaryHeader />
-      <KeyboardAvoidingView
-        style={[globalStyles.container, { paddingTop: 50 }]}
-      >
-        <View style={styles.view}>
-          <Image style={styles.image} source={Logo} resizeMode="contain" />
-          <Image
-            style={styles.image2}
-            source={lock_open}
-            resizeMode="contain"
-          />
+      {/* 
+<SecondaryHeader />
+<KeyboardAvoidingView
+  style={[globalStyles.container, { paddingTop: 50 }]}
+>
+  <View style={styles.view}>
+    <Image style={styles.image} source={Logo} resizeMode="contain" />
+    <Image
+      style={styles.image2}
+      source={lock_open}
+      resizeMode="contain"
+    />
 
-          <GlobalText style={[globalStyles.heading2, { marginBottom: 10 }]}>
-            {t('trouble_with_logging_in')}
-          </GlobalText>
-          {/* <GlobalText
-          style={[globalStyles.text, { marginBottom: 20, textAlign: 'center' }]}
+    <GlobalText style={[globalStyles.heading2, { marginBottom: 10 }]}>
+      {t('trouble_with_logging_in')}
+    </GlobalText>
+
+    <CustomTextInput
+      error={error}
+      field="username"
+      onChange={handleInput}
+      value={value}
+      autoCapitalize="none"
+    />
+    <PrimaryButton onPress={onPress} text={t('next')}></PrimaryButton>
+  </View>
+  <View style={{ width: '60%', alignSelf: 'center' }}></View>
+  <View
+    style={{
+      position: 'relative',
+      top: '20%',
+      alignSelf: 'center',
+      width: '100%',
+    }}
+  >
+    <HorizontalLine />
+    {enableLogin && (
+      <GlobalText
+        style={[
+          globalStyles.text,
+          { textAlign: 'center', padding: 30, color: '#0D599E' },
+        ]}
+        onPress={() => {
+          navigation.navigate('LoginScreen');
+        }}
+      >
+        {t('back_to_login')}
+      </GlobalText>
+    )}
+  </View>
+        <Modal visible={modal} transparent={true} animationType="slide" onclo>
+    <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
+      <View style={styles.alertBox}>
+        <TouchableOpacity
+                activeOpacity={1} // Prevent closing the modal when clicking inside the alert box
+          style={styles.alertSubBox}
         >
-          {t('forgot_password_desp')}
-        </GlobalText> */}
-          <CustomTextInput
-            error={error}
-            field="username"
-            onChange={handleInput}
-            value={value}
-            autoCapitalize="none"
-          />
-          <PrimaryButton onPress={onPress} text={t('next')}></PrimaryButton>
-        </View>
-        <View style={{ width: '60%', alignSelf: 'center' }}></View>
-        <View
-          style={{
-            position: 'relative',
-            top: '20%',
-            alignSelf: 'center',
-            width: '100%',
-          }}
-        >
-          <HorizontalLine />
-          {enableLogin && (
+          {modalError ? (
             <GlobalText
               style={[
-                globalStyles.text,
-                { textAlign: 'center', padding: 30, color: '#0D599E' },
+                globalStyles.subHeading,
+                { textAlign: 'center', marginVertical: 10 },
               ]}
-              onPress={() => {
-                navigation.navigate('LoginScreen');
-              }}
             >
-              {t('back_to_login')}
+              {t(modalError.toLowerCase().replace(/\s+/g, '_'))}
             </GlobalText>
-          )}
-        </View>
-        <Modal visible={modal} transparent={true} animationType="slide" onclo>
-          <TouchableOpacity style={styles.modalContainer} activeOpacity={1}>
-            <View style={styles.alertBox}>
-              <TouchableOpacity
-                activeOpacity={1} // Prevent closing the modal when clicking inside the alert box
-                style={styles.alertSubBox}
+          ) : (
+            <>
+              <Icon
+                name={'checkmark-circle-outline'}
+                size={60}
+                color="#1A8825"
+              />
+              <GlobalText
+                style={[
+                  globalStyles.subHeading,
+                  { textAlign: 'center', marginVertical: 10 },
+                ]}
               >
-                {modalError ? (
-                  <GlobalText
-                    style={[
-                      globalStyles.subHeading,
-                      { textAlign: 'center', marginVertical: 10 },
-                    ]}
-                  >
-                    {t(modalError.toLowerCase().replace(/\s+/g, '_'))}
-                  </GlobalText>
-                ) : (
-                  <>
-                    <Icon
-                      name={'checkmark-circle-outline'}
-                      size={60}
-                      color="#1A8825"
-                    />
-                    <GlobalText
-                      style={[
-                        globalStyles.subHeading,
-                        { textAlign: 'center', marginVertical: 10 },
-                      ]}
-                    >
-                      {t('we_sent_an_email_to')} {encryptEmail(username)}{' '}
-                      {t('with_a_link_to_get_back_to_your_account')}
-                    </GlobalText>
-                  </>
-                )}
-              </TouchableOpacity>
-              <View style={styles.btnbox}>
-                <PrimaryButton
-                  onPress={() => {
-                    setmodal(false);
-                  }}
-                  text={t('ok')}
-                ></PrimaryButton>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </Modal>
-      </KeyboardAvoidingView>
+                {t('we_sent_an_email_to')} {encryptEmail(username)}{' '}
+                {t('with_a_link_to_get_back_to_your_account')}
+              </GlobalText>
+            </>
+          )}
+        </TouchableOpacity>
+        <View style={styles.btnbox}>
+          <PrimaryButton
+            onPress={() => {
+              setmodal(false);
+            }}
+            text={t('ok')}
+          ></PrimaryButton>
+        </View>
+      </View>
+    </TouchableOpacity>
+  </Modal>
+</KeyboardAvoidingView>
+*/}
+
+      <WebView
+        originWhitelist={['*']}
+        source={{
+          uri: forgetPassUrl,
+        }}
+        ref={webViewRef}
+        style={styles.webview}
+        injectedJavaScript={injectedJS}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        scalesPageToFit={true}
+        startInLoadingState={true}
+        allowFileAccess={true}
+        allowUniversalAccessFromFileURLs={true}
+        allowingReadAccessToURL={true}
+        mixedContentMode={'always'}
+        allowsFullscreenVideo={true}
+        mediaPlaybackRequiresUserAction={false}
+        onNavigationStateChange={(navState) => {
+          console.log('Current URL:', navState.url);
+          const tab = getQueryParam(navState.url, 'tab');
+
+          console.log('tab:', tab);
+          if (tab) {
+            navigation.goBack();
+          }
+        }}
+      />
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  webViewContainer: {
+    flex: 1,
+    height: '100%',
+  },
+  webview: {
+    flex: 1,
+  },
+
   view: {
     alignItems: 'center',
     padding: 20,
