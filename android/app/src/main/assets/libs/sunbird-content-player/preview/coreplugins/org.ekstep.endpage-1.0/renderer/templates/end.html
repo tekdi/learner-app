@@ -3,12 +3,25 @@
     <image class="gc-ep-cont-background" ng-src="{{imageBasePath}}background_1.png" />
     <!-- <genie class="gc-ep-home"></genie> -->
 <div class="gc-ep-content" style="text-align:center; margin-top: 20px;height:550px">
-    <button class="replay-button" ng-click="replayContent()" style="display:block; margin: 20px auto; padding: 10px 20px; background-color: orange; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    <!-- <button class="replay-button" ng-click="replayContent()" style="display:block; margin: 20px auto; padding: 10px 20px; background-color: orange; color: white; border: none; border-radius: 5px; cursor: pointer;">
         
         Replay
+    </button> -->
+
+    
+    <button class="replay-button" onclick="exityoutube();" style="display:block; margin: 20px auto; padding: 10px 20px; background-color: orange; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Exit
     </button>
+
     <h3>Congratulations! You just completed.</h3>
 </div>
+
+    <script type="text/javascript">
+function exityoutube() 
+      {
+        window.ReactNativeWebView.postMessage(JSON.stringify({'youtube':'Exit'}));
+      }
+    </script>
     <div class="gc-ep-footer">
                     <div ng-click="replayContent()" role="button" aria-label="{{AppLables.replay}}" tabindex="0" class="gc-ep-footer-icons gc-ep-replay">
                        <img class="replay" ng-src="{{imageBasePath}}icn_replay.png" />

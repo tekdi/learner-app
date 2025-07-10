@@ -108,7 +108,10 @@ const Contents = () => {
             ?.course || [];
       }
       // setTrackData(courseTrackData);
-      console.log('########## courseTrackData', JSON.stringify(courseTrackData));
+      console.log(
+        '########## courseTrackData',
+        JSON.stringify(courseTrackData)
+      );
       setTrackData(courseTrackData);
     } catch (e) {
       console.log('Error:', e);
@@ -269,9 +272,11 @@ const Contents = () => {
 
     try {
       setRefreshKey((prevKey) => prevKey + 1);
-      // console.log('Fetching Data...');
-      // setOffset(0); // Reset offset when searching
-      // fetchData(0, false); // Reset course data
+      if (searchText === '') {
+        // console.log('Fetching Data...');
+        setOffset(0); // Reset offset when searching
+        fetchData(0, false); // Reset course data
+      }
       setSearchText('');
     } catch (error) {
       console.log('Error fetching data:', error);
