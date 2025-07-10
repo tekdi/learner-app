@@ -36,7 +36,7 @@ import {
   epubPlayerConfig,
   questionsData,
 } from './data';
-import { getData, storeData } from '../../../utils/Helper/JSHelper';
+import { getData, removeData, storeData } from '../../../utils/Helper/JSHelper';
 import RNFS from 'react-native-fs';
 import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
@@ -293,9 +293,55 @@ const StandAlonePlayer = ({ route }) => {
     try {
       //get telemetry save
       const data = event.nativeEvent.data;
+      // console.log('data_obj data', JSON.stringify(event.nativeEvent));
       let jsonObj = JSON.parse(data);
       let data_obj = jsonObj.data;
       let data_event = jsonObj?.event;
+      let youtubeExit = jsonObj?.youtube;
+      //for youtubeExit
+      if (youtubeExit && youtubeExit == 'Exit') {
+        // console.log('####################');
+        // console.log(
+        //   'data_obj playerevent youtube',
+        //   JSON.stringify(youtubeExit)
+        // );
+        // console.log('####################');
+        contentEidEND = [
+          {
+            eid: 'END',
+            edata: {
+              duration: 0,
+              mode: 'play',
+              pageid: 'sunbird-player-Endpage',
+              summary: [
+                {
+                  progress: 100,
+                },
+                {
+                  totallength: '',
+                },
+                {
+                  visitedlength: '',
+                },
+                {
+                  visitedcontentend: '',
+                },
+                {
+                  totalseekedlength: '',
+                },
+                {
+                  endpageseen: false,
+                },
+              ],
+              type: 'content',
+            },
+          },
+        ];
+        await storeData('contentEidEND', contentEidEND, 'json');
+        //check if exit button pressed
+        fetchExitData();
+        navigation.goBack();
+      }
       //check telemetry
       if (data_obj && data_event != 'playerevent') {
         //add user id in actor
@@ -1137,17 +1183,37 @@ const StandAlonePlayer = ({ route }) => {
     let storedContentEidINTERACT = await getData('contentEidINTERACT', 'json');
     let storedContentEidEND = await getData('contentEidEND', 'json');
     console.log('storedContentEidSTART', storedContentEidSTART);
+    console.log('storedContentEidEND', storedContentEidEND);
 
     let detailsObject = [];
     try {
-      if (storedContentEidSTART.length > 0) {
+      if (storedContentEidSTART && storedContentEidSTART.length > 0) {
         detailsObject.push(storedContentEidSTART[0]);
+      } else {
+        //for only html content games push end event manually after close app
+        if (
+          content_mime_type == 'application/vnd.ekstep.html-archive' ||
+          content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+          content_mime_type == 'video/x-youtube' ||
+          content_mime_type == 'application/vnd.ekstep.h5p-archive'
+        ) {
+          detailsObject.push({
+            eid: 'START',
+            edata: {
+              duration: 0,
+              mode: 'play',
+              pageid: 'sunbird-player-Startpage',
+              summary: [],
+              type: 'content',
+            },
+          });
+        }
       }
     } catch (error) {
       console.log('error', error);
     }
     try {
-      if (storedContentEidINTERACT.length > 0) {
+      if (storedContentEidINTERACT && storedContentEidINTERACT.length > 0) {
         detailsObject.push(storedContentEidINTERACT[0]);
       }
     } catch (error) {
@@ -1155,11 +1221,15 @@ const StandAlonePlayer = ({ route }) => {
     }
 
     try {
-      if (storedContentEidEND.length > 0) {
+      if (storedContentEidEND && storedContentEidEND.length > 0) {
         detailsObject.push(storedContentEidEND[0]);
       } else {
         //for only html content games push end event manually after close app
-        if (content_mime_type == 'application/vnd.ekstep.html-archive') {
+        if (
+          content_mime_type == 'application/vnd.ekstep.html-archive' ||
+          content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+          content_mime_type == 'application/vnd.ekstep.h5p-archive'
+        ) {
           detailsObject.push({
             eid: 'END',
             edata: {
@@ -1194,7 +1264,7 @@ const StandAlonePlayer = ({ route }) => {
     } catch (error) {
       console.log('error', error);
     }
-    
+
     let userId = await getDataFromStorage('userId');
     let courseId = await getData('courseId', '');
     let unitId = await getData('unitId', '');
@@ -1204,7 +1274,7 @@ const StandAlonePlayer = ({ route }) => {
     let lastAccessOn = new Date().toISOString();
 
     if (detailsObject && detailsObject.length > 0) {
-      console.log('reached here');
+      console.log('reached here', JSON.stringify(detailsObject));
 
       try {
         let create_tracking = await contentTracking(
@@ -1239,6 +1309,10 @@ const StandAlonePlayer = ({ route }) => {
         console.log(e);
       }
     }
+
+    await removeData('contentEidSTART');
+    await removeData('contentEidINTERACT');
+    await removeData('contentEidEND');
   };
   //event when player closed
 
