@@ -551,6 +551,7 @@ const RegistrationForm = ({ fields }) => {
   };
 
   const renderField = (field) => {
+   
     const age = calculateAge(formData?.dob || '');
     if (
       (field.name === 'guardian_relation' ||
@@ -561,6 +562,22 @@ const RegistrationForm = ({ fields }) => {
     ) {
       return null;
     }
+     const familyType = formData?.family_member_details;
+      if (
+    !familyType &&
+    ['father_name', 'mother_name', 'spouse_name'].includes(field.name)
+  ) {
+    return null;
+  }
+  if (familyType === 'spouse' && (field.name === 'father_name' || field.name === 'mother_name')) {
+    return null;
+  }
+  if (familyType === 'father' && (field.name === 'spouse_name' || field.name === 'mother_name')) {
+    return null;
+  }
+  if (familyType === 'mother' && (field.name === 'father_name' || field.name === 'spouse_name')) {
+    return null;
+  }
 
     if (['is_volunteer'].includes(field.name)) {
       return null; // Skip validation for these fields
