@@ -43,7 +43,9 @@ import PrimaryButton from '../PrimaryButton/PrimaryButton';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 
-const SubjectBox = ({ name, disabled, data }) => {
+const SubjectBox = ({ name, disabled, data, isAiAssessment }) => {
+  // console.log('#### isAiAssessment', isAiAssessment);
+  // console.log('#### isAiAssessment', data?.identifier);
   const { t } = useTranslation();
   const navigation = useNavigation();
   const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
@@ -351,39 +353,52 @@ const SubjectBox = ({ name, disabled, data }) => {
               <></>
             )}
           </View>
-          <View style={{ marginRight: 10, paddingVertical: 10 }}>
-            {data?.lastAttemptedOn ? (
-              <MaterialIcons name="navigate-next" size={32} color="black" />
-            ) : isSyncPending ? (
-              <View style={globalStyles.flexrow}>
-                <Ionicons
-                  name="cloud-offline-outline"
-                  color={'#7C766F'}
-                  size={22}
+          {isAiAssessment == false && (
+            <View style={{ marginRight: 10, paddingVertical: 10 }}>
+              {data?.lastAttemptedOn ? (
+                <MaterialIcons name="navigate-next" size={32} color="black" />
+              ) : isSyncPending ? (
+                <View style={globalStyles.flexrow}>
+                  <Ionicons
+                    name="cloud-offline-outline"
+                    color={'#7C766F'}
+                    size={22}
+                  />
+                  <GlobalText
+                    style={[
+                      globalStyles.subHeading,
+                      { color: '#7C766F', marginLeft: 10 },
+                    ]}
+                  >
+                    {t('sync_pending')}
+                  </GlobalText>
+                </View>
+              ) : (
+                <SecondaryButton
+                  onPress={() => {
+                    navigation.navigate('TestDetailView', {
+                      title: name,
+                      data: data,
+                    });
+                  }}
+                  style={[globalStyles.text]}
+                  text={'take_the_test'}
                 />
-                <GlobalText
-                  style={[
-                    globalStyles.subHeading,
-                    { color: '#7C766F', marginLeft: 10 },
-                  ]}
-                >
-                  {t('sync_pending')}
-                </GlobalText>
-              </View>
-            ) : (
-              <SecondaryButton
-                onPress={() => {
-                  navigation.navigate('TestDetailView', {
-                    title: name,
-                    data: data,
-                  });
-                }}
-                style={[globalStyles.text]}
-                text={'take_the_test'}
-              />
-            )}
-          </View>
-          {!data?.lastAttemptedOn && downloadStatus == 'progress' ? (
+              )}
+            </View>
+          )}
+          {isAiAssessment == true ? (
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('ATMAssessment', {
+                  title: name,
+                  data: data,
+                })
+              }
+            >
+              <MaterialIcons name="navigate-next" size={32} color="black" />
+            </TouchableOpacity>
+          ) : !data?.lastAttemptedOn && downloadStatus == 'progress' ? (
             <ActivityIndicator size="large" />
           ) : !data?.lastAttemptedOn && downloadStatus == 'completed' ? (
             <TouchableOpacity onPress={() => setModalVisible(true)}>

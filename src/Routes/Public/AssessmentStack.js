@@ -6,6 +6,9 @@ import AnswerKeyView from '../../screens/Assessment/AnswerKeyView';
 import TestDetailView from '../../screens/Assessment/TestDetailView';
 import Profile from '../../screens/Profile/Profile';
 
+// ATM
+import ATMAssessment from '../../screens/Assessment/ATM/ATMAssessment';
+
 const Stack = createNativeStackNavigator();
 
 const AssessmentStack = () => {
@@ -16,6 +19,8 @@ const AssessmentStack = () => {
       <Stack.Screen name="AnswerKeyView" component={AnswerKeyView} />
       <Stack.Screen name="TestDetailView" component={TestDetailView} />
       <Stack.Screen name="Profile" component={Profile} />
+      {/* ATM */}
+      <Stack.Screen name="ATMAssessment" component={ATMAssessment} />
     </Stack.Navigator>
   );
 };

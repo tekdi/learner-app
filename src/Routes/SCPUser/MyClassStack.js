@@ -9,6 +9,9 @@ import TestDetailView from '../../screens/Assessment/TestDetailView';
 import CourseContentList from '@src/screens/Dashboard/Courses/CourseContentList';
 import UnitList from '@src/screens/Dashboard/Courses/UnitList';
 
+// ATM
+import ATMAssessment from '../../screens/Assessment/ATM/ATMAssessment';
+
 const Stack = createNativeStackNavigator();
 
 const SCPUserStack = () => {
@@ -44,6 +47,9 @@ const SCPUserStack = () => {
         component={UnitList}
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
+
+      {/* ATM */}
+      <Stack.Screen name="ATMAssessment" component={ATMAssessment} />
     </Stack.Navigator>
   );
 };

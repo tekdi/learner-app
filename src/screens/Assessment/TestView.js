@@ -17,6 +17,7 @@ import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import { removeData } from '../../utils/Helper/JSHelper';
+import { AIAssessmentSearch, AIAssessmentStatus } from '../../utils/API/ApiCalls';
 
 const instructions = [
   {
@@ -75,6 +76,33 @@ const TestView = ({ route }) => {
   /*useEffect(() => {
     fetchData();
   }, []);*/
+
+  const [aiQuestionSet, setAiQuestionSet] = useState(null);
+  useEffect(() => {
+    const fetchAIData = async () => {
+      if (questionsets && questionsets.length > 0) {
+        let do_ids = questionsets?.map((item) => item?.identifier || '');
+        // console.log('do_ids', do_ids);
+        let response_ai = await AIAssessmentSearch(do_ids);
+        // console.log('response_ai', response_ai);
+        let response_ai_ids =
+          response_ai?.data?.map((item) => item?.question_set_id || '') || [];
+        // console.log('response_ai_ids', response_ai_ids);
+        setAiQuestionSet(response_ai_ids);
+        if(response_ai_ids.length > 0){
+          let aiAssessmentStatusTrack=[]
+          for(let i=0;i<response_ai_ids.length;i++){
+            let response_ai_status = await AIAssessmentStatus(response_ai_ids[i]);
+            console.log('response_ai_status', response_ai_status);
+            aiAssessmentStatusTrack.push(response_ai_status)
+          }
+          // setAiQuestionSet(aiAssessmentStatusTrack);
+         
+        }
+      }
+    };
+    fetchAIData();
+  }, [questionsets]);
 
   useFocusEffect(
     useCallback(() => {
@@ -144,17 +172,21 @@ const TestView = ({ route }) => {
           <GlobalText style={globalStyles.text}>
             {t('assessment_instructions')}
           </GlobalText>
-          {questionsets?.map((item, index) => {
-            return (
-              <SubjectBox
-                key={item?.subject}
-                disabled={!item?.lastAttemptedOn}
-                //name={item?.subject?.[0]?.toUpperCase()}
-                name={item?.name}
-                data={item}
-              />
-            );
-          })}
+          {aiQuestionSet &&
+            questionsets?.map((item, index) => {
+              let isAiAssessment = aiQuestionSet?.includes(item?.identifier);
+              return (
+                <SubjectBox
+                  key={item?.subject}
+                  disabled={!item?.lastAttemptedOn}
+                  //name={item?.subject?.[0]?.toUpperCase()}
+                  name={item?.name}
+                  data={item}
+                  isAiAssessment={isAiAssessment}
+                  index={index}
+                />
+              );
+            })}
           <View style={styles.note}>
             <GlobalText style={[globalStyles.text, { fontWeight: '700' }]}>
               {t('assessment_note')}
