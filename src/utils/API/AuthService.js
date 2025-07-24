@@ -2198,7 +2198,7 @@ export const telemetryTrackingData = async ({ telemetryPayloadData }) => {
   const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
     payload
   )}' ${url}`;
-  // console.log('cURL Command:', curlCommand);
+  console.log('cURL Command telemetryTrackingData:', curlCommand);
   try {
     // Make the actual request
     const result = await post(url, payload, {

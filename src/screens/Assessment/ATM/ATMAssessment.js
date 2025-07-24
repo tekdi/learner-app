@@ -10,7 +10,6 @@ import {
   Dimensions,
   useWindowDimensions,
   Image,
-  Alert,
   Linking,
   PermissionsAndroid,
   Platform,
@@ -38,6 +37,17 @@ import pdficon from '../../../assets/images/png/pdficon.png';
 import Config from 'react-native-config';
 import RNFS from 'react-native-fs';
 
+// Import new image upload components
+import ImageUploadSection from './components/ImageUploadSection';
+import ImageUploadDialog from './components/ImageUploadDialog';
+import PermissionTestComponent from './components/PermissionTestComponent';
+import CustomAlert from './components/CustomAlert';
+
+// Import utilities
+import ImageUploadHelper from './utils/ImageUploadHelper';
+import ImageAPIService from './utils/ImageAPIService';
+import useCustomAlert from './hooks/useCustomAlert';
+
 const ITEMS_PER_PAGE = 10;
 
 const ATMAssessment = ({ route }) => {
@@ -51,6 +61,18 @@ const ATMAssessment = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [networkstatus, setNetworkstatus] = useState(true);
   const [downloadIcon, setDownloadIcon] = useState(download);
+
+  // Image upload states
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [hasUploadedImages, setHasUploadedImages] = useState(false);
+
+  // Custom alert hook
+  const { alertConfig, showErrorAlert, showSuccessAlert, hideAlert } =
+    useCustomAlert();
 
   useFocusEffect(
     useCallback(() => {
@@ -88,6 +110,121 @@ const ATMAssessment = ({ route }) => {
     Linking.openURL(url);
   };
 
+  // Image upload handlers
+  const handleUploadPress = () => {
+    setShowUploadDialog(true);
+  };
+
+  const handleCameraPress = async () => {
+    try {
+      const capturedImages = await ImageUploadHelper.capturePhoto();
+      if (capturedImages.length > 0) {
+        const validImages = capturedImages.filter((img) =>
+          ImageUploadHelper.validateImage(img)
+        );
+        if (validImages.length > 0) {
+          setSelectedImages((prev) => [...prev, ...validImages]);
+          ImageUploadHelper.showImageCountWarning(
+            selectedImages.length + validImages.length
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Camera capture error:', error);
+      showErrorAlert({
+        title: t('Error'),
+        message: t('Failed to capture photo. Please try again.'),
+        onOk: () => {},
+      });
+    }
+  };
+
+  const handleGalleryPress = async () => {
+    try {
+      const selectedImagesFromGallery = await ImageUploadHelper.selectImages();
+      if (selectedImagesFromGallery.length > 0) {
+        const validImages = selectedImagesFromGallery.filter((img) =>
+          ImageUploadHelper.validateImage(img)
+        );
+        if (validImages.length > 0) {
+          setSelectedImages((prev) => [...prev, ...validImages]);
+          ImageUploadHelper.showImageCountWarning(
+            selectedImages.length + validImages.length
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Gallery selection error:', error);
+      showErrorAlert({
+        title: t('Error'),
+        message: t('Failed to select images. Please try again.'),
+        onOk: () => {},
+      });
+    }
+  };
+
+  const handleRemoveImage = (imageId) => {
+    setSelectedImages((prev) => prev.filter((img) => img.id !== imageId));
+  };
+
+  const handleImagePress = (image) => {
+    // Image preview is now handled within the ImageUploadDialog component
+    // No additional action needed here
+  };
+
+  const handleUploadedImagePress = (image) => {
+    navigation.navigate('ImageViewer', { image });
+  };
+
+  const handleSubmitImages = async () => {
+    if (selectedImages.length === 0) {
+      showErrorAlert({
+        title: t('No Images'),
+        message: t('Please select images to upload.'),
+        onOk: () => {},
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const response = await ImageAPIService.uploadImages(
+        selectedImages,
+        (progress) => {
+          setUploadProgress(progress);
+        }
+      );
+
+      if (ImageAPIService.validateResponse(response)) {
+        const uploadedImageData = ImageAPIService.parseUploadedImages(response);
+        setUploadedImages(uploadedImageData);
+        setSelectedImages([]);
+        setHasUploadedImages(true);
+        setShowUploadDialog(false); // Close the dialog after successful upload
+
+        showSuccessAlert({
+          title: t('Success'),
+          message: t('Images uploaded successfully!'),
+          onOk: () => {},
+        });
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      showErrorAlert({
+        title: t('Upload Failed'),
+        message: t('Failed to upload images. Please try again.'),
+        onOk: () => {},
+      });
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <SecondaryHeader logo />
@@ -119,9 +256,9 @@ const ATMAssessment = ({ route }) => {
                   marginTop: -5,
                 }}
               >
-                {t('Published_On')}
+                {t('published_on')}
                 {': '}
-                {moment(data?.created_at).format('DD MMM, YYYY')}
+                {moment(data?.lastUpdatedOn).format('DD MMM, YYYY')}
               </GlobalText>
             </View>
           </View>
@@ -139,7 +276,13 @@ const ATMAssessment = ({ route }) => {
               }}
             >
               <Image style={styles.img} source={pdficon} resizeMode="contain" />
-              <GlobalText style={[globalStyles.subHeading, { color: '#000' }]}>
+              <GlobalText
+                style={[
+                  globalStyles.subHeading,
+                  { color: '#000', flexShrink: 1 },
+                ]}
+                numberOfLines={1}
+              >
                 {title.replace(/ /g, '_')}.pdf
               </GlobalText>
               <View style={{ flex: 1 }} />
@@ -152,6 +295,89 @@ const ATMAssessment = ({ route }) => {
               </TouchableOpacity>
             </View>
           )}
+
+          {/* Permission Test Component - Remove this after testing */}
+          {/* <PermissionTestComponent /> */}
+
+          {/* Image Upload Section */}
+          <ImageUploadSection
+            onUploadPress={handleUploadPress}
+            selectedImagesCount={selectedImages.length}
+            isUploading={isUploading}
+            uploadProgress={uploadProgress}
+          />
+
+          {/* Submit Button */}
+          {selectedImages.length > 0 && (
+            <TouchableOpacity
+              style={[
+                styles.submitButton,
+                isUploading && styles.submitButtonDisabled,
+              ]}
+              onPress={handleSubmitImages}
+              disabled={isUploading}
+            >
+              <GlobalText style={styles.submitButtonText}>
+                {isUploading ? t('Uploading...') : t('Submit Images')}
+              </GlobalText>
+            </TouchableOpacity>
+          )}
+
+          {/* Uploaded Images Grid */}
+          {hasUploadedImages && (
+            <View style={styles.uploadedImagesContainer}>
+              <GlobalText style={styles.uploadedImagesTitle}>
+                {t('Uploaded Images')} ({uploadedImages.length})
+              </GlobalText>
+              <View style={styles.uploadedImagesGrid}>
+                {uploadedImages.map((image, index) => (
+                  <TouchableOpacity
+                    key={image.id || index}
+                    style={styles.uploadedImageItem}
+                    onPress={() => handleUploadedImagePress(image)}
+                  >
+                    <Image
+                      source={{ uri: image.url || image.uri }}
+                      style={styles.uploadedImageThumbnail}
+                      resizeMode="cover"
+                    />
+                    <GlobalText
+                      style={styles.uploadedImageName}
+                      numberOfLines={1}
+                    >
+                      {image.fileName}
+                    </GlobalText>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Upload Dialog */}
+          <ImageUploadDialog
+            visible={showUploadDialog}
+            onClose={() => setShowUploadDialog(false)}
+            onCameraPress={handleCameraPress}
+            onGalleryPress={handleGalleryPress}
+            selectedImages={selectedImages}
+            onRemoveImage={handleRemoveImage}
+            onImagePress={handleImagePress}
+            onSubmit={handleSubmitImages}
+            isUploading={isUploading}
+            uploadProgress={uploadProgress}
+          />
+
+          {/* Custom Alert Dialog */}
+          <CustomAlert
+            visible={alertConfig.visible}
+            title={alertConfig.title}
+            message={alertConfig.message}
+            buttons={alertConfig.buttons}
+            onDismiss={hideAlert}
+            icon={alertConfig.icon}
+            iconColor={alertConfig.iconColor}
+            showCloseButton={alertConfig.showCloseButton}
+          />
         </SafeAreaView>
       )}
       <NetworkAlert
@@ -206,6 +432,58 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     marginHorizontal: 10,
+  },
+  submitButton: {
+    backgroundColor: '#4D4639',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  submitButtonDisabled: {
+    backgroundColor: '#A0A0A0',
+  },
+  submitButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+  },
+  uploadedImagesContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
+  uploadedImagesTitle: {
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+    color: '#333',
+    marginBottom: 10,
+    paddingHorizontal: 5,
+  },
+  uploadedImagesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+  },
+  uploadedImageItem: {
+    width: '30%', // Adjust as needed for grid layout
+    marginVertical: 5,
+    alignItems: 'center',
+  },
+  uploadedImageThumbnail: {
+    width: '100%',
+    height: 80,
+    borderRadius: 5,
+    marginBottom: 5,
+  },
+  uploadedImageName: {
+    fontSize: 12,
+    color: '#555',
+    textAlign: 'center',
+    width: '100%',
   },
 });
 

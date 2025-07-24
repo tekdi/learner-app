@@ -8,6 +8,7 @@ import Profile from '../../screens/Profile/Profile';
 
 // ATM
 import ATMAssessment from '../../screens/Assessment/ATM/ATMAssessment';
+import ImageViewerScreen from '../../screens/Assessment/ATM/components/ImageViewerScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,7 @@ const AssessmentStack = () => {
       <Stack.Screen name="Profile" component={Profile} />
       {/* ATM */}
       <Stack.Screen name="ATMAssessment" component={ATMAssessment} />
+      <Stack.Screen name="ImageViewer" component={ImageViewerScreen} />
     </Stack.Navigator>
   );
 };

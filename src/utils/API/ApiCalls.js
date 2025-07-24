@@ -692,7 +692,7 @@ export const AIAssessmentStatus = async (do_id) => {
   // console.log('userId===>', userId);
   const userId = await getDataFromStorage('userId');
   try {
-    const url = EndUrls.atmAssessment;
+    const url = EndUrls.atmAssessment_status;
 
     let data = JSON.stringify({
       userIds: [userId],

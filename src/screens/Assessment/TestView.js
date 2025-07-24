@@ -14,10 +14,14 @@ import ActiveLoading from '../LoadingScreen/ActiveLoading';
 import globalStyles from '../../utils/Helper/Style';
 import { useFocusEffect } from '@react-navigation/native';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
+import ATMTabView from './ATM/components/ATMTabView';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import { removeData } from '../../utils/Helper/JSHelper';
-import { AIAssessmentSearch, AIAssessmentStatus } from '../../utils/API/ApiCalls';
+import {
+  AIAssessmentSearch,
+  AIAssessmentStatus,
+} from '../../utils/API/ApiCalls';
 
 const instructions = [
   {
@@ -62,6 +66,18 @@ function mergeDataWithQuestionSet(questionSet, datatest) {
   return questionSet;
 }
 
+// Helper function to find AI question set status by identifier
+function findAiQuestionSetStatus(aiQuestionSetStatus, identifier) {
+  if (!aiQuestionSetStatus || !Array.isArray(aiQuestionSetStatus)) {
+    return [];
+  }
+
+  const foundItem = aiQuestionSetStatus.find(
+    (item) => item.do_id === identifier
+  );
+  return foundItem ? foundItem : {};
+}
+
 const TestView = ({ route }) => {
   const { title } = route.params;
   const navigation = useNavigation();
@@ -69,18 +85,23 @@ const TestView = ({ route }) => {
 
   const [questionsets, setQuestionsets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [aiDataLoading, setAiDataLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [percentage, setPercentage] = useState('');
   const [completedCount, setCompletedCount] = useState(0);
+  const [activeTabIndex, setActiveTabIndex] = useState(0); // Add state for active tab
+  const [isDataLoaded, setIsDataLoaded] = useState(false); // Track if data is already loaded
 
   /*useEffect(() => {
     fetchData();
   }, []);*/
 
   const [aiQuestionSet, setAiQuestionSet] = useState(null);
+  const [aiQuestionSetStatus, setAiQuestionSetStatus] = useState([]);
   useEffect(() => {
     const fetchAIData = async () => {
       if (questionsets && questionsets.length > 0) {
+        setAiDataLoading(true);
         let do_ids = questionsets?.map((item) => item?.identifier || '');
         // console.log('do_ids', do_ids);
         let response_ai = await AIAssessmentSearch(do_ids);
@@ -89,16 +110,53 @@ const TestView = ({ route }) => {
           response_ai?.data?.map((item) => item?.question_set_id || '') || [];
         // console.log('response_ai_ids', response_ai_ids);
         setAiQuestionSet(response_ai_ids);
-        if(response_ai_ids.length > 0){
-          let aiAssessmentStatusTrack=[]
-          for(let i=0;i<response_ai_ids.length;i++){
-            let response_ai_status = await AIAssessmentStatus(response_ai_ids[i]);
-            console.log('response_ai_status', response_ai_status);
-            aiAssessmentStatusTrack.push(response_ai_status)
+        if (response_ai_ids.length > 0) {
+          let aiAssessmentStatusTrack = [];
+          for (let i = 0; i < response_ai_ids.length; i++) {
+            let response_ai_status = await AIAssessmentStatus(
+              response_ai_ids[i]
+            );
+            if (response_ai_status?.result?.length > 0) {
+              console.log('response_ai_status', response_ai_status);
+
+              // Extract record_file and record_answer from records array
+              let record_file = null;
+              let record_answer = null;
+
+              if (
+                response_ai_status?.result?.[0]?.records &&
+                Array.isArray(response_ai_status.result[0].records)
+              ) {
+                const records = response_ai_status.result[0].records;
+
+                // Find record_file: object with fileUrls or status key
+                record_file = records.find(
+                  (record) => record && (record.fileUrls || record.status)
+                );
+
+                // Find record_answer: object with showFlag: true and evaluatedBy: "Manual"
+                record_answer = records.find(
+                  (record) =>
+                    record &&
+                    record.showFlag === true &&
+                    record.evaluatedBy === 'Manual'
+                );
+              }
+
+              aiAssessmentStatusTrack.push({
+                do_id: response_ai_ids[i],
+                status: response_ai_status?.result?.[0]?.status,
+                fileUrls: response_ai_status?.result?.[0]?.fileUrls,
+                uploadedFlag: response_ai_status?.result?.[0]?.uploadedFlag,
+                submitedFlag: response_ai_status?.result?.[0]?.submitedFlag,
+                record_file: record_file,
+                record_answer: record_answer,
+              });
+            }
           }
-          // setAiQuestionSet(aiAssessmentStatusTrack);
-         
+          setAiQuestionSetStatus(aiAssessmentStatusTrack);
         }
+        setAiDataLoading(false);
       }
     };
     fetchAIData();
@@ -106,11 +164,25 @@ const TestView = ({ route }) => {
 
   useFocusEffect(
     useCallback(() => {
-      loadData();
-    }, []) // Make sure to include the dependencies
+      // Only reload data if it hasn't been loaded yet or if coming from player
+      if (!isDataLoaded) {
+        loadData();
+      } else {
+        // Check if coming from player without reloading data
+        checkIfFromPlayer();
+      }
+    }, [isDataLoaded]) // Add isDataLoaded as dependency
   );
 
   //fix for assessment back button press
+  const checkIfFromPlayer = async () => {
+    let isFromPlayer = await getDataFromStorage('isFromPlayer');
+    if (isFromPlayer == 'yes') {
+      await removeData('isFromPlayer');
+      navigation.goBack();
+    }
+  };
+
   const loadData = async () => {
     let isFromPlayer = await getDataFromStorage('isFromPlayer');
     if (isFromPlayer == 'yes') {
@@ -153,14 +225,168 @@ const TestView = ({ route }) => {
     setQuestionsets(finalData);
     // console.log(JSON.stringify(finalData));
     setLoading(false);
+    setIsDataLoaded(true); // Mark data as loaded
   };
 
-  return loading ? (
+  // Separate assessments into online and offline
+  const onlineAssessments =
+    questionsets?.filter((item) => {
+      let isAiAssessment = aiQuestionSet?.includes(item?.identifier);
+      console.log(
+        'Assessment:',
+        item?.name,
+        'ID:',
+        item?.identifier,
+        'isAI:',
+        isAiAssessment
+      );
+      return !isAiAssessment;
+    }) || [];
+
+  const offlineAssessments =
+    questionsets?.filter((item) => {
+      let isAiAssessment = aiQuestionSet?.includes(item?.identifier);
+      return isAiAssessment;
+    }) || [];
+
+  console.log('AI Question Set IDs:', aiQuestionSet);
+  console.log('Online Assessments Count:', onlineAssessments.length);
+  console.log('Offline Assessments Count:', offlineAssessments.length);
+
+  // Create tab content components
+  const OnlineAssessmentContent = () => (
+    <View style={styles.tabContent}>
+      {aiDataLoading ? (
+        <View style={styles.emptyState}>
+          <GlobalText style={styles.emptyText}>
+            {t('loading_assessments') || 'Loading assessments...'}
+          </GlobalText>
+        </View>
+      ) : onlineAssessments.length > 0 ? (
+        onlineAssessments.map((item, index) => (
+          <SubjectBox
+            key={item?.subject}
+            disabled={!item?.lastAttemptedOn}
+            name={item?.name}
+            data={item}
+            isAiAssessment={false}
+            index={index}
+            aiQuestionSetStatus={findAiQuestionSetStatus(
+              aiQuestionSetStatus,
+              item?.identifier
+            )}
+          />
+        ))
+      ) : (
+        <View style={styles.emptyState}>
+          <GlobalText style={styles.emptyText}>
+            {t('no_online_assessments_available')}
+          </GlobalText>
+        </View>
+      )}
+
+      {/* <View style={styles.note}>
+        <GlobalText style={[globalStyles.text, { fontWeight: '700' }]}>
+          {t('assessment_note')}
+        </GlobalText>
+      </View>
+      <GlobalText
+        style={[
+          globalStyles.subHeading,
+          { fontWeight: '700', paddingVertical: 20 },
+        ]}
+      >
+        {t('general_instructions')}
+      </GlobalText>
+      {instructions?.map((item) => {
+        return (
+          <View key={item.id.toString()} style={styles.itemContainer}>
+            <GlobalText style={styles.bullet}>{'\u2022'}</GlobalText>
+            <GlobalText style={[globalStyles.subHeading]}>
+              {t(item.title)}
+            </GlobalText>
+          </View>
+        );
+      })} */}
+    </View>
+  );
+
+  const OfflineAssessmentContent = () => (
+    <View style={styles.tabContent}>
+      {aiDataLoading ? (
+        <View style={styles.emptyState}>
+          <GlobalText style={styles.emptyText}>
+            {t('loading_assessments') || 'Loading assessments...'}
+          </GlobalText>
+        </View>
+      ) : offlineAssessments.length > 0 ? (
+        offlineAssessments.map((item, index) => (
+          <SubjectBox
+            key={item?.subject}
+            disabled={!item?.lastAttemptedOn}
+            name={item?.name}
+            data={item}
+            isAiAssessment={true}
+            index={index}
+            aiQuestionSetStatus={findAiQuestionSetStatus(
+              aiQuestionSetStatus,
+              item?.identifier
+            )}
+          />
+        ))
+      ) : (
+        <View style={styles.emptyState}>
+          <GlobalText style={styles.emptyText}>
+            {t('no_offline_assessments_available')}
+          </GlobalText>
+        </View>
+      )}
+
+      {/* <View style={styles.note}>
+        <GlobalText style={[globalStyles.text, { fontWeight: '700' }]}>
+          {t('assessment_note')}
+        </GlobalText>
+      </View>
+      <GlobalText
+        style={[
+          globalStyles.subHeading,
+          { fontWeight: '700', paddingVertical: 20 },
+        ]}
+      >
+        {t('general_instructions')}
+      </GlobalText>
+      {instructions?.map((item) => {
+        return (
+          <View key={item.id.toString()} style={styles.itemContainer}>
+            <GlobalText style={styles.bullet}>{'\u2022'}</GlobalText>
+            <GlobalText style={[globalStyles.subHeading]}>
+              {t(item.title)}
+            </GlobalText>
+          </View>
+        );
+      })} */}
+    </View>
+  );
+
+  const tabs = [
+    {
+      title: t('online_assessment'),
+      content: <OnlineAssessmentContent />,
+      count: onlineAssessments.length,
+    },
+    {
+      title: t('offline_assessment'),
+      content: <OfflineAssessmentContent />,
+      count: offlineAssessments.length,
+    },
+  ];
+
+  return loading || aiDataLoading ? (
     <ActiveLoading />
   ) : (
     <SafeAreaView style={{ flex: 1 }}>
       <SecondaryHeader logo />
-      <ScrollView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <AssessmentHeader
           testText={title}
           status={status}
@@ -169,49 +395,27 @@ const TestView = ({ route }) => {
           questionsets={questionsets}
         />
         <View style={styles.container}>
-          <GlobalText style={globalStyles.text}>
+          {/* <GlobalText style={globalStyles.text}>
             {t('assessment_instructions')}
-          </GlobalText>
-          {aiQuestionSet &&
-            questionsets?.map((item, index) => {
-              let isAiAssessment = aiQuestionSet?.includes(item?.identifier);
-              return (
-                <SubjectBox
-                  key={item?.subject}
-                  disabled={!item?.lastAttemptedOn}
-                  //name={item?.subject?.[0]?.toUpperCase()}
-                  name={item?.name}
-                  data={item}
-                  isAiAssessment={isAiAssessment}
-                  index={index}
-                />
-              );
-            })}
-          <View style={styles.note}>
-            <GlobalText style={[globalStyles.text, { fontWeight: '700' }]}>
-              {t('assessment_note')}
-            </GlobalText>
+          </GlobalText> */}
+
+          <View style={styles.tabContainer}>
+            <ATMTabView
+              tabs={tabs}
+              activeTabIndex={activeTabIndex}
+              onTabChange={setActiveTabIndex}
+              activeTabStyle={{ borderBottomWidth: 2, borderColor: '#FDBE16' }}
+              inactiveTabStyle={{
+                borderBottomWidth: 1,
+                borderColor: '#EBE1D4',
+              }}
+              tabTextStyle={{ color: '#888' }}
+              activeTextStyle={{ color: '#000', fontWeight: 'bold' }}
+              t={t}
+            />
           </View>
-          <GlobalText
-            style={[
-              globalStyles.subHeading,
-              { fontWeight: '700', paddingVertical: 20 },
-            ]}
-          >
-            {t('general_instructions')}
-          </GlobalText>
-          {instructions?.map((item) => {
-            return (
-              <View key={item.id.toString()} style={styles.itemContainer}>
-                <GlobalText style={styles.bullet}>{'\u2022'}</GlobalText>
-                <GlobalText style={[globalStyles.subHeading]}>
-                  {t(item.title)}
-                </GlobalText>
-              </View>
-            );
-          })}
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -223,13 +427,32 @@ TestView.propTypes = {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
-    paddingTop: 5,
-    backgroundColor: '#FBF4E4',
+    paddingTop: 0,
+    backgroundColor: '#FFFFFF',
+    flex: 1,
+  },
+  tabContainer: {
+    flex: 1,
+    marginTop: 0,
+  },
+  tabContent: {
+    paddingTop: 10,
+  },
+  emptyState: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#888',
+    textAlign: 'center',
   },
   note: {
     padding: 10,
     backgroundColor: '#FFDEA1',
     borderRadius: 10,
+    marginTop: 20,
   },
   itemContainer: {
     flexDirection: 'row',
