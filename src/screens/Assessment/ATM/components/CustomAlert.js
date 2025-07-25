@@ -242,7 +242,7 @@ const styles = {
   buttonText: {
     fontSize: 14,
     fontFamily: 'Poppins-Medium',
-    color: '#4D4639', // Default text color for better contrast
+    color: '#FFFFFF', // White text for better contrast on dark backgrounds
   },
   primaryButtonText: {
     color: '#4D4639',

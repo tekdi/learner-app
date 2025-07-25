@@ -129,6 +129,7 @@ const SubjectBox = ({
       navigation.navigate('ATMAssessment', {
         title: name,
         data: data,
+        aiQuestionSetStatus: aiQuestionSetStatus,
       });
     }
   };
@@ -442,9 +443,7 @@ const SubjectBox = ({
                           }}
                         >
                           {data?.totalScore && data?.totalMaxScore
-                            ? Math.round(
-                                (data.totalScore / 16) * 100
-                              )
+                            ? Math.round((data.totalScore / 16) * 100)
                             : 0}
                           %
                         </GlobalText>
@@ -506,6 +505,7 @@ const SubjectBox = ({
                     navigation.navigate('ATMAssessment', {
                       title: name,
                       data: data,
+                      aiQuestionSetStatus: aiQuestionSetStatus,
                     });
                   }}
                 >

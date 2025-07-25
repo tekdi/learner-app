@@ -88,6 +88,7 @@ const EndUrls = {
   atmAssessment: `${API_URL}/interface/v1/tracking/ai-assessment/search`,
   atmAssessment_status: `${API_URL}/interface/v1/tracking/assessment/offline-assessment-status`,
   
+  
 };
 
 export default EndUrls;

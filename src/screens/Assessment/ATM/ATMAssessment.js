@@ -13,6 +13,7 @@ import {
   Linking,
   PermissionsAndroid,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
@@ -22,6 +23,7 @@ import { getAssessmentAnswerKey } from '../../../utils/API/AuthService';
 import {
   capitalizeFirstLetter,
   getDataFromStorage,
+  getTentantId,
   setDataInStorage,
 } from '../../../utils/JsHelper/Helper';
 import ActiveLoading from '../../LoadingScreen/ActiveLoading';
@@ -55,9 +57,10 @@ const ATMAssessment = ({ route }) => {
   const { width } = useWindowDimensions();
   const { t } = useTranslation();
   const { isConnected } = useInternet();
-  const { title, data } = route.params;
+  const { title, data, aiQuestionSetStatus } = route.params;
   const { height } = Dimensions.get('window');
 
+  console.log('#########atm aiQuestionSetStatus', aiQuestionSetStatus);
   const [loading, setLoading] = useState(true);
   const [networkstatus, setNetworkstatus] = useState(true);
   const [downloadIcon, setDownloadIcon] = useState(download);
@@ -69,6 +72,11 @@ const ATMAssessment = ({ route }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [hasUploadedImages, setHasUploadedImages] = useState(false);
+  const [isProcessingImages, setIsProcessingImages] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(null);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarType, setSnackbarType] = useState('success');
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // Custom alert hook
   const { alertConfig, showErrorAlert, showSuccessAlert, hideAlert } =
@@ -117,20 +125,45 @@ const ATMAssessment = ({ route }) => {
 
   const handleCameraPress = async () => {
     try {
+      setIsProcessingImages(true);
       const capturedImages = await ImageUploadHelper.capturePhoto();
       if (capturedImages.length > 0) {
         const validImages = capturedImages.filter((img) =>
           ImageUploadHelper.validateImage(img)
         );
         if (validImages.length > 0) {
-          setSelectedImages((prev) => [...prev, ...validImages]);
+          // Add processing state to images
+          const imagesWithProcessing = validImages.map((img) => ({
+            ...img,
+            isProcessing: true,
+          }));
+
+          setSelectedImages((prev) => [...prev, ...imagesWithProcessing]);
+
+          // Simulate processing completion after a short delay
+          setTimeout(() => {
+            setSelectedImages((prev) =>
+              prev.map((img) =>
+                validImages.some((validImg) => validImg.id === img.id)
+                  ? { ...img, isProcessing: false }
+                  : img
+              )
+            );
+            setIsProcessingImages(false);
+          }, 1000);
+
           ImageUploadHelper.showImageCountWarning(
             selectedImages.length + validImages.length
           );
+        } else {
+          setIsProcessingImages(false);
         }
+      } else {
+        setIsProcessingImages(false);
       }
     } catch (error) {
-      console.error('Camera capture error:', error);
+      console.log('Camera capture error:', error);
+      setIsProcessingImages(false);
       showErrorAlert({
         title: t('Error'),
         message: t('Failed to capture photo. Please try again.'),
@@ -141,20 +174,45 @@ const ATMAssessment = ({ route }) => {
 
   const handleGalleryPress = async () => {
     try {
+      setIsProcessingImages(true);
       const selectedImagesFromGallery = await ImageUploadHelper.selectImages();
       if (selectedImagesFromGallery.length > 0) {
         const validImages = selectedImagesFromGallery.filter((img) =>
           ImageUploadHelper.validateImage(img)
         );
         if (validImages.length > 0) {
-          setSelectedImages((prev) => [...prev, ...validImages]);
+          // Add processing state to images
+          const imagesWithProcessing = validImages.map((img) => ({
+            ...img,
+            isProcessing: true,
+          }));
+
+          setSelectedImages((prev) => [...prev, ...imagesWithProcessing]);
+
+          // Simulate processing completion after a short delay
+          setTimeout(() => {
+            setSelectedImages((prev) =>
+              prev.map((img) =>
+                validImages.some((validImg) => validImg.id === img.id)
+                  ? { ...img, isProcessing: false }
+                  : img
+              )
+            );
+            setIsProcessingImages(false);
+          }, 1000);
+
           ImageUploadHelper.showImageCountWarning(
             selectedImages.length + validImages.length
           );
+        } else {
+          setIsProcessingImages(false);
         }
+      } else {
+        setIsProcessingImages(false);
       }
     } catch (error) {
-      console.error('Gallery selection error:', error);
+      console.log('Gallery selection error:', error);
+      setIsProcessingImages(false);
       showErrorAlert({
         title: t('Error'),
         message: t('Failed to select images. Please try again.'),
@@ -190,38 +248,177 @@ const ATMAssessment = ({ route }) => {
     setUploadProgress(0);
 
     try {
-      const response = await ImageAPIService.uploadImages(
-        selectedImages,
-        (progress) => {
-          setUploadProgress(progress);
-        }
-      );
+      // Step 1: Upload all images to get URLs
+      const uploadedUrls = await uploadAllImages(selectedImages);
 
-      if (ImageAPIService.validateResponse(response)) {
-        const uploadedImageData = ImageAPIService.parseUploadedImages(response);
-        setUploadedImages(uploadedImageData);
+      if (uploadedUrls.length === 0) {
+        throw new Error('Failed to upload images');
+      }
+
+      console.log('#########atm uploadedUrls', uploadedUrls);
+
+      // Step 2: Submit for review with uploaded URLs
+      const submitResponse = await submitForReview(uploadedUrls);
+
+      console.log('#########atm submitResponse', submitResponse);
+
+      if (submitResponse.success) {
         setSelectedImages([]);
         setHasUploadedImages(true);
-        setShowUploadDialog(false); // Close the dialog after successful upload
+        setShowUploadDialog(false);
 
-        showSuccessAlert({
-          title: t('Success'),
-          message: t('Images uploaded successfully!'),
-          onOk: () => {},
-        });
+        // Show success snackbar
+        setSnackbarType('success');
+        setSnackbarMessage(t('Images are successfully uploaded'));
+        setSnackbarVisible(true);
+
+        // Auto hide after 3 seconds
+        setTimeout(() => {
+          setSnackbarVisible(false);
+        }, 3000);
       } else {
-        throw new Error('Invalid response format');
+        throw new Error('Failed to submit for review');
       }
     } catch (error) {
-      console.error('Upload error:', error);
-      showErrorAlert({
-        title: t('Upload Failed'),
-        message: t('Failed to upload images. Please try again.'),
-        onOk: () => {},
-      });
+      console.log('Upload error:', error);
+
+      // Show error snackbar
+      setSnackbarType('error');
+      setSnackbarMessage(t('Failed to upload images. Please try again.'));
+      setSnackbarVisible(true);
+
+      // Auto hide after 3 seconds
+      setTimeout(() => {
+        setSnackbarVisible(false);
+      }, 3000);
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
+    }
+  };
+
+  // Function to upload all images and return URLs
+  const uploadAllImages = async (images) => {
+    const uploadedUrls = [];
+    const totalImages = images.length;
+
+    for (let i = 0; i < totalImages; i++) {
+      const image = images[i];
+      try {
+        // Update progress
+        const progress = Math.round(((i + 1) / totalImages) * 100);
+        setUploadProgress(progress);
+
+        const uploadedUrl = await uploadSingleImage(image);
+        if (uploadedUrl) {
+          uploadedUrls.push(uploadedUrl);
+        }
+      } catch (error) {
+        console.log(`Failed to upload image ${i + 1}:`, error);
+      }
+    }
+
+    return uploadedUrls;
+  };
+
+  // Function to upload a single image
+  const uploadSingleImage = async (image) => {
+    try {
+      const extension = image.fileName.split('.').pop()?.toLowerCase();
+      const fileName = image.fileName.split('.')[0];
+
+      // Step 1: Get Presigned URL
+      const middlewareUrl = Config.API_URL;
+      const presignedResponse = await fetch(
+        `${middlewareUrl}/interface/v1/user/presigned-url?filename=${fileName}&foldername=aiassessments&fileType=.${extension}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!presignedResponse.ok) {
+        throw new Error('Failed to get presigned URL');
+      }
+
+      const presignedData = await presignedResponse.json();
+      const { url, fields } = presignedData.result;
+
+      // Step 2: Prepare form data
+      const formData = new FormData();
+      Object.entries(fields).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      // Convert image to file object
+      const imageFile = {
+        uri: image.uri,
+        type: `image/${extension}`,
+        name: image.fileName,
+      };
+      formData.append('file', imageFile);
+
+      // Step 3: Upload to S3
+      const uploadResponse = await fetch(url, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error('S3 upload failed');
+      }
+
+      // Step 4: Construct the uploaded file URL
+      const uploadedUrl = `${url}${fields.key}`;
+      return uploadedUrl;
+    } catch (error) {
+      console.log('Single image upload failed:', error);
+      throw error;
+    }
+  };
+
+  // Function to submit for review
+  const submitForReview = async (fileUrls) => {
+    try {
+      const userId = await getDataFromStorage('userId');
+      const token = await getDataFromStorage('Accesstoken');
+      let tenantId = await getTentantId();
+
+      const submitData = {
+        userId: userId,
+        questionSetId: data?.identifier,
+        identifier: data?.identifier,
+        fileUrls: fileUrls,
+      };
+
+      const middlewareUrl = Config.API_URL;
+      const response = await fetch(
+        middlewareUrl +
+          '/interface/v1/tracking/answer-sheet-submissions/create',
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json, text/plain, */*',
+            'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            tenantid: tenantId,
+          },
+          body: JSON.stringify(submitData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Submit for review failed');
+      }
+      console.log('#########atm response', JSON.stringify(response?.data));
+      const result = await response.json();
+      return { success: true, data: result };
+    } catch (error) {
+      console.log('#########atm Submit for review failed:', error);
+      return { success: false, error };
     }
   };
 
@@ -245,8 +442,11 @@ const ATMAssessment = ({ route }) => {
                 size={30}
               />
             </TouchableOpacity>
-            <View>
-              <GlobalText style={globalStyles.heading}>
+            <View style={{ flex: 1, marginRight: 10 }}>
+              <GlobalText
+                style={[globalStyles.heading, { flexShrink: 1 }]}
+                numberOfLines={2}
+              >
                 {t(capitalizeFirstLetter(title))}
               </GlobalText>
               <GlobalText
@@ -299,16 +499,268 @@ const ATMAssessment = ({ route }) => {
           {/* Permission Test Component - Remove this after testing */}
           {/* <PermissionTestComponent /> */}
 
-          {/* Image Upload Section */}
-          <ImageUploadSection
-            onUploadPress={handleUploadPress}
-            selectedImagesCount={selectedImages.length}
-            isUploading={isUploading}
-            uploadProgress={uploadProgress}
-          />
+          {/* Status-based rendering based on aiQuestionSetStatus */}
+          {aiQuestionSetStatus?.status === 'AI Pending' && (
+            <ScrollView
+              style={styles.successContainer}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.successContentContainer}
+            >
+              {/* Uploaded Images Info - Only show if record_file exists */}
+              {aiQuestionSetStatus?.record_file?.fileUrls && (
+                <TouchableOpacity
+                  style={styles.uploadedInfoContainer}
+                  onPress={() => {
+                    // Navigate to uploaded images view
+                    const uploadedImages = Array.isArray(
+                      aiQuestionSetStatus.record_file.fileUrls
+                    )
+                      ? aiQuestionSetStatus.record_file.fileUrls.map(
+                          (url, index) => ({
+                            id: index,
+                            url: url,
+                            uri: url,
+                            fileName: `Image_${index + 1}.jpg`,
+                          })
+                        )
+                      : [
+                          {
+                            id: 0,
+                            url: aiQuestionSetStatus.record_file.fileUrls,
+                            uri: aiQuestionSetStatus.record_file.fileUrls,
+                            fileName: 'Image_1.jpg',
+                          },
+                        ];
+
+                    navigation.navigate('UploadedImagesScreen', {
+                      images: uploadedImages,
+                      title: title,
+                    });
+                  }}
+                >
+                  <View style={styles.uploadedInfoContent}>
+                    <GlobalText style={styles.uploadedCountText}>
+                      {Array.isArray(aiQuestionSetStatus.record_file.fileUrls)
+                        ? `${aiQuestionSetStatus.record_file.fileUrls.length} images uploaded`
+                        : '1 image uploaded'}
+                    </GlobalText>
+                    <GlobalText style={styles.uploadedDateText}>
+                      {aiQuestionSetStatus?.record_file?.createdAt
+                        ? moment(
+                            aiQuestionSetStatus.record_file.createdAt
+                          ).format('DD MMM, YYYY')
+                        : moment().format('DD MMM, YYYY')}
+                    </GlobalText>
+                  </View>
+                  <Icon name="chevron-right" size={18} color="#1F1B13" />
+                </TouchableOpacity>
+              )}
+
+              {/* Success Icon */}
+              <View style={styles.successIconContainer}>
+                <Icon name="check-circle" size={40} color="#1A881F" />
+              </View>
+
+              {/* Main Confirmation Text */}
+              <GlobalText style={styles.successMainText}>
+                {t(
+                  'Your answers have been successfully submitted for evaluation'
+                )}
+              </GlobalText>
+
+              {/* Secondary Information Text */}
+              <GlobalText style={styles.successSecondaryText}>
+                {t("You'll be notified as soon as the evaluation is complete.")}
+              </GlobalText>
+
+              {/* Instructional Text */}
+              <GlobalText style={styles.successInstructionText}>
+                {t(
+                  "In the meantime, make sure you've submitted all required answers correctly. If you face any issues, please reach out to your facilitator."
+                )}
+              </GlobalText>
+            </ScrollView>
+          )}
+
+          {aiQuestionSetStatus?.status === 'Success Evaluation' && (
+            <ScrollView
+              style={styles.successEvaluationContainer}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.successEvaluationContentContainer}
+            >
+              {/* Success Evaluation Icon */}
+              <View style={styles.successEvaluationIconContainer}>
+                <Icon name="check-circle" size={80} color="#1A881F" />
+              </View>
+
+              {/* Main Success Text */}
+              <GlobalText style={styles.successEvaluationMainText}>
+                {t('Evaluation completed successfully!')}
+              </GlobalText>
+
+              {/* Marks Display */}
+              <View style={styles.marksContainer}>
+                <GlobalText style={styles.marksText}>
+                  {t('Your Score')}: {data?.totalScore || 0}/
+                  {data?.totalMaxScore || 0}
+                </GlobalText>
+                <GlobalText style={styles.percentageText}>
+                  {data?.totalScore && data?.totalMaxScore
+                    ? Math.round((data.totalScore / data.totalMaxScore) * 100)
+                    : 0}
+                  %
+                </GlobalText>
+              </View>
+
+              {/* Congratulatory Text */}
+              <GlobalText style={styles.successEvaluationSecondaryText}>
+                {t(
+                  'Congratulations! Your assessment has been evaluated successfully.'
+                )}
+              </GlobalText>
+
+              {/* Uploaded Images Info - Only show if record_file exists */}
+              {aiQuestionSetStatus?.record_file?.fileUrls && (
+                <TouchableOpacity
+                  style={styles.uploadedInfoContainer}
+                  onPress={() => {
+                    // Navigate to uploaded images view
+                    const uploadedImages = Array.isArray(
+                      aiQuestionSetStatus.record_file.fileUrls
+                    )
+                      ? aiQuestionSetStatus.record_file.fileUrls.map(
+                          (url, index) => ({
+                            id: index,
+                            url: url,
+                            uri: url,
+                            fileName: `Image_${index + 1}.jpg`,
+                          })
+                        )
+                      : [
+                          {
+                            id: 0,
+                            url: aiQuestionSetStatus.record_file.fileUrls,
+                            uri: aiQuestionSetStatus.record_file.fileUrls,
+                            fileName: 'Image_1.jpg',
+                          },
+                        ];
+
+                    navigation.navigate('UploadedImagesScreen', {
+                      images: uploadedImages,
+                      title: title,
+                    });
+                  }}
+                >
+                  <View style={styles.uploadedInfoContent}>
+                    <GlobalText style={styles.uploadedCountText}>
+                      {Array.isArray(aiQuestionSetStatus.record_file.fileUrls)
+                        ? `${aiQuestionSetStatus.record_file.fileUrls.length} images uploaded`
+                        : '1 image uploaded'}
+                    </GlobalText>
+                    <GlobalText style={styles.uploadedDateText}>
+                      {aiQuestionSetStatus?.record_file?.createdAt
+                        ? moment(
+                            aiQuestionSetStatus.record_file.createdAt
+                          ).format('DD MMM, YYYY')
+                        : moment().format('DD MMM, YYYY')}
+                    </GlobalText>
+                  </View>
+                  <Icon name="chevron-right" size={18} color="#1F1B13" />
+                </TouchableOpacity>
+              )}
+            </ScrollView>
+          )}
+
+          {aiQuestionSetStatus?.status === 'Approved' && (
+            <View style={styles.statusContainer}>
+              <View style={styles.statusRow}>
+                <Icon name="check-circle" size={18} color="#1F1B13" />
+                <GlobalText style={styles.statusText}>
+                  Marks: ({data?.totalScore || 0}/{data?.totalMaxScore || 0}){' '}
+                  <GlobalText style={styles.percentageText}>
+                    {data?.totalScore && data?.totalMaxScore
+                      ? Math.round((data.totalScore / data.totalMaxScore) * 100)
+                      : 0}
+                    %
+                  </GlobalText>
+                </GlobalText>
+              </View>
+
+              {/* Uploaded Images Info */}
+              {aiQuestionSetStatus?.record_file?.fileUrls && (
+                <TouchableOpacity
+                  style={styles.uploadedInfoContainer}
+                  onPress={() => {
+                    // Navigate to uploaded images view
+                    const uploadedImages = Array.isArray(
+                      aiQuestionSetStatus.record_file.fileUrls
+                    )
+                      ? aiQuestionSetStatus.record_file.fileUrls.map(
+                          (url, index) => ({
+                            id: index,
+                            url: url,
+                            uri: url,
+                            fileName: `Image_${index + 1}.jpg`,
+                          })
+                        )
+                      : [
+                          {
+                            id: 0,
+                            url: aiQuestionSetStatus.record_file.fileUrls,
+                            uri: aiQuestionSetStatus.record_file.fileUrls,
+                            fileName: 'Image_1.jpg',
+                          },
+                        ];
+
+                    navigation.navigate('UploadedImagesScreen', {
+                      images: uploadedImages,
+                      title: title,
+                    });
+                  }}
+                >
+                  <View style={styles.uploadedInfoContent}>
+                    <GlobalText style={styles.uploadedCountText}>
+                      {Array.isArray(aiQuestionSetStatus.record_file.fileUrls)
+                        ? `${aiQuestionSetStatus.record_file.fileUrls.length} images uploaded`
+                        : '1 image uploaded'}
+                    </GlobalText>
+                    <GlobalText style={styles.uploadedDateText}>
+                      {aiQuestionSetStatus?.record_file?.createdAt
+                        ? moment(
+                            aiQuestionSetStatus.record_file.createdAt
+                          ).format('DD MMM, YYYY')
+                        : moment().format('DD MMM, YYYY')}
+                    </GlobalText>
+                  </View>
+                  <Icon name="chevron-right" size={18} color="#1F1B13" />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+
+          {(!aiQuestionSetStatus || !aiQuestionSetStatus.status) && (
+            <View style={styles.statusContainer}>
+              <View style={styles.statusRow}>
+                <Icon name="dash" size={18} color="#1F1B13" />
+                <GlobalText style={styles.statusText}>
+                  {t('Not Submitted')}
+                </GlobalText>
+              </View>
+            </View>
+          )}
+
+          {/* Image Upload Section - Only show when status is undefined or not submitted */}
+          {(!aiQuestionSetStatus || !aiQuestionSetStatus.status) && (
+            <ImageUploadSection
+              onUploadPress={handleUploadPress}
+              selectedImagesCount={selectedImages.length}
+              isUploading={isUploading}
+              uploadProgress={uploadProgress}
+            />
+          )}
 
           {/* Submit Button */}
-          {selectedImages.length > 0 && (
+          {/* {selectedImages.length > 0 && (
             <TouchableOpacity
               style={[
                 styles.submitButton,
@@ -321,7 +773,7 @@ const ATMAssessment = ({ route }) => {
                 {isUploading ? t('Uploading...') : t('Submit Images')}
               </GlobalText>
             </TouchableOpacity>
-          )}
+          )} */}
 
           {/* Uploaded Images Grid */}
           {hasUploadedImages && (
@@ -365,6 +817,11 @@ const ATMAssessment = ({ route }) => {
             onSubmit={handleSubmitImages}
             isUploading={isUploading}
             uploadProgress={uploadProgress}
+            isProcessingImages={isProcessingImages}
+            onShowSnackbar={setShowSnackbar}
+            snackbarVisible={snackbarVisible}
+            snackbarType={snackbarType}
+            snackbarMessage={snackbarMessage}
           />
 
           {/* Custom Alert Dialog */}
@@ -484,6 +941,159 @@ const styles = StyleSheet.create({
     color: '#555',
     textAlign: 'center',
     width: '100%',
+  },
+  statusContainer: {
+    marginTop: 10,
+    paddingHorizontal: 10,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  statusText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    color: '#4D4639',
+    marginLeft: 8,
+    letterSpacing: 0.25,
+    lineHeight: 20,
+  },
+  percentageText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    color: '#1A881F',
+    letterSpacing: 0.1,
+    lineHeight: 20,
+  },
+  uploadedInfoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#DBDBDB',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    minHeight: 52,
+    marginTop: 8,
+  },
+  uploadedInfoContent: {
+    flex: 1,
+  },
+  uploadedCountText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    color: '#1F1B13',
+    letterSpacing: 0.1,
+    lineHeight: 20,
+  },
+  uploadedDateText: {
+    fontSize: 12,
+    fontFamily: 'Poppins-Medium',
+    color: '#7C766F',
+    letterSpacing: 0.5,
+    lineHeight: 16,
+    marginTop: 2,
+  },
+  successContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  successContentContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  successIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    borderWidth: 0,
+    borderColor: '#1A881F',
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  successMainText: {
+    fontSize: 18,
+    fontFamily: 'Poppins-Medium',
+    color: '#1F1B13',
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 24,
+    letterSpacing: 0.15,
+  },
+  successSecondaryText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    color: '#1F1B13',
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 24,
+    letterSpacing: 0.5,
+  },
+  successInstructionText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    color: '#1F1B13',
+    textAlign: 'center',
+    lineHeight: 24,
+    letterSpacing: 0.5,
+    marginBottom: 30,
+  },
+  successEvaluationContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  successEvaluationContentContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  successEvaluationIconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 30,
+    borderWidth: 3,
+    borderColor: '#1A881F',
+  },
+  successEvaluationMainText: {
+    fontSize: 18,
+    fontFamily: 'Poppins-Medium',
+    color: '#1F1B13',
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 24,
+    letterSpacing: 0.15,
+  },
+  marksContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginBottom: 16,
+  },
+  marksText: {
+    fontSize: 18,
+    fontFamily: 'Poppins-SemiBold',
+    color: '#1F1B13',
+    marginRight: 10,
+  },
+  successEvaluationSecondaryText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    color: '#1F1B13',
+    textAlign: 'center',
+    lineHeight: 24,
+    letterSpacing: 0.5,
+    marginBottom: 30,
   },
 });
 
