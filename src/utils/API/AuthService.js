@@ -976,7 +976,7 @@ export const getAssessmentStatus = async (params = {}) => {
       .join('\n')} 
       -d '${JSON.stringify(payload)}'`;
 
-    // console.log('cURL Command:', curlCommand);
+    console.log('#########atm do_ids cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {

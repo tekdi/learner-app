@@ -1,6 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../../components/Layout/Header';
 import AssessmentHeader from './AssessmentHeader';
@@ -85,7 +92,7 @@ const TestView = ({ route }) => {
 
   const [questionsets, setQuestionsets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [aiDataLoading, setAiDataLoading] = useState(true);
+  const [aiDataLoading, setAiDataLoading] = useState(false);
   const [status, setStatus] = useState('');
   const [percentage, setPercentage] = useState('');
   const [completedCount, setCompletedCount] = useState(0);
@@ -99,68 +106,92 @@ const TestView = ({ route }) => {
   const [aiQuestionSet, setAiQuestionSet] = useState(null);
   const [aiQuestionSetStatus, setAiQuestionSetStatus] = useState([]);
   useEffect(() => {
-    const fetchAIData = async () => {
-      if (questionsets && questionsets.length > 0) {
-        setAiDataLoading(true);
-        let do_ids = questionsets?.map((item) => item?.identifier || '');
-        // console.log('do_ids', do_ids);
-        let response_ai = await AIAssessmentSearch(do_ids);
-        // console.log('response_ai', response_ai);
-        let response_ai_ids =
-          response_ai?.data?.map((item) => item?.question_set_id || '') || [];
-        // console.log('response_ai_ids', response_ai_ids);
-        setAiQuestionSet(response_ai_ids);
-        if (response_ai_ids.length > 0) {
-          let aiAssessmentStatusTrack = [];
-          for (let i = 0; i < response_ai_ids.length; i++) {
-            let response_ai_status = await AIAssessmentStatus(
-              response_ai_ids[i]
-            );
-            if (response_ai_status?.result?.length > 0) {
-              console.log('response_ai_status', response_ai_status);
-
-              // Extract record_file and record_answer from records array
-              let record_file = null;
-              let record_answer = null;
-
-              if (
-                response_ai_status?.result?.[0]?.records &&
-                Array.isArray(response_ai_status.result[0].records)
-              ) {
-                const records = response_ai_status.result[0].records;
-
-                // Find record_file: object with fileUrls or status key
-                record_file = records.find(
-                  (record) => record && (record.fileUrls || record.status)
-                );
-
-                // Find record_answer: object with showFlag: true and evaluatedBy: "Manual"
-                record_answer = records.find(
-                  (record) =>
-                    record &&
-                    record.showFlag === true &&
-                    record.evaluatedBy === 'Manual'
-                );
-              }
-
-              aiAssessmentStatusTrack.push({
-                do_id: response_ai_ids[i],
-                status: response_ai_status?.result?.[0]?.status,
-                fileUrls: response_ai_status?.result?.[0]?.fileUrls,
-                uploadedFlag: response_ai_status?.result?.[0]?.uploadedFlag,
-                submitedFlag: response_ai_status?.result?.[0]?.submitedFlag,
-                record_file: record_file,
-                record_answer: record_answer,
-              });
-            }
-          }
-          setAiQuestionSetStatus(aiAssessmentStatusTrack);
-        }
-        setAiDataLoading(false);
-      }
-    };
     fetchAIData();
   }, [questionsets]);
+
+  //use focus effect to fetch data
+  useFocusEffect(
+    useCallback(() => {
+      console.log('#########atm useFocusEffect');
+      fetchDataAIReload();
+    }, [])
+  );
+
+  const fetchDataAIReload = async () => {
+    const isloadassesments = await getDataFromStorage('isloadassesments');
+    console.log('#########atm isloadassesments', isloadassesments);
+    if (isloadassesments === 'yes') {
+      fetchAIData();
+      await removeData('isloadassesments');
+    }
+  };
+
+  const fetchAIData = async () => {
+    if (questionsets && questionsets.length > 0) {
+      setAiDataLoading(true);
+      let do_ids = questionsets?.map((item) => item?.identifier || '');
+      // console.log('do_ids', do_ids);
+      let response_ai = await AIAssessmentSearch(do_ids);
+      // console.log('response_ai', response_ai);
+      let response_ai_ids =
+        response_ai?.data?.map((item) => item?.question_set_id || '') || [];
+      console.log('#########atm response_ai_ids', response_ai_ids);
+      setAiQuestionSet(response_ai_ids);
+      if (response_ai_ids.length > 0) {
+        let aiAssessmentStatusTrack = [];
+        for (let i = 0; i < response_ai_ids.length; i++) {
+          let response_ai_status = await AIAssessmentStatus(response_ai_ids[i]);
+          if (response_ai_status?.result?.length > 0) {
+            console.log(
+              '#########atm response_ai_status',
+              JSON.stringify(response_ai_status)
+            );
+
+            // Extract record_file and record_answer from records array
+            let record_file = null;
+            let record_answer = null;
+
+            if (
+              response_ai_status?.result?.[0]?.records &&
+              Array.isArray(response_ai_status.result[0].records)
+            ) {
+              const records = response_ai_status.result[0].records;
+
+              // Find record_file: object with fileUrls or status key
+              record_file = records.find(
+                (record) => record && (record.fileUrls || record.status)
+              );
+
+              // Find record_answer: object with showFlag: true and evaluatedBy: "Manual"
+              record_answer = records.find(
+                (record) =>
+                  record &&
+                  // record.showFlag === false &&
+                  // record.evaluatedBy === 'AI'
+                  //to do: remove this after testing
+                record.showFlag === true &&
+                record.evaluatedBy === 'Manual'
+              );
+            }
+
+            aiAssessmentStatusTrack.push({
+              do_id: response_ai_ids[i],
+              status: response_ai_status?.result?.[0]?.status,
+              fileUrls: response_ai_status?.result?.[0]?.fileUrls,
+              uploadedFlag: response_ai_status?.result?.[0]?.uploadedFlag,
+              submitedFlag: response_ai_status?.result?.[0]?.submitedFlag,
+              createdAt:
+                response_ai_status?.result?.[0]?.records?.[0]?.createdAt ||
+                response_ai_status?.result?.[0]?.records?.[0]?.createdOn,
+              record_answer: record_answer,
+            });
+          }
+        }
+        setAiQuestionSetStatus(aiAssessmentStatusTrack);
+      }
+      setAiDataLoading(false);
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -258,9 +289,14 @@ const TestView = ({ route }) => {
     <View style={styles.tabContent}>
       {aiDataLoading ? (
         <View style={styles.emptyState}>
-          <GlobalText style={styles.emptyText}>
+          <ActivityIndicator
+            size="large"
+            color="#4D4639"
+            style={styles.loadingIndicator}
+          />
+          {/* <GlobalText style={styles.emptyText}>
             {t('loading_assessments') || 'Loading assessments...'}
-          </GlobalText>
+          </GlobalText> */}
         </View>
       ) : onlineAssessments.length > 0 ? (
         onlineAssessments.map((item, index) => (
@@ -315,9 +351,14 @@ const TestView = ({ route }) => {
     <View style={styles.tabContent}>
       {aiDataLoading ? (
         <View style={styles.emptyState}>
-          <GlobalText style={styles.emptyText}>
+          <ActivityIndicator
+            size="large"
+            color="#4D4639"
+            style={styles.loadingIndicator}
+          />
+          {/* <GlobalText style={styles.emptyText}>
             {t('loading_assessments') || 'Loading assessments...'}
-          </GlobalText>
+          </GlobalText> */}
         </View>
       ) : offlineAssessments.length > 0 ? (
         offlineAssessments.map((item, index) => (
@@ -381,7 +422,7 @@ const TestView = ({ route }) => {
     },
   ];
 
-  return loading || aiDataLoading ? (
+  return loading ? (
     <ActiveLoading />
   ) : (
     <SafeAreaView style={{ flex: 1 }}>
@@ -464,6 +505,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
     color: '#000',
     top: -10,
+  },
+  loadingIndicator: {
+    marginBottom: 10,
   },
 });
 

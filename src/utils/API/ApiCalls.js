@@ -719,7 +719,7 @@ export const AIAssessmentStatus = async (do_id) => {
         .join('\n')} 
       --data '${data}'`;
 
-    console.log('Generated cURL AIAssessmentStatus:', curlCommand);
+    // console.log('Generated cURL AIAssessmentStatus:', curlCommand);
 
     try {
       const response = await axios.request(config);

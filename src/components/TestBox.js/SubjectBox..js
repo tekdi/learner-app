@@ -348,7 +348,8 @@ const SubjectBox = ({
             {isAiAssessment == true && (
               <IconConditions
                 status={
-                  aiQuestionSetStatus?.status == 'AI Pending'
+                  aiQuestionSetStatus?.status == 'AI Pending' ||
+                  aiQuestionSetStatus?.status == 'AI Processed'
                     ? 'In_Progress'
                     : aiQuestionSetStatus?.status == 'Approved'
                     ? 'Completed'
@@ -414,7 +415,8 @@ const SubjectBox = ({
               )}
               {isAiAssessment == true && (
                 <>
-                  {aiQuestionSetStatus?.status == 'AI Pending' && (
+                  {(aiQuestionSetStatus?.status == 'AI Pending' ||
+                    aiQuestionSetStatus?.status == 'AI Processed') && (
                     <GlobalText style={{ color: '#7C766F' }}>
                       {t('submitted_eval')}
                     </GlobalText>

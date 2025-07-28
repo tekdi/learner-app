@@ -61,6 +61,9 @@ const ATMAssessment = ({ route }) => {
   const { height } = Dimensions.get('window');
 
   console.log('#########atm aiQuestionSetStatus', aiQuestionSetStatus);
+
+  const [aiQuestionSetNew, setAiQuestionSetNew] = useState(aiQuestionSetStatus);
+
   const [loading, setLoading] = useState(true);
   const [networkstatus, setNetworkstatus] = useState(true);
   const [downloadIcon, setDownloadIcon] = useState(download);
@@ -294,6 +297,9 @@ const ATMAssessment = ({ route }) => {
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
+      //navigate to the assessment screen
+      await setDataInStorage(`isloadassesments`, 'yes');
+      navigation.goBack();
     }
   };
 
@@ -389,11 +395,23 @@ const ATMAssessment = ({ route }) => {
       const submitData = {
         userId: userId,
         questionSetId: data?.identifier,
-        identifier: data?.identifier,
+        // identifier: data?.identifier,
         fileUrls: fileUrls,
       };
 
       const middlewareUrl = Config.API_URL;
+
+      // Console CURL for debugging
+      const curlCommand = `curl -X POST '${middlewareUrl}/interface/v1/tracking/answer-sheet-submissions/create' \\
+  -H 'Accept: application/json, text/plain, */*' \\
+  -H 'Accept-Language: en-GB,en-US;q=0.9,en;q=0.8' \\
+  -H 'Authorization: Bearer ${token}' \\
+  -H 'Content-Type: application/json' \\
+  -H 'tenantid: ${tenantId}' \\
+  --data-raw '${JSON.stringify(submitData)}'`;
+
+      // console.log('#########atm CURL Command:', curlCommand);
+
       const response = await fetch(
         middlewareUrl +
           '/interface/v1/tracking/answer-sheet-submissions/create',
@@ -410,11 +428,12 @@ const ATMAssessment = ({ route }) => {
         }
       );
 
+      console.log('#########atm response', JSON.stringify(response));
       if (!response.ok) {
         throw new Error('Submit for review failed');
       }
-      console.log('#########atm response', JSON.stringify(response?.data));
       const result = await response.json();
+      console.log('#########atm result', JSON.stringify(result));
       return { success: true, data: result };
     } catch (error) {
       console.log('#########atm Submit for review failed:', error);
@@ -500,34 +519,33 @@ const ATMAssessment = ({ route }) => {
           {/* <PermissionTestComponent /> */}
 
           {/* Status-based rendering based on aiQuestionSetStatus */}
-          {aiQuestionSetStatus?.status === 'AI Pending' && (
+          {(aiQuestionSetStatus?.status === 'AI Pending' ||
+            aiQuestionSetStatus?.status === 'AI Processed') && (
             <ScrollView
               style={styles.successContainer}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.successContentContainer}
             >
               {/* Uploaded Images Info - Only show if record_file exists */}
-              {aiQuestionSetStatus?.record_file?.fileUrls && (
+              {aiQuestionSetStatus?.fileUrls && (
                 <TouchableOpacity
                   style={styles.uploadedInfoContainer}
                   onPress={() => {
                     // Navigate to uploaded images view
                     const uploadedImages = Array.isArray(
-                      aiQuestionSetStatus.record_file.fileUrls
+                      aiQuestionSetStatus.fileUrls
                     )
-                      ? aiQuestionSetStatus.record_file.fileUrls.map(
-                          (url, index) => ({
-                            id: index,
-                            url: url,
-                            uri: url,
-                            fileName: `Image_${index + 1}.jpg`,
-                          })
-                        )
+                      ? aiQuestionSetStatus.fileUrls.map((url, index) => ({
+                          id: index,
+                          url: url,
+                          uri: url,
+                          fileName: `Image_${index + 1}.jpg`,
+                        }))
                       : [
                           {
                             id: 0,
-                            url: aiQuestionSetStatus.record_file.fileUrls,
-                            uri: aiQuestionSetStatus.record_file.fileUrls,
+                            url: aiQuestionSetStatus.fileUrls,
+                            uri: aiQuestionSetStatus.fileUrls,
                             fileName: 'Image_1.jpg',
                           },
                         ];
@@ -540,15 +558,15 @@ const ATMAssessment = ({ route }) => {
                 >
                   <View style={styles.uploadedInfoContent}>
                     <GlobalText style={styles.uploadedCountText}>
-                      {Array.isArray(aiQuestionSetStatus.record_file.fileUrls)
-                        ? `${aiQuestionSetStatus.record_file.fileUrls.length} images uploaded`
+                      {Array.isArray(aiQuestionSetStatus.fileUrls)
+                        ? `${aiQuestionSetStatus.fileUrls.length} images uploaded`
                         : '1 image uploaded'}
                     </GlobalText>
                     <GlobalText style={styles.uploadedDateText}>
-                      {aiQuestionSetStatus?.record_file?.createdAt
-                        ? moment(
-                            aiQuestionSetStatus.record_file.createdAt
-                          ).format('DD MMM, YYYY')
+                      {aiQuestionSetStatus?.createdAt
+                        ? moment(aiQuestionSetStatus.createdAt).format(
+                            'DD MMM, YYYY'
+                          )
                         : moment().format('DD MMM, YYYY')}
                     </GlobalText>
                   </View>
@@ -582,102 +600,21 @@ const ATMAssessment = ({ route }) => {
             </ScrollView>
           )}
 
-          {aiQuestionSetStatus?.status === 'Success Evaluation' && (
-            <ScrollView
-              style={styles.successEvaluationContainer}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.successEvaluationContentContainer}
-            >
-              {/* Success Evaluation Icon */}
-              <View style={styles.successEvaluationIconContainer}>
-                <Icon name="check-circle" size={80} color="#1A881F" />
-              </View>
-
-              {/* Main Success Text */}
-              <GlobalText style={styles.successEvaluationMainText}>
-                {t('Evaluation completed successfully!')}
-              </GlobalText>
-
-              {/* Marks Display */}
-              <View style={styles.marksContainer}>
-                <GlobalText style={styles.marksText}>
-                  {t('Your Score')}: {data?.totalScore || 0}/
-                  {data?.totalMaxScore || 0}
-                </GlobalText>
-                <GlobalText style={styles.percentageText}>
-                  {data?.totalScore && data?.totalMaxScore
-                    ? Math.round((data.totalScore / data.totalMaxScore) * 100)
-                    : 0}
-                  %
-                </GlobalText>
-              </View>
-
-              {/* Congratulatory Text */}
-              <GlobalText style={styles.successEvaluationSecondaryText}>
-                {t(
-                  'Congratulations! Your assessment has been evaluated successfully.'
-                )}
-              </GlobalText>
-
-              {/* Uploaded Images Info - Only show if record_file exists */}
-              {aiQuestionSetStatus?.record_file?.fileUrls && (
-                <TouchableOpacity
-                  style={styles.uploadedInfoContainer}
-                  onPress={() => {
-                    // Navigate to uploaded images view
-                    const uploadedImages = Array.isArray(
-                      aiQuestionSetStatus.record_file.fileUrls
-                    )
-                      ? aiQuestionSetStatus.record_file.fileUrls.map(
-                          (url, index) => ({
-                            id: index,
-                            url: url,
-                            uri: url,
-                            fileName: `Image_${index + 1}.jpg`,
-                          })
-                        )
-                      : [
-                          {
-                            id: 0,
-                            url: aiQuestionSetStatus.record_file.fileUrls,
-                            uri: aiQuestionSetStatus.record_file.fileUrls,
-                            fileName: 'Image_1.jpg',
-                          },
-                        ];
-
-                    navigation.navigate('UploadedImagesScreen', {
-                      images: uploadedImages,
-                      title: title,
-                    });
-                  }}
-                >
-                  <View style={styles.uploadedInfoContent}>
-                    <GlobalText style={styles.uploadedCountText}>
-                      {Array.isArray(aiQuestionSetStatus.record_file.fileUrls)
-                        ? `${aiQuestionSetStatus.record_file.fileUrls.length} images uploaded`
-                        : '1 image uploaded'}
-                    </GlobalText>
-                    <GlobalText style={styles.uploadedDateText}>
-                      {aiQuestionSetStatus?.record_file?.createdAt
-                        ? moment(
-                            aiQuestionSetStatus.record_file.createdAt
-                          ).format('DD MMM, YYYY')
-                        : moment().format('DD MMM, YYYY')}
-                    </GlobalText>
-                  </View>
-                  <Icon name="chevron-right" size={18} color="#1F1B13" />
-                </TouchableOpacity>
-              )}
-            </ScrollView>
-          )}
-
           {aiQuestionSetStatus?.status === 'Approved' && (
             <View style={styles.statusContainer}>
               <View style={styles.statusRow}>
                 <Icon name="check-circle" size={18} color="#1F1B13" />
+                <GlobalText
+                  style={[
+                    styles.statusText,
+                    { fontFamily: 'Poppins-SemiBold' },
+                  ]}
+                >
+                  Marks:{' '}
+                </GlobalText>
                 <GlobalText style={styles.statusText}>
-                  Marks: ({data?.totalScore || 0}/{data?.totalMaxScore || 0}){' '}
                   <GlobalText style={styles.percentageText}>
+                    ({data?.totalScore || 0}/{data?.totalMaxScore || 0}){' '}
                     {data?.totalScore && data?.totalMaxScore
                       ? Math.round((data.totalScore / data.totalMaxScore) * 100)
                       : 0}
@@ -685,6 +622,166 @@ const ATMAssessment = ({ route }) => {
                   </GlobalText>
                 </GlobalText>
               </View>
+
+              {/* Answer Sheet Component - Direct Display */}
+              {aiQuestionSetStatus?.record_answer && (
+                <View style={styles.answerSheetContainer}>
+                  <View style={styles.answerSheetHeader}>
+                    <GlobalText style={styles.answerSheetTitle}>
+                      {t('Answer Sheet')}
+                    </GlobalText>
+                    <View style={styles.answerSheetScore}>
+                      <GlobalText style={styles.scoreText}>
+                        Score:{' '}
+                        {aiQuestionSetStatus.record_answer.totalScore || 0}/
+                        {aiQuestionSetStatus.record_answer.totalMaxScore || 0}
+                      </GlobalText>
+                      <GlobalText style={styles.percentageText}>
+                        {aiQuestionSetStatus.record_answer.totalScore &&
+                        aiQuestionSetStatus.record_answer.totalMaxScore
+                          ? Math.round(
+                              (aiQuestionSetStatus.record_answer.totalScore /
+                                aiQuestionSetStatus.record_answer
+                                  .totalMaxScore) *
+                                100
+                            )
+                          : 0}
+                        %
+                      </GlobalText>
+                    </View>
+                  </View>
+
+                  <ScrollView
+                    style={styles.answerSheetContent}
+                    showsVerticalScrollIndicator={false}
+                  >
+                    {aiQuestionSetStatus.record_answer.assessmentSummary?.map(
+                      (section, sectionIndex) => (
+                        <View
+                          key={sectionIndex}
+                          style={styles.sectionContainer}
+                        >
+                          <GlobalText style={styles.sectionTitle}>
+                            {section.sectionName}
+                          </GlobalText>
+
+                          {section.data?.map((question, questionIndex) => (
+                            <View
+                              key={questionIndex}
+                              style={styles.questionContainer}
+                            >
+                              <View style={styles.questionHeader}>
+                                <GlobalText style={styles.questionNumber}>
+                                  Q{question.index || questionIndex + 1}
+                                </GlobalText>
+                                <View style={styles.questionScore}>
+                                  <GlobalText style={styles.scoreLabel}>
+                                    Score: {question.score}/{question.maxscore}
+                                  </GlobalText>
+                                  <View
+                                    style={[
+                                      styles.passIndicator,
+                                      {
+                                        backgroundColor:
+                                          question.pass === 'Yes'
+                                            ? '#1A881F'
+                                            : '#FF4444',
+                                      },
+                                    ]}
+                                  >
+                                    <GlobalText style={styles.passText}>
+                                      {question.pass === 'Yes'
+                                        ? 'Pass'
+                                        : 'Fail'}
+                                    </GlobalText>
+                                  </View>
+                                </View>
+                              </View>
+
+                              <GlobalText style={styles.questionTitle}>
+                                {question.item?.title?.replace(
+                                  /<[^>]*>/g,
+                                  ''
+                                ) || 'Question'}
+                              </GlobalText>
+
+                              {/* MCQ Options */}
+                              {question.item?.type === 'MCQ' &&
+                                question.item?.params && (
+                                  <View style={styles.optionsContainer}>
+                                    {question.item.params.map(
+                                      (option, optionIndex) => (
+                                        <View
+                                          key={optionIndex}
+                                          style={styles.optionContainer}
+                                        >
+                                          <View
+                                            style={[
+                                              styles.optionCircle,
+                                              {
+                                                backgroundColor:
+                                                  question.resvalues?.[0]
+                                                    ?.value === option.value
+                                                    ? question.pass === 'Yes'
+                                                      ? '#1A881F'
+                                                      : '#FF4444'
+                                                    : '#E5E5E5',
+                                              },
+                                            ]}
+                                          >
+                                            <GlobalText
+                                              style={styles.optionText}
+                                            >
+                                              {String.fromCharCode(
+                                                65 + optionIndex
+                                              )}
+                                            </GlobalText>
+                                          </View>
+                                          <GlobalText
+                                            style={styles.optionLabel}
+                                          >
+                                            {option.value?.body?.replace(
+                                              /<[^>]*>/g,
+                                              ''
+                                            ) || option.value}
+                                          </GlobalText>
+                                        </View>
+                                      )
+                                    )}
+                                  </View>
+                                )}
+
+                              {/* User Answer */}
+                              <View style={styles.answerContainer}>
+                                <GlobalText style={styles.answerLabel}>
+                                  Your Answer:
+                                </GlobalText>
+                                <GlobalText style={styles.userAnswer}>
+                                  {question.resvalues?.[0]?.value ||
+                                    question.resvalues?.[0]?.label ||
+                                    'No answer provided'}
+                                </GlobalText>
+                              </View>
+
+                              {/* AI Suggestion */}
+                              {question.resvalues?.[0]?.AI_suggestion && (
+                                <View style={styles.aiSuggestionContainer}>
+                                  <GlobalText style={styles.aiSuggestionLabel}>
+                                    AI Suggestion:
+                                  </GlobalText>
+                                  <GlobalText style={styles.aiSuggestionText}>
+                                    {question.resvalues[0].AI_suggestion}
+                                  </GlobalText>
+                                </View>
+                              )}
+                            </View>
+                          ))}
+                        </View>
+                      )
+                    )}
+                  </ScrollView>
+                </View>
+              )}
 
               {/* Uploaded Images Info */}
               {aiQuestionSetStatus?.record_file?.fileUrls && (
@@ -725,10 +822,10 @@ const ATMAssessment = ({ route }) => {
                         : '1 image uploaded'}
                     </GlobalText>
                     <GlobalText style={styles.uploadedDateText}>
-                      {aiQuestionSetStatus?.record_file?.createdAt
-                        ? moment(
-                            aiQuestionSetStatus.record_file.createdAt
-                          ).format('DD MMM, YYYY')
+                      {aiQuestionSetStatus?.createdAt
+                        ? moment(aiQuestionSetStatus.createdAt).format(
+                            'DD MMM, YYYY'
+                          )
                         : moment().format('DD MMM, YYYY')}
                     </GlobalText>
                   </View>
@@ -1094,6 +1191,165 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     letterSpacing: 0.5,
     marginBottom: 30,
+  },
+  answerSheetContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    marginTop: 10,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    maxHeight: 400,
+  },
+  answerSheetHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  answerSheetTitle: {
+    fontSize: 18,
+    fontFamily: 'Poppins-SemiBold',
+    color: '#1F1B13',
+  },
+  answerSheetScore: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
+  scoreText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+    color: '#1F1B13',
+    marginRight: 5,
+  },
+  answerSheetContent: {
+    flex: 1,
+  },
+  sectionContainer: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+    color: '#1F1B13',
+    marginBottom: 10,
+    paddingHorizontal: 5,
+  },
+  questionContainer: {
+    backgroundColor: '#F9F9F9',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#E5E5E5',
+  },
+  questionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  questionNumber: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    color: '#1F1B13',
+    marginRight: 10,
+  },
+  questionScore: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  scoreLabel: {
+    fontSize: 12,
+    fontFamily: 'Poppins-Regular',
+    color: '#7C766F',
+    marginRight: 8,
+  },
+  passIndicator: {
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+  },
+  passText: {
+    fontSize: 11,
+    fontFamily: 'Poppins-Medium',
+    color: '#FFFFFF',
+  },
+  questionTitle: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    color: '#1F1B13',
+    marginBottom: 8,
+    lineHeight: 20,
+  },
+  optionsContainer: {
+    marginBottom: 8,
+  },
+  optionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  optionCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  optionText: {
+    fontSize: 12,
+    fontFamily: 'Poppins-Medium',
+    color: '#FFFFFF',
+  },
+  optionLabel: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    color: '#1F1B13',
+    flex: 1,
+  },
+  answerContainer: {
+    marginTop: 10,
+    marginBottom: 8,
+    padding: 8,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 6,
+  },
+  answerLabel: {
+    fontSize: 13,
+    fontFamily: 'Poppins-Medium',
+    color: '#1F1B13',
+    marginBottom: 4,
+  },
+  userAnswer: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    color: '#1F1B13',
+    lineHeight: 20,
+  },
+  aiSuggestionContainer: {
+    marginTop: 8,
+    padding: 8,
+    backgroundColor: '#E8F5E8',
+    borderRadius: 6,
+    borderLeftWidth: 3,
+    borderLeftColor: '#1A881F',
+  },
+  aiSuggestionLabel: {
+    fontSize: 13,
+    fontFamily: 'Poppins-Medium',
+    color: '#1F1B13',
+    marginBottom: 4,
+  },
+  aiSuggestionText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    color: '#1F1B13',
+    lineHeight: 20,
   },
 });
 
