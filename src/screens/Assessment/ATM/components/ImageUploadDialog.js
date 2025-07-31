@@ -39,7 +39,33 @@ const ImageUploadDialog = ({
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarType, setSnackbarType] = useState('success'); // 'success' or 'error'
+  const [isInstructionsExpanded, setIsInstructionsExpanded] = useState(true);
+  const [instructionsAnimation] = useState(new Animated.Value(1));
   const { alertConfig, showDeleteAlert, hideAlert } = useCustomAlert();
+
+  // Auto-collapse instructions when images are uploaded
+  useEffect(() => {
+    if (selectedImages.length > 0 && isInstructionsExpanded) {
+      setIsInstructionsExpanded(false);
+      Animated.timing(instructionsAnimation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
+  }, [selectedImages.length, isInstructionsExpanded, instructionsAnimation]);
+
+  // Function to toggle instructions
+  const toggleInstructions = () => {
+    const newExpandedState = !isInstructionsExpanded;
+    setIsInstructionsExpanded(newExpandedState);
+
+    Animated.timing(instructionsAnimation, {
+      toValue: newExpandedState ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
 
   // Function to show snackbar
   const showSnackbar = useCallback((type, message) => {
@@ -251,6 +277,92 @@ const ImageUploadDialog = ({
                     {t('Up to 4 images')}
                   </GlobalText>
 
+                  {/* Expandable Instructions */}
+                  <View style={styles.instructionsContainer}>
+                    <TouchableOpacity
+                      style={styles.instructionsHeader}
+                      onPress={toggleInstructions}
+                      activeOpacity={0.7}
+                    >
+                      <View style={styles.instructionsHeaderContent}>
+                        <Icon
+                          name="info-circle"
+                          size={20}
+                          color="#1C1B1F"
+                          style={styles.instructionsIcon}
+                        />
+                        <GlobalText style={styles.instructionsTitle}>
+                          {t('Upload Instructions')}
+                        </GlobalText>
+                      </View>
+                      <Animated.View
+                        style={[
+                          styles.instructionsArrow,
+                          {
+                            transform: [
+                              {
+                                rotate: instructionsAnimation.interpolate({
+                                  inputRange: [0, 1],
+                                  outputRange: ['0deg', '180deg'],
+                                }),
+                              },
+                            ],
+                          },
+                        ]}
+                      >
+                        <Icon name="chevron-down" size={16} color="#1C1B1F" />
+                      </Animated.View>
+                    </TouchableOpacity>
+
+                    <Animated.View
+                      style={[
+                        styles.instructionsContent,
+                        {
+                          maxHeight: instructionsAnimation.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 200],
+                          }),
+                          opacity: instructionsAnimation,
+                        },
+                      ]}
+                    >
+                      <View style={styles.instructionsList}>
+                        <View style={styles.instructionItem}>
+                          <Icon name="check-circle" size={16} color="#4CAF50" />
+                          <GlobalText style={styles.instructionText}>
+                            {t(
+                              'Ensure your answer sheet is clearly visible and well-lit'
+                            )}
+                          </GlobalText>
+                        </View>
+                        <View style={styles.instructionItem}>
+                          <Icon name="check-circle" size={16} color="#4CAF50" />
+                          <GlobalText style={styles.instructionText}>
+                            {t('Capture all pages of your answer sheet')}
+                          </GlobalText>
+                        </View>
+                        <View style={styles.instructionItem}>
+                          <Icon name="check-circle" size={16} color="#4CAF50" />
+                          <GlobalText style={styles.instructionText}>
+                            {t('Make sure your handwriting is legible')}
+                          </GlobalText>
+                        </View>
+                        <View style={styles.instructionItem}>
+                          <Icon name="check-circle" size={16} color="#4CAF50" />
+                          <GlobalText style={styles.instructionText}>
+                            {t('Avoid shadows or glare on the paper')}
+                          </GlobalText>
+                        </View>
+                        <View style={styles.instructionItem}>
+                          <Icon name="check-circle" size={16} color="#4CAF50" />
+                          <GlobalText style={styles.instructionText}>
+                            {t('Keep the camera steady while taking photos')}
+                          </GlobalText>
+                        </View>
+                      </View>
+                    </Animated.View>
+                  </View>
+
                   {/* Selected Images List */}
                   {selectedImages.length > 0 && (
                     <View style={styles.selectedImagesContainer}>
@@ -274,10 +386,7 @@ const ImageUploadDialog = ({
                       <GlobalText style={styles.warningText}>
                         {t('You have selected')} {selectedImages.length}{' '}
                         {t('images')}.{' '}
-                        {t(
-                          'For better performance, we recommend uploading up to 4 images at a time'
-                        )}
-                        .
+                        {t('We recommend uploading up to 4 images')}.
                       </GlobalText>
                     </View>
                   )}
@@ -715,6 +824,64 @@ const styles = {
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: 'transparent',
+  },
+  instructionsContainer: {
+    marginTop: 16,
+    backgroundColor: '#F9F9F9',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    overflow: 'hidden',
+  },
+  instructionsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#E0E0E0',
+    borderBottomWidth: 1,
+    borderBottomColor: '#D0C5B4',
+  },
+  instructionsHeaderContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  instructionsIcon: {
+    marginRight: 8,
+  },
+  instructionsTitle: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    color: '#1C1B1F',
+  },
+  instructionsArrow: {
+    transform: [{ rotate: '0deg' }],
+  },
+  instructionsContent: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    overflow: 'hidden',
+  },
+  instructionsList: {
+    //
+  },
+  instructionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 6,
+  },
+  instructionText: {
+    fontSize: 13,
+    fontFamily: 'Poppins-Regular',
+    color: '#5E5E5E',
+    marginLeft: 8,
+    flex: 1,
+    lineHeight: 18,
   },
 };
 

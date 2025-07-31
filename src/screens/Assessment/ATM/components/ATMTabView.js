@@ -60,12 +60,14 @@ const ATMTabView = ({
           >
             {/* Assessment Count Display - Inside Scrollable Area */}
             <View style={styles.countContainer}>
-              <GlobalText style={styles.countText}>
-                {tabs[selectedTab].count || 0}{' '}
-                {tabs[selectedTab].count === 1
-                  ? t('Total_Assessment')
-                  : t('Total_Assessments')}
-              </GlobalText>
+              {tabs[selectedTab]?.count && (
+                <GlobalText style={styles.countText}>
+                  {tabs[selectedTab].count || 0}{' '}
+                  {tabs[selectedTab].count === 1
+                    ? t('Total_Assessment')
+                    : t('Total_Assessments')}
+                </GlobalText>
+              )}
             </View>
 
             <View style={{ paddingBottom: 30 }}>

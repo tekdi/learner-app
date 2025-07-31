@@ -299,7 +299,9 @@ const ATMAssessment = ({ route }) => {
       setUploadProgress(0);
       //navigate to the assessment screen
       await setDataInStorage(`isloadassesments`, 'yes');
-      navigation.goBack();
+      setTimeout(() => {
+        navigation.goBack();
+      }, 1000);
     }
   };
 

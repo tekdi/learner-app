@@ -104,10 +104,42 @@ const TestView = ({ route }) => {
   }, []);*/
 
   const [aiQuestionSet, setAiQuestionSet] = useState(null);
-  const [aiQuestionSetStatus, setAiQuestionSetStatus] = useState([]);
+  const [aiQuestionSetStatus, setAiQuestionSetStatus] = useState(null);
+  const [onlineAssessments, setOnlineAssessments] = useState(null);
+  const [offlineAssessments, setOfflineAssessments] = useState(null);
   useEffect(() => {
     fetchAIData();
   }, [questionsets]);
+
+  useEffect(() => {
+    console.log('#########atm aiQuestionSet', aiQuestionSet);
+    if (aiQuestionSet != null) {
+      setAiDataLoading(true);
+      // Separate assessments into online and offline
+      const onlineAssessments =
+        questionsets?.filter((item) => {
+          let isAiAssessment = aiQuestionSet?.includes(item?.identifier);
+          console.log(
+            'Assessment:',
+            item?.name,
+            'ID:',
+            item?.identifier,
+            'isAI:',
+            isAiAssessment
+          );
+          return !isAiAssessment;
+        }) || [];
+      setOnlineAssessments(onlineAssessments);
+
+      const offlineAssessments =
+        questionsets?.filter((item) => {
+          let isAiAssessment = aiQuestionSet?.includes(item?.identifier);
+          return isAiAssessment;
+        }) || [];
+      setOfflineAssessments(offlineAssessments);
+      setAiDataLoading(false);
+    }
+  }, [aiQuestionSet]);
 
   //use focus effect to fetch data
   useFocusEffect(
@@ -121,13 +153,20 @@ const TestView = ({ route }) => {
     const isloadassesments = await getDataFromStorage('isloadassesments');
     console.log('#########atm isloadassesments', isloadassesments);
     if (isloadassesments === 'yes') {
-      fetchAIData();
+      setAiDataLoading(true);
+      setAiQuestionSetStatus(null);
+      setAiQuestionSet(null);
+      setOnlineAssessments(null);
+      setOfflineAssessments(null);
+      fetchData();
       await removeData('isloadassesments');
     }
   };
 
   const fetchAIData = async () => {
+    console.log('#########atm questionsets');
     if (questionsets && questionsets.length > 0) {
+      console.log('#########atm questionsets 1');
       setAiDataLoading(true);
       let do_ids = questionsets?.map((item) => item?.identifier || '');
       // console.log('do_ids', do_ids);
@@ -169,8 +208,8 @@ const TestView = ({ route }) => {
                   // record.showFlag === false &&
                   // record.evaluatedBy === 'AI'
                   //to do: remove this after testing
-                record.showFlag === true &&
-                record.evaluatedBy === 'Manual'
+                  record.showFlag === true &&
+                  record.evaluatedBy === 'Manual'
               );
             }
 
@@ -225,6 +264,9 @@ const TestView = ({ route }) => {
   };
 
   const fetchData = async () => {
+    setAiDataLoading(true);
+    console.log('#########atm fetchData');
+
     const data = await getDataFromStorage('QuestionSet');
 
     const tempParseData = JSON.parse(data);
@@ -257,37 +299,17 @@ const TestView = ({ route }) => {
     // console.log(JSON.stringify(finalData));
     setLoading(false);
     setIsDataLoaded(true); // Mark data as loaded
+    setAiDataLoading(false);
   };
 
-  // Separate assessments into online and offline
-  const onlineAssessments =
-    questionsets?.filter((item) => {
-      let isAiAssessment = aiQuestionSet?.includes(item?.identifier);
-      console.log(
-        'Assessment:',
-        item?.name,
-        'ID:',
-        item?.identifier,
-        'isAI:',
-        isAiAssessment
-      );
-      return !isAiAssessment;
-    }) || [];
-
-  const offlineAssessments =
-    questionsets?.filter((item) => {
-      let isAiAssessment = aiQuestionSet?.includes(item?.identifier);
-      return isAiAssessment;
-    }) || [];
-
   console.log('AI Question Set IDs:', aiQuestionSet);
-  console.log('Online Assessments Count:', onlineAssessments.length);
-  console.log('Offline Assessments Count:', offlineAssessments.length);
+  console.log('Online Assessments Count:', onlineAssessments?.length);
+  console.log('Offline Assessments Count:', offlineAssessments?.length);
 
   // Create tab content components
   const OnlineAssessmentContent = () => (
     <View style={styles.tabContent}>
-      {aiDataLoading ? (
+      {!onlineAssessments || aiDataLoading ? (
         <View style={styles.emptyState}>
           <ActivityIndicator
             size="large"
@@ -307,10 +329,11 @@ const TestView = ({ route }) => {
             data={item}
             isAiAssessment={false}
             index={index}
-            aiQuestionSetStatus={findAiQuestionSetStatus(
-              aiQuestionSetStatus,
-              item?.identifier
-            )}
+            aiQuestionSetStatus={
+              aiQuestionSetStatus
+                ? findAiQuestionSetStatus(aiQuestionSetStatus, item?.identifier)
+                : null
+            }
           />
         ))
       ) : (
@@ -349,7 +372,7 @@ const TestView = ({ route }) => {
 
   const OfflineAssessmentContent = () => (
     <View style={styles.tabContent}>
-      {aiDataLoading ? (
+      {!offlineAssessments || aiDataLoading ? (
         <View style={styles.emptyState}>
           <ActivityIndicator
             size="large"
@@ -369,10 +392,11 @@ const TestView = ({ route }) => {
             data={item}
             isAiAssessment={true}
             index={index}
-            aiQuestionSetStatus={findAiQuestionSetStatus(
-              aiQuestionSetStatus,
-              item?.identifier
-            )}
+            aiQuestionSetStatus={
+              aiQuestionSetStatus
+                ? findAiQuestionSetStatus(aiQuestionSetStatus, item?.identifier)
+                : null
+            }
           />
         ))
       ) : (
@@ -413,12 +437,12 @@ const TestView = ({ route }) => {
     {
       title: t('online_assessment'),
       content: <OnlineAssessmentContent />,
-      count: onlineAssessments.length,
+      count: onlineAssessments?.length,
     },
     {
       title: t('offline_assessment'),
       content: <OfflineAssessmentContent />,
-      count: offlineAssessments.length,
+      count: offlineAssessments?.length,
     },
   ];
 

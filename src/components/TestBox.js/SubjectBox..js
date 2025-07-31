@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
+  Animated,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -43,6 +44,55 @@ import HorizontalLine from '../HorizontalLine/HorizontalLine';
 import PrimaryButton from '../PrimaryButton/PrimaryButton';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+
+// Loading Card Component
+const LoadingCard = () => {
+  const [animation] = useState(new Animated.Value(0));
+
+  useEffect(() => {
+    const startAnimation = () => {
+      Animated.sequence([
+        Animated.timing(animation, {
+          toValue: 1,
+          duration: 1200,
+          useNativeDriver: false,
+        }),
+        Animated.timing(animation, {
+          toValue: 0,
+          duration: 1200,
+          useNativeDriver: false,
+        }),
+      ]).start(() => startAnimation());
+    };
+
+    startAnimation();
+  }, [animation]);
+
+  const opacity = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.4, 0.8],
+  });
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.row}>
+        {/* Left Container Skeleton */}
+        <View style={styles.leftContainer}>
+          <Animated.View style={[styles.skeletonCircle, { opacity }]} />
+        </View>
+
+        {/* Content Section Skeleton */}
+        <View style={styles.contentSection}>
+          <Animated.View style={[styles.skeletonTitle, { opacity }]} />
+          <View style={styles.skeletonRow}>
+            <Animated.View style={[styles.skeletonScore, { opacity }]} />
+            <Animated.View style={[styles.skeletonDate, { opacity }]} />
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+};
 
 const IconConditions = ({ status, styles }) => {
   let iconName;
@@ -342,56 +392,59 @@ const SubjectBox = ({
 
   return (
     <SafeAreaView>
-      <TouchableOpacity onPress={handlePress}>
-        <View style={styles.card}>
-          <View style={styles.row}>
-            {isAiAssessment == true && (
-              <IconConditions
-                status={
-                  aiQuestionSetStatus?.status == 'AI Pending' ||
-                  aiQuestionSetStatus?.status == 'AI Processed'
-                    ? 'In_Progress'
-                    : aiQuestionSetStatus?.status == 'Approved'
-                    ? 'Completed'
-                    : 'Not_Started'
-                }
-                styles={styles}
-              />
-            )}
-            <View style={styles.contentSection}>
-              <GlobalText style={globalStyles.subHeading}>
-                {t(capitalizeFirstLetter(name))}
-              </GlobalText>
-              {isAiAssessment == false && (
-                <>
-                  {disabled && !isSyncPending ? (
-                    <GlobalText style={{ color: '#7C766F' }}>
-                      {t('not_submitted')}
-                    </GlobalText>
-                  ) : !isSyncPending ? (
-                    <View
-                      style={{ flexDirection: 'row', alignItems: 'center' }}
-                    >
-                      <GlobalText style={{ color: '#000' }}>
-                        {data?.totalScore}/{data?.totalMaxScore}
+      {aiQuestionSetStatus == null && isAiAssessment == true ? (
+        <LoadingCard />
+      ) : (
+        <TouchableOpacity onPress={handlePress}>
+          <View style={styles.card}>
+            <View style={styles.row}>
+              {isAiAssessment == true && (
+                <IconConditions
+                  status={
+                    aiQuestionSetStatus?.status == 'AI Pending' ||
+                    aiQuestionSetStatus?.status == 'AI Processed'
+                      ? 'In_Progress'
+                      : aiQuestionSetStatus?.status == 'Approved'
+                      ? 'Completed'
+                      : 'Not_Started'
+                  }
+                  styles={styles}
+                />
+              )}
+              <View style={styles.contentSection}>
+                <GlobalText style={globalStyles.subHeading}>
+                  {t(capitalizeFirstLetter(name))}
+                </GlobalText>
+                {isAiAssessment == false && (
+                  <>
+                    {disabled && !isSyncPending ? (
+                      <GlobalText style={{ color: '#7C766F' }}>
+                        {t('not_submitted')}
                       </GlobalText>
+                    ) : !isSyncPending ? (
                       <View
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          marginLeft: 20,
-                        }}
+                        style={{ flexDirection: 'row', alignItems: 'center' }}
                       >
-                        <Icon name="circle" size={8} color="#7C766F" />
-                        <GlobalText
-                          style={[
-                            globalStyles.text,
-                            { color: '#7C766F', marginLeft: 5 },
-                          ]}
-                        >
-                          {moment(data?.createdOn).format('DD MMM, YYYY')}
+                        <GlobalText style={{ color: '#000' }}>
+                          {data?.totalScore}/{data?.totalMaxScore}
                         </GlobalText>
-                        {/* <View style={[globalStyles.flexrow, { marginLeft: 15 }]}>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginLeft: 20,
+                          }}
+                        >
+                          <Icon name="circle" size={8} color="#7C766F" />
+                          <GlobalText
+                            style={[
+                              globalStyles.text,
+                              { color: '#7C766F', marginLeft: 5 },
+                            ]}
+                          >
+                            {moment(data?.createdOn).format('DD MMM, YYYY')}
+                          </GlobalText>
+                          {/* <View style={[globalStyles.flexrow, { marginLeft: 15 }]}>
                       <Ionicons
                         name="cloud-outline"
                         color={'#7C766F'}
@@ -406,138 +459,147 @@ const SubjectBox = ({
                         {moment(data?.lastAttemptedOn).format('DD MMM, YYYY')}
                       </GlobalText>
                     </View> */}
+                        </View>
                       </View>
-                    </View>
-                  ) : (
-                    <></>
-                  )}
-                </>
-              )}
-              {isAiAssessment == true && (
-                <>
-                  {(aiQuestionSetStatus?.status == 'AI Pending' ||
-                    aiQuestionSetStatus?.status == 'AI Processed') && (
-                    <GlobalText style={{ color: '#7C766F' }}>
-                      {t('submitted_eval')}
-                    </GlobalText>
-                  )}
-                  {aiQuestionSetStatus?.status == 'Approved' && (
-                    <View
-                      style={{ flexDirection: 'row', alignItems: 'center' }}
-                    >
-                      <GlobalText
-                        style={{
-                          color: '#1F1B13',
-                          fontSize: 14,
-                          fontFamily: 'Poppins-Medium',
-                          letterSpacing: 0.1,
-                          lineHeight: 20,
-                        }}
+                    ) : (
+                      <></>
+                    )}
+                  </>
+                )}
+                {isAiAssessment == true && (
+                  <>
+                    {(aiQuestionSetStatus?.status == 'AI Pending' ||
+                      aiQuestionSetStatus?.status == 'AI Processed') && (
+                      <GlobalText style={{ color: '#7C766F' }}>
+                        {t('submitted_eval')}
+                      </GlobalText>
+                    )}
+                    {aiQuestionSetStatus?.status == 'Approved' && (
+                      <View
+                        style={{ flexDirection: 'row', alignItems: 'center' }}
                       >
-                        Marks: ({data?.totalScore}/{data?.totalMaxScore}){' '}
                         <GlobalText
                           style={{
-                            color: '#1A881F',
+                            color: '#1F1B13',
                             fontSize: 14,
                             fontFamily: 'Poppins-Medium',
                             letterSpacing: 0.1,
                             lineHeight: 20,
                           }}
                         >
-                          {data?.totalScore && data?.totalMaxScore
-                            ? Math.round((data.totalScore / 16) * 100)
-                            : 0}
-                          %
+                          Marks: ({data?.totalScore}/{data?.totalMaxScore}){' '}
+                          <GlobalText
+                            style={{
+                              color: '#1A881F',
+                              fontSize: 14,
+                              fontFamily: 'Poppins-Medium',
+                              letterSpacing: 0.1,
+                              lineHeight: 20,
+                            }}
+                          >
+                            {data?.totalScore && data?.totalMaxScore
+                              ? Math.round((data.totalScore / 16) * 100)
+                              : 0}
+                            %
+                          </GlobalText>
                         </GlobalText>
+                      </View>
+                    )}
+                    {!aiQuestionSetStatus?.status && (
+                      <GlobalText style={{ color: '#7C766F' }}>
+                        {t('not_submitted')}
                       </GlobalText>
-                    </View>
-                  )}
-                  {!aiQuestionSetStatus?.status && (
+                    )}
                     <GlobalText style={{ color: '#7C766F' }}>
-                      {t('not_submitted')}
+                      {t('published_on')}
+                      {': '}
+                      {moment(data?.lastPublishedOn).format('DD MMM, YYYY')}
                     </GlobalText>
-                  )}
-                  <GlobalText style={{ color: '#7C766F' }}>
-                    {t('published_on')}
-                    {': '}
-                    {moment(data?.lastPublishedOn).format('DD MMM, YYYY')}
-                  </GlobalText>
-                </>
-              )}
-            </View>
-
-            {isAiAssessment == false && (
-              <View style={{ marginRight: 10, paddingVertical: 10 }}>
-                {data?.lastAttemptedOn ? (
-                  <MaterialIcons name="navigate-next" size={32} color="black" />
-                ) : isSyncPending ? (
-                  <View style={globalStyles.flexrow}>
-                    <Ionicons
-                      name="cloud-offline-outline"
-                      color={'#7C766F'}
-                      size={22}
-                    />
-                    <GlobalText
-                      style={[
-                        globalStyles.subHeading,
-                        { color: '#7C766F', marginLeft: 10 },
-                      ]}
-                    >
-                      {t('sync_pending')}
-                    </GlobalText>
-                  </View>
-                ) : (
-                  <SecondaryButton
-                    onPress={() => {
-                      navigation.navigate('TestDetailView', {
-                        title: name,
-                        data: data,
-                      });
-                    }}
-                    style={[globalStyles.text]}
-                    text={'take_the_test'}
-                  />
+                  </>
                 )}
               </View>
-            )}
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              {isAiAssessment == true ? (
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('ATMAssessment', {
-                      title: name,
-                      data: data,
-                      aiQuestionSetStatus: aiQuestionSetStatus,
-                    });
-                  }}
-                >
-                  <MaterialIcons name="navigate-next" size={32} color="black" />
-                </TouchableOpacity>
-              ) : !data?.lastAttemptedOn && downloadStatus == 'progress' ? (
-                <ActivityIndicator size="large" />
-              ) : !data?.lastAttemptedOn && downloadStatus == 'completed' ? (
-                <TouchableOpacity onPress={() => setModalVisible(true)}>
-                  <Image
-                    style={styles.img}
-                    source={downloadIcon}
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
-              ) : !data?.lastAttemptedOn ? (
-                <TouchableOpacity onPress={handleDownload}>
-                  <Image
-                    style={styles.img}
-                    source={downloadIcon}
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
-              ) : (
-                <></>
+
+              {isAiAssessment == false && (
+                <View style={{ marginRight: 10, paddingVertical: 10 }}>
+                  {data?.lastAttemptedOn ? (
+                    <MaterialIcons
+                      name="navigate-next"
+                      size={32}
+                      color="black"
+                    />
+                  ) : isSyncPending ? (
+                    <View style={globalStyles.flexrow}>
+                      <Ionicons
+                        name="cloud-offline-outline"
+                        color={'#7C766F'}
+                        size={22}
+                      />
+                      <GlobalText
+                        style={[
+                          globalStyles.subHeading,
+                          { color: '#7C766F', marginLeft: 10 },
+                        ]}
+                      >
+                        {t('sync_pending')}
+                      </GlobalText>
+                    </View>
+                  ) : (
+                    <SecondaryButton
+                      onPress={() => {
+                        navigation.navigate('TestDetailView', {
+                          title: name,
+                          data: data,
+                        });
+                      }}
+                      style={[globalStyles.text]}
+                      text={'take_the_test'}
+                    />
+                  )}
+                </View>
               )}
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {isAiAssessment == true ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('ATMAssessment', {
+                        title: name,
+                        data: data,
+                        aiQuestionSetStatus: aiQuestionSetStatus,
+                      });
+                    }}
+                  >
+                    <MaterialIcons
+                      name="navigate-next"
+                      size={32}
+                      color="black"
+                    />
+                  </TouchableOpacity>
+                ) : !data?.lastAttemptedOn && downloadStatus == 'progress' ? (
+                  <ActivityIndicator size="large" />
+                ) : !data?.lastAttemptedOn && downloadStatus == 'completed' ? (
+                  <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <Image
+                      style={styles.img}
+                      source={downloadIcon}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                ) : !data?.lastAttemptedOn ? (
+                  <TouchableOpacity onPress={handleDownload}>
+                    <Image
+                      style={styles.img}
+                      source={downloadIcon}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <></>
+                )}
+              </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      )}
       <NetworkAlert
         onTryAgain={handleDownload}
         isConnected={networkstatus}
@@ -681,6 +743,43 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingVertical: 20,
+  },
+  skeletonCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#F0F0F0',
+  },
+  skeletonTitle: {
+    width: '80%',
+    height: 18,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 4,
+    marginBottom: 8,
+  },
+  skeletonSubtitle: {
+    width: '60%',
+    height: 14,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 4,
+  },
+  skeletonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  skeletonScore: {
+    width: 50,
+    height: 18,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 4,
+  },
+  skeletonDate: {
+    width: 100,
+    height: 14,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 4,
+    marginLeft: 10,
   },
 });
 
