@@ -114,7 +114,7 @@
   "Inprogress": "In Progress",
   "Overallscore": "Overall Score:",
   "completed": "Completed",
-  "take_the_test": "Take the Test",
+  "take_the_test": "Start the Test",
   "not_started": "Not Started",
   "submitted_On": "Submitted On :",
   "reading": "READING",
@@ -423,5 +423,16 @@
   "unemployed_housewife_domestic_work": "Unemployed, Housewife or Domestic Work",
   "DROP_OUT_REASON": "Reason for Drop Out From School",
   "self_employment_own_business_shop": "Self Employment, Own Business or Shop",
-  "student": "Student"
+  "student": "Student",
+
+  "###ATM###": "###ATM###",
+  "online_assessment": "Online Assessment",
+  "offline_assessment": "Offline Assessment",
+  "Total_Assessment": "Total Assessment",
+  "Total_Assessments": "Total Assessments",
+  "no_offline_assessments_available": "No offline assessments available",
+  "no_online_assessments_available": "No online assessments available",
+  "not_submitted": "Not Submitted",
+  "submitted_eval": "Submitted for Evaluation",
+  "published_on": "Published On"
 }

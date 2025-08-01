@@ -83,6 +83,12 @@ const EndUrls = {
   // filterContent: `https://lap.prathamdigital.org/api/framework/v1/read/scp-framework`,
   filterContent: `${API_URL}/interface/v1/api/framework/v1/read`,
   staticFilterContent: `${API_URL}/interface/v1/action/object/category/definition/v1/read?fields=objectMetadata,forms,name,label`,
+
+  //ATM
+  atmAssessment: `${API_URL}/interface/v1/tracking/ai-assessment/search`,
+  atmAssessment_status: `${API_URL}/interface/v1/tracking/assessment/offline-assessment-status`,
+  
+  
 };
 
 export default EndUrls;

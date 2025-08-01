@@ -149,7 +149,7 @@ const SyncCard = ({ doneSync }) => {
             setSyncCall('Assessments');
             //sync data to online
             let isError = false;
-            //console.log('result_sync_offline', result_sync_offline.length);
+            // console.log('result_sync_offline', result_sync_offline.length);
             for (let i = 0; i < result_sync_offline.length; i++) {
               let assessment_result = result_sync_offline[i];
               try {
@@ -169,7 +169,7 @@ const SyncCard = ({ doneSync }) => {
                   create_assessment?.response?.responseCode == 201
                 ) {
                   //success
-                  //console.log('create_assessment', create_assessment);
+                  console.log('create_assessment', create_assessment);
                   //delete from storage
                   await deleteAsessmentOffline(
                     assessment_result?.user_id,
