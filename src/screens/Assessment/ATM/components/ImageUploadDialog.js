@@ -41,19 +41,37 @@ const ImageUploadDialog = ({
   const [snackbarType, setSnackbarType] = useState('success'); // 'success' or 'error'
   const [isInstructionsExpanded, setIsInstructionsExpanded] = useState(true);
   const [instructionsAnimation] = useState(new Animated.Value(1));
+  const [hasAutoCollapsed, setHasAutoCollapsed] = useState(false);
   const { alertConfig, showDeleteAlert, hideAlert } = useCustomAlert();
 
-  // Auto-collapse instructions when images are uploaded
+  // Auto-collapse instructions when images are uploaded (only once)
   useEffect(() => {
-    if (selectedImages.length > 0 && isInstructionsExpanded) {
+    if (
+      selectedImages.length > 0 &&
+      isInstructionsExpanded &&
+      !hasAutoCollapsed
+    ) {
       setIsInstructionsExpanded(false);
+      setHasAutoCollapsed(true);
       Animated.timing(instructionsAnimation, {
         toValue: 0,
         duration: 300,
         useNativeDriver: false,
       }).start();
     }
-  }, [selectedImages.length, isInstructionsExpanded, instructionsAnimation]);
+  }, [
+    selectedImages.length,
+    isInstructionsExpanded,
+    instructionsAnimation,
+    hasAutoCollapsed,
+  ]);
+
+  // Reset auto-collapse flag when all images are removed
+  useEffect(() => {
+    if (selectedImages.length === 0) {
+      setHasAutoCollapsed(false);
+    }
+  }, [selectedImages.length]);
 
   // Function to toggle instructions
   const toggleInstructions = () => {
@@ -207,11 +225,9 @@ const ImageUploadDialog = ({
                   style={styles.content}
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={styles.scrollContent}
-                  removeClippedSubviews={true}
-                  maxToRenderPerBatch={10}
-                  windowSize={10}
-                  initialNumToRender={5}
-                  keyExtractor={(item, index) => `${item.id}-${index}`}
+                  scrollEventThrottle={16}
+                  bounces={true}
+                  nestedScrollEnabled={true}
                 >
                   {/* Action Buttons */}
                   <View style={styles.actionButtons}>
@@ -292,7 +308,7 @@ const ImageUploadDialog = ({
                           style={styles.instructionsIcon}
                         />
                         <GlobalText style={styles.instructionsTitle}>
-                          {t('Upload Instructions')}
+                          {t('Exam Instructions')}
                         </GlobalText>
                       </View>
                       <Animated.View
@@ -320,7 +336,7 @@ const ImageUploadDialog = ({
                         {
                           maxHeight: instructionsAnimation.interpolate({
                             inputRange: [0, 1],
-                            outputRange: [0, 200],
+                            outputRange: [0, 400],
                           }),
                           opacity: instructionsAnimation,
                         },
@@ -330,33 +346,37 @@ const ImageUploadDialog = ({
                         <View style={styles.instructionItem}>
                           <Icon name="check-circle" size={16} color="#4CAF50" />
                           <GlobalText style={styles.instructionText}>
+                            {t('Take a plain white paper')}
+                          </GlobalText>
+                        </View>
+                        <View style={styles.instructionItem}>
+                          <Icon name="check-circle" size={16} color="#4CAF50" />
+                          <GlobalText style={styles.instructionText}>
+                            {t('Use pen with black or blue ink only')}
+                          </GlobalText>
+                        </View>
+                        <View style={styles.instructionItem}>
+                          <Icon name="check-circle" size={16} color="#4CAF50" />
+                          <GlobalText style={styles.instructionText}>
                             {t(
-                              'Ensure your answer sheet is clearly visible and well-lit'
+                              'Write all the answers, including MCQs and fill-in-the-blanks, on the piece of paper'
                             )}
                           </GlobalText>
                         </View>
                         <View style={styles.instructionItem}>
                           <Icon name="check-circle" size={16} color="#4CAF50" />
                           <GlobalText style={styles.instructionText}>
-                            {t('Capture all pages of your answer sheet')}
+                            {t(
+                              'Use the same numbering system as the question paper; take extra care to write the numbers clearly'
+                            )}
                           </GlobalText>
                         </View>
                         <View style={styles.instructionItem}>
                           <Icon name="check-circle" size={16} color="#4CAF50" />
                           <GlobalText style={styles.instructionText}>
-                            {t('Make sure your handwriting is legible')}
-                          </GlobalText>
-                        </View>
-                        <View style={styles.instructionItem}>
-                          <Icon name="check-circle" size={16} color="#4CAF50" />
-                          <GlobalText style={styles.instructionText}>
-                            {t('Avoid shadows or glare on the paper')}
-                          </GlobalText>
-                        </View>
-                        <View style={styles.instructionItem}>
-                          <Icon name="check-circle" size={16} color="#4CAF50" />
-                          <GlobalText style={styles.instructionText}>
-                            {t('Keep the camera steady while taking photos')}
+                            {t(
+                              'Write clearly and make sure the letters do not touch the edges of the page. If a mistake is made, strike it out neatly and write it again'
+                            )}
                           </GlobalText>
                         </View>
                       </View>
@@ -861,7 +881,6 @@ const styles = {
   instructionsContent: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    overflow: 'hidden',
   },
   instructionsList: {
     //

@@ -205,11 +205,7 @@ const TestView = ({ route }) => {
               record_answer = records.find(
                 (record) =>
                   record &&
-                  // record.showFlag === false &&
-                  // record.evaluatedBy === 'AI'
-                  //to do: remove this after testing
-                  record.showFlag === true &&
-                  record.evaluatedBy === 'Manual'
+                  record.evaluatedBy !== 'AI'
               );
             }
 
@@ -320,7 +316,7 @@ const TestView = ({ route }) => {
             {t('loading_assessments') || 'Loading assessments...'}
           </GlobalText> */}
         </View>
-      ) : onlineAssessments.length > 0 ? (
+      ) : onlineAssessments && onlineAssessments.length > 0 ? (
         onlineAssessments.map((item, index) => (
           <SubjectBox
             key={item?.subject}
@@ -383,7 +379,7 @@ const TestView = ({ route }) => {
             {t('loading_assessments') || 'Loading assessments...'}
           </GlobalText> */}
         </View>
-      ) : offlineAssessments.length > 0 ? (
+      ) : offlineAssessments && offlineAssessments.length > 0 ? (
         offlineAssessments.map((item, index) => (
           <SubjectBox
             key={item?.subject}
@@ -437,12 +433,12 @@ const TestView = ({ route }) => {
     {
       title: t('online_assessment'),
       content: <OnlineAssessmentContent />,
-      count: onlineAssessments?.length,
+      count: onlineAssessments?.length || 0,
     },
     {
       title: t('offline_assessment'),
       content: <OfflineAssessmentContent />,
-      count: offlineAssessments?.length,
+      count: offlineAssessments?.length || 0,
     },
   ];
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   View,
@@ -14,6 +14,7 @@ import {
   PermissionsAndroid,
   Platform,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
@@ -44,11 +45,13 @@ import ImageUploadSection from './components/ImageUploadSection';
 import ImageUploadDialog from './components/ImageUploadDialog';
 import PermissionTestComponent from './components/PermissionTestComponent';
 import CustomAlert from './components/CustomAlert';
+import AnswerSheet from './components/AnswerSheet';
 
 // Import utilities
 import ImageUploadHelper from './utils/ImageUploadHelper';
 import ImageAPIService from './utils/ImageAPIService';
 import useCustomAlert from './hooks/useCustomAlert';
+import { hierarchyContent } from '../../../utils/API/ApiCalls';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -58,11 +61,106 @@ const ATMAssessment = ({ route }) => {
   const { t } = useTranslation();
   const { isConnected } = useInternet();
   const { title, data, aiQuestionSetStatus } = route.params;
+
+  const [sectionMapping, setSectionMapping] = useState({});
+  const [assessmentTrackingData, setAssessmentTrackingData] = useState(null);
+  const [questionNumberingMap, setQuestionNumberingMap] = useState({});
+  const [isLoadingAssessmentData, setIsLoadingAssessmentData] = useState(false);
+
+  useEffect(() => {
+    console.log('#########atm aiQuestionSetStatus', aiQuestionSetStatus);
+    const fetchAnswerSheet = async () => {
+      console.log('#########atm fetchAnswerSheet called');
+      console.log(
+        '#########atm aiQuestionSetStatus?.record_answer',
+        aiQuestionSetStatus?.record_answer
+      );
+      console.log(
+        '#########atm aiQuestionSetStatus?.status',
+        aiQuestionSetStatus?.status
+      );
+
+      if (
+        aiQuestionSetStatus?.record_answer &&
+        aiQuestionSetStatus?.status == 'Approved'
+      ) {
+        console.log('#########atm Conditions met, fetching data...');
+        setIsLoadingAssessmentData(true);
+        try {
+          const hierarchyResponse = await hierarchyContent(
+            aiQuestionSetStatus?.do_id
+          );
+          console.log('#########atm hierarchyResponse', hierarchyResponse);
+          if (hierarchyResponse) {
+            const numberingMap = createQuestionNumberingMap(hierarchyResponse);
+            const sectionMap = createSectionMapping(hierarchyResponse);
+            setQuestionNumberingMap(numberingMap);
+            setSectionMapping(sectionMap);
+            console.log(
+              '#########atm Question numbering map created:',
+              numberingMap
+            );
+            console.log('#########atm Section mapping created:', sectionMap);
+          }
+        } catch (error) {
+          console.error('Error fetching hierarchy data:', error);
+        }
+        //setup assessment tracking data
+        const responsedata = await getAssessmentAnswerKey({
+          user_id: aiQuestionSetStatus?.record_answer?.userId,
+          contentId: aiQuestionSetStatus?.do_id,
+        });
+        console.log('#########atm responsedata from API', responsedata);
+        if (responsedata?.length > 0) {
+          try {
+            console.log('#########atm responsedata', responsedata);
+            // Find the latest assessment data by comparing timestamps
+            const latestAssessment = responsedata.reduce((latest, current) => {
+              const currentDate = Math.max(
+                new Date(current.createdOn).getTime(),
+                new Date(current.lastAttemptedOn).getTime(),
+                new Date(current.updatedOn).getTime()
+              );
+
+              const latestDate = Math.max(
+                new Date(latest.createdOn).getTime(),
+                new Date(latest.lastAttemptedOn).getTime(),
+                new Date(latest.updatedOn).getTime()
+              );
+
+              return currentDate > latestDate ? current : latest;
+            }, responsedata[0]);
+
+            console.log('#########atm latestAssessment', latestAssessment);
+            console.log(
+              '#########atm latestAssessment.score_details',
+              latestAssessment?.score_details
+            );
+            setAssessmentTrackingData(latestAssessment);
+          } catch (error) {
+            console.log('#########atm error', error);
+          }
+        } else {
+          console.log('#########atm No responsedata found');
+        }
+        setIsLoadingAssessmentData(false);
+      } else {
+        console.log('#########atm Conditions not met for fetching data');
+        console.log(
+          '#########atm record_answer exists:',
+          !!aiQuestionSetStatus?.record_answer
+        );
+        console.log(
+          '#########atm status is Approved:',
+          aiQuestionSetStatus?.status === 'Approved'
+        );
+        setIsLoadingAssessmentData(false);
+      }
+    };
+    fetchAnswerSheet();
+  }, [aiQuestionSetStatus]);
+
   const { height } = Dimensions.get('window');
-
-  console.log('#########atm aiQuestionSetStatus', aiQuestionSetStatus);
-
-  const [aiQuestionSetNew, setAiQuestionSetNew] = useState(aiQuestionSetStatus);
 
   const [loading, setLoading] = useState(true);
   const [networkstatus, setNetworkstatus] = useState(true);
@@ -443,13 +541,71 @@ const ATMAssessment = ({ route }) => {
     }
   };
 
+  //answer sheet view
+
+  const createQuestionNumberingMap = (hierarchyData) => {
+    const numberingMap = {};
+
+    if (!hierarchyData?.result?.questionset?.children) {
+      return numberingMap;
+    }
+
+    const sections = hierarchyData.result.questionset.children;
+
+    sections.forEach((section, sectionIndex) => {
+      const sectionNumber = sectionIndex + 1;
+
+      if (section.children) {
+        section.children.forEach((question) => {
+          numberingMap[
+            question.identifier
+          ] = `Q${sectionNumber}.${question.index}`;
+        });
+      }
+    });
+
+    return numberingMap;
+  };
+
+  // New function to create section mapping
+  const createSectionMapping = (hierarchyData) => {
+    const sectionMap = {};
+
+    if (!hierarchyData?.result?.questionset?.children) {
+      return sectionMap;
+    }
+
+    const sections = hierarchyData.result.questionset.children;
+
+    sections.forEach((section) => {
+      if (section.children) {
+        section.children.forEach((question) => {
+          sectionMap[question.identifier] = section.name;
+        });
+      }
+    });
+
+    return sectionMap;
+  };
+
+  // Debug logging for component state
+  console.log('#########atm Component render state:', {
+    aiQuestionSetStatus: aiQuestionSetStatus,
+    assessmentTrackingData: !!assessmentTrackingData,
+    assessmentTrackingDataLength: assessmentTrackingData?.score_details?.length,
+    questionNumberingMap: !!questionNumberingMap,
+    sectionMapping: !!sectionMapping,
+    status: aiQuestionSetStatus?.status,
+    record_answer: !!aiQuestionSetStatus?.record_answer,
+  });
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <SecondaryHeader logo />
       {loading ? (
         <ActiveLoading />
       ) : (
-        <SafeAreaView style={globalStyles.container}>
+        <SafeAreaView style={[globalStyles.container, { flex: 1 }]}>
           <View style={globalStyles.flexrow}>
             <TouchableOpacity
               onPress={() => {
@@ -603,7 +759,7 @@ const ATMAssessment = ({ route }) => {
           )}
 
           {aiQuestionSetStatus?.status === 'Approved' && (
-            <View style={styles.statusContainer}>
+            <View style={[styles.statusContainer, { flex: 1 }]}>
               <View style={styles.statusRow}>
                 <Icon name="check-circle" size={18} color="#1F1B13" />
                 <GlobalText
@@ -626,162 +782,58 @@ const ATMAssessment = ({ route }) => {
               </View>
 
               {/* Answer Sheet Component - Direct Display */}
-              {aiQuestionSetStatus?.record_answer && (
-                <View style={styles.answerSheetContainer}>
-                  <View style={styles.answerSheetHeader}>
-                    <GlobalText style={styles.answerSheetTitle}>
-                      {t('Answer Sheet')}
-                    </GlobalText>
-                    <View style={styles.answerSheetScore}>
-                      <GlobalText style={styles.scoreText}>
-                        Score:{' '}
-                        {aiQuestionSetStatus.record_answer.totalScore || 0}/
-                        {aiQuestionSetStatus.record_answer.totalMaxScore || 0}
-                      </GlobalText>
-                      <GlobalText style={styles.percentageText}>
-                        {aiQuestionSetStatus.record_answer.totalScore &&
-                        aiQuestionSetStatus.record_answer.totalMaxScore
-                          ? Math.round(
-                              (aiQuestionSetStatus.record_answer.totalScore /
-                                aiQuestionSetStatus.record_answer
-                                  .totalMaxScore) *
-                                100
-                            )
-                          : 0}
-                        %
-                      </GlobalText>
-                    </View>
-                  </View>
-
-                  <ScrollView
-                    style={styles.answerSheetContent}
-                    showsVerticalScrollIndicator={false}
+              {assessmentTrackingData ? (
+                <View
+                  style={{
+                    flex: 1,
+                    marginTop: 10,
+                  }}
+                >
+                  <AnswerSheet
+                    assessmentTrackingData={assessmentTrackingData}
+                    onApprove={() => {
+                      console.log('#########atm onApprove');
+                    }}
+                    onScoreEdit={() => {
+                      console.log('#########atm onScoreEdit');
+                    }}
+                    isApproved={aiQuestionSetStatus?.status === 'Approved'}
+                    questionNumberingMap={questionNumberingMap}
+                    sectionMapping={sectionMapping}
+                  />
+                </View>
+              ) : isLoadingAssessmentData ? (
+                <View
+                  style={{
+                    padding: 20,
+                    alignItems: 'center',
+                    flex: 1,
+                    justifyContent: 'center',
+                  }}
+                >
+                  <ActivityIndicator size="large" color="#4D4639" />
+                  <Text style={{ color: '#666', fontSize: 14, marginTop: 10 }}>
+                    Loading assessment data...
+                  </Text>
+                </View>
+              ) : (
+                <View
+                  style={{
+                    padding: 20,
+                    alignItems: 'center',
+                    flex: 1,
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text
+                    style={{ color: '#666', fontSize: 16, fontWeight: 'bold' }}
                   >
-                    {aiQuestionSetStatus.record_answer.assessmentSummary?.map(
-                      (section, sectionIndex) => (
-                        <View
-                          key={sectionIndex}
-                          style={styles.sectionContainer}
-                        >
-                          <GlobalText style={styles.sectionTitle}>
-                            {section.sectionName}
-                          </GlobalText>
-
-                          {section.data?.map((question, questionIndex) => (
-                            <View
-                              key={questionIndex}
-                              style={styles.questionContainer}
-                            >
-                              <View style={styles.questionHeader}>
-                                <GlobalText style={styles.questionNumber}>
-                                  Q{question.index || questionIndex + 1}
-                                </GlobalText>
-                                <View style={styles.questionScore}>
-                                  <GlobalText style={styles.scoreLabel}>
-                                    Score: {question.score}/{question.maxscore}
-                                  </GlobalText>
-                                  <View
-                                    style={[
-                                      styles.passIndicator,
-                                      {
-                                        backgroundColor:
-                                          question.pass === 'Yes'
-                                            ? '#1A881F'
-                                            : '#FF4444',
-                                      },
-                                    ]}
-                                  >
-                                    <GlobalText style={styles.passText}>
-                                      {question.pass === 'Yes'
-                                        ? 'Pass'
-                                        : 'Fail'}
-                                    </GlobalText>
-                                  </View>
-                                </View>
-                              </View>
-
-                              <GlobalText style={styles.questionTitle}>
-                                {question.item?.title?.replace(
-                                  /<[^>]*>/g,
-                                  ''
-                                ) || 'Question'}
-                              </GlobalText>
-
-                              {/* MCQ Options */}
-                              {question.item?.type === 'MCQ' &&
-                                question.item?.params && (
-                                  <View style={styles.optionsContainer}>
-                                    {question.item.params.map(
-                                      (option, optionIndex) => (
-                                        <View
-                                          key={optionIndex}
-                                          style={styles.optionContainer}
-                                        >
-                                          <View
-                                            style={[
-                                              styles.optionCircle,
-                                              {
-                                                backgroundColor:
-                                                  question.resvalues?.[0]
-                                                    ?.value === option.value
-                                                    ? question.pass === 'Yes'
-                                                      ? '#1A881F'
-                                                      : '#FF4444'
-                                                    : '#E5E5E5',
-                                              },
-                                            ]}
-                                          >
-                                            <GlobalText
-                                              style={styles.optionText}
-                                            >
-                                              {String.fromCharCode(
-                                                65 + optionIndex
-                                              )}
-                                            </GlobalText>
-                                          </View>
-                                          <GlobalText
-                                            style={styles.optionLabel}
-                                          >
-                                            {option.value?.body?.replace(
-                                              /<[^>]*>/g,
-                                              ''
-                                            ) || option.value}
-                                          </GlobalText>
-                                        </View>
-                                      )
-                                    )}
-                                  </View>
-                                )}
-
-                              {/* User Answer */}
-                              <View style={styles.answerContainer}>
-                                <GlobalText style={styles.answerLabel}>
-                                  Your Answer:
-                                </GlobalText>
-                                <GlobalText style={styles.userAnswer}>
-                                  {question.resvalues?.[0]?.value ||
-                                    question.resvalues?.[0]?.label ||
-                                    'No answer provided'}
-                                </GlobalText>
-                              </View>
-
-                              {/* AI Suggestion */}
-                              {question.resvalues?.[0]?.AI_suggestion && (
-                                <View style={styles.aiSuggestionContainer}>
-                                  <GlobalText style={styles.aiSuggestionLabel}>
-                                    AI Suggestion:
-                                  </GlobalText>
-                                  <GlobalText style={styles.aiSuggestionText}>
-                                    {question.resvalues[0].AI_suggestion}
-                                  </GlobalText>
-                                </View>
-                              )}
-                            </View>
-                          ))}
-                        </View>
-                      )
-                    )}
-                  </ScrollView>
+                    No assessment data available yet
+                  </Text>
+                  <Text style={{ color: '#999', fontSize: 12, marginTop: 5 }}>
+                    assessmentTrackingData:{' '}
+                    {assessmentTrackingData ? 'EXISTS' : 'NULL'}
+                  </Text>
                 </View>
               )}
 
