@@ -562,6 +562,7 @@ const StandAlonePlayer = ({ route }) => {
           contentPlayerConfig.data = contentObj?.body;
           contentPlayerConfig.context = {
             host: `file://${content_file}/assets`,
+            contentId: content_do_id,
           };
           //console.log('contentPlayerConfig set', contentPlayerConfig);
           set_is_valid_file(true);
