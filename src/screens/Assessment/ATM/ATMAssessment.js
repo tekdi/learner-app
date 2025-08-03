@@ -684,7 +684,7 @@ const ATMAssessment = ({ route }) => {
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.successContentContainer}
             >
-              {/* Uploaded Images Info - Only show if record_file exists */}
+              {/* Uploaded Images Info - Only show if fileUrls exists */}
               {aiQuestionSetStatus?.fileUrls && (
                 <TouchableOpacity
                   style={styles.uploadedInfoContainer}
@@ -717,7 +717,7 @@ const ATMAssessment = ({ route }) => {
                   <View style={styles.uploadedInfoContent}>
                     <GlobalText style={styles.uploadedCountText}>
                       {Array.isArray(aiQuestionSetStatus.fileUrls)
-                        ? `${aiQuestionSetStatus.fileUrls.length} images uploaded`
+                        ? `${aiQuestionSetStatus.fileUrls.length} ${t('Images Uploaded')}`
                         : '1 image uploaded'}
                     </GlobalText>
                     <GlobalText style={styles.uploadedDateText}>
@@ -781,6 +781,56 @@ const ATMAssessment = ({ route }) => {
                 </GlobalText>
               </View>
 
+              {/* Uploaded Images Info */}
+              {aiQuestionSetStatus?.fileUrls && (
+                <TouchableOpacity
+                  style={styles.uploadedInfoContainer}
+                  onPress={() => {
+                    // Navigate to uploaded images view
+                    const uploadedImages = Array.isArray(
+                      aiQuestionSetStatus.fileUrls
+                    )
+                      ? aiQuestionSetStatus.fileUrls.map(
+                          (url, index) => ({
+                            id: index,
+                            url: url,
+                            uri: url,
+                            fileName: `Image_${index + 1}.jpg`,
+                          })
+                        )
+                      : [
+                          {
+                            id: 0,
+                            url: aiQuestionSetStatus.fileUrls,
+                            uri: aiQuestionSetStatus.fileUrls,
+                            fileName: 'Image_1.jpg',
+                          },
+                        ];
+
+                    navigation.navigate('UploadedImagesScreen', {
+                      images: uploadedImages,
+                      title: title,
+                    });
+                  }}
+                >
+                  <View style={styles.uploadedInfoContent}>
+                    <GlobalText style={styles.uploadedCountText}>
+                      {Array.isArray(aiQuestionSetStatus.fileUrls)
+                        ? `${aiQuestionSetStatus.fileUrls.length} ${t('Images Uploaded')}`
+                        : '1 image uploaded'}
+                    </GlobalText>
+                    <GlobalText style={styles.uploadedDateText}>
+                      {aiQuestionSetStatus?.createdAt
+                        ? moment(aiQuestionSetStatus.createdAt).format(
+                            'DD MMM, YYYY'
+                          )
+                        : moment().format('DD MMM, YYYY')}
+                    </GlobalText>
+                  </View>
+                  <Icon name="chevron-right" size={18} color="#1F1B13" />
+                </TouchableOpacity>
+              )}
+
               {/* Answer Sheet Component - Direct Display */}
               {assessmentTrackingData ? (
                 <View
@@ -837,55 +887,6 @@ const ATMAssessment = ({ route }) => {
                 </View>
               )}
 
-              {/* Uploaded Images Info */}
-              {aiQuestionSetStatus?.record_file?.fileUrls && (
-                <TouchableOpacity
-                  style={styles.uploadedInfoContainer}
-                  onPress={() => {
-                    // Navigate to uploaded images view
-                    const uploadedImages = Array.isArray(
-                      aiQuestionSetStatus.record_file.fileUrls
-                    )
-                      ? aiQuestionSetStatus.record_file.fileUrls.map(
-                          (url, index) => ({
-                            id: index,
-                            url: url,
-                            uri: url,
-                            fileName: `Image_${index + 1}.jpg`,
-                          })
-                        )
-                      : [
-                          {
-                            id: 0,
-                            url: aiQuestionSetStatus.record_file.fileUrls,
-                            uri: aiQuestionSetStatus.record_file.fileUrls,
-                            fileName: 'Image_1.jpg',
-                          },
-                        ];
-
-                    navigation.navigate('UploadedImagesScreen', {
-                      images: uploadedImages,
-                      title: title,
-                    });
-                  }}
-                >
-                  <View style={styles.uploadedInfoContent}>
-                    <GlobalText style={styles.uploadedCountText}>
-                      {Array.isArray(aiQuestionSetStatus.record_file.fileUrls)
-                        ? `${aiQuestionSetStatus.record_file.fileUrls.length} images uploaded`
-                        : '1 image uploaded'}
-                    </GlobalText>
-                    <GlobalText style={styles.uploadedDateText}>
-                      {aiQuestionSetStatus?.createdAt
-                        ? moment(aiQuestionSetStatus.createdAt).format(
-                            'DD MMM, YYYY'
-                          )
-                        : moment().format('DD MMM, YYYY')}
-                    </GlobalText>
-                  </View>
-                  <Icon name="chevron-right" size={18} color="#1F1B13" />
-                </TouchableOpacity>
-              )}
             </View>
           )}
 

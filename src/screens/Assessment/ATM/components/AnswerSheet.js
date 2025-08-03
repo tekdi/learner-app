@@ -455,10 +455,10 @@ const AnswerSheet = ({
       contentContainerStyle={{ flexGrow: 1 }}
     >
       {/* Score Summary */}
-      <ScoreSummary
+      {/* <ScoreSummary
         totalScore={assessmentTrackingData.totalScore}
         totalMaxScore={assessmentTrackingData.totalMaxScore}
-      />
+      /> */}
 
       {/* Approve Button */}
       <ApproveButton onApprove={onApprove} isApproved={isApproved} />
