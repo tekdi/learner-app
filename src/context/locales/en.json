@@ -528,5 +528,21 @@
   "delete": "Delete",
   "success": "Success",
   "error": "Error",
-  "warning": "Warning"
+  "warning": "Warning",
+
+  "###DOWNLOAD###": "###DOWNLOAD###",
+  "download": "Download",
+  "downloading": "Downloading",
+  "download_complete": "Download Complete",
+  "download_failed": "Download Failed",
+  "download_starting": "Starting download... Please wait.",
+  "download_success_message": "Image saved to Downloads/LearnerApp",
+  "download_failed_message": "Failed to download image. Please check your internet connection and try again.",
+  "no_image_url": "No image URL available for download.",
+  "permission_unavailable": "Permission Unavailable",
+  "permission_unavailable_message": "Storage permission is not available on this device.",
+  "permission_blocked": "Permission Blocked",
+  "permission_blocked_message": "Storage permission is blocked. Please enable it in Settings > Apps > Your App > Permissions.",
+  "cancel": "Cancel",
+  "open_settings": "Open Settings"
 }

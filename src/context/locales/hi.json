@@ -526,5 +526,21 @@
   "success": "सफलता",
   "error": "त्रुटि",
   "warning": "चेतावनी",
-  "delete": "हटाएं"
+  "delete": "हटाएं",
+
+  "###DOWNLOAD###": "###DOWNLOAD###",
+  "download": "डाउनलोड",
+  "downloading": "डाउनलोड हो रहा है",
+  "download_complete": "डाउनलोड पूरा",
+  "download_failed": "डाउनलोड विफल",
+  "download_starting": "डाउनलोड शुरू हो रहा है... कृपया प्रतीक्षा करें।",
+  "download_success_message": "छवि Downloads/LearnerApp में सहेजी गई",
+  "download_failed_message": "छवि डाउनलोड करने में विफल। कृपया अपना इंटरनेट कनेक्शन जांचें और फिर से प्रयास करें।",
+  "no_image_url": "डाउनलोड के लिए कोई छवि URL उपलब्ध नहीं।",
+  "permission_unavailable": "अनुमति उपलब्ध नहीं",
+  "permission_unavailable_message": "इस डिवाइस पर स्टोरेज अनुमति उपलब्ध नहीं है।",
+  "permission_blocked": "अनुमति अवरुद्ध",
+  "permission_blocked_message": "स्टोरेज अनुमति अवरुद्ध है। कृपया इसे सेटिंग्स > ऐप्स > आपका ऐप > अनुमतियों में सक्षम करें।",
+  "cancel": "रद्द करें",
+  "open_settings": "सेटिंग्स खोलें"
 }

@@ -8,11 +8,15 @@ import {
   Dimensions,
   Linking,
   Platform,
+  Alert,
+  PermissionsAndroid,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../../../context/LanguageContext';
 import GlobalText from '@components/GlobalText/GlobalText';
+import RNFS from 'react-native-fs';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,6 +26,7 @@ const ImageZoomDialog = ({ route }) => {
   const { image, images, currentIndex } = route.params;
   const [currentImageIndex, setCurrentImageIndex] = useState(currentIndex || 0);
   const [modalVisible, setModalVisible] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleClose = () => {
     setModalVisible(false);
@@ -31,20 +36,169 @@ const ImageZoomDialog = ({ route }) => {
     }, 100);
   };
 
-  const handleDownload = async () => {
+  const checkAndRequestPermissions = async () => {
     try {
-      const currentImage = images[currentImageIndex];
-      const imageUrl = currentImage.url || currentImage.uri;
+      let permission;
 
-      if (Platform.OS === 'ios') {
-        // For iOS, we can use Linking to open the image in browser for download
-        await Linking.openURL(imageUrl);
+      if (Platform.OS === 'android') {
+        if (Platform.Version >= 33) {
+          // Android 13+ (API 33+)
+          permission = PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
+        } else {
+          // Android 12 and below
+          permission = PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
+        }
       } else {
-        // For Android, we can also use Linking
-        await Linking.openURL(imageUrl);
+        // iOS doesn't need special permissions for downloads
+        return true;
+      }
+
+      const result = await check(permission);
+
+      switch (result) {
+        case RESULTS.UNAVAILABLE:
+          Alert.alert(
+            t('permission_unavailable'),
+            t('permission_unavailable_message')
+          );
+          return false;
+        case RESULTS.DENIED:
+          const permissionResult = await request(permission);
+          return permissionResult === RESULTS.GRANTED;
+        case RESULTS.LIMITED:
+          return true;
+        case RESULTS.GRANTED:
+          return true;
+        case RESULTS.BLOCKED:
+          Alert.alert(
+            t('permission_blocked'),
+            t('permission_blocked_message'),
+            [
+              { text: t('cancel'), style: 'cancel' },
+              {
+                text: t('open_settings'),
+                onPress: () => Linking.openSettings(),
+              },
+            ]
+          );
+          return false;
+        default:
+          return false;
+      }
+    } catch (error) {
+      console.log('Permission check error:', error);
+      return false;
+    }
+  };
+
+  const getDownloadPath = () => {
+    if (Platform.OS === 'android') {
+      // Use Pictures directory for better organization
+      return `${RNFS.DownloadDirectoryPath}/LearnerApp`;
+    } else {
+      // iOS - use Documents directory
+      return `${RNFS.DocumentDirectoryPath}/LearnerApp`;
+    }
+  };
+
+  const downloadImage = async (imageUrl, fileName) => {
+    try {
+      const downloadPath = getDownloadPath();
+
+      // Create directory if it doesn't exist
+      const dirExists = await RNFS.exists(downloadPath);
+      if (!dirExists) {
+        await RNFS.mkdir(downloadPath);
+      }
+
+      const filePath = `${downloadPath}/${fileName}`;
+
+      // Check if file already exists
+      const fileExists = await RNFS.exists(filePath);
+      if (fileExists) {
+        // Generate unique filename
+        const timestamp = new Date().getTime();
+        const nameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
+        const ext = fileName.substring(fileName.lastIndexOf('.'));
+        fileName = `${nameWithoutExt}_${timestamp}${ext}`;
+      }
+
+      const finalFilePath = `${downloadPath}/${fileName}`;
+
+      const downloadResult = await RNFS.downloadFile({
+        fromUrl: imageUrl,
+        toFile: finalFilePath,
+        background: true,
+        discretionary: true,
+        progress: (res) => {
+          const progressPercent = (res.bytesWritten / res.contentLength) * 100;
+          console.log(`Downloaded: ${progressPercent}%`);
+        },
+      }).promise;
+
+      if (downloadResult.statusCode === 200) {
+        // For Android, the file should be visible in gallery automatically
+        // since we're saving to the Downloads directory
+
+        Alert.alert(t('download_complete'), t('download_success_message'), [
+          { text: t('OK') },
+        ]);
+        return true;
+      } else {
+        throw new Error(
+          `Download failed with status: ${downloadResult.statusCode}`
+        );
       }
     } catch (error) {
       console.log('Download error:', error);
+      throw error;
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      setIsDownloading(true);
+
+      const currentImage = images[currentImageIndex];
+      const imageUrl = currentImage.url || currentImage.uri;
+
+      if (!imageUrl) {
+        Alert.alert(t('error'), t('no_image_url'));
+        return;
+      }
+
+      // Check permissions first
+      const hasPermission = await checkAndRequestPermissions();
+      if (!hasPermission) {
+        return;
+      }
+
+      // Show download starting message
+      Alert.alert(t('downloading'), t('download_starting'));
+
+      // Generate filename from URL or use default
+      let fileName = 'image.jpg';
+      try {
+        const urlParts = imageUrl.split('/');
+        const lastPart = urlParts[urlParts.length - 1];
+        if (lastPart && lastPart.includes('.')) {
+          fileName = lastPart;
+        } else {
+          // If no extension in URL, try to get it from content-type or use default
+          fileName = `pratham_image_${Date.now()}.jpg`;
+        }
+      } catch (error) {
+        fileName = `pratham_image_${Date.now()}.jpg`;
+      }
+
+      await downloadImage(imageUrl, fileName);
+    } catch (error) {
+      console.log('Download error:', error);
+      Alert.alert(t('download_failed'), t('download_failed_message'), [
+        { text: t('OK') },
+      ]);
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -74,9 +228,17 @@ const ImageZoomDialog = ({ route }) => {
         <View style={styles.header}>
           <TouchableOpacity
             onPress={handleDownload}
-            style={styles.headerButton}
+            style={[
+              styles.headerButton,
+              isDownloading && styles.headerButtonDisabled,
+            ]}
+            disabled={isDownloading}
           >
-            <Icon name="download" size={24} color="#4D4639" />
+            <Icon
+              name={isDownloading ? 'sync' : 'download'}
+              size={24}
+              color={isDownloading ? '#CCCCCC' : '#4D4639'}
+            />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleClose} style={styles.headerButton}>
             <Icon name="x" size={24} color="#4D4639" />
@@ -159,6 +321,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  headerButtonDisabled: {
+    backgroundColor: '#F0F0F0',
   },
   imageContainer: {
     flex: 1,

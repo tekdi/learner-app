@@ -526,5 +526,21 @@
   "delete": "हटवा",
   "success": "यश",
   "error": "त्रुटी",
-  "warning": "चेतावणी"
+  "warning": "चेतावणी",
+
+  "###DOWNLOAD###": "###DOWNLOAD###",
+  "download": "डाउनलोड",
+  "downloading": "डाउनलोड होत आहे",
+  "download_complete": "डाउनलोड पूर्ण",
+  "download_failed": "डाउनलोड अयशस्वी",
+  "download_starting": "डाउनलोड सुरू होत आहे... कृपया प्रतीक्षा करा।",
+  "download_success_message": "छवी Downloads/LearnerApp मध्ये जतन केली",
+  "download_failed_message": "छवी डाउनलोड करण्यात अयशस्वी. कृपया तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा।",
+  "no_image_url": "डाउनलोडसाठी कोणतीही छवी URL उपलब्ध नाही।",
+  "permission_unavailable": "परवानगी उपलब्ध नाही",
+  "permission_unavailable_message": "या डिव्हाइसवर स्टोरेज परवानगी उपलब्ध नाही।",
+  "permission_blocked": "परवानगी अवरुद्ध",
+  "permission_blocked_message": "स्टोरेज परवानगी अवरुद्ध आहे. कृपया ते सेटिंग्ज > ॲप्स > तुमचे ॲप > परवानगी मध्ये सक्षम करा।",
+  "cancel": "रद्द करा",
+  "open_settings": "सेटिंग्ज उघडा"
 }
