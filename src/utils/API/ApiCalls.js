@@ -288,7 +288,6 @@ export const assessmentTracking = async (
     });
 
     let api_response = null;
-
     let config = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -296,6 +295,16 @@ export const assessmentTracking = async (
       headers: headers || {},
       data: data,
     };
+
+    // Generate cURL command
+    // const curlCommand = `curl -X POST "${url}" \\
+    //   -H "Content-Type: application/json" \\
+    //   ${Object.entries(headers)
+    //     .map(([key, value]) => `-H "${key}: ${value}" \\`)
+    //     .join('\n')}
+    //   --data '${data}'`;
+
+    // console.log('Generated cURL Command:', curlCommand);
 
     await axios
       .request(config)
@@ -606,6 +615,111 @@ export const CourseInProgress = async () => {
       --data '${data}'`;
 
     // console.log('Generated cURL Command:', curlCommand);
+
+    try {
+      const response = await axios.request(config);
+      api_response = response.data;
+      if (api_response) {
+        await storeApiResponse(userId, url, 'post', data, api_response);
+        return api_response;
+      } else {
+        const result_offline = await getApiResponse(userId, url, 'post', data);
+        return result_offline;
+      }
+    } catch (error) {
+      console.log('No internet available, retrieving offline data...');
+      const result_offline = await getApiResponse(userId, url, 'post', data);
+      return result_offline;
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Content Status Failed');
+  }
+};
+
+//ATM
+export const AIAssessmentSearch = async (do_id) => {
+  // console.log('userId===>', userId);
+  const userId = await getDataFromStorage('userId');
+  try {
+    const url = EndUrls.atmAssessment;
+
+    let data = JSON.stringify({
+      question_set_id: do_id,
+    });
+
+    let api_response = null;
+
+    const headers = await getHeaders();
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url,
+      headers: headers || {},
+      data: data,
+    };
+
+    // Generate the cURL command
+    const curlCommand = `curl -X POST "${url}" \\
+      -H "Content-Type: application/json" \\
+      ${Object.entries(headers || {})
+        .map(([key, value]) => `-H "${key}: ${value}" \\`)
+        .join('\n')} 
+      --data '${data}'`;
+
+    // console.log('Generated cURL Command:', curlCommand);
+
+    try {
+      const response = await axios.request(config);
+      api_response = response.data;
+      if (api_response) {
+        await storeApiResponse(userId, url, 'post', data, api_response);
+        return api_response;
+      } else {
+        const result_offline = await getApiResponse(userId, url, 'post', data);
+        return result_offline;
+      }
+    } catch (error) {
+      console.log('No internet available, retrieving offline data...');
+      const result_offline = await getApiResponse(userId, url, 'post', data);
+      return result_offline;
+    }
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Content Status Failed');
+  }
+};
+export const AIAssessmentStatus = async (do_id) => {
+  // console.log('userId===>', userId);
+  const userId = await getDataFromStorage('userId');
+  try {
+    const url = EndUrls.atmAssessment_status;
+
+    let data = JSON.stringify({
+      userIds: [userId],
+      questionSetId: do_id,
+    });
+
+    let api_response = null;
+
+    const headers = await getHeaders();
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url,
+      headers: headers || {},
+      data: data,
+    };
+
+    // Generate the cURL command
+    const curlCommand = `curl -X POST "${url}" \\
+      -H "Content-Type: application/json" \\
+      ${Object.entries(headers || {})
+        .map(([key, value]) => `-H "${key}: ${value}" \\`)
+        .join('\n')} 
+      --data '${data}'`;
+
+    // console.log('Generated cURL AIAssessmentStatus:', curlCommand);
 
     try {
       const response = await axios.request(config);

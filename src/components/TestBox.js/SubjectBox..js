@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
+  Animated,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -23,6 +24,7 @@ import {
   getDataFromStorage,
 } from '../../utils/JsHelper/Helper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import moment from 'moment';
 import globalStyles from '../../utils/Helper/Style';
 import download from '../../assets/images/png/download.png';
@@ -43,7 +45,92 @@ import PrimaryButton from '../PrimaryButton/PrimaryButton';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 
-const SubjectBox = ({ name, disabled, data }) => {
+// Loading Card Component
+const LoadingCard = () => {
+  const [animation] = useState(new Animated.Value(0));
+
+  useEffect(() => {
+    const startAnimation = () => {
+      Animated.sequence([
+        Animated.timing(animation, {
+          toValue: 1,
+          duration: 1200,
+          useNativeDriver: false,
+        }),
+        Animated.timing(animation, {
+          toValue: 0,
+          duration: 1200,
+          useNativeDriver: false,
+        }),
+      ]).start(() => startAnimation());
+    };
+
+    startAnimation();
+  }, [animation]);
+
+  const opacity = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.4, 0.8],
+  });
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.row}>
+        {/* Left Container Skeleton */}
+        <View style={styles.leftContainer}>
+          <Animated.View style={[styles.skeletonCircle, { opacity }]} />
+        </View>
+
+        {/* Content Section Skeleton */}
+        <View style={styles.contentSection}>
+          <Animated.View style={[styles.skeletonTitle, { opacity }]} />
+          <View style={styles.skeletonRow}>
+            <Animated.View style={[styles.skeletonScore, { opacity }]} />
+            <Animated.View style={[styles.skeletonDate, { opacity }]} />
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const IconConditions = ({ status, styles }) => {
+  let iconName;
+  let IconComponent;
+
+  switch (status) {
+    case 'Completed':
+      iconName = 'check-circle';
+      IconComponent = Icon;
+      break;
+    case 'In_Progress':
+      iconName = 'ellipsis-h';
+      IconComponent = Icon;
+      break;
+    default:
+      iconName = 'dash';
+      IconComponent = Octicons;
+  }
+
+  return (
+    <View style={styles.leftContainer}>
+      <IconComponent name={iconName} size={24} color="black" />
+    </View>
+  );
+};
+
+const SubjectBox = ({
+  name,
+  disabled,
+  data,
+  isAiAssessment,
+  aiQuestionSetStatus,
+}) => {
+  // console.log('#### isAiAssessment', isAiAssessment);
+  // console.log('#### isAiAssessment', data?.identifier);
+  console.log('#### aiQuestionSetStatus', JSON.stringify(aiQuestionSetStatus));
+  // console.log('#### do id data', JSON.stringify(data));
+
   const { t } = useTranslation();
   const navigation = useNavigation();
   const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
@@ -83,10 +170,18 @@ const SubjectBox = ({ name, disabled, data }) => {
   };
 
   const handlePress = () => {
-    navigation.navigate('AnswerKeyView', {
-      title: name,
-      contentId: data?.IL_UNIQUE_ID,
-    });
+    if (!disabled && !isAiAssessment) {
+      navigation.navigate('AnswerKeyView', {
+        title: name,
+        contentId: data?.IL_UNIQUE_ID,
+      });
+    } else if (isAiAssessment) {
+      navigation.navigate('ATMAssessment', {
+        title: name,
+        data: data,
+        aiQuestionSetStatus: aiQuestionSetStatus,
+      });
+    }
   };
   const handleDownload = async () => {
     setNetworkstatus(true);
@@ -297,115 +392,214 @@ const SubjectBox = ({ name, disabled, data }) => {
 
   return (
     <SafeAreaView>
-      <TouchableOpacity disabled={disabled} onPress={handlePress}>
-        <View style={styles.card}>
-          <View style={styles.rightContainer}>
-            <GlobalText style={globalStyles.subHeading}>
-              {t(capitalizeFirstLetter(name))}
-            </GlobalText>
-            {disabled && !isSyncPending ? (
-              <GlobalText
-                style={[globalStyles.subHeading, { color: '#7C766F' }]}
-              >
-                {t('not_started')}
-              </GlobalText>
-            ) : !isSyncPending ? (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <GlobalText style={{ color: '#000' }}>
-                  {data?.totalScore}/{data?.totalMaxScore}
-                </GlobalText>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginLeft: 20,
-                  }}
-                >
-                  <Icon name="circle" size={8} color="#7C766F" />
-                  <GlobalText
-                    style={[
-                      globalStyles.text,
-                      { color: '#7C766F', marginLeft: 5 },
-                    ]}
-                  >
-                    {moment(data?.createdOn).format('DD MMM, YYYY')}
-                  </GlobalText>
-                  <View style={[globalStyles.flexrow, { marginLeft: 15 }]}>
-                    <Ionicons
-                      name="cloud-outline"
-                      color={'#7C766F'}
-                      size={15}
-                    />
-                    <GlobalText
-                      style={[
-                        globalStyles.text,
-                        { color: '#7C766F', marginLeft: 5 },
-                      ]}
-                    >
-                      {moment(data?.lastAttemptedOn).format('DD MMM, YYYY')}
-                    </GlobalText>
-                  </View>
-                </View>
-              </View>
-            ) : (
-              <></>
-            )}
-          </View>
-          <View style={{ marginRight: 10, paddingVertical: 10 }}>
-            {data?.lastAttemptedOn ? (
-              <MaterialIcons name="navigate-next" size={32} color="black" />
-            ) : isSyncPending ? (
-              <View style={globalStyles.flexrow}>
-                <Ionicons
-                  name="cloud-offline-outline"
-                  color={'#7C766F'}
-                  size={22}
+      {aiQuestionSetStatus == null && isAiAssessment == true ? (
+        <LoadingCard />
+      ) : (
+        <TouchableOpacity onPress={handlePress}>
+          <View style={styles.card}>
+            <View style={styles.row}>
+              {isAiAssessment == true && (
+                <IconConditions
+                  status={
+                    aiQuestionSetStatus?.status == 'AI Pending' ||
+                    aiQuestionSetStatus?.status == 'AI Processed'
+                      ? 'In_Progress'
+                      : aiQuestionSetStatus?.status == 'Approved'
+                      ? 'Completed'
+                      : 'Not_Started'
+                  }
+                  styles={styles}
                 />
-                <GlobalText
-                  style={[
-                    globalStyles.subHeading,
-                    { color: '#7C766F', marginLeft: 10 },
-                  ]}
-                >
-                  {t('sync_pending')}
+              )}
+              <View style={styles.contentSection}>
+                <GlobalText style={globalStyles.subHeading}>
+                  {t(capitalizeFirstLetter(name))}
                 </GlobalText>
+                {isAiAssessment == false && (
+                  <>
+                    {disabled && !isSyncPending ? (
+                      <GlobalText style={{ color: '#7C766F' }}>
+                        {t('not_submitted')}
+                      </GlobalText>
+                    ) : !isSyncPending ? (
+                      <View
+                        style={{ flexDirection: 'row', alignItems: 'center' }}
+                      >
+                        <GlobalText style={{ color: '#000' }}>
+                          {data?.totalScore}/{data?.totalMaxScore}
+                        </GlobalText>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginLeft: 20,
+                          }}
+                        >
+                          <Icon name="circle" size={8} color="#7C766F" />
+                          <GlobalText
+                            style={[
+                              globalStyles.text,
+                              { color: '#7C766F', marginLeft: 5 },
+                            ]}
+                          >
+                            {moment(data?.createdOn).format('DD MMM, YYYY')}
+                          </GlobalText>
+                          {/* <View style={[globalStyles.flexrow, { marginLeft: 15 }]}>
+                      <Ionicons
+                        name="cloud-outline"
+                        color={'#7C766F'}
+                        size={15}
+                      />
+                      <GlobalText
+                        style={[
+                          globalStyles.text,
+                          { color: '#7C766F', marginLeft: 5 },
+                        ]}
+                      >
+                        {moment(data?.lastAttemptedOn).format('DD MMM, YYYY')}
+                      </GlobalText>
+                    </View> */}
+                        </View>
+                      </View>
+                    ) : (
+                      <></>
+                    )}
+                  </>
+                )}
+                {isAiAssessment == true && (
+                  <>
+                    {(aiQuestionSetStatus?.status == 'AI Pending' ||
+                      aiQuestionSetStatus?.status == 'AI Processed') && (
+                      <GlobalText style={{ color: '#7C766F' }}>
+                        {t('submitted_eval')}
+                      </GlobalText>
+                    )}
+                    {aiQuestionSetStatus?.status == 'Approved' && (
+                      <View
+                        style={{ flexDirection: 'row', alignItems: 'center' }}
+                      >
+                        <GlobalText
+                          style={{
+                            color: '#1F1B13',
+                            fontSize: 14,
+                            fontFamily: 'Poppins-Medium',
+                            letterSpacing: 0.1,
+                            lineHeight: 20,
+                          }}
+                        >
+                          Marks: ({data?.totalScore}/{data?.totalMaxScore}){' '}
+                          <GlobalText
+                            style={{
+                              color: '#1A881F',
+                              fontSize: 14,
+                              fontFamily: 'Poppins-Medium',
+                              letterSpacing: 0.1,
+                              lineHeight: 20,
+                            }}
+                          >
+                            {data?.totalScore && data?.totalMaxScore
+                              ? Math.round((data.totalScore / 16) * 100)
+                              : 0}
+                            %
+                          </GlobalText>
+                        </GlobalText>
+                      </View>
+                    )}
+                    {!aiQuestionSetStatus?.status && (
+                      <GlobalText style={{ color: '#7C766F' }}>
+                        {t('not_submitted')}
+                      </GlobalText>
+                    )}
+                    <GlobalText style={{ color: '#7C766F' }}>
+                      {t('published_on')}
+                      {': '}
+                      {moment(data?.lastPublishedOn).format('DD MMM, YYYY')}
+                    </GlobalText>
+                  </>
+                )}
               </View>
-            ) : (
-              <SecondaryButton
-                onPress={() => {
-                  navigation.navigate('TestDetailView', {
-                    title: name,
-                    data: data,
-                  });
-                }}
-                style={[globalStyles.text]}
-                text={'take_the_test'}
-              />
-            )}
+
+              {isAiAssessment == false && (
+                <View style={{ marginRight: 10, paddingVertical: 10 }}>
+                  {data?.lastAttemptedOn ? (
+                    <MaterialIcons
+                      name="navigate-next"
+                      size={32}
+                      color="black"
+                    />
+                  ) : isSyncPending ? (
+                    <View style={globalStyles.flexrow}>
+                      <Ionicons
+                        name="cloud-offline-outline"
+                        color={'#7C766F'}
+                        size={22}
+                      />
+                      <GlobalText
+                        style={[
+                          globalStyles.subHeading,
+                          { color: '#7C766F', marginLeft: 10 },
+                        ]}
+                      >
+                        {t('sync_pending')}
+                      </GlobalText>
+                    </View>
+                  ) : (
+                    <SecondaryButton
+                      onPress={() => {
+                        navigation.navigate('TestDetailView', {
+                          title: name,
+                          data: data,
+                        });
+                      }}
+                      style={[globalStyles.text]}
+                      text={'take_the_test'}
+                    />
+                  )}
+                </View>
+              )}
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {isAiAssessment == true ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('ATMAssessment', {
+                        title: name,
+                        data: data,
+                        aiQuestionSetStatus: aiQuestionSetStatus,
+                      });
+                    }}
+                  >
+                    <MaterialIcons
+                      name="navigate-next"
+                      size={32}
+                      color="black"
+                    />
+                  </TouchableOpacity>
+                ) : !data?.lastAttemptedOn && downloadStatus == 'progress' ? (
+                  <ActivityIndicator size="large" />
+                ) : !data?.lastAttemptedOn && downloadStatus == 'completed' ? (
+                  <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <Image
+                      style={styles.img}
+                      source={downloadIcon}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                ) : !data?.lastAttemptedOn ? (
+                  <TouchableOpacity onPress={handleDownload}>
+                    <Image
+                      style={styles.img}
+                      source={downloadIcon}
+                      resizeMode="contain"
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <></>
+                )}
+              </View>
+            </View>
           </View>
-          {!data?.lastAttemptedOn && downloadStatus == 'progress' ? (
-            <ActivityIndicator size="large" />
-          ) : !data?.lastAttemptedOn && downloadStatus == 'completed' ? (
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <Image
-                style={styles.img}
-                source={downloadIcon}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          ) : !data?.lastAttemptedOn ? (
-            <TouchableOpacity onPress={handleDownload}>
-              <Image
-                style={styles.img}
-                source={downloadIcon}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          ) : (
-            <></>
-          )}
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      )}
       <NetworkAlert
         onTryAgain={handleDownload}
         isConnected={networkstatus}
@@ -465,19 +659,53 @@ SubjectBox.propTypes = {
   data: PropTypes.any,
   disabled: PropTypes.bool,
 };
+IconConditions.propTypes = {
+  status: PropTypes.string,
+  styles: PropTypes.object,
+};
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     borderWidth: 1,
     borderColor: '#D0C5B4',
     borderRadius: 8,
     alignItems: 'center',
     marginVertical: 10,
     backgroundColor: 'white',
-    padding: 5,
+    // padding: 5,
   },
-
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconSection: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  contentSection: {
+    flex: 10,
+    paddingHorizontal: 8,
+  },
+  buttonSection: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  icon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  leftContainer: {
+    flex: 1,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFDEA1',
+    paddingVertical: 20,
+    // borderWidth: 1,
+    height: 'auto',
+  },
   rightContainer: {
     flex: 4,
     marginLeft: 10,
@@ -515,6 +743,43 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingVertical: 20,
+  },
+  skeletonCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#F0F0F0',
+  },
+  skeletonTitle: {
+    width: '80%',
+    height: 18,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 4,
+    marginBottom: 8,
+  },
+  skeletonSubtitle: {
+    width: '60%',
+    height: 14,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 4,
+  },
+  skeletonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  skeletonScore: {
+    width: 50,
+    height: 18,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 4,
+  },
+  skeletonDate: {
+    width: 100,
+    height: 14,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 4,
+    marginLeft: 10,
   },
 });
 

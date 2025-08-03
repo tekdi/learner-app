@@ -100,6 +100,7 @@ const TestBox = ({ testText }) => {
     const OfflineAssessmentStatusData = JSON.parse(
       await getDataFromStorage('assessmentStatusData')
     );
+    console.log('#########atm OfflineAssessmentStatusData', JSON.stringify(OfflineAssessmentStatusData));
     setStatus(OfflineAssessmentStatusData[key]?.[0]?.status || 'not_started');
     setPercentage(OfflineAssessmentStatusData[key]?.[0]?.percentage || '');
   };
