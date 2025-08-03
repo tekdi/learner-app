@@ -412,7 +412,11 @@ const SubjectBox = ({
                 />
               )}
               <View style={styles.contentSection}>
-                <GlobalText style={globalStyles.subHeading}>
+                <GlobalText
+                  style={globalStyles.subHeading}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
                   {t(capitalizeFirstLetter(name))}
                 </GlobalText>
                 {isAiAssessment == false && (
@@ -498,7 +502,9 @@ const SubjectBox = ({
                             }}
                           >
                             {data?.totalScore && data?.totalMaxScore
-                              ? Math.round((data.totalScore / 16) * 100)
+                              ? Math.round(
+                                  (data.totalScore / data?.totalMaxScore) * 100
+                                )
                               : 0}
                             %
                           </GlobalText>

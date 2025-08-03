@@ -266,7 +266,7 @@ const ATMAssessment = ({ route }) => {
       console.log('Camera capture error:', error);
       setIsProcessingImages(false);
       showErrorAlert({
-        title: t('Error'),
+        title: t('error'),
         message: t('Failed to capture photo. Please try again.'),
         onOk: () => {},
       });
@@ -315,7 +315,7 @@ const ATMAssessment = ({ route }) => {
       console.log('Gallery selection error:', error);
       setIsProcessingImages(false);
       showErrorAlert({
-        title: t('Error'),
+        title: t('error'),
         message: t('Failed to select images. Please try again.'),
         onOk: () => {},
       });
@@ -768,7 +768,7 @@ const ATMAssessment = ({ route }) => {
                     { fontFamily: 'Poppins-SemiBold' },
                   ]}
                 >
-                  Marks:{' '}
+                  {t('Marks')}:{' '}
                 </GlobalText>
                 <GlobalText style={styles.statusText}>
                   <GlobalText style={styles.percentageText}>
@@ -813,7 +813,7 @@ const ATMAssessment = ({ route }) => {
                 >
                   <ActivityIndicator size="large" color="#4D4639" />
                   <Text style={{ color: '#666', fontSize: 14, marginTop: 10 }}>
-                    Loading assessment data...
+                    {t('Loading assessment data...')}
                   </Text>
                 </View>
               ) : (
@@ -828,7 +828,7 @@ const ATMAssessment = ({ route }) => {
                   <Text
                     style={{ color: '#666', fontSize: 16, fontWeight: 'bold' }}
                   >
-                    No assessment data available yet
+                    {t('No assessment data available yet')}
                   </Text>
                   <Text style={{ color: '#999', fontSize: 12, marginTop: 5 }}>
                     assessmentTrackingData:{' '}
@@ -894,7 +894,7 @@ const ATMAssessment = ({ route }) => {
               <View style={styles.statusRow}>
                 <Icon name="dash" size={18} color="#1F1B13" />
                 <GlobalText style={styles.statusText}>
-                  {t('Not Submitted')}
+                  {t('not_submitted')}
                 </GlobalText>
               </View>
             </View>

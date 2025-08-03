@@ -100,6 +100,7 @@ ScoreBadge.displayName = 'ScoreBadge';
 // AI Suggestion Component with See More/Less functionality
 const AISuggestion = React.memo(({ aiSuggestion }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t } = useTranslation();
 
   if (
     !aiSuggestion ||
@@ -134,7 +135,7 @@ const AISuggestion = React.memo(({ aiSuggestion }) => {
 
   return (
     <View style={styles.aiSuggestionContainer}>
-      <Text style={styles.aiSuggestionTitle}>Explanation:</Text>
+      <Text style={styles.aiSuggestionTitle}>{t('Explanation')}:</Text>
       <Text style={styles.aiSuggestionText}>{displayText}</Text>
       {shouldShowToggle && (
         <TouchableOpacity
@@ -142,7 +143,7 @@ const AISuggestion = React.memo(({ aiSuggestion }) => {
           style={styles.seeMoreButton}
         >
           <Text style={styles.seeMoreText}>
-            {isExpanded ? 'See less' : 'See more'}
+            {isExpanded ? t('See less') : t('See more')}
           </Text>
         </TouchableOpacity>
       )}
@@ -249,6 +250,7 @@ QuestionItem.displayName = 'QuestionItem';
 
 // Score Summary Component
 const ScoreSummary = React.memo(({ totalScore, totalMaxScore }) => {
+  const { t } = useTranslation();
   const percentage = useMemo(() => {
     return totalMaxScore > 0
       ? Math.min(Math.round((totalScore / totalMaxScore) * 100), 100)
@@ -257,7 +259,7 @@ const ScoreSummary = React.memo(({ totalScore, totalMaxScore }) => {
 
   return (
     <Text style={styles.scoreSummary}>
-      Marks:{' '}
+      {t('Marks')}:{' '}
       <Text style={styles.scoreSummaryHighlight}>
         {totalScore || 0}/{totalMaxScore || 0} ({percentage}%)
       </Text>
@@ -269,6 +271,7 @@ ScoreSummary.displayName = 'ScoreSummary';
 
 // Approve Button Component
 const ApproveButton = React.memo(({ onApprove, isApproved }) => {
+  const { t } = useTranslation();
   if (isApproved || !onApprove) return null;
 
   return (
@@ -279,7 +282,7 @@ const ApproveButton = React.memo(({ onApprove, isApproved }) => {
         activeOpacity={0.8}
       >
         <Text style={styles.approveButtonText}>
-          Approve Marks & Notify Learner
+          {t('Approve Marks & Notify Learner')}
         </Text>
       </TouchableOpacity>
     </View>
@@ -297,6 +300,7 @@ const QuestionsList = React.memo(
     questionNumberingMap = {},
     sectionMapping = {},
   }) => {
+    const { t } = useTranslation();
     const handleScoreClick = useCallback(
       (question) => {
         if (!isApproved && onScoreEdit) {
@@ -310,10 +314,10 @@ const QuestionsList = React.memo(
     const formatSectionName = (name) => {
       // Handle common patterns
       const nameMap = {
-        fill_in_the_blanks: 'Fill in the Blanks',
-        mcq: 'Multiple Choice Questions',
-        short: 'Short Answer Questions',
-        long: 'Long Answer Questions',
+        fill_in_the_blanks: t('Fill in the Blanks'),
+        mcq: t('Multiple Choice Questions'),
+        short: t('Short Answer Questions'),
+        long: t('Long Answer Questions'),
       };
 
       const lowerName = name.toLowerCase();
@@ -332,8 +336,8 @@ const QuestionsList = React.memo(
 
       scoreDetails.forEach((question) => {
         const sectionName = question.questionId
-          ? sectionMapping[question.questionId] || 'Unknown Section'
-          : 'Unknown Section';
+          ? sectionMapping[question.questionId] || t('Unknown Section')
+          : t('Unknown Section');
 
         if (!groups[sectionName]) {
           groups[sectionName] = [];
@@ -343,7 +347,7 @@ const QuestionsList = React.memo(
       });
 
       return groups;
-    }, [scoreDetails, sectionMapping]);
+    }, [scoreDetails, sectionMapping, t]);
 
     return (
       <View style={styles.questionsListContainer}>
@@ -380,11 +384,14 @@ QuestionsList.displayName = 'QuestionsList';
 
 // Empty State Component
 const EmptyState = React.memo(() => {
+  const { t } = useTranslation();
   return (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyStateTitle}>No assessment data available</Text>
+      <Text style={styles.emptyStateTitle}>
+        {t('No assessment data available')}
+      </Text>
       <Text style={styles.emptyStateSubtitle}>
-        Please check if the assessment has been completed and try again.
+        {t('Please check if the assessment has been completed and try again')}.
       </Text>
     </View>
   );
@@ -401,6 +408,7 @@ const AnswerSheet = ({
   questionNumberingMap = {},
   sectionMapping = {},
 }) => {
+  const { t } = useTranslation();
   // Debug logging
   console.log('#########atm AnswerSheet component rendered');
   console.log('#########atm AnswerSheet props:', {
@@ -421,10 +429,10 @@ const AnswerSheet = ({
       <View style={styles.container}>
         <View style={{ padding: 20, alignItems: 'center' }}>
           <Text style={{ color: '#666', fontSize: 16, fontWeight: 'bold' }}>
-            AnswerSheet Component is Rendering!
+            {t('AnswerSheet Component is Rendering')}!
           </Text>
           <Text style={{ color: '#999', fontSize: 14, marginTop: 10 }}>
-            But no assessment data available
+            {t('But no assessment data available')}
           </Text>
           <Text style={{ color: '#999', fontSize: 12, marginTop: 5 }}>
             assessmentTrackingData: {assessmentTrackingData ? 'EXISTS' : 'NULL'}
@@ -447,10 +455,10 @@ const AnswerSheet = ({
       contentContainerStyle={{ flexGrow: 1 }}
     >
       {/* Score Summary */}
-      {/* <ScoreSummary
+      <ScoreSummary
         totalScore={assessmentTrackingData.totalScore}
         totalMaxScore={assessmentTrackingData.totalMaxScore}
-      /> */}
+      />
 
       {/* Approve Button */}
       <ApproveButton onApprove={onApprove} isApproved={isApproved} />

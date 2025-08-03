@@ -15,15 +15,15 @@ const PermissionTestComponent = () => {
       setPermissionStatus(status);
 
       Alert.alert(
-        'Permission Status',
+        t('Permission Status'),
         `Camera: ${status.camera}\nStorage: ${
           status.storage
         }\nAndroid Version: ${status.androidVersion || 'iOS'}`,
-        [{ text: 'OK' }]
+        [{ text: t('OK') }]
       );
     } catch (error) {
       console.error('Permission test error:', error);
-      Alert.alert('Error', 'Failed to check permissions');
+      Alert.alert(t('Error'), t('Failed to check permissions'));
     }
   };
 
@@ -32,11 +32,11 @@ const PermissionTestComponent = () => {
       const result = await ImagePermissionHelper.requestAllPermissions();
 
       Alert.alert(
-        'Permission Request Result',
-        `Camera: ${result.camera ? 'Granted' : 'Denied'}\nStorage: ${
-          result.storage ? 'Granted' : 'Denied'
+        t('Permission Request Result'),
+        `Camera: ${result.camera ? t('Granted') : t('Denied')}\nStorage: ${
+          result.storage ? t('Granted') : t('Denied')
         }`,
-        [{ text: 'OK' }]
+        [{ text: t('OK') }]
       );
 
       // Refresh status after request
@@ -44,7 +44,7 @@ const PermissionTestComponent = () => {
       setPermissionStatus(status);
     } catch (error) {
       console.error('Permission request error:', error);
-      Alert.alert('Error', 'Failed to request permissions');
+      Alert.alert(t('Error'), t('Failed to request permissions'));
     }
   };
 
@@ -60,7 +60,7 @@ const PermissionTestComponent = () => {
       <GlobalText
         style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}
       >
-        Permission Test Component
+        {t('Permission Test Component')}
       </GlobalText>
 
       <TouchableOpacity
@@ -68,7 +68,7 @@ const PermissionTestComponent = () => {
         onPress={testPermissions}
       >
         <GlobalText style={ATMAssessmentStyles.uploadButtonText}>
-          Check Permissions
+          {t('Check Permissions')}
         </GlobalText>
       </TouchableOpacity>
 
@@ -80,7 +80,7 @@ const PermissionTestComponent = () => {
         onPress={requestPermissions}
       >
         <GlobalText style={ATMAssessmentStyles.uploadButtonText}>
-          Request Permissions
+          {t('Request Permissions')}
         </GlobalText>
       </TouchableOpacity>
 
