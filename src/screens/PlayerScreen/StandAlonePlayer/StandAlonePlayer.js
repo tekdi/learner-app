@@ -1265,7 +1265,7 @@ const StandAlonePlayer = ({ route }) => {
     } catch (error) {
       console.log('error', error);
     }
-
+    
     let userId = await getDataFromStorage('userId');
     let courseId = await getData('courseId', '');
     let unitId = await getData('unitId', '');
