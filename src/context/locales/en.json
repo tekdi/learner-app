@@ -544,5 +544,7 @@
   "permission_blocked": "Permission Blocked",
   "permission_blocked_message": "Storage permission is blocked. Please enable it in Settings > Apps > Your App > Permissions.",
   "cancel": "Cancel",
-  "open_settings": "Open Settings"
+  "open_settings": "Open Settings",
+  "many_images_selected": "Many Images Selected",
+  "many_images_selected_message": "You have selected {count} images. For better performance, we recommend uploading up to 4 images at a time."
 }

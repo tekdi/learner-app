@@ -5,4 +5,6 @@
     <cache-path name="cache" path="."/>
     <external-cache-path name="external_cache" path="."/>
     <files-path name="files" path="."/>
+    <!-- Downloads directory for saving files to public Downloads folder -->
+    <external-path name="downloads" path="Download/"/>
 </paths> 

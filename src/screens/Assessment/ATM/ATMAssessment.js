@@ -254,7 +254,8 @@ const ATMAssessment = ({ route }) => {
           }, 1000);
 
           ImageUploadHelper.showImageCountWarning(
-            selectedImages.length + validImages.length
+            selectedImages.length + validImages.length,
+            t
           );
         } else {
           setIsProcessingImages(false);
@@ -303,7 +304,8 @@ const ATMAssessment = ({ route }) => {
           }, 1000);
 
           ImageUploadHelper.showImageCountWarning(
-            selectedImages.length + validImages.length
+            selectedImages.length + validImages.length,
+            t
           );
         } else {
           setIsProcessingImages(false);
@@ -717,7 +719,9 @@ const ATMAssessment = ({ route }) => {
                   <View style={styles.uploadedInfoContent}>
                     <GlobalText style={styles.uploadedCountText}>
                       {Array.isArray(aiQuestionSetStatus.fileUrls)
-                        ? `${aiQuestionSetStatus.fileUrls.length} ${t('Images Uploaded')}`
+                        ? `${aiQuestionSetStatus.fileUrls.length} ${t(
+                            'Images Uploaded'
+                          )}`
                         : '1 image uploaded'}
                     </GlobalText>
                     <GlobalText style={styles.uploadedDateText}>
@@ -790,14 +794,12 @@ const ATMAssessment = ({ route }) => {
                     const uploadedImages = Array.isArray(
                       aiQuestionSetStatus.fileUrls
                     )
-                      ? aiQuestionSetStatus.fileUrls.map(
-                          (url, index) => ({
-                            id: index,
-                            url: url,
-                            uri: url,
-                            fileName: `Image_${index + 1}.jpg`,
-                          })
-                        )
+                      ? aiQuestionSetStatus.fileUrls.map((url, index) => ({
+                          id: index,
+                          url: url,
+                          uri: url,
+                          fileName: `Image_${index + 1}.jpg`,
+                        }))
                       : [
                           {
                             id: 0,
@@ -816,7 +818,9 @@ const ATMAssessment = ({ route }) => {
                   <View style={styles.uploadedInfoContent}>
                     <GlobalText style={styles.uploadedCountText}>
                       {Array.isArray(aiQuestionSetStatus.fileUrls)
-                        ? `${aiQuestionSetStatus.fileUrls.length} ${t('Images Uploaded')}`
+                        ? `${aiQuestionSetStatus.fileUrls.length} ${t(
+                            'Images Uploaded'
+                          )}`
                         : '1 image uploaded'}
                     </GlobalText>
                     <GlobalText style={styles.uploadedDateText}>
@@ -886,7 +890,6 @@ const ATMAssessment = ({ route }) => {
                   </Text>
                 </View>
               )}
-
             </View>
           )}
 

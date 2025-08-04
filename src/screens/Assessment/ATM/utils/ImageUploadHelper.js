@@ -1,6 +1,9 @@
 import { Alert } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePermissionHelper from './ImagePermissionHelper';
+import CrossPlatformDownloadHelper from './CrossPlatformDownloadHelper';
+import { Platform } from 'react-native';
+import { useTranslation } from '../../../context/LanguageContext';
 
 class ImageUploadHelper {
   /**
@@ -27,7 +30,8 @@ class ImageUploadHelper {
       maxWidth: 1920,
       maxHeight: 1920,
       includeBase64: false,
-      saveToPhotos: true,
+      // Removed saveToPhotos as it can cause issues on Android 9
+      // saveToPhotos: true,
     };
   }
 
@@ -37,35 +41,55 @@ class ImageUploadHelper {
    */
   static async capturePhoto() {
     try {
+      console.log('=== Camera Capture Started ===');
+      console.log('Platform:', Platform.OS, 'Version:', Platform.Version);
+
       // Check camera permission
       const hasPermission = await ImagePermissionHelper.checkCameraPermission();
+      console.log('Camera permission check result:', hasPermission);
+
       if (!hasPermission) {
         const granted = await ImagePermissionHelper.requestCameraPermission();
+        console.log('Camera permission request result:', granted);
         if (!granted) {
           ImagePermissionHelper.showPermissionDeniedAlert('camera');
           return [];
         }
       }
 
+      const cameraOptions = this.getCameraOptions();
+      console.log('Camera options:', cameraOptions);
+
       return new Promise((resolve) => {
-        launchCamera(this.getCameraOptions(), (response) => {
+        launchCamera(cameraOptions, async (response) => {
+          console.log('Camera response:', response);
+
           if (response.didCancel) {
             console.log('User cancelled camera');
             resolve([]);
           } else if (response.errorMessage) {
             console.log('Camera Error: ', response.errorMessage);
+            console.log('Camera Error Code: ', response.errorCode);
             Alert.alert('Error', 'Failed to capture photo. Please try again.');
             resolve([]);
           } else if (response.assets && response.assets.length > 0) {
-            const processedImages = this.processImageAssets(response.assets);
+            console.log('Camera assets received:', response.assets);
+            const processedImages = await this.processImageAssets(
+              response.assets
+            );
+            console.log('Processed images:', processedImages);
             resolve(processedImages);
           } else {
+            console.log('No assets in camera response');
+            console.log('Full response:', response);
             resolve([]);
           }
         });
       });
     } catch (error) {
       console.error('Capture photo error:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
       Alert.alert('Error', 'Failed to capture photo. Please try again.');
       return [];
     }
@@ -89,7 +113,7 @@ class ImageUploadHelper {
       }
 
       return new Promise((resolve) => {
-        launchImageLibrary(this.getImagePickerOptions(), (response) => {
+        launchImageLibrary(this.getImagePickerOptions(), async (response) => {
           if (response.didCancel) {
             console.log('User cancelled image picker');
             resolve([]);
@@ -98,7 +122,9 @@ class ImageUploadHelper {
             Alert.alert('Error', 'Failed to select images. Please try again.');
             resolve([]);
           } else if (response.assets && response.assets.length > 0) {
-            const processedImages = this.processImageAssets(response.assets);
+            const processedImages = await this.processImageAssets(
+              response.assets
+            );
             resolve(processedImages);
           } else {
             resolve([]);
@@ -117,17 +143,56 @@ class ImageUploadHelper {
    * @param {Array} assets - Raw assets from image picker
    * @returns {Array} - Processed image objects
    */
-  static processImageAssets(assets) {
-    return assets.map((asset, index) => ({
-      id: `${Date.now()}_${index}`,
-      uri: asset.uri,
-      type: asset.type || 'image/jpeg',
-      fileName: asset.fileName || `image_${Date.now()}_${index}.jpg`,
-      fileSize: asset.fileSize || 0,
-      width: asset.width || 0,
-      height: asset.height || 0,
-      timestamp: Date.now(),
-    }));
+  static async processImageAssets(assets) {
+    console.log('Processing image assets:', assets);
+
+    const processedAssets = [];
+
+    for (let i = 0; i < assets.length; i++) {
+      const asset = assets[i];
+      const processedAsset = {
+        id: `${Date.now()}_${i}`,
+        uri: asset.uri,
+        type: asset.type || 'image/jpeg',
+        fileName: asset.fileName || `image_${Date.now()}_${i}.jpg`,
+        fileSize: asset.fileSize || 0,
+        width: asset.width || 0,
+        height: asset.height || 0,
+        timestamp: Date.now(),
+      };
+
+      console.log(`Processed asset ${i}:`, processedAsset);
+
+      // If this is from camera (not gallery), also save to Downloads folder
+      if (
+        asset.uri &&
+        asset.uri.includes('file://') &&
+        !asset.uri.includes('gallery')
+      ) {
+        try {
+          console.log('Saving camera photo to Downloads folder...');
+          const success =
+            await CrossPlatformDownloadHelper.saveCameraPhotoToDownloads(
+              asset.uri,
+              processedAsset.fileName
+            );
+
+          if (success) {
+            console.log('Camera photo saved to Downloads successfully');
+            // Update the success message to indicate it's saved to Downloads
+            processedAsset.savedToDownloads = true;
+          } else {
+            console.log('Failed to save camera photo to Downloads');
+          }
+        } catch (error) {
+          console.log('Error saving camera photo to Downloads:', error);
+        }
+      }
+
+      processedAssets.push(processedAsset);
+    }
+
+    return processedAssets;
   }
 
   /**
@@ -154,10 +219,7 @@ class ImageUploadHelper {
     // Check file type
     const allowedTypes = ['image/jpeg', 'image/jpg'];
     if (!allowedTypes.includes(image.type)) {
-      Alert.alert(
-        'Invalid File Type',
-        'Please select only JPEG images.'
-      );
+      Alert.alert('Invalid File Type', 'Please select only JPEG images.');
       return false;
     }
 
@@ -193,13 +255,14 @@ class ImageUploadHelper {
   /**
    * Show warning for too many images
    * @param {number} count - Number of selected images
+   * @param {function} t - Translation function
    */
-  static showImageCountWarning(count) {
+  static showImageCountWarning(count, t) {
     if (count > 4) {
       Alert.alert(
-        'Many Images Selected',
-        `You have selected ${count} images. For better performance, we recommend uploading up to 4 images at a time.`,
-        [{ text: 'OK', style: 'default' }]
+        t('many_images_selected'),
+        t('many_images_selected_message').replace('{count}', count),
+        [{ text: t('OK'), style: 'default' }]
       );
     }
   }
