@@ -436,7 +436,7 @@ export const courseListApi_New = async ({
         channel: instant?.channelId || channelId,
         // program:
         //   userType == 'scp'
-        //     ? ['secondchance', 'Second Chance', 'SCP']
+        //     ? ['secondchance', 'Second Chance']
         //     : ['Youthnet', 'youthnet', 'YouthNet'],
         domain: contentFilter?.domain,
         program: contentFilter?.program,

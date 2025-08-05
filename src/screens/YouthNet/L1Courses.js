@@ -82,7 +82,7 @@ const L1Courses = () => {
 
       const instant =
         userType === 'youthnet'
-          ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+          ? { frameworkId: 'pos-framework', channelId: 'pos-channel' }
           : userType === 'scp'
           ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
           : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
