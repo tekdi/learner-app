@@ -29,8 +29,8 @@ const ImagePreviewDialog = ({
 
   const handleDelete = () => {
     showDeleteAlert({
-      title: t('Delete Image'),
-      message: t('Are you sure you want to delete this image?'),
+      title: t('Remove Image'),
+      message: t('Are you sure you want to remove this image?'),
       onConfirm: () => {
         onDelete(image.id);
         onClose();
@@ -38,8 +38,8 @@ const ImagePreviewDialog = ({
       onCancel: () => {
         // Do nothing, alert will close automatically
       },
-      confirmText: t('Delete'),
-      cancelText: t('Cancel'),
+      confirmText: t('delete'),
+      cancelText: t('cancel'),
     });
   };
 
@@ -89,7 +89,7 @@ const ImagePreviewDialog = ({
           {/* Footer with image info */}
           <View style={styles.footer}>
             <GlobalText style={styles.fileName} numberOfLines={1}>
-              {image.fileName || 'Image'}
+              {image.fileName || t('Image')}
             </GlobalText>
             <View style={styles.imageInfo}>
               {image.fileSize && (

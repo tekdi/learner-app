@@ -103,6 +103,9 @@ const CustomAlert = ({
                             styles.destructiveButtonText,
                           buttons[0].style === 'primary' &&
                             styles.primaryButtonText,
+                          buttons[0].textColor && {
+                            color: buttons[0].textColor,
+                          },
                         ]}
                       >
                         {buttons[0].text}
@@ -131,6 +134,7 @@ const CustomAlert = ({
                                 styles.destructiveButtonText,
                               button.style === 'primary' &&
                                 styles.primaryButtonText,
+                              button.textColor && { color: button.textColor },
                             ]}
                           >
                             {button.text}
@@ -261,6 +265,7 @@ CustomAlert.propTypes = {
       text: PropTypes.string.isRequired,
       onPress: PropTypes.func,
       style: PropTypes.oneOf(['default', 'primary', 'destructive']),
+      textColor: PropTypes.string,
     })
   ),
   onDismiss: PropTypes.func,

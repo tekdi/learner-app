@@ -8,11 +8,16 @@ import {
   Dimensions,
   Linking,
   Platform,
+  Alert,
+  PermissionsAndroid,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../../../context/LanguageContext';
 import GlobalText from '@components/GlobalText/GlobalText';
+import RNFS from 'react-native-fs';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import CrossPlatformDownloadHelper from '../utils/CrossPlatformDownloadHelper';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,6 +27,7 @@ const ImageZoomDialog = ({ route }) => {
   const { image, images, currentIndex } = route.params;
   const [currentImageIndex, setCurrentImageIndex] = useState(currentIndex || 0);
   const [modalVisible, setModalVisible] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleClose = () => {
     setModalVisible(false);
@@ -31,20 +37,97 @@ const ImageZoomDialog = ({ route }) => {
     }, 100);
   };
 
-  const handleDownload = async () => {
+  const downloadImage = async (imageUrl, fileName) => {
     try {
-      const currentImage = images[currentImageIndex];
-      const imageUrl = currentImage.url || currentImage.uri;
+      console.log('Starting cross-platform download for:', imageUrl);
+      console.log('Platform:', Platform.OS, 'Version:', Platform.Version);
 
-      if (Platform.OS === 'ios') {
-        // For iOS, we can use Linking to open the image in browser for download
-        await Linking.openURL(imageUrl);
+      // Use the new cross-platform download helper
+      const success = await CrossPlatformDownloadHelper.downloadToDownloads(
+        imageUrl,
+        fileName
+      );
+
+      if (success) {
+        const successMessage = CrossPlatformDownloadHelper.getSuccessMessage();
+        Alert.alert(t('download_complete'), successMessage, [
+          { text: t('OK') },
+        ]);
+        return true;
       } else {
-        // For Android, we can also use Linking
-        await Linking.openURL(imageUrl);
+        throw new Error('Download failed');
       }
     } catch (error) {
       console.log('Download error:', error);
+      console.log('Error message:', error.message);
+      console.log('Error stack:', error.stack);
+      throw error;
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      console.log('=== Cross-Platform Download Started ===');
+      setIsDownloading(true);
+
+      const currentImage = images[currentImageIndex];
+      console.log('Current image:', currentImage);
+
+      if (!currentImage) {
+        console.log('No current image found');
+        Alert.alert(t('error'), 'No image data available');
+        return;
+      }
+
+      const imageUrl = currentImage.url || currentImage.uri;
+      console.log('Image URL:', imageUrl);
+
+      if (!imageUrl) {
+        console.log('No image URL available');
+        Alert.alert(t('error'), t('no_image_url'));
+        return;
+      }
+
+      // Show download starting message
+      console.log('Showing download starting alert');
+      Alert.alert(t('downloading'), t('download_starting'));
+
+      // Generate filename from URL or use default
+      let fileName = 'image.jpg';
+      try {
+        const urlParts = imageUrl.split('/');
+        const lastPart = urlParts[urlParts.length - 1];
+        console.log('URL parts:', urlParts);
+        console.log('Last part:', lastPart);
+
+        if (lastPart && lastPart.includes('.')) {
+          fileName = lastPart;
+        } else {
+          // If no extension in URL, try to get it from content-type or use default
+          fileName = `pratham_image_${Date.now()}.jpg`;
+        }
+      } catch (error) {
+        console.log('Error parsing filename:', error);
+        fileName = `pratham_image_${Date.now()}.jpg`;
+      }
+
+      console.log('Final filename:', fileName);
+
+      console.log('Calling cross-platform download...');
+      await downloadImage(imageUrl, fileName);
+      console.log('Download completed successfully');
+    } catch (error) {
+      console.log('=== Download Error ===');
+      console.log('Error in handleDownload:', error);
+      console.log('Error message:', error.message);
+      console.log('Error stack:', error.stack);
+
+      Alert.alert(t('download_failed'), t('download_failed_message'), [
+        { text: t('OK') },
+      ]);
+    } finally {
+      console.log('Setting isDownloading to false');
+      setIsDownloading(false);
     }
   };
 
@@ -74,10 +157,19 @@ const ImageZoomDialog = ({ route }) => {
         <View style={styles.header}>
           <TouchableOpacity
             onPress={handleDownload}
-            style={styles.headerButton}
+            style={[
+              styles.headerButton,
+              isDownloading && styles.headerButtonDisabled,
+            ]}
+            disabled={isDownloading}
           >
-            <Icon name="download" size={24} color="#4D4639" />
+            <Icon
+              name={isDownloading ? 'sync' : 'download'}
+              size={24}
+              color={isDownloading ? '#CCCCCC' : '#4D4639'}
+            />
           </TouchableOpacity>
+
           <TouchableOpacity onPress={handleClose} style={styles.headerButton}>
             <Icon name="x" size={24} color="#4D4639" />
           </TouchableOpacity>
@@ -159,6 +251,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  headerButtonDisabled: {
+    backgroundColor: '#F0F0F0',
   },
   imageContainer: {
     flex: 1,

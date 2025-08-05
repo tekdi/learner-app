@@ -102,7 +102,7 @@ const Profile = () => {
     let userTypes = await getDataFromStorage('userType');
     // const instant =
     //   userTypes === 'youthnet'
-    //     ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+    //     ? { frameworkId: 'pos-framework', channelId: 'pos-channel' }
     //     : userTypes === 'scp'
     //     ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
     //     : { frameworkId: 'pos-framework', channelId: 'pos-channel' };

@@ -216,21 +216,13 @@ const UPLOAD_ENDPOINT = 'https://your-api.com/upload';
 
 ## Permissions
 
-### Android Manifest
+### Permissions Required
 
-Required permissions are automatically added:
-
-```xml
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-```
-
-### Runtime Permissions
-
-- **Camera**: Requested when taking photos
-- **Storage**: Requested when accessing gallery
-- **Android 13+**: Handles granular media permissions
+- `CAMERA` - For taking photos (All API levels)
+- `READ_EXTERNAL_STORAGE` - For accessing gallery (API 26-32)
+- `WRITE_EXTERNAL_STORAGE` - For saving images (All API levels)
+- Photo Picker - For accessing gallery (API 33-35 - handles permissions automatically)
+- `requestLegacyExternalStorage="true"` - For Android 10-12 compatibility
 
 ## File Structure
 

@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { useTranslation } from '../../../../context/LanguageContext';
 
 const useCustomAlert = () => {
+  const { t } = useTranslation();
+
   const [alertConfig, setAlertConfig] = useState({
     visible: false,
     title: '',
@@ -43,8 +46,8 @@ const useCustomAlert = () => {
     message,
     onConfirm,
     onCancel,
-    confirmText = 'Confirm',
-    cancelText = 'Cancel',
+    confirmText = t('confirm'),
+    cancelText = t('cancel'),
     icon = 'alert',
   }) => {
     showAlert({
@@ -56,6 +59,7 @@ const useCustomAlert = () => {
           text: cancelText,
           onPress: onCancel,
           style: 'default',
+          textColor: '#000000',
         },
         {
           text: confirmText,
@@ -67,12 +71,12 @@ const useCustomAlert = () => {
   };
 
   const showDeleteAlert = ({
-    title = 'Delete Item',
-    message = 'Are you sure you want to delete this item?',
+    title = t('delete_item'),
+    message = t('are_you_sure_you_want_to_delete_this_item'),
     onConfirm,
     onCancel,
-    confirmText = 'Delete',
-    cancelText = 'Cancel',
+    confirmText = t('delete'),
+    cancelText = t('cancel'),
   }) => {
     showAlert({
       title,
@@ -84,6 +88,7 @@ const useCustomAlert = () => {
           text: cancelText,
           onPress: onCancel,
           style: 'default',
+          textColor: '#000000',
         },
         {
           text: confirmText,
@@ -95,10 +100,10 @@ const useCustomAlert = () => {
   };
 
   const showSuccessAlert = ({
-    title = 'Success',
+    title = t('success'),
     message,
     onOk,
-    okText = 'OK',
+    okText = t('OK'),
   }) => {
     showAlert({
       title,
@@ -116,10 +121,10 @@ const useCustomAlert = () => {
   };
 
   const showErrorAlert = ({
-    title = 'Error',
+    title = t('error'),
     message,
     onOk,
-    okText = 'OK',
+    okText = t('OK'),
   }) => {
     showAlert({
       title,
@@ -137,10 +142,10 @@ const useCustomAlert = () => {
   };
 
   const showWarningAlert = ({
-    title = 'Warning',
+    title = t('warning'),
     message,
     onOk,
-    okText = 'OK',
+    okText = t('OK'),
   }) => {
     showAlert({
       title,
