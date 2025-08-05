@@ -344,7 +344,7 @@ export const courseListApi_testing = async ({
       filters: {
         program:
           userType == 'scp'
-            ? ['secondchance', 'Second Chance', 'SCP']
+            ? ['secondchance', 'Second Chance']
             : ['Youthnet', 'youthnet', 'YouthNet'],
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }),
         primaryCategory: ['Course'],
@@ -777,7 +777,7 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? ['SCP', 'Second Chance'] : ['YouthNet'],
+        program: userType == 'scp' ? [ 'Second Chance'] : ['YouthNet'],
         board: `${params?.boardName}`,
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
