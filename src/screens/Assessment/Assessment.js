@@ -129,6 +129,7 @@ const Assessment = ({ header, background }) => {
           'QuestionSet',
           JSON.stringify(questionSetData) || ''
         );
+        // console.log('#########atm uniqueAssessments', JSON.stringify(uniqueAssessments));
         setAssessments(uniqueAssessments);
       } else {
         setNetworkstatus(false);
