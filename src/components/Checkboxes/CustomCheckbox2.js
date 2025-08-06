@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
-  TouchableOpacity,
   StyleSheet,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
 import { CheckBox } from '@ui-kitten/components';
+import GlobalText from '@components/GlobalText/GlobalText';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const CustomCheckbox2 = ({
@@ -14,9 +14,10 @@ const CustomCheckbox2 = ({
   staticFormData,
   options,
   category,
+  showMoreLimit = 3,
 }) => {
-  const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [showAllOptions, setShowAllOptions] = useState(false);
 
   useEffect(() => {
     setSelectedItems(staticFormData[category] || []);
@@ -42,72 +43,103 @@ const CustomCheckbox2 = ({
     );
   };
 
+  const renderCheckboxItem = ({ item }) => {
+    const isSelected = selectedItems.includes(item);
+
+    return (
+      <View style={styles.optionContainer}>
+        <CheckBox
+          checked={isSelected}
+          onChange={() => toggleSelection(item)}
+          style={styles.checkbox}
+          checkedColor="#333"
+          tintColor="#FFD700"
+        >
+          {() => (
+            <GlobalText style={[styles.optionText, isSelected && styles.selectedText]}>
+              {item}
+            </GlobalText>
+          )}
+        </CheckBox>
+      </View>
+    );
+  };
+
+  const displayOptions = showAllOptions ? options : options.slice(0, showMoreLimit);
+  const hasMoreOptions = options.length > showMoreLimit;
+
   return (
     <View style={styles.container}>
-      {/* Dropdown Button */}
-      <TouchableOpacity
-        style={styles.dropdownButton}
-        onPress={() => setDropdownVisible(!isDropdownVisible)}
-      >
-        <Text style={styles.buttonText}>
-          {selectedItems.length > 0
-            ? selectedItems.join(', ')
-            : 'Select options'}
-        </Text>
-        <MaterialIcons
-          name={isDropdownVisible ? 'arrow-drop-up' : 'arrow-drop-down'}
-          size={24}
-          color="black"
-        />
-      </TouchableOpacity>
-
-      {/* Options List */}
-      {isDropdownVisible && (
-        <View style={styles.dropdown}>
-          <FlatList
-            data={options}
-            keyExtractor={(item) => item} // Ensure items are unique
-            renderItem={({ item }) => (
-              <View style={styles.option}>
-                <CheckBox
-                  checked={selectedItems.includes(item)}
-                  onChange={() => toggleSelection(item)}
-                >
-                  {item}
-                </CheckBox>
-              </View>
-            )}
-            nestedScrollEnabled
-            keyboardShouldPersistTaps="handled"
+      <FlatList
+        data={displayOptions}
+        keyExtractor={(item) => item} // Ensure items are unique
+        renderItem={renderCheckboxItem}
+        nestedScrollEnabled
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContainer}
+      />
+      
+      {hasMoreOptions && (
+        <TouchableOpacity
+          style={styles.showMoreButton}
+          onPress={() => setShowAllOptions(!showAllOptions)}
+          activeOpacity={0.7}
+        >
+          <GlobalText style={styles.showMoreText}>
+            {showAllOptions ? 'Show less' : 'Show more'}
+          </GlobalText>
+          <MaterialIcons
+            name={showAllOptions ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+            size={16}
+            color="#FFD700"
+            style={styles.showMoreIcon}
           />
-        </View>
+        </TouchableOpacity>
       )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 10 },
-  dropdownButton: {
+  container: {
+    flex: 1,
+  },
+  listContainer: {
+    paddingVertical: 4,
+  },
+  optionContainer: {
+    marginVertical: 2,
+    paddingHorizontal: 4,
+  },
+  checkbox: {
+    marginVertical: 2,
+  },
+  optionText: {
+    fontSize: 14,
+    color: '#333',
+    marginLeft: 8,
+  },
+  selectedText: {
+    fontWeight: '600',
+    color: '#333',
+  },
+  showMoreButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginTop: 8,
   },
-  buttonText: { fontSize: 16, color: '#333', width: '80%' },
-  dropdown: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginTop: 5,
-    backgroundColor: 'white',
-    padding: 10,
-    maxHeight: 200,
+  showMoreText: {
+    fontSize: 14,
+    color: '#FFD700',
+    fontWeight: '500',
   },
-  option: { flexDirection: 'row', alignItems: 'center', paddingVertical: 5 },
+  showMoreIcon: {
+    marginLeft: 4,
+  },
 });
 
 export default CustomCheckbox2;
