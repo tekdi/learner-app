@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 import globalStyles from '../../utils/Helper/Style';
@@ -10,6 +10,7 @@ import CustomCheckbox2 from '@components/Checkboxes/CustomCheckbox2';
 import { filterContent, staticFilterContent } from '@src/utils/API/AuthService';
 import ActiveLoading from '@src/screens/LoadingScreen/ActiveLoading';
 import { useInternet } from '../../context/NetworkContext';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const FilterList = ({
   setParentFormData,
@@ -30,7 +31,20 @@ const FilterList = ({
   const [formData, setFormData] = useState([]);
   const [staticFormData, setStaticFormData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedSections, setExpandedSections] = useState({});
   const { isConnected } = useInternet();
+
+  // Initialize expanded sections
+  useEffect(() => {
+    const initialExpanded = {};
+    renderForm.forEach((item) => {
+      initialExpanded[item.code] = true; // Default to expanded
+    });
+    renderStaticForm.forEach((item) => {
+      initialExpanded[item.code] = true; // Default to expanded
+    });
+    setExpandedSections(initialExpanded);
+  }, [renderForm, renderStaticForm]);
 
   // useEffect(() => {
   //   setParentFormData(formData);
@@ -130,6 +144,97 @@ const FilterList = ({
   function extractNames(renderForm) {
     return renderForm.map((item) => item.name);
   }
+
+  // Custom ordering function for filter sections
+  const getFilterOrder = (itemName) => {
+    const orderMap = {
+      'Content Language': 1,
+      'Language': 1,
+      'Sub Domain': 2,
+      'Subdomain': 2,
+      'Subject': 3,
+      'Domain': 4,
+      'Category': 5,
+      'Program': 6,
+    };
+    
+    return orderMap[itemName] || 999; // Default to end for unknown items
+  };
+
+  const sortFilterSections = (sections) => {
+    return sections.sort((a, b) => {
+      const orderA = getFilterOrder(a.name);
+      const orderB = getFilterOrder(b.name);
+      return orderA - orderB;
+    });
+  };
+
+  const toggleSection = (sectionCode) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionCode]: !prev[sectionCode]
+    }));
+  };
+
+  const renderFilterSection = (item, key, isStatic = false) => {
+    const isExpanded = expandedSections[item.code];
+    const selectedCount = isStatic 
+      ? (staticFormData[item.code]?.length || 0)
+      : (formData[item.code]?.length || 0);
+
+    return (
+      <View key={key} style={styles.filterSection}>
+        <TouchableOpacity
+          style={styles.sectionHeader}
+          onPress={() => toggleSection(item.code)}
+          activeOpacity={0.7}
+        >
+          <View style={styles.sectionHeaderContent}>
+            <GlobalText style={styles.sectionTitle}>
+              {item.name}
+            </GlobalText>
+            {selectedCount > 0 && (
+              <View style={styles.selectedCount}>
+                <GlobalText style={styles.selectedCountText}>
+                  {selectedCount}
+                </GlobalText>
+              </View>
+            )}
+          </View>
+          <MaterialIcons
+            name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+            size={24}
+            color="#666"
+          />
+        </TouchableOpacity>
+
+        {isExpanded && (
+          <View style={styles.sectionContent}>
+            {isStatic ? (
+              <CustomCheckbox2
+                setStaticFormData={setStaticFormData}
+                staticFormData={staticFormData}
+                options={item.range}
+                category={item.code}
+                showMoreLimit={3}
+              />
+            ) : (
+              <CustomCheckbox
+                setFormData={setFormData}
+                formData={formData}
+                options={item.options}
+                category={item.code}
+                index={item.index}
+                replaceOptionsWithAssoc={replaceOptionsWithAssoc}
+                showMoreLimit={3}
+              />
+            )}
+          </View>
+        )}
+      </View>
+    );
+  };
+
   const fetchData = async () => {
     setLoading(true);
     const instantId = instant?.frameworkId;
@@ -439,69 +544,52 @@ const FilterList = ({
               </GlobalText>
             ) : (
               <ScrollView
-                nestedScrollEnabled={true} // ✅ Enables independent scrolling
+                nestedScrollEnabled={true}
                 style={styles.scrollContainer}
                 keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
               >
-                <View style={{ padding: 10 }}>
-                  {renderForm?.map((item, key) => {
+                <View style={styles.contentContainer}>
+                  {/* Content Language Filter - Show First */}
+                  {renderStaticForm?.length > 0 && (
+                    <>
+                      {sortFilterSections(renderStaticForm || [])
+                        .filter(item => 
+                          item?.name === 'Content Language' || 
+                          item?.name === 'Language'
+                        )
+                        .map((item, key) => (
+                          renderFilterSection(item, key, true)
+                        ))}
+                    </>
+                  )}
+
+                  {/* Dynamic Filters (Categories/Subdomains) */}
+                  {sortFilterSections(renderForm || []).map((item, key) => {
                     return (
                       (item?.name !== 'Domain' || isExplore == true) && (
-                        <View key={key}>
-                          <GlobalText
-                            style={[
-                              globalStyles.subHeading,
-                              { fontWeight: 600, marginLeft: 10 },
-                            ]}
-                          >
-                            {item?.name}
-                          </GlobalText>
-
-                          <CustomCheckbox
-                            setFormData={setFormData}
-                            formData={formData}
-                            options={item?.options}
-                            category={item?.code}
-                            index={item?.index}
-                            replaceOptionsWithAssoc={replaceOptionsWithAssoc}
-                          />
-                        </View>
+                        renderFilterSection(item, key, false)
                       )
                     );
                   })}
-                </View>
-                <GlobalText
-                  style={[
-                    globalStyles.heading2,
-                    { fontWeight: 700, marginLeft: 10 },
-                  ]}
-                >
-                  {t('other_filters')}
-                </GlobalText>
-                <View style={{ padding: 10 }}>
-                  {renderStaticForm?.map((item, key) => {
-                    return (
-                      (item?.name !== 'Program' || isExplore == true) && (
-                        <View key={key}>
-                          <GlobalText
-                            style={[
-                              globalStyles.subHeading,
-                              { fontWeight: 600, marginLeft: 10 },
-                            ]}
-                          >
-                            {item?.name}
-                          </GlobalText>
 
-                          <CustomCheckbox2
-                            setStaticFormData={setStaticFormData}
-                            staticFormData={staticFormData}
-                            options={item?.range}
-                            category={item?.code}
-                          />
-                        </View>
-                      )
-                    );
-                  })}
+                  {/* Remaining Static Filters */}
+                  {renderStaticForm?.length > 0 && (
+                    <>
+                      {sortFilterSections(renderStaticForm || [])
+                        .filter(item => 
+                          item?.name !== 'Content Language' && 
+                          item?.name !== 'Language'
+                        )
+                        .map((item, key) => {
+                          return (
+                            (item?.name !== 'Program' || isExplore == true) && (
+                              renderFilterSection(item, key, true)
+                            )
+                          );
+                        })}
+                    </>
+                  )}
                 </View>
               </ScrollView>
             )}
@@ -541,8 +629,6 @@ const styles = StyleSheet.create({
   },
   alertBox: {
     maxHeight: '98%',
-    // borderWidth: 1,
-    // paddingBottom: 10,
   },
   header: {
     padding: 15,
@@ -556,12 +642,78 @@ const styles = StyleSheet.create({
   scrollContainer: {
     width: '100%',
   },
-
+  contentContainer: {
+    padding: 16,
+  },
+  filterSection: {
+    marginBottom: 16,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    overflow: 'hidden',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#F8F9FA',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  sectionHeaderContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    flex: 1,
+  },
+  selectedCount: {
+    backgroundColor: '#FFD700',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    marginLeft: 8,
+    minWidth: 20,
+    alignItems: 'center',
+  },
+  selectedCountText: {
+    color: '#333',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  sectionContent: {
+    padding: 8,
+  },
+  sectionDivider: {
+    marginVertical: 20,
+    alignItems: 'center',
+  },
+  sectionDividerText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333',
+    backgroundColor: '#F8F9FA',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
   btn: {
     borderRadius: 30,
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  btnbox: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    backgroundColor: '#fff',
   },
 });
 
