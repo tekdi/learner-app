@@ -577,7 +577,7 @@ const FilterList = ({
     if (contentFilter) {
       // Set default domain if contentFilter has domain
       if (contentFilter.domain) {
-        const filterData = renderForm.filter((item) => item?.name === 'Domain');
+        const filterData = renderForm.filter((item) => item?.name === 'domain');
         const selectedDomain = filterData?.[0]?.options.filter((item) => {
           return item?.name == contentFilter?.domain;
         });
@@ -588,7 +588,7 @@ const FilterList = ({
       
       // Set default program if contentFilter has program
       if (contentFilter.program && renderStaticForm.length > 0) {
-        const filterData = renderStaticForm.filter((item) => item?.name === 'Program');
+        const filterData = renderStaticForm.filter((item) => item?.name === 'program');
         const selectedProgram = filterData?.[0]?.range.filter((item) => {
           return item == contentFilter?.program;
         });

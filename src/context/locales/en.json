@@ -318,6 +318,7 @@
   "enter_otp": "Enter OTP",
   "resend_otp_in": "Resend OTP in {count}s",
   "verify_otp": "Verify OTP",
+  "unable_to_send_otp": "Unable to send OTP",
   "min_validation": "{field} must be at least {length} characters",
   "max_validation": "{field} must be at most {length} characters",
   "settings": "Settings",
@@ -443,13 +444,9 @@
     "family_member_details": "Family Member Details",
     "spouse_name":"Spouse Name",
     "father_name":"Father Name",
-    "nophone":"No Phone"
-    
-  
-}
-
-  "###ATM###": "###ATM###",
-  "online_assessment": "Online Assessment",
+        "nophone":"No Phone",
+    "###ATM###": "###ATM###",
+    "online_assessment": "Online Assessment",
   "offline_assessment": "Offline Assessment",
   "Total_Assessment": "Total Assessment",
   "Total_Assessments": "Total Assessments",
@@ -457,5 +454,6 @@
   "no_online_assessments_available": "No online assessments available",
   "not_submitted": "Not Submitted",
   "submitted_eval": "Submitted for Evaluation",
-  "published_on": "Published On"
+  "published_on": "Published On",
+  "clear_filter": "Clear Filter"
 }
