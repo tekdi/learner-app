@@ -30,9 +30,49 @@ const FilterList = ({
   const [staticFilter, setStaticFilter] = useState([]);
   const [formData, setFormData] = useState([]);
   const [staticFormData, setStaticFormData] = useState([]);
+  const [userSelectedFormData, setUserSelectedFormData] = useState({});
+  const [userSelectedStaticFormData, setUserSelectedStaticFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState({});
   const { isConnected } = useInternet();
+  console.log('staticFormData---', staticFormData);
+  
+  // Log selected filters in a more readable format
+  const logSelectedFilters = () => {
+    
+    // Log dynamic filters
+    if (Object.keys(formData).length > 0) {
+      console.log('Dynamic Filters:');
+      Object.keys(formData).forEach(category => {
+        if (formData[category] && formData[category].length > 0) {
+          console.log(`  ${category}:`, formData[category].map(item => item.name || item.code));
+        }
+      });
+    } else {
+      console.log('Dynamic Filters: None selected');
+    }
+    
+    // Log static filters
+    if (Object.keys(staticFormData).length > 0) {
+      console.log('Static Filters:');
+      Object.keys(staticFormData).forEach(category => {
+        if (staticFormData[category] && staticFormData[category].length > 0) {
+          console.log(`  ${category}:`, staticFormData[category]);
+        }
+      });
+    } else {
+    }
+  };
+  
+  // Call the logging function whenever formData or staticFormData changes
+  useEffect(() => {
+    logSelectedFilters();
+  }, [formData, staticFormData]);
+
+  // Track user selections whenever formData or staticFormData changes
+  useEffect(() => {
+    updateUserSelections(formData, staticFormData);
+  }, [formData, staticFormData]);
 
   // Initialize expanded sections
   useEffect(() => {
@@ -245,6 +285,7 @@ const FilterList = ({
 
     // RenderForm
     const transformRenderFormOutput = transformRenderForm(categories || []);
+    console.log('transformRenderFormOutput===>', transformRenderFormOutput);
 
     // ✅ Preselect single-option categories
     const defaultFormData = {};
@@ -508,6 +549,8 @@ const FilterList = ({
 
   const handleFilter = () => {
     const transformedFormData = transformFormData(formData, staticFilter);
+    
+    
     // console.log('staticFilter', JSON.stringify(renderForm));
     // console.log('staticFormData', JSON.stringify(staticFormData));
     setParentFormData(transformedFormData);
@@ -516,12 +559,140 @@ const FilterList = ({
     setIsDrawerOpen(false);
   };
 
+  // Function to get default form data (single-option categories)
+  const getDefaultFormData = () => {
+    const defaultFormData = {};
+    renderForm.forEach((item) => {
+      if (item.options.length === 1) {
+        defaultFormData[item.code] = [item.options[0]];
+      }
+    });
+    return defaultFormData;
+  };
+
+  // Function to get default static form data (from contentFilter)
+  const getDefaultStaticFormData = () => {
+    const defaultStaticFormData = {};
+    
+    if (contentFilter) {
+      // Set default domain if contentFilter has domain
+      if (contentFilter.domain) {
+        const filterData = renderForm.filter((item) => item?.name === 'Domain');
+        const selectedDomain = filterData?.[0]?.options.filter((item) => {
+          return item?.name == contentFilter?.domain;
+        });
+        if (selectedDomain && selectedDomain.length > 0) {
+          defaultStaticFormData.domain = selectedDomain;
+        }
+      }
+      
+      // Set default program if contentFilter has program
+      if (contentFilter.program && renderStaticForm.length > 0) {
+        const filterData = renderStaticForm.filter((item) => item?.name === 'Program');
+        const selectedProgram = filterData?.[0]?.range.filter((item) => {
+          return item == contentFilter?.program;
+        });
+        if (selectedProgram && selectedProgram.length > 0) {
+          defaultStaticFormData.program = selectedProgram;
+        }
+      }
+    }
+    
+    return defaultStaticFormData;
+  };
+
+  // Function to check if there are any user-selected filters (excluding defaults)
+  const hasUserSelectedFilters = () => {
+    const hasUserFormData = Object.keys(userSelectedFormData).length > 0;
+    const hasUserStaticFormData = Object.keys(userSelectedStaticFormData).length > 0;
+    return hasUserFormData || hasUserStaticFormData;
+  };
+
+  // Function to track user selections (excluding defaults)
+  const updateUserSelections = (newFormData, newStaticFormData) => {
+    const defaultFormData = getDefaultFormData();
+    const defaultStaticFormData = getDefaultStaticFormData();
+    
+    // Filter out default selections from user selections
+    const userFormData = {};
+    Object.keys(newFormData).forEach(key => {
+      const userSelection = newFormData[key];
+      const defaultSelection = defaultFormData[key];
+      
+      if (defaultSelection) {
+        // Check if user selection is different from default
+        const isDifferent = userSelection.length !== defaultSelection.length ||
+          userSelection.some(item => !defaultSelection.find(defaultItem => defaultItem.code === item.code));
+        
+        if (isDifferent) {
+          userFormData[key] = userSelection;
+        }
+      } else if (userSelection && userSelection.length > 0) {
+        // No default for this category, so all selections are user selections
+        userFormData[key] = userSelection;
+      }
+    });
+    
+    const userStaticFormData = {};
+    Object.keys(newStaticFormData).forEach(key => {
+      const userSelection = newStaticFormData[key];
+      const defaultSelection = defaultStaticFormData[key];
+      
+      if (defaultSelection) {
+        // Check if user selection is different from default
+        const isDifferent = userSelection.length !== defaultSelection.length ||
+          userSelection.some(item => !defaultSelection.includes(item));
+        
+        if (isDifferent) {
+          userStaticFormData[key] = userSelection;
+        }
+      } else if (userSelection && userSelection.length > 0) {
+        // No default for this category, so all selections are user selections
+        userStaticFormData[key] = userSelection;
+      }
+    });
+    
+    setUserSelectedFormData(userFormData);
+    setUserSelectedStaticFormData(userStaticFormData);
+  };
+
+  const handleClearFilter = () => {
+    // Get default filters that should be preserved
+    const defaultFormData = getDefaultFormData();
+    const defaultStaticFormData = getDefaultStaticFormData();
+    
+    console.log('=== CLEARING FILTERS ===');
+    console.log('Preserving default formData:', defaultFormData);
+    console.log('Preserving default staticFormData:', defaultStaticFormData);
+    console.log('========================');
+    
+    // Set to default values instead of empty objects
+    setFormData(defaultFormData);
+    setStaticFormData(defaultStaticFormData);
+    setParentFormData({});
+    setOrginalFormData(defaultFormData);
+    setParentStaticFormData(defaultStaticFormData);
+  };
+
   return (
     <View style={styles.modalContainer} activeOpacity={1}>
       <View style={styles.alertBox}>
-        <GlobalText style={[globalStyles.heading2, { fontWeight: 'bold' }]}>
-          {t('select_filters')}
-        </GlobalText>
+        <View style={styles.header}>
+          <GlobalText style={[globalStyles.heading2, { fontWeight: 'bold' }]}>
+            {t('select_filters')}
+          </GlobalText>
+          {hasUserSelectedFilters() && (
+            <TouchableOpacity
+              style={styles.clearFilterButton}
+              onPress={handleClearFilter}
+              activeOpacity={0.7}
+            >
+              <GlobalText style={styles.clearFilterText}>
+                {t('clear_filter')}
+              </GlobalText>
+            </TouchableOpacity>
+          )}
+        </View>
         {/* Scrollable Content */}
         {loading ? (
           <View style={{ height: 200 }}>
@@ -637,7 +808,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     borderBottomWidth: 1,
-    borderColor: '#D0C5B4',
+    borderBottomColor: '#E0E0E0',
+    backgroundColor: '#fff',
   },
   scrollContainer: {
     width: '100%',
@@ -714,6 +886,19 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
     backgroundColor: '#fff',
+  },
+  clearFilterButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFD700',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#FFD700',
+  },
+  clearFilterText: {
+    color: '#333',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
 
