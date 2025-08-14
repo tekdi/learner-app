@@ -19,6 +19,10 @@ const PrimaryButton = ({ text, onPress, isDisabled, color }) => {
           justifyContent: 'center',
           alignItems: 'center',
           ...(color && { backgroundColor: color }),
+          ...(isDisabled && { 
+            backgroundColor: '#D3D3D3', // Light gray for disabled state
+            opacity: 0.6 
+          }),
         }}
         disabled={isDisabled}
       >

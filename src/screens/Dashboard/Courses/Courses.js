@@ -492,6 +492,7 @@ const Courses = () => {
               >
                 {youthnet && t('l1_courses')}
               </GlobalText>
+             
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <CopilotStep
                   text="You can search courses from here"
@@ -527,7 +528,73 @@ const Courses = () => {
                   }}
                 >
                   <GlobalText style={globalStyles.text}>
-                    {t('filter')}
+                    {t('filter')} {Object.entries({...orginalFormData, ...parentStaticFormData}).filter(([key, value]) => {
+                      // Skip keys that are present in contentFilter
+                      if (contentFilter && contentFilter[key]) {
+                        return false;
+                      }
+                      
+                      // Also skip empty or meaningless values
+                      if (!value || value === '' || value === null || value === undefined) {
+                        return false;
+                      }
+                      
+                      // Skip empty arrays
+                      if (Array.isArray(value) && value.length === 0) {
+                        return false;
+                      }
+                      
+                      // Check if the value has meaningful content
+                      let displayValue = '';
+                      if (Array.isArray(value) && value.length > 0) {
+                        if (value[0] && typeof value[0] === 'object' && value[0].name) {
+                          displayValue = value.map(item => item.name).join(', ');
+                        } else {
+                          displayValue = value.join(', ');
+                        }
+                      } else if (typeof value === 'string') {
+                        displayValue = value;
+                      } else if (typeof value === 'object' && value !== null) {
+                        displayValue = value.name || key;
+                      } else {
+                        displayValue = String(value);
+                      }
+                      
+                      return displayValue && displayValue.trim() !== '';
+                    }).length > 0 ? `(${Object.entries({...orginalFormData, ...parentStaticFormData}).filter(([key, value]) => {
+                      // Skip keys that are present in contentFilter
+                      if (contentFilter && contentFilter[key]) {
+                        return false;
+                      }
+                      
+                      // Also skip empty or meaningless values
+                      if (!value || value === '' || value === null || value === undefined) {
+                        return false;
+                      }
+                      
+                      // Skip empty arrays
+                      if (Array.isArray(value) && value.length === 0) {
+                        return false;
+                      }
+                      
+                      // Check if the value has meaningful content
+                      let displayValue = '';
+                      if (Array.isArray(value) && value.length > 0) {
+                        if (value[0] && typeof value[0] === 'object' && value[0].name) {
+                          displayValue = value.map(item => item.name).join(', ');
+                        } else {
+                          displayValue = value.join(', ');
+                        }
+                      } else if (typeof value === 'string') {
+                        displayValue = value;
+                      } else if (typeof value === 'object' && value !== null) {
+                        displayValue = value.name || key;
+                      } else {
+                        displayValue = String(value);
+                      }
+                      
+                      return displayValue && displayValue.trim() !== '';
+                    }).length})` : ''}
                   </GlobalText>
                   <Icon
                     name={'caretdown'}
@@ -537,7 +604,103 @@ const Courses = () => {
                   />
                 </TouchableOpacity>
               </View>
+              {(() => {
+                const hasFilters = Object.entries({...orginalFormData, ...parentStaticFormData}).some(([key, value]) => {
+                  // Skip keys that are present in contentFilter
+                  if (contentFilter && contentFilter[key]) {
+                    return false;
+                  }
+                  
+                  // Also skip empty or meaningless values
+                  if (!value || value === '' || value === null || value === undefined) {
+                    return false;
+                  }
+                  
+                  // Skip empty arrays
+                  if (Array.isArray(value) && value.length === 0) {
+                    return false;
+                  }
+                  
+                  // Check if the value has meaningful content
+                  let displayValue = '';
+                  if (Array.isArray(value) && value.length > 0) {
+                    if (value[0] && typeof value[0] === 'object' && value[0].name) {
+                      displayValue = value.map(item => item.name).join(', ');
+                    } else {
+                      displayValue = value.join(', ');
+                    }
+                  } else if (typeof value === 'string') {
+                    displayValue = value;
+                  } else if (typeof value === 'object' && value !== null) {
+                    displayValue = value.name || key;
+                  } else {
+                    displayValue = String(value);
+                  }
+                  
+                  return displayValue && displayValue.trim() !== '';
+                });
 
+                return hasFilters ? (
+                  <View style={styles.filterTagsContainer}>
+                    <GlobalText style={styles.appliedFiltersText}>
+                      Applied Filters:
+                    </GlobalText>
+                    <View style={styles.tagsWrapper}>
+                      {Object.entries({...orginalFormData, ...parentStaticFormData}).map(([key, value]) => {
+                        // Skip keys that are present in contentFilter
+                        if (contentFilter && contentFilter[key]) {
+                          return null;
+                        }
+                        
+                        // Also skip empty or meaningless values
+                        if (!value || value === '' || value === null || value === undefined) {
+                          return null;
+                        }
+                        
+                        // Skip empty arrays
+                        if (Array.isArray(value) && value.length === 0) {
+                          return null;
+                        }
+                        
+                        if (value && value !== '' && value !== null && value !== undefined) {
+                          let displayValue = '';
+                          
+                          // Handle array of objects (like subDomain, subject)
+                          if (Array.isArray(value) && value.length > 0) {
+                            if (value[0] && typeof value[0] === 'object' && value[0].name) {
+                              // Extract names from objects and join them
+                              displayValue = value.map(item => item.name).join(', ');
+                            } else {
+                              // Handle simple arrays
+                              displayValue = value.join(', ');
+                            }
+                          } else if (typeof value === 'string') {
+                            // Handle simple string values
+                            displayValue = value;
+                          } else if (typeof value === 'object' && value !== null) {
+                            // Handle single object
+                            displayValue = value.name || key;
+                          } else {
+                            // Fallback
+                            displayValue = String(value);
+                          }
+                          
+                          if (displayValue && displayValue.trim() !== '') {
+                            return (
+                              <View key={key} style={styles.filterTag}>
+                                <GlobalText style={styles.filterTagText}>
+                                  {displayValue}
+                                </GlobalText>
+                              </View>
+                            );
+                          }
+                        }
+                        return null;
+                      })}
+                    </View>
+                  </View>
+                ) : null;
+              })()}
               <SyncCard doneSync={fetchData} />
               <CopilotStep
                 text="You can explore courses from here!"
@@ -681,6 +844,46 @@ const styles = StyleSheet.create({
     color: 'black',
     marginLeft: 10,
     fontWeight: '500',
+  },
+  filterTagsContainer: {
+   // marginTop: 5,
+    marginBottom: 10,
+    paddingHorizontal: 4,
+    marginLeft: 10,
+  },
+  filterTag: {
+    backgroundColor: '#E5E7EB',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  filterTagText: {
+    fontSize: 13,
+    color: '#374151',
+    fontWeight: '500',
+    letterSpacing: 0.3,
+  },
+  appliedFiltersText: {
+    fontSize: 16,
+    color: '#1F2937',
+    fontWeight: '600',
+    marginBottom: 8,
+    letterSpacing: 0.5,
+  },
+  tagsWrapper: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
   },
 });
 
