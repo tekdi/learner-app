@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import GlobalText from '@components/GlobalText/GlobalText';
+import { useTranslation } from '../../../../context/LanguageContext';
 
 const ATMTabView = ({
   tabs,
@@ -10,8 +11,8 @@ const ATMTabView = ({
   inactiveTabStyle,
   tabTextStyle,
   activeTextStyle,
-  t,
 }) => {
+  const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState(activeTabIndex);
 
   // Update internal state when external activeTabIndex changes
@@ -63,11 +64,15 @@ const ATMTabView = ({
               {tabs[selectedTab]?.count !== undefined &&
                 tabs[selectedTab]?.count !== null && (
                   <GlobalText style={styles.countText}>
-                    {tabs[selectedTab]?.count!='0' && <>
-                    {tabs[selectedTab]?.count!='0' && tabs[selectedTab]?.count}{' '}
-                    {tabs[selectedTab]?.count === 1
-                      ? t('Total_Assessment')
-                      : t('Total_Assessments')}</>}
+                    {tabs[selectedTab]?.count != '0' && (
+                      <>
+                        {tabs[selectedTab]?.count != '0' &&
+                          tabs[selectedTab]?.count}{' '}
+                        {tabs[selectedTab]?.count === 1
+                          ? t('Total_Assessment')
+                          : t('Total_Assessments')}
+                      </>
+                    )}
                   </GlobalText>
                 )}
             </View>

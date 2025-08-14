@@ -39,13 +39,18 @@ class ImagePermissionHelper {
     }
 
     try {
-      // For Android 13+ (API 33+), use READ_MEDIA_IMAGES
+      // For Android 13+ (API 33+), we don't need to request READ_MEDIA_IMAGES
+      // The Photo Picker will handle permissions automatically
       if (Platform.Version >= 33) {
+        return true; // Photo Picker handles permissions automatically
+      } else if (Platform.Version >= 29) {
+        // Android 10-12 (API 29-32) - use READ_EXTERNAL_STORAGE
+        // Note: requestLegacyExternalStorage is set to true in AndroidManifest.xml
         const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
           {
-            title: 'Media Permission',
-            message: 'This app needs access to your photos to select images.',
+            title: 'Storage Permission',
+            message: 'This app needs access to your storage to select images.',
             buttonNeutral: 'Ask Me Later',
             buttonNegative: 'Cancel',
             buttonPositive: 'OK',
@@ -53,7 +58,7 @@ class ImagePermissionHelper {
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
       } else {
-        // For older Android versions, use READ_EXTERNAL_STORAGE
+        // Android 8-9 (API 26-28) - use READ_EXTERNAL_STORAGE
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
           {
@@ -102,12 +107,9 @@ class ImagePermissionHelper {
     }
 
     try {
-      // For Android 13+ (API 33+), check READ_MEDIA_IMAGES
+      // For Android 13+ (API 33+), Photo Picker handles permissions automatically
       if (Platform.Version >= 33) {
-        const granted = await PermissionsAndroid.check(
-          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
-        );
-        return granted;
+        return true; // No need to check permissions for Photo Picker
       } else {
         // For older Android versions, check READ_EXTERNAL_STORAGE
         const granted = await PermissionsAndroid.check(
@@ -187,19 +189,19 @@ class ImagePermissionHelper {
 
     let storageStatus;
     if (Platform.Version >= 33) {
-      storageStatus = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
-      );
+      storageStatus = 'Photo Picker - handled automatically';
     } else {
       storageStatus = await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
       );
+      storageStatus = storageStatus ? 'granted' : 'denied';
     }
 
     return {
       camera: cameraStatus ? 'granted' : 'denied',
-      storage: storageStatus ? 'granted' : 'denied',
+      storage: storageStatus,
       androidVersion: Platform.Version,
+      apiLevel: Platform.Version,
     };
   }
 }

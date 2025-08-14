@@ -173,7 +173,7 @@ const Courses = () => {
       setUserId(userId);
       const instant =
         userType === 'youthnet'
-          ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+          ? { frameworkId: 'pos-framework', channelId: 'pos-channel' }
           : userType === 'scp'
           ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
           : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
@@ -245,7 +245,7 @@ const Courses = () => {
   );
 
   const fetchTopics = async () => {
-    const instantId = `youthnet-framework`;
+    const instantId = `pos-framework`;
     const data = await filterContent({ instantId });
     const newData = data?.framework?.categories?.filter((item) => {
       return item?.code === 'subject';
@@ -266,7 +266,7 @@ const Courses = () => {
 
     // const instant =
     //   userType === 'youthnet'
-    //     ? { frameworkId: 'youthnet-framework', channelId: 'youthnet-channel' }
+    //     ? { frameworkId: 'pos-framework', channelId: 'pos-channel' }
     //     : userType === 'scp'
     //       ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
     //       : { frameworkId: 'pos-framework', channelId: 'pos-channel' };

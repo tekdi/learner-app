@@ -66,8 +66,8 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
           // const instant =
           //   userType === 'youthnet'
           //     ? {
-          //         frameworkId: 'youthnet-framework',
-          //         channelId: 'youthnet-channel',
+          //         frameworkId: 'pos-framework',
+          //         channelId: 'pos-channel',
           //       }
           //     : userType === 'scp'
           //     ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }

@@ -116,8 +116,8 @@ const ImageUploadDialog = ({
       onCancel: () => {
         // Do nothing, alert will close automatically
       },
-      confirmText: t('Remove'),
-      cancelText: t('Cancel'),
+      confirmText: t('delete'),
+      cancelText: t('cancel'),
     });
   };
 
@@ -198,248 +198,234 @@ const ImageUploadDialog = ({
         animationType="slide"
         onRequestClose={onClose}
       >
-        <TouchableWithoutFeedback onPress={onClose}>
-          <View style={styles.overlay}>
-            <TouchableWithoutFeedback onPress={() => {}}>
-              <View style={styles.dialogContainer}>
-                {/* Header */}
-                <View style={styles.header}>
-                  <View style={styles.headerContent}>
-                    <GlobalText style={styles.headerTitle}>
-                      {t('Submit Answers for AI Evaluation')}
+        <View style={styles.overlay}>
+          <TouchableWithoutFeedback onPress={onClose}>
+            <View style={styles.overlayTouchable} />
+          </TouchableWithoutFeedback>
+
+          <View style={styles.dialogContainer}>
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.headerContent}>
+                <GlobalText style={styles.headerTitle}>
+                  {t('Submit Answers for AI Evaluation')}
+                </GlobalText>
+              </View>
+              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <Icon name="x" size={20} color="#4D4639" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Divider */}
+            <View style={styles.divider} />
+
+            {/* Content */}
+            <ScrollView
+              style={styles.content}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.scrollContent}
+              scrollEventThrottle={16}
+              bounces={true}
+              nestedScrollEnabled={true}
+              keyboardShouldPersistTaps="handled"
+            >
+              {/* Action Buttons */}
+              <View style={styles.actionButtons}>
+                <TouchableOpacity
+                  style={[
+                    styles.actionButton,
+                    (isProcessingImages || isUploading) &&
+                      styles.actionButtonDisabled,
+                  ]}
+                  onPress={onCameraPress}
+                  disabled={isProcessingImages || isUploading}
+                >
+                  {isProcessingImages ? (
+                    <ActivityIndicator size="small" color="#1F1B13" />
+                  ) : (
+                    <Icon name="device-camera" size={32} color="#1C1B1F" />
+                  )}
+                  <GlobalText
+                    style={[
+                      styles.actionButtonText,
+                      (isProcessingImages || isUploading) &&
+                        styles.actionButtonTextDisabled,
+                    ]}
+                  >
+                    {isProcessingImages ? t('Processing...') : t('Take Photo')}
+                  </GlobalText>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.actionButton,
+                    (isProcessingImages || isUploading) &&
+                      styles.actionButtonDisabled,
+                  ]}
+                  onPress={onGalleryPress}
+                  disabled={isProcessingImages || isUploading}
+                >
+                  {isProcessingImages ? (
+                    <ActivityIndicator size="small" color="#1F1B13" />
+                  ) : (
+                    <Icon name="image" size={32} color="#1C1B1F" />
+                  )}
+                  <GlobalText
+                    style={[
+                      styles.actionButtonText,
+                      (isProcessingImages || isUploading) &&
+                        styles.actionButtonTextDisabled,
+                    ]}
+                  >
+                    {isProcessingImages
+                      ? t('Processing...')
+                      : t('Choose from Gallery')}
+                  </GlobalText>
+                </TouchableOpacity>
+              </View>
+
+              {/* Format Information */}
+              <GlobalText style={styles.formatInfo}>
+                {t('Format: jpg, size: 50 MB')}
+                {'\n'}
+                {t('Up to 4 images')}
+              </GlobalText>
+
+              {/* Expandable Instructions */}
+              <View style={styles.instructionsContainer}>
+                <TouchableOpacity
+                  style={styles.instructionsHeader}
+                  onPress={toggleInstructions}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.instructionsHeaderContent}>
+                    <GlobalText style={styles.instructionsTitle}>
+                      {t('Exam Instructions')}
                     </GlobalText>
                   </View>
-                  <TouchableOpacity
-                    style={styles.closeButton}
-                    onPress={onClose}
-                  >
-                    <Icon name="x" size={20} color="#4D4639" />
-                  </TouchableOpacity>
-                </View>
-
-                {/* Divider */}
-                <View style={styles.divider} />
-
-                {/* Content */}
-                <ScrollView
-                  style={styles.content}
-                  showsVerticalScrollIndicator={false}
-                  contentContainerStyle={styles.scrollContent}
-                  scrollEventThrottle={16}
-                  bounces={true}
-                  nestedScrollEnabled={true}
-                >
-                  {/* Action Buttons */}
-                  <View style={styles.actionButtons}>
-                    <TouchableOpacity
-                      style={[
-                        styles.actionButton,
-                        (isProcessingImages || isUploading) &&
-                          styles.actionButtonDisabled,
-                      ]}
-                      onPress={onCameraPress}
-                      disabled={isProcessingImages || isUploading}
-                    >
-                      {isProcessingImages ? (
-                        <ActivityIndicator size="small" color="#1F1B13" />
-                      ) : (
-                        <Icon name="device-camera" size={32} color="#1C1B1F" />
-                      )}
-                      <GlobalText
-                        style={[
-                          styles.actionButtonText,
-                          (isProcessingImages || isUploading) &&
-                            styles.actionButtonTextDisabled,
-                        ]}
-                      >
-                        {isProcessingImages
-                          ? t('Processing...')
-                          : t('Take Photo')}
-                      </GlobalText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={[
-                        styles.actionButton,
-                        (isProcessingImages || isUploading) &&
-                          styles.actionButtonDisabled,
-                      ]}
-                      onPress={onGalleryPress}
-                      disabled={isProcessingImages || isUploading}
-                    >
-                      {isProcessingImages ? (
-                        <ActivityIndicator size="small" color="#1F1B13" />
-                      ) : (
-                        <Icon name="image" size={32} color="#1C1B1F" />
-                      )}
-                      <GlobalText
-                        style={[
-                          styles.actionButtonText,
-                          (isProcessingImages || isUploading) &&
-                            styles.actionButtonTextDisabled,
-                        ]}
-                      >
-                        {isProcessingImages
-                          ? t('Processing...')
-                          : t('Choose from Gallery')}
-                      </GlobalText>
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* Format Information */}
-                  <GlobalText style={styles.formatInfo}>
-                    {t('Format: jpg, size: 50 MB')}
-                    {'\n'}
-                    {t('Up to 4 images')}
-                  </GlobalText>
-
-                  {/* Expandable Instructions */}
-                  <View style={styles.instructionsContainer}>
-                    <TouchableOpacity
-                      style={styles.instructionsHeader}
-                      onPress={toggleInstructions}
-                      activeOpacity={0.7}
-                    >
-                      <View style={styles.instructionsHeaderContent}>
-                        <Icon
-                          name="info-circle"
-                          size={20}
-                          color="#1C1B1F"
-                          style={styles.instructionsIcon}
-                        />
-                        <GlobalText style={styles.instructionsTitle}>
-                          {t('Exam Instructions')}
-                        </GlobalText>
-                      </View>
-                      <Animated.View
-                        style={[
-                          styles.instructionsArrow,
+                  <Animated.View
+                    style={[
+                      styles.instructionsArrow,
+                      {
+                        transform: [
                           {
-                            transform: [
-                              {
-                                rotate: instructionsAnimation.interpolate({
-                                  inputRange: [0, 1],
-                                  outputRange: ['0deg', '180deg'],
-                                }),
-                              },
-                            ],
+                            rotate: instructionsAnimation.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: ['0deg', '180deg'],
+                            }),
                           },
-                        ]}
-                      >
-                        <Icon name="chevron-down" size={16} color="#1C1B1F" />
-                      </Animated.View>
-                    </TouchableOpacity>
+                        ],
+                      },
+                    ]}
+                  >
+                    <Icon name="chevron-down" size={16} color="#1C1B1F" />
+                  </Animated.View>
+                </TouchableOpacity>
 
-                    <Animated.View
-                      style={[
-                        styles.instructionsContent,
-                        {
-                          maxHeight: instructionsAnimation.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [0, 400],
-                          }),
-                          opacity: instructionsAnimation,
-                        },
-                      ]}
-                    >
-                      <View style={styles.instructionsList}>
-                        <View style={styles.instructionItem}>
-                          <Icon name="check-circle" size={16} color="#4CAF50" />
-                          <GlobalText style={styles.instructionText}>
-                            {t('Take a plain white paper')}
-                          </GlobalText>
-                        </View>
-                        <View style={styles.instructionItem}>
-                          <Icon name="check-circle" size={16} color="#4CAF50" />
-                          <GlobalText style={styles.instructionText}>
-                            {t('Use pen with black or blue ink only')}
-                          </GlobalText>
-                        </View>
-                        <View style={styles.instructionItem}>
-                          <Icon name="check-circle" size={16} color="#4CAF50" />
-                          <GlobalText style={styles.instructionText}>
-                            {t(
-                              'Write all the answers, including MCQs and fill-in-the-blanks, on the piece of paper'
-                            )}
-                          </GlobalText>
-                        </View>
-                        <View style={styles.instructionItem}>
-                          <Icon name="check-circle" size={16} color="#4CAF50" />
-                          <GlobalText style={styles.instructionText}>
-                            {t(
-                              'Use the same numbering system as the question paper; take extra care to write the numbers clearly'
-                            )}
-                          </GlobalText>
-                        </View>
-                        <View style={styles.instructionItem}>
-                          <Icon name="check-circle" size={16} color="#4CAF50" />
-                          <GlobalText style={styles.instructionText}>
-                            {t(
-                              'Write clearly and make sure the letters do not touch the edges of the page. If a mistake is made, strike it out neatly and write it again'
-                            )}
-                          </GlobalText>
-                        </View>
-                      </View>
-                    </Animated.View>
-                  </View>
-
-                  {/* Selected Images List */}
-                  {selectedImages.length > 0 && (
-                    <View style={styles.selectedImagesContainer}>
-                      {isProcessingImages && (
-                        <View style={styles.processingIndicator}>
-                          <ActivityIndicator size="small" color="#1F1B13" />
-                          <GlobalText style={styles.processingText}>
-                            {t('Processing images...')}
-                          </GlobalText>
-                        </View>
-                      )}
-                      {selectedImages.map((item, index) =>
-                        renderImageItem(item, index)
-                      )}
-                    </View>
-                  )}
-
-                  {/* Warning for too many images */}
-                  {selectedImages.length > 4 && (
-                    <View style={styles.warningContainer}>
-                      <GlobalText style={styles.warningText}>
-                        {t('You have selected')} {selectedImages.length}{' '}
-                        {t('images')}.{' '}
-                        {t('We recommend uploading up to 4 images')}.
+                <Animated.View
+                  style={[
+                    styles.instructionsContent,
+                    {
+                      maxHeight: instructionsAnimation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 400],
+                      }),
+                      opacity: instructionsAnimation,
+                    },
+                  ]}
+                >
+                  <View style={styles.instructionsList}>
+                    <View style={styles.instructionItem}>
+                      <Icon name="check-circle" size={16} color="#4CAF50" />
+                      <GlobalText style={styles.instructionText}>
+                        {t('Take a plain white paper')}
                       </GlobalText>
                     </View>
-                  )}
-                </ScrollView>
-
-                {/* Actions Footer */}
-                <View style={styles.actions}>
-                  <View style={styles.actionsDivider} />
-                  <View style={styles.buttonsContainer}>
-                    <TouchableOpacity
-                      style={[
-                        styles.submitButton,
-                        selectedImages.length === 0 &&
-                          styles.submitButtonDisabled,
-                        isUploading && styles.submitButtonDisabled,
-                      ]}
-                      onPress={onSubmit}
-                      disabled={selectedImages.length === 0 || isUploading}
-                    >
-                      <GlobalText style={styles.submitButtonText}>
-                        {isUploading
-                          ? `${t('Uploading')}... ${Math.round(
-                              uploadProgress
-                            )}%`
-                          : t('Submit for Review')}
+                    <View style={styles.instructionItem}>
+                      <Icon name="check-circle" size={16} color="#4CAF50" />
+                      <GlobalText style={styles.instructionText}>
+                        {t('Use pen with black or blue ink only')}
                       </GlobalText>
-                    </TouchableOpacity>
+                    </View>
+                    <View style={styles.instructionItem}>
+                      <Icon name="check-circle" size={16} color="#4CAF50" />
+                      <GlobalText style={styles.instructionText}>
+                        {t(
+                          'Write all the answers, including MCQs and fill-in-the-blanks, on the piece of paper'
+                        )}
+                      </GlobalText>
+                    </View>
+                    <View style={styles.instructionItem}>
+                      <Icon name="check-circle" size={16} color="#4CAF50" />
+                      <GlobalText style={styles.instructionText}>
+                        {t(
+                          'Use the same numbering system as the question paper; take extra care to write the numbers clearly'
+                        )}
+                      </GlobalText>
+                    </View>
+                    <View style={styles.instructionItem}>
+                      <Icon name="check-circle" size={16} color="#4CAF50" />
+                      <GlobalText style={styles.instructionText}>
+                        {t(
+                          'Write clearly and make sure the letters do not touch the edges of the page. If a mistake is made, strike it out neatly and write it again'
+                        )}
+                      </GlobalText>
+                    </View>
                   </View>
-                </View>
+                </Animated.View>
               </View>
-            </TouchableWithoutFeedback>
+
+              {/* Selected Images List */}
+              {selectedImages.length > 0 && (
+                <View style={styles.selectedImagesContainer}>
+                  {isProcessingImages && (
+                    <View style={styles.processingIndicator}>
+                      <ActivityIndicator size="small" color="#1F1B13" />
+                      <GlobalText style={styles.processingText}>
+                        {t('Processing images...')}
+                      </GlobalText>
+                    </View>
+                  )}
+                  {selectedImages.map((item, index) =>
+                    renderImageItem(item, index)
+                  )}
+                </View>
+              )}
+
+              {/* Warning for too many images */}
+              {selectedImages.length > 4 && (
+                <View style={styles.warningContainer}>
+                  <GlobalText style={styles.warningText}>
+                    {t('You have selected')} {selectedImages.length}{' '}
+                    {t('images')}. {t('We recommend uploading up to 4 images')}.
+                  </GlobalText>
+                </View>
+              )}
+            </ScrollView>
+
+            {/* Actions Footer */}
+            <View style={styles.actions}>
+              <View style={styles.actionsDivider} />
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.submitButton,
+                    selectedImages.length === 0 && styles.submitButtonDisabled,
+                    isUploading && styles.submitButtonDisabled,
+                  ]}
+                  onPress={onSubmit}
+                  disabled={selectedImages.length === 0 || isUploading}
+                >
+                  <GlobalText style={styles.submitButtonText}>
+                    {isUploading
+                      ? `${t('Uploading')}... ${Math.round(uploadProgress)}%`
+                      : t('Submit for Review')}
+                  </GlobalText>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-        </TouchableWithoutFeedback>
+        </View>
       </Modal>
 
       {/* Full-Screen Image Preview Dialog */}
@@ -546,6 +532,9 @@ const styles = {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  overlayTouchable: {
+    flex: 1,
   },
   dialogContainer: {
     width: '90%',

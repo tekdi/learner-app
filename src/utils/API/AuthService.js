@@ -436,7 +436,7 @@ export const courseListApi_New = async ({
         channel: instant?.channelId || channelId,
         // program:
         //   userType == 'scp'
-        //     ? ['secondchance', 'Second Chance', 'SCP']
+        //     ? ['secondchance', 'Second Chance']
         //     : ['Youthnet', 'youthnet', 'YouthNet'],
         domain: contentFilter?.domain,
         program: contentFilter?.program,
@@ -782,7 +782,7 @@ export const assessmentListApi = async (params = {}) => {
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
         // assessmentType: ['pre-test', 'post-test'],
-        assessmentType: ['Pre Test', 'Post Test'],
+        assessmentType: ['Pre Test', 'Post Test', 'Other'],
         status: ['Live'],
         primaryCategory: ['Practice Question Set'],
       },
