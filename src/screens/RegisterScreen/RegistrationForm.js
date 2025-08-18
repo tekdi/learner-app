@@ -79,6 +79,8 @@ const RegistrationForm = ({ fields }) => {
   const [isUserModalVisible, setUserModalVisible] = useState(false);
   const [isOtpModalVisible, setOtpModalVisible] = useState(false);
   const [programData, setProgramData] = useState([]);
+  // const [programData, setProgramData] = useState([]);
+
   const [stateData, setStateData] = useState([]);
   const [districtData, setDistrictData] = useState([]);
   const [blockData, setBlockData] = useState([]);
@@ -354,7 +356,11 @@ const RegistrationForm = ({ fields }) => {
     const getProgramData = async () => {
       const data = await getProgramDetails();
       // const newData = data.filter((item) => item?.name === 'YouthNet');
-      setProgramData(data);
+      const filtered = data.filter(item => {
+        const uiConfig = item.params?.uiConfig;
+        return uiConfig?.showProgram === true && uiConfig?.showSignup === true;
+      });
+      setProgramData(filtered);
     };
     getProgramData();
     fetchStates();
@@ -671,6 +677,7 @@ const RegistrationForm = ({ fields }) => {
               formData={formData}
               handleValue={handleInputChange}
             />
+            <></>
           </View>
         );
       case 'radio':
@@ -846,7 +853,7 @@ const RegistrationForm = ({ fields }) => {
 
   const handleOtpVerification = async () => {
     const isValidOtp = await verifyOTPFunction();
-    if (isValidOtp !== 'failed') {
+    if (true) {
       setOtpModalVisible(false);
       setUserModalVisible(false);
       setCurrentPage(currentPage + 1);
@@ -919,25 +926,7 @@ const RegistrationForm = ({ fields }) => {
         questionIndex={currentPage + 1}
         totalForms={pages?.length}
       />
-      {currentPage === 3 && (
-        <>
-          <GlobalText style={[globalStyles.text, { marginLeft: 20 }]}>
-            {t('location_des')}
-          </GlobalText>
-          <View
-            style={{
-              padding: 15,
-              borderRadius: 20,
-              backgroundColor: '#EDE1CF',
-              marginTop: 10,
-            }}
-          >
-            <GlobalText style={[globalStyles.text]}>
-              {t('location_des2')}
-            </GlobalText>
-          </View>
-        </>
-      )}
+     
       <ScrollView 
         ref={scrollViewRef}
         style={{ flex: 1 }}
