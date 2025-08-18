@@ -604,7 +604,17 @@ const FilterList = ({
   // Function to check if there are any user-selected filters (excluding defaults)
   const hasUserSelectedFilters = () => {
     const hasUserFormData = Object.keys(userSelectedFormData).length > 0;
-    const hasUserStaticFormData = Object.keys(userSelectedStaticFormData).length > 0;
+    
+    // Filter out contentFilter keys from userSelectedStaticFormData
+    const filteredUserSelectedStaticFormData = {};
+    Object.keys(userSelectedStaticFormData).forEach(key => {
+      if (!contentFilter || !contentFilter.hasOwnProperty(key)) {
+        filteredUserSelectedStaticFormData[key] = userSelectedStaticFormData[key];
+      }
+    });
+    
+    const hasUserStaticFormData = Object.keys(filteredUserSelectedStaticFormData).length > 0;
+    
     return hasUserFormData || hasUserStaticFormData;
   };
 
