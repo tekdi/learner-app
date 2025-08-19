@@ -853,7 +853,7 @@ const RegistrationForm = ({ fields }) => {
 
   const handleOtpVerification = async () => {
     const isValidOtp = await verifyOTPFunction();
-    if (true) {
+    if (isValidOtp !== 'failed') {
       setOtpModalVisible(false);
       setUserModalVisible(false);
       setCurrentPage(currentPage + 1);
