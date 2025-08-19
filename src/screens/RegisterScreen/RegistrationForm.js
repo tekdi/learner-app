@@ -945,7 +945,6 @@ const RegistrationForm = ({ fields }) => {
           </View>
         </>
       )}
-      <ScrollView style={{ flex: 1 }}></ScrollView>
       <ScrollView 
         ref={scrollViewRef}
         style={{ flex: 1 }}
