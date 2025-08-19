@@ -443,8 +443,12 @@ const RegistrationForm = ({ fields }) => {
 
         // Merge new fields into the filtered schema
         const newSchema = [...filteredSchema, ...fields];
-
-        setSchema(newSchema);
+        const result = newSchema.filter(
+          (item) => item.label !== "CENTER" && item.label !== "BATCH"
+        );
+        
+        console.log('newSchema', newSchema)
+        setSchema(result);
 
         // Group fields into pages and update state
         const mypages = groupFieldsByOrder(newSchema);
