@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 import globalStyles from '../../utils/Helper/Style';
@@ -10,6 +10,7 @@ import CustomCheckbox2 from '@components/Checkboxes/CustomCheckbox2';
 import { filterContent, staticFilterContent } from '@src/utils/API/AuthService';
 import ActiveLoading from '@src/screens/LoadingScreen/ActiveLoading';
 import { useInternet } from '../../context/NetworkContext';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const FilterList = ({
   setParentFormData,
@@ -29,8 +30,61 @@ const FilterList = ({
   const [staticFilter, setStaticFilter] = useState([]);
   const [formData, setFormData] = useState([]);
   const [staticFormData, setStaticFormData] = useState([]);
+  const [userSelectedFormData, setUserSelectedFormData] = useState({});
+  const [userSelectedStaticFormData, setUserSelectedStaticFormData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [expandedSections, setExpandedSections] = useState({});
   const { isConnected } = useInternet();
+  console.log('staticFormData---', staticFormData);
+  
+  // Log selected filters in a more readable format
+  const logSelectedFilters = () => {
+    
+    // Log dynamic filters
+    if (Object.keys(formData).length > 0) {
+      console.log('Dynamic Filters:');
+      Object.keys(formData).forEach(category => {
+        if (formData[category] && formData[category].length > 0) {
+          console.log(`  ${category}:`, formData[category].map(item => item.name || item.code));
+        }
+      });
+    } else {
+      console.log('Dynamic Filters: None selected');
+    }
+    
+    // Log static filters
+    if (Object.keys(staticFormData).length > 0) {
+      console.log('Static Filters:');
+      Object.keys(staticFormData).forEach(category => {
+        if (staticFormData[category] && staticFormData[category].length > 0) {
+          console.log(`  ${category}:`, staticFormData[category]);
+        }
+      });
+    } else {
+    }
+  };
+  
+  // Call the logging function whenever formData or staticFormData changes
+  useEffect(() => {
+    logSelectedFilters();
+  }, [formData, staticFormData]);
+
+  // Track user selections whenever formData or staticFormData changes
+  useEffect(() => {
+    updateUserSelections(formData, staticFormData);
+  }, [formData, staticFormData]);
+
+  // Initialize expanded sections
+  useEffect(() => {
+    const initialExpanded = {};
+    renderForm.forEach((item) => {
+      initialExpanded[item.code] = true; // Default to expanded
+    });
+    renderStaticForm.forEach((item) => {
+      initialExpanded[item.code] = true; // Default to expanded
+    });
+    setExpandedSections(initialExpanded);
+  }, [renderForm, renderStaticForm]);
 
   // useEffect(() => {
   //   setParentFormData(formData);
@@ -130,6 +184,97 @@ const FilterList = ({
   function extractNames(renderForm) {
     return renderForm.map((item) => item.name);
   }
+
+  // Custom ordering function for filter sections
+  const getFilterOrder = (itemName) => {
+    const orderMap = {
+      'Content Language': 1,
+      'Language': 1,
+      'Sub Domain': 2,
+      'Subdomain': 2,
+      'Subject': 3,
+      'Domain': 4,
+      'Category': 5,
+      'Program': 6,
+    };
+    
+    return orderMap[itemName] || 999; // Default to end for unknown items
+  };
+
+  const sortFilterSections = (sections) => {
+    return sections.sort((a, b) => {
+      const orderA = getFilterOrder(a.name);
+      const orderB = getFilterOrder(b.name);
+      return orderA - orderB;
+    });
+  };
+
+  const toggleSection = (sectionCode) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionCode]: !prev[sectionCode]
+    }));
+  };
+
+  const renderFilterSection = (item, key, isStatic = false) => {
+    const isExpanded = expandedSections[item.code];
+    const selectedCount = isStatic 
+      ? (staticFormData[item.code]?.length || 0)
+      : (formData[item.code]?.length || 0);
+
+    return (
+      <View key={key} style={styles.filterSection}>
+        <TouchableOpacity
+          style={styles.sectionHeader}
+          onPress={() => toggleSection(item.code)}
+          activeOpacity={0.7}
+        >
+          <View style={styles.sectionHeaderContent}>
+            <GlobalText style={styles.sectionTitle}>
+              {item.name}
+            </GlobalText>
+            {selectedCount > 0 && (
+              <View style={styles.selectedCount}>
+                <GlobalText style={styles.selectedCountText}>
+                  {selectedCount}
+                </GlobalText>
+              </View>
+            )}
+          </View>
+          <MaterialIcons
+            name={isExpanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+            size={24}
+            color="#666"
+          />
+        </TouchableOpacity>
+
+        {isExpanded && (
+          <View style={styles.sectionContent}>
+            {isStatic ? (
+              <CustomCheckbox2
+                setStaticFormData={setStaticFormData}
+                staticFormData={staticFormData}
+                options={item.range}
+                category={item.code}
+                showMoreLimit={3}
+              />
+            ) : (
+              <CustomCheckbox
+                setFormData={setFormData}
+                formData={formData}
+                options={item.options}
+                category={item.code}
+                index={item.index}
+                replaceOptionsWithAssoc={replaceOptionsWithAssoc}
+                showMoreLimit={3}
+              />
+            )}
+          </View>
+        )}
+      </View>
+    );
+  };
+
   const fetchData = async () => {
     setLoading(true);
     const instantId = instant?.frameworkId;
@@ -140,6 +285,7 @@ const FilterList = ({
 
     // RenderForm
     const transformRenderFormOutput = transformRenderForm(categories || []);
+    console.log('transformRenderFormOutput===>', transformRenderFormOutput);
 
     // ✅ Preselect single-option categories
     const defaultFormData = {};
@@ -403,6 +549,8 @@ const FilterList = ({
 
   const handleFilter = () => {
     const transformedFormData = transformFormData(formData, staticFilter);
+    
+    
     // console.log('staticFilter', JSON.stringify(renderForm));
     // console.log('staticFormData', JSON.stringify(staticFormData));
     setParentFormData(transformedFormData);
@@ -411,12 +559,150 @@ const FilterList = ({
     setIsDrawerOpen(false);
   };
 
+  // Function to get default form data (single-option categories)
+  const getDefaultFormData = () => {
+    const defaultFormData = {};
+    renderForm.forEach((item) => {
+      if (item.options.length === 1) {
+        defaultFormData[item.code] = [item.options[0]];
+      }
+    });
+    return defaultFormData;
+  };
+
+  // Function to get default static form data (from contentFilter)
+  const getDefaultStaticFormData = () => {
+    const defaultStaticFormData = {};
+    
+    if (contentFilter) {
+      // Set default domain if contentFilter has domain
+      if (contentFilter.domain) {
+        const filterData = renderForm.filter((item) => item?.name === 'domain');
+        const selectedDomain = filterData?.[0]?.options.filter((item) => {
+          return item?.name == contentFilter?.domain;
+        });
+        if (selectedDomain && selectedDomain.length > 0) {
+          defaultStaticFormData.domain = selectedDomain;
+        }
+      }
+      
+      // Set default program if contentFilter has program
+      if (contentFilter.program && renderStaticForm.length > 0) {
+        const filterData = renderStaticForm.filter((item) => item?.name === 'program');
+        const selectedProgram = filterData?.[0]?.range.filter((item) => {
+          return item == contentFilter?.program;
+        });
+        if (selectedProgram && selectedProgram.length > 0) {
+          defaultStaticFormData.program = selectedProgram;
+        }
+      }
+    }
+    
+    return defaultStaticFormData;
+  };
+
+  // Function to check if there are any user-selected filters (excluding defaults)
+  const hasUserSelectedFilters = () => {
+    const hasUserFormData = Object.keys(userSelectedFormData).length > 0;
+    
+    // Filter out contentFilter keys from userSelectedStaticFormData
+    const filteredUserSelectedStaticFormData = {};
+    Object.keys(userSelectedStaticFormData).forEach(key => {
+      if (!contentFilter || !contentFilter.hasOwnProperty(key)) {
+        filteredUserSelectedStaticFormData[key] = userSelectedStaticFormData[key];
+      }
+    });
+    
+    const hasUserStaticFormData = Object.keys(filteredUserSelectedStaticFormData).length > 0;
+    
+    return hasUserFormData || hasUserStaticFormData;
+  };
+
+  // Function to track user selections (excluding defaults)
+  const updateUserSelections = (newFormData, newStaticFormData) => {
+    const defaultFormData = getDefaultFormData();
+    const defaultStaticFormData = getDefaultStaticFormData();
+    
+    // Filter out default selections from user selections
+    const userFormData = {};
+    Object.keys(newFormData).forEach(key => {
+      const userSelection = newFormData[key];
+      const defaultSelection = defaultFormData[key];
+      
+      if (defaultSelection) {
+        // Check if user selection is different from default
+        const isDifferent = userSelection.length !== defaultSelection.length ||
+          userSelection.some(item => !defaultSelection.find(defaultItem => defaultItem.code === item.code));
+        
+        if (isDifferent) {
+          userFormData[key] = userSelection;
+        }
+      } else if (userSelection && userSelection.length > 0) {
+        // No default for this category, so all selections are user selections
+        userFormData[key] = userSelection;
+      }
+    });
+    
+    const userStaticFormData = {};
+    Object.keys(newStaticFormData).forEach(key => {
+      const userSelection = newStaticFormData[key];
+      const defaultSelection = defaultStaticFormData[key];
+      
+      if (defaultSelection) {
+        // Check if user selection is different from default
+        const isDifferent = userSelection.length !== defaultSelection.length ||
+          userSelection.some(item => !defaultSelection.includes(item));
+        
+        if (isDifferent) {
+          userStaticFormData[key] = userSelection;
+        }
+      } else if (userSelection && userSelection.length > 0) {
+        // No default for this category, so all selections are user selections
+        userStaticFormData[key] = userSelection;
+      }
+    });
+    
+    setUserSelectedFormData(userFormData);
+    setUserSelectedStaticFormData(userStaticFormData);
+  };
+
+  const handleClearFilter = () => {
+    // Get default filters that should be preserved
+    const defaultFormData = getDefaultFormData();
+    const defaultStaticFormData = getDefaultStaticFormData();
+    
+    console.log('=== CLEARING FILTERS ===');
+    console.log('Preserving default formData:', defaultFormData);
+    console.log('Preserving default staticFormData:', defaultStaticFormData);
+    console.log('========================');
+    
+    // Set to default values instead of empty objects
+    setFormData(defaultFormData);
+    setStaticFormData(defaultStaticFormData);
+    setParentFormData({});
+    setOrginalFormData(defaultFormData);
+    setParentStaticFormData(defaultStaticFormData);
+  };
+
   return (
     <View style={styles.modalContainer} activeOpacity={1}>
       <View style={styles.alertBox}>
-        <GlobalText style={[globalStyles.heading2, { fontWeight: 'bold' }]}>
-          {t('select_filters')}
-        </GlobalText>
+        <View style={styles.header}>
+          <GlobalText style={[globalStyles.heading2, { fontWeight: 'bold' }]}>
+            {t('select_filters')}
+          </GlobalText>
+          {hasUserSelectedFilters() && (
+            <TouchableOpacity
+              style={styles.clearFilterButton}
+              onPress={handleClearFilter}
+              activeOpacity={0.7}
+            >
+              <GlobalText style={styles.clearFilterText}>
+                {t('clear_filter')}
+              </GlobalText>
+            </TouchableOpacity>
+          )}
+        </View>
         {/* Scrollable Content */}
         {loading ? (
           <View style={{ height: 200 }}>
@@ -439,69 +725,52 @@ const FilterList = ({
               </GlobalText>
             ) : (
               <ScrollView
-                nestedScrollEnabled={true} // ✅ Enables independent scrolling
+                nestedScrollEnabled={true}
                 style={styles.scrollContainer}
                 keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
               >
-                <View style={{ padding: 10 }}>
-                  {renderForm?.map((item, key) => {
+                <View style={styles.contentContainer}>
+                  {/* Content Language Filter - Show First */}
+                  {renderStaticForm?.length > 0 && (
+                    <>
+                      {sortFilterSections(renderStaticForm || [])
+                        .filter(item => 
+                          item?.name === 'Content Language' || 
+                          item?.name === 'Language'
+                        )
+                        .map((item, key) => (
+                          renderFilterSection(item, key, true)
+                        ))}
+                    </>
+                  )}
+
+                  {/* Dynamic Filters (Categories/Subdomains) */}
+                  {sortFilterSections(renderForm || []).map((item, key) => {
                     return (
                       (item?.name !== 'Domain' || isExplore == true) && (
-                        <View key={key}>
-                          <GlobalText
-                            style={[
-                              globalStyles.subHeading,
-                              { fontWeight: 600, marginLeft: 10 },
-                            ]}
-                          >
-                            {item?.name}
-                          </GlobalText>
-
-                          <CustomCheckbox
-                            setFormData={setFormData}
-                            formData={formData}
-                            options={item?.options}
-                            category={item?.code}
-                            index={item?.index}
-                            replaceOptionsWithAssoc={replaceOptionsWithAssoc}
-                          />
-                        </View>
+                        renderFilterSection(item, key, false)
                       )
                     );
                   })}
-                </View>
-                <GlobalText
-                  style={[
-                    globalStyles.heading2,
-                    { fontWeight: 700, marginLeft: 10 },
-                  ]}
-                >
-                  {t('other_filters')}
-                </GlobalText>
-                <View style={{ padding: 10 }}>
-                  {renderStaticForm?.map((item, key) => {
-                    return (
-                      (item?.name !== 'Program' || isExplore == true) && (
-                        <View key={key}>
-                          <GlobalText
-                            style={[
-                              globalStyles.subHeading,
-                              { fontWeight: 600, marginLeft: 10 },
-                            ]}
-                          >
-                            {item?.name}
-                          </GlobalText>
 
-                          <CustomCheckbox2
-                            setStaticFormData={setStaticFormData}
-                            staticFormData={staticFormData}
-                            options={item?.range}
-                            category={item?.code}
-                          />
-                        </View>
-                      )
-                    );
-                  })}
+                  {/* Remaining Static Filters */}
+                  {renderStaticForm?.length > 0 && (
+                    <>
+                      {sortFilterSections(renderStaticForm || [])
+                        .filter(item => 
+                          item?.name !== 'Content Language' && 
+                          item?.name !== 'Language'
+                        )
+                        .map((item, key) => {
+                          return (
+                            (item?.name !== 'Program' || isExplore == true) && (
+                              renderFilterSection(item, key, true)
+                            )
+                          );
+                        })}
+                    </>
+                  )}
                 </View>
               </ScrollView>
             )}
@@ -541,8 +810,6 @@ const styles = StyleSheet.create({
   },
   alertBox: {
     maxHeight: '98%',
-    // borderWidth: 1,
-    // paddingBottom: 10,
   },
   header: {
     padding: 15,
@@ -551,17 +818,97 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     borderBottomWidth: 1,
-    borderColor: '#D0C5B4',
+    borderBottomColor: '#E0E0E0',
+    backgroundColor: '#fff',
   },
   scrollContainer: {
     width: '100%',
   },
-
+  contentContainer: {
+    padding: 16,
+  },
+  filterSection: {
+    marginBottom: 16,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    overflow: 'hidden',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#F8F9FA',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  sectionHeaderContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    flex: 1,
+  },
+  selectedCount: {
+    backgroundColor: '#FFD700',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    marginLeft: 8,
+    minWidth: 20,
+    alignItems: 'center',
+  },
+  selectedCountText: {
+    color: '#333',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  sectionContent: {
+    padding: 8,
+  },
+  sectionDivider: {
+    marginVertical: 20,
+    alignItems: 'center',
+  },
+  sectionDividerText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333',
+    backgroundColor: '#F8F9FA',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
   btn: {
     borderRadius: 30,
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  btnbox: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    backgroundColor: '#fff',
+  },
+  clearFilterButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFD700',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#FFD700',
+  },
+  clearFilterText: {
+    color: '#333',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
 

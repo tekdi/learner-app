@@ -203,7 +203,6 @@
   "delete_msg": "Are you sure you want to remove this from your downloads?",
   "failed_msg": "Download failed. Network disconnected.",
   "invalid_file": "Invalid file.",
-  "delete": "Delete",
   "cancel": "Cancel",
   "next": "Next",
   "trouble_with_logging_in": "Trouble with logging in?",
@@ -318,6 +317,7 @@
   "enter_otp": "Enter OTP",
   "resend_otp_in": "Resend OTP in {count}s",
   "verify_otp": "Verify OTP",
+  "unable_to_send_otp": "Unable to send OTP",
   "min_validation": "{field} must be at least {length} characters",
   "max_validation": "{field} must be at most {length} characters",
   "settings": "Settings",
@@ -426,7 +426,7 @@
   "DROP_OUT_REASON": "Reason for Drop Out From School",
   "self_employment_own_business_shop": "Self Employment, Own Business or Shop",
   "student": "Student",
-  "grade_1": "Grade 1",
+"grade_1": "Grade 1",
   "grade_2": "Grade 2",
   "grade_3": "Grade 3",
   "grade_4": "Grade 4",
@@ -438,7 +438,6 @@
   "grade_10": "Grade 10",
   "grade_11": "Grade 11",
   "grade_12": "Grade 12",
-  "family_member_details": "Family Member Details",
   "spouse_name": "Spouse Name",
   "father_name": "Father Name",
   "nophone": "No Phone",
@@ -452,6 +451,7 @@
   "not_submitted": "Not Submitted",
   "submitted_eval": "Submitted for Evaluation",
   "published_on": "Published On",
+  "clear_filter": "Clear Filter",
   "Explanation": "Explanation",
   "See less": "See less",
   "See more": "See more",
@@ -540,5 +540,6 @@
   "permission_blocked_message": "Storage permission is blocked. Please enable it in Settings > Apps > Your App > Permissions.",
   "open_settings": "Open Settings",
   "many_images_selected": "Many Images Selected",
-  "many_images_selected_message": "You have selected {count} images. For better performance, we recommend uploading up to 4 images at a time."
+  "many_images_selected_message": "You have selected {count} images. For better performance, we recommend uploading up to 4 images at a time.",
+  "family_member_details": "Family Member Details"
 }
