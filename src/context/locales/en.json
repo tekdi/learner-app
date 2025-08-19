@@ -331,7 +331,6 @@
   "marital_status": "Marital Status",
   "type_of_phone_available": "Type of Phone Available",
   "type_of_phone_accessible": "Type of Phone Accessible",
-
   "does_this_phone_belong_to_you": "Does this phone belong to you?",
   "village": "Village",
   "if_your_village_is_not_mentioned_in_the_list_please_select_your_nearest_village": "If your village is not mentioned in the list, please select your nearest village",
@@ -424,7 +423,6 @@
   "what_is_your_primary_work": "What is your primary work?",
   "unemployed_housewife_domestic_work": "Unemployed, Housewife or Domestic Work",
   "Unemployed_housewife_domestic_work": "Unemployed, Housewife or Domestic Work",
-
   "DROP_OUT_REASON": "Reason for Drop Out From School",
   "self_employment_own_business_shop": "Self Employment, Own Business or Shop",
   "student": "Student",
@@ -444,7 +442,6 @@
   "spouse_name": "Spouse Name",
   "father_name": "Father Name",
   "nophone": "No Phone",
-
   "###ATM###": "###ATM###",
   "online_assessment": "Online Assessment",
   "offline_assessment": "Offline Assessment",
@@ -525,11 +522,9 @@
   "confirm": "Confirm",
   "delete_item": "Delete Item",
   "are_you_sure_you_want_to_delete_this_item": "Are you sure you want to delete this item?",
-  "delete": "Delete",
   "success": "Success",
   "error": "Error",
   "warning": "Warning",
-
   "###DOWNLOAD###": "###DOWNLOAD###",
   "download": "Download",
   "downloading": "Downloading",
@@ -543,7 +538,6 @@
   "permission_unavailable_message": "Storage permission is not available on this device.",
   "permission_blocked": "Permission Blocked",
   "permission_blocked_message": "Storage permission is blocked. Please enable it in Settings > Apps > Your App > Permissions.",
-  "cancel": "Cancel",
   "open_settings": "Open Settings",
   "many_images_selected": "Many Images Selected",
   "many_images_selected_message": "You have selected {count} images. For better performance, we recommend uploading up to 4 images at a time."
