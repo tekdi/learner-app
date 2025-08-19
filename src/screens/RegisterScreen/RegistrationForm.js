@@ -926,7 +926,26 @@ const RegistrationForm = ({ fields }) => {
         questionIndex={currentPage + 1}
         totalForms={pages?.length}
       />
-     
+     {currentPage === 3 && (
+        <>
+          <GlobalText style={[globalStyles.text, { marginLeft: 20 }]}>
+            {t('location_des')}
+          </GlobalText>
+          <View
+            style={{
+              padding: 15,
+              borderRadius: 20,
+              backgroundColor: '#EDE1CF',
+              marginTop: 10,
+            }}
+          >
+            <GlobalText style={[globalStyles.text]}>
+              {t('location_des2')}
+            </GlobalText>
+          </View>
+        </>
+      )}
+      <ScrollView style={{ flex: 1 }}></ScrollView>
       <ScrollView 
         ref={scrollViewRef}
         style={{ flex: 1 }}
