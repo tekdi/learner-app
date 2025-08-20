@@ -499,6 +499,8 @@ const ATMAssessment = ({ route }) => {
         questionSetId: data?.identifier,
         // identifier: data?.identifier,
         fileUrls: fileUrls,
+        //reupload feature api fix
+        createdBy: userId,
       };
 
       const middlewareUrl = Config.API_URL;
