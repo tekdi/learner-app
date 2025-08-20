@@ -3,11 +3,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  SafeAreaView,
+  // SafeAreaView,
   Pressable,
   ScrollView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, React, useEffect } from 'react';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
@@ -77,11 +78,18 @@ const LoginScreen = () => {
         await saveAccessToken(data?.access_token || '');
         const userDetails = await getuserDetails();
 
+        console.log('#### userDetails', userDetails);
         const user_id = userDetails?.userId;
         const tenantData = userDetails?.tenantData;
         const tenantid = userDetails?.tenantData?.[0]?.tenantId;
+        const enrollmentId = userDetails?.enrollmentId;
         await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
         await setDataInStorage('userId', user_id || '');
+        await setDataInStorage('enrollmentId', enrollmentId || '');
+
+        //store dynamci templateId
+        const templateId = userDetails?.tenantData?.[0]?.templateId;
+        await setDataInStorage('templateId', templateId || '');
 
         const academicyear = await setAcademicYear({ tenantid });
         const academicYearId = academicyear?.[0]?.id;
@@ -286,7 +294,7 @@ const LoginScreen = () => {
             onPress={() => {
               navigation.navigate('ForgotPassword', { enableLogin: true });
             }}
-            style={{ paddingLeft: 20, marginBottom: 30 }}
+            style={{ paddingLeft: 20, marginBottom: 30,zIndex:-1 }}
           >
             <GlobalText
               style={[

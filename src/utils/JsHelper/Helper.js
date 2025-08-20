@@ -197,6 +197,19 @@ export const capitalizeName = (name) => {
     ?.join(' '); // Join the words back into a single string
 };
 
+export const capitalizeNameWithSpace = (name) => {
+  try {
+    if (!name) return '';
+    return name
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  } catch (e) {
+    console.log('share ', e);
+    return '';
+  }
+};
+
 export const logEventFunction = async ({ eventName, method, screenName }) => {
   const timestamp = new Date().toLocaleString(); // Get the current timestamp
 

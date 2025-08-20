@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   ImageBackground,
-  SafeAreaView,
   StyleSheet,
   Text,
   View,

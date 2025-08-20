@@ -30,7 +30,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const handleCardPress = (item) => {
-    navigation.navigate('UnitList', {
+    navigation.push('UnitList', {
       children: item?.children,
       name: item?.name,
       description: item?.description,
@@ -46,7 +46,7 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
 
   useEffect(() => {
     fetchDataTrack();
-  }, [course_id]);
+  }, [course_id, TrackData]);
   // Recursive function to collect leaf nodes
   const getLeafNodes = (node) => {
     let result = [];
@@ -226,10 +226,10 @@ const UnitCard = ({ item, course_id, unit_id, TrackData, headingName }) => {
                 trackCompleted >= 100
                   ? 'completed'
                   : trackCompleted > 0
-                    ? 'inprogress'
-                    : trackProgress > 0
-                      ? 'progress'
-                      : 'not_started'
+                  ? 'inprogress'
+                  : trackProgress > 0
+                  ? 'progress'
+                  : 'not_started'
               }
               trackCompleted={trackCompleted}
             />

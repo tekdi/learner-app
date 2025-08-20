@@ -26,6 +26,9 @@ import { notificationSubscribe } from './utils/API/AuthService';
 import GlobalText from '@components/GlobalText/GlobalText';
 import { CopilotProvider } from 'react-native-copilot';
 
+//fix for android version 15
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 const linking = {
   prefixes: ['pratham://'],
   config: {
@@ -45,45 +48,66 @@ const fetchData = async () => {
   }
 };
 
+// for version upgrade API 35 app crash issue on android 9, 10, 11, 12
 async function requestUserPermission() {
-  try {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-    );
+  if (Platform.OS === 'android' && Platform.Version >= 33) {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+      );
 
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('Permission granted');
-      await fetchData();
-    } else {
-      console.log('Permission denied');
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Permission granted');
+        await fetchData();
+      } else {
+        console.log('Permission denied at start POST_NOTIFICATIONS');
+      }
+    } catch (error) {
+      console.error('Error requesting permission:', error);
     }
-  } catch (error) {
-    console.error('Error requesting permission:', error);
+  } else {
+    console.log('Permission granted');
+    await fetchData();
   }
 }
 
 async function checkAndRequestStoragePermission() {
   if (Platform.OS === 'android' && Platform.Version >= 33) {
-    const permissions = [
-      PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
-      PermissionsAndroid.PERMISSIONS.READ_MEDIA_VIDEO,
-      PermissionsAndroid.PERMISSIONS.READ_MEDIA_AUDIO,
-    ];
-    const granted = await PermissionsAndroid.requestMultiple(permissions);
-
-    const allGranted = permissions.every(
-      (permission) => granted[permission] === PermissionsAndroid.RESULTS.GRANTED
+    // For Android 13+ (API 33+), Photo Picker handles permissions automatically
+    // No need to request READ_MEDIA_IMAGES or READ_MEDIA_VIDEO
+    return true;
+  } else if (Platform.OS === 'android' && Platform.Version >= 29) {
+    // Android 10-12 (API 29-32) - use traditional storage permissions
+    // requestLegacyExternalStorage is set to true in AndroidManifest.xml
+    const hasWritePermission = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+    );
+    const hasReadPermission = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
     );
 
-    if (!allGranted) {
-      Alert.alert(
-        'Permission Denied',
-        'Storage permission is required to download files. The app will now exit.',
-        [{ text: 'OK', onPress: () => BackHandler.exitApp() }]
-      );
-      return false;
+    if (!hasWritePermission || !hasReadPermission) {
+      const granted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      ]);
+
+      if (
+        granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] !==
+          PermissionsAndroid.RESULTS.GRANTED ||
+        granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] !==
+          PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        Alert.alert(
+          'Permission Denied',
+          'Storage permission is required to download files. The app will now exit.',
+          [{ text: 'OK', onPress: () => BackHandler.exitApp() }]
+        );
+        return false;
+      }
     }
-  } else {
+  } else if (Platform.OS === 'android' && Platform.Version >= 26) {
+    // Android 8-9 (API 26-28) - use traditional storage permissions
     const hasWritePermission = await PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
     );
@@ -193,26 +217,30 @@ const App = () => {
   }, []);
 
   return (
-    <NetworkProvider>
-      <ConfirmationProvider>
-        <LanguageProvider>
-          {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
+    <SafeAreaProvider>
+      <NetworkProvider>
+        <ConfirmationProvider>
+          <LanguageProvider>
+            {/* // App.js file has to be wrapped with ApplicationProvider for UI Kitten to
       work */}
-          <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
-            <CopilotProvider
-              tooltipStyle={{ backgroundColor: 'black' }}
-              androidStatusBarVisible={true}
-            >
-              <NavigationContainer linking={linking}>
-                <Suspense fallback={<GlobalText>Loading Screen...</GlobalText>}>
-                  <StackScreen />
-                </Suspense>
-              </NavigationContainer>
-            </CopilotProvider>
-          </ApplicationProvider>
-        </LanguageProvider>
-      </ConfirmationProvider>
-    </NetworkProvider>
+            <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+              <CopilotProvider
+                tooltipStyle={{ backgroundColor: 'black' }}
+                androidStatusBarVisible={true}
+              >
+                <NavigationContainer linking={linking}>
+                  <Suspense
+                    fallback={<GlobalText>Loading Screen...</GlobalText>}
+                  >
+                    <StackScreen />
+                  </Suspense>
+                </NavigationContainer>
+              </CopilotProvider>
+            </ApplicationProvider>
+          </LanguageProvider>
+        </ConfirmationProvider>
+      </NetworkProvider>
+    </SafeAreaProvider>
   );
 };
 

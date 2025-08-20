@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -7,8 +7,9 @@ import {
   ScrollView,
   Image,
   BackHandler,
-  SafeAreaView,
+  // SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import CustomRadioCard from '@components/CustomRadioCard/CustomRadioCard';
 import RadioButton from '@components/CustomRadioCard/RadioButton';
@@ -69,6 +70,7 @@ import SuggestUsername from './SuggestUsername';
 const RegistrationForm = ({ fields }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const scrollViewRef = useRef(null);
   const [formData, setFormData] = useState({});
   const [schema, setSchema] = useState(fields);
   const [orginalSchema] = useState(fields);
@@ -77,6 +79,8 @@ const RegistrationForm = ({ fields }) => {
   const [isUserModalVisible, setUserModalVisible] = useState(false);
   const [isOtpModalVisible, setOtpModalVisible] = useState(false);
   const [programData, setProgramData] = useState([]);
+  // const [programData, setProgramData] = useState([]);
+
   const [stateData, setStateData] = useState([]);
   const [districtData, setDistrictData] = useState([]);
   const [blockData, setBlockData] = useState([]);
@@ -236,6 +240,11 @@ const RegistrationForm = ({ fields }) => {
 
   const fetchDistricts = async (state) => {
     setLoading(true);
+
+    //reset data
+    setBlockData([]);
+    setVillageData([]);
+
     const payload = {
       // limit: 10,
       offset: 0,
@@ -250,6 +259,7 @@ const RegistrationForm = ({ fields }) => {
   };
   const fetchvillages = async (block) => {
     setLoading(true);
+
     const payload = {
       // limit: 10,
       offset: 0,
@@ -265,6 +275,10 @@ const RegistrationForm = ({ fields }) => {
   };
   const fetchBlocks = async (district) => {
     setLoading(true);
+
+    //reset data
+    setVillageData([]);
+
     const payload = {
       // limit: 10,
       offset: 0,
@@ -280,6 +294,12 @@ const RegistrationForm = ({ fields }) => {
 
   const fetchStates = async () => {
     setLoading(true);
+
+    //reset data
+    setDistrictData([]);
+    setBlockData([]);
+    setVillageData([]);
+
     const stateAPIdata = JSON.parse(await getDataFromStorage('states'));
 
     const geoData = JSON.parse(await getDataFromStorage('geoData'));
@@ -336,7 +356,11 @@ const RegistrationForm = ({ fields }) => {
     const getProgramData = async () => {
       const data = await getProgramDetails();
       // const newData = data.filter((item) => item?.name === 'YouthNet');
-      setProgramData(data);
+      const filtered = data.filter(item => {
+        const uiConfig = item.params?.uiConfig;
+        return uiConfig?.showProgram === true && uiConfig?.showSignup === true;
+      });
+      setProgramData(filtered);
     };
     getProgramData();
     fetchStates();
@@ -419,8 +443,12 @@ const RegistrationForm = ({ fields }) => {
 
         // Merge new fields into the filtered schema
         const newSchema = [...filteredSchema, ...fields];
-
-        setSchema(newSchema);
+        const result = newSchema.filter(
+          (item) => item.label !== "CENTER" && item.label !== "BATCH"
+        );
+        
+        console.log('newSchema', newSchema)
+        setSchema(result);
 
         // Group fields into pages and update state
         const mypages = groupFieldsByOrder(newSchema);
@@ -459,8 +487,12 @@ const RegistrationForm = ({ fields }) => {
     if (name === 'state') {
       updatedFormData['district'] = '';
       updatedFormData['block'] = '';
+      updatedFormData['village'] = '';
     } else if (name === 'district') {
       updatedFormData['block'] = '';
+      updatedFormData['village'] = '';
+    } else if (name === 'block') {
+      updatedFormData['village'] = '';
     }
 
     setFormData(updatedFormData);
@@ -497,7 +529,7 @@ const RegistrationForm = ({ fields }) => {
           return; // Skip validation for these fields
         }
         if (
-          (field.isRequired && !value) ||
+          (field?.validation?.isRequired === true && !value) ||
           // (field.name === 'blocks' && !value) ||
           // (field.name === 'states' && !value) ||
           // (field.name === 'districts' && !value) ||
@@ -530,6 +562,7 @@ const RegistrationForm = ({ fields }) => {
   };
 
   const renderField = (field) => {
+   
     const age = calculateAge(formData?.dob || '');
     if (
       (field.name === 'guardian_relation' ||
@@ -540,6 +573,22 @@ const RegistrationForm = ({ fields }) => {
     ) {
       return null;
     }
+     const familyType = formData?.family_member_details;
+      if (
+    !familyType &&
+    ['father_name', 'mother_name', 'spouse_name'].includes(field.name)
+  ) {
+    return null;
+  }
+  if (familyType === 'spouse' && (field.name === 'father_name' || field.name === 'mother_name')) {
+    return null;
+  }
+  if (familyType === 'father' && (field.name === 'spouse_name' || field.name === 'mother_name')) {
+    return null;
+  }
+  if (familyType === 'mother' && (field.name === 'father_name' || field.name === 'spouse_name')) {
+    return null;
+  }
 
     if (['is_volunteer'].includes(field.name)) {
       return null; // Skip validation for these fields
@@ -632,6 +681,7 @@ const RegistrationForm = ({ fields }) => {
               formData={formData}
               handleValue={handleInputChange}
             />
+            <></>
           </View>
         );
       case 'radio':
@@ -853,6 +903,13 @@ const RegistrationForm = ({ fields }) => {
     startOtpTimer(); // Start a new timer
   };
 
+  useEffect(() => {
+    // Scroll to top when page changes
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
+    }
+  }, [currentPage]);
+
   if (loading) {
     return <ActiveLoading />;
   }
@@ -873,7 +930,7 @@ const RegistrationForm = ({ fields }) => {
         questionIndex={currentPage + 1}
         totalForms={pages?.length}
       />
-      {currentPage === 3 && (
+     {currentPage === 3 && (
         <>
           <GlobalText style={[globalStyles.text, { marginLeft: 20 }]}>
             {t('location_des')}
@@ -892,7 +949,11 @@ const RegistrationForm = ({ fields }) => {
           </View>
         </>
       )}
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView 
+        ref={scrollViewRef}
+        style={{ flex: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
         {renderPage()}
 
         {currentPage === 0 && (
@@ -998,7 +1059,7 @@ const RegistrationForm = ({ fields }) => {
         }}
       >
         {currentPage < pages.length - 1 ? (
-          <PrimaryButton text={t('continue')} onPress={handleNext} />
+          <PrimaryButton text={t('continue')} isDisabled={currentPage===0 && !formData?.mobile } onPress={handleNext} />
         ) : (
           <PrimaryButton
             isDisabled={
@@ -1190,7 +1251,7 @@ const RegistrationForm = ({ fields }) => {
             </View>
             {OTPError ? (
               <GlobalText style={[globalStyles.heading2, { fontWeight: 650 }]}>
-                {OTPError}
+                {t('unable_to_send_otp')}
               </GlobalText>
             ) : (
               <View

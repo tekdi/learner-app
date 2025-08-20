@@ -102,24 +102,42 @@ const LearningResources = ({ route }) => {
           const postrequisites = [];
 
           // Filter prerequisites
-          result?.content?.forEach((item) => {
-            if (data?.prerequisites.includes(item?.identifier?.toLowerCase())) {
-              prerequisites.push(item);
-            }
-            if (
-              data?.postrequisites.includes(item?.identifier?.toLowerCase())
-            ) {
-              postrequisites.push(item);
+          // result?.content?.forEach((item) => {
+          //   if (data?.prerequisites.includes(item?.identifier?.toLowerCase())) {
+          //     prerequisites.push(item);
+          //   }
+          //   if (
+          //     data?.postrequisites.includes(item?.identifier?.toLowerCase())
+          //   ) {
+          //     postrequisites.push(item);
+          //   }
+          // });
+
+          // // Filter postrequisites
+          // result?.QuestionSet?.forEach((item) => {
+          //   if (data?.prerequisites.includes(item.identifier)) {
+          //     prerequisites.push(item);
+          //   }
+          //   if (data?.postrequisites.includes(item.identifier)) {
+          //     postrequisites.push(item);
+          //   }
+          // });
+          const allItems = [
+            ...(result?.content || []),
+            ...(result?.QuestionSet || []),
+          ];
+
+          data?.prerequisites?.forEach((id) => {
+            const matchedItem = allItems.find((item) => item.identifier === id);
+            if (matchedItem) {
+              prerequisites.push(matchedItem);
             }
           });
 
-          // Filter postrequisites
-          result?.QuestionSet?.forEach((item) => {
-            if (data?.prerequisites.includes(item.identifier)) {
-              prerequisites.push(item);
-            }
-            if (data?.postrequisites.includes(item.identifier)) {
-              postrequisites.push(item);
+          data?.postrequisites?.forEach((id) => {
+            const matchedItem = allItems.find((item) => item.identifier === id);
+            if (matchedItem) {
+              postrequisites.push(matchedItem);
             }
           });
 

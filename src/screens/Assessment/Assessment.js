@@ -84,12 +84,35 @@ const Assessment = ({ header, background }) => {
             )
           ),
         ];
+
+        // Sort uniqueAssessments according to specified order: Pre Test, Post Test, Other
+        const assessmentOrder = ['Pre Test', 'Post Test', 'Other'];
+        const sortedUniqueAssessments = uniqueAssessments.sort((a, b) => {
+          const indexA = assessmentOrder.indexOf(a);
+          const indexB = assessmentOrder.indexOf(b);
+
+          // If both are in the order array, sort by their position
+          if (indexA !== -1 && indexB !== -1) {
+            return indexA - indexB;
+          }
+          // If only a is in the order array, a comes first
+          if (indexA !== -1) {
+            return -1;
+          }
+          // If only b is in the order array, b comes first
+          if (indexB !== -1) {
+            return 1;
+          }
+          // If neither is in the order array, maintain original order
+          return 0;
+        });
+
         //extract all question list with assessment type
         let questionSetData = {};
         let assessmentStatusData = {};
-        if (uniqueAssessments) {
-          for (let i = 0; i < uniqueAssessments.length; i++) {
-            let key = uniqueAssessments[i];
+        if (sortedUniqueAssessments) {
+          for (let i = 0; i < sortedUniqueAssessments.length; i++) {
+            let key = sortedUniqueAssessments[i];
             let questionSetDataId = [];
             let uniqueAssessmentsId = [];
             if (OfflineAssessmentList?.QuestionSet) {
@@ -129,7 +152,10 @@ const Assessment = ({ header, background }) => {
           'QuestionSet',
           JSON.stringify(questionSetData) || ''
         );
-        setAssessments(uniqueAssessments);
+        // console.log('#########atm uniqueAssessments', JSON.stringify(uniqueAssessments));
+        //change uniqueAssessments sequence to match the assessmentStatusData sequence
+
+        setAssessments(sortedUniqueAssessments);
       } else {
         setNetworkstatus(false);
       }

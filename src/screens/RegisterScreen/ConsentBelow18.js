@@ -1,7 +1,7 @@
 import React from 'react';
 import globalStyles from '../../utils/Helper/Style';
 import GlobalText from '@components/GlobalText/GlobalText';
-import { SafeAreaView, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 
 const ConsentAbove18 = () => {
   return (

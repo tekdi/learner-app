@@ -34,7 +34,7 @@ import Svg, { Circle, Text as SvgText } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import { findObjectByIdentifier } from '../../utils/JsHelper/Helper';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const DownloadCard = ({ contentId, contentMimeType, name }) => {
   const navigation = useNavigation();
@@ -61,6 +61,9 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
         contentMimeType == 'application/vnd.ekstep.h5p-archive' ||
         contentMimeType == 'application/pdf' ||
         contentMimeType == 'video/mp4' ||
+        contentMimeType == 'video/webm' ||
+        contentMimeType == 'audio/mp3' ||
+        contentMimeType == 'audio/wav' ||
         contentMimeType == 'application/epub' ||
         contentMimeType == 'application/vnd.sunbird.questionset'
       ) {
@@ -96,6 +99,8 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
       contentMimeType == 'application/pdf' ||
       contentMimeType == 'video/mp4' ||
       contentMimeType == 'video/webm' ||
+      contentMimeType == 'audio/mp3' ||
+      contentMimeType == 'audio/wav' ||
       contentMimeType == 'application/epub'
     ) {
       await downloadContentPDFEpubVideo(contentId);
@@ -501,6 +506,10 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
         filePath = `${content_file}.mp4`;
       } else if (contentObj?.mimeType == 'video/webm') {
         filePath = `${content_file}.webm`;
+      } else if (contentObj?.mimeType == 'audio/mp3') {
+        filePath = `${content_file}.mp3`;
+      } else if (contentObj?.mimeType == 'audio/wav') {
+        filePath = `${content_file}.wav`;
       }
       if (filePath != '') {
         //download file and store object in local

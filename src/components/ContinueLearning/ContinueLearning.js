@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   FlatList,
-  SafeAreaView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -33,9 +32,19 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
 
   useEffect(() => {
     const fetch = async () => {
-      let course_in_progress = await CourseInProgress(userId);
+      let course_in_progress = await CourseInProgress();
 
-      let courseData = course_in_progress?.data;
+      console.log(
+        '###### CourseInProgress course_in_progress ',
+        JSON.stringify(course_in_progress)
+      );
+
+      let courseData = course_in_progress?.result?.data;
+
+      console.log(
+        '###### CourseInProgress courseData ',
+        JSON.stringify(courseData)
+      );
 
       if (courseData) {
         // console.log(
@@ -46,10 +55,10 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
         //   '########## course_in_progress?.[0]?.courseIdList',
         //   courseData?.[0]?.courseIdList
         // );
-        if (courseData?.[0]?.courseIdList?.length > 0) {
+        if (courseData.length > 0) {
           let inprogress_do_ids = [];
-          for (let i = 0; i < courseData?.[0]?.courseIdList.length; i++) {
-            inprogress_do_ids.push(courseData?.[0]?.courseIdList[i]?.courseId);
+          for (let i = 0; i < courseData.length; i++) {
+            inprogress_do_ids.push(courseData[i]?.courseId);
           }
           // console.log('########## inprogress_do_ids', inprogress_do_ids);
           let userType = await getDataFromStorage('userType');
@@ -57,8 +66,8 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
           // const instant =
           //   userType === 'youthnet'
           //     ? {
-          //         frameworkId: 'youthnet-framework',
-          //         channelId: 'youthnet-channel',
+          //         frameworkId: 'pos-framework',
+          //         channelId: 'pos-channel',
           //       }
           //     : userType === 'scp'
           //     ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
@@ -78,32 +87,34 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
           try {
             // console.log('########## contentListApi');
             const contentList = data?.content;
-            //console.log('########## contentList', contentList);
+            // console.log('########## contentList', contentList);
             let courseList = [];
             if (contentList) {
               for (let i = 0; i < contentList.length; i++) {
                 courseList.push(contentList[i]?.identifier);
               }
             }
-            //console.log('########## courseList', courseList);
+            // console.log('########## courseList', courseList);
             //get course track data
+            const user_Id =
+              userId != '' ? userId : await getDataFromStorage('userId');
             let course_track_data = await courseTrackingStatus(
-              userId,
+              user_Id,
               courseList
             );
             // console.log(
-            //   '########## course_track_data',
+            //   '########## course_track_data inprogress',
             //   JSON.stringify(course_track_data?.data)
             // );
             let courseTrackData = [];
             if (course_track_data?.data) {
               courseTrackData =
                 course_track_data?.data.find(
-                  (course) => course.userId === userId
+                  (course) => course.userId === user_Id
                 )?.course || [];
             }
             setTrackData(courseTrackData);
-            // console.log('########## courseTrackData', courseTrackData);
+            console.log('########## courseTrackData', courseTrackData);
             // console.log('##########');
           } catch (e) {
             console.log('e', e);
@@ -121,7 +132,7 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
     //console.log('Card pressed!', item);
     // console.log('identifier', item?.identifier);
     // console.log('item', item?.leafNodes);
-    navigation.navigate('CourseContentList', {
+    navigation.push('CourseContentList', {
       do_id: item?.identifier,
       course_id: item?.identifier,
       content_list_node: item?.leafNodes,
@@ -133,7 +144,7 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
       onPress={() => handlePress(item)}
       appIcon={item?.appIcon}
       index={index}
-      cardWidth={260}
+      cardWidth={170}
       item={item}
       TrackData={trackData}
       navigation={navigation}

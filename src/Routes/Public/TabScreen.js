@@ -48,12 +48,17 @@ const TabScreen = () => {
     const fetchData = async () => {
       let userType = await getDataFromStorage('userType');
       const result = JSON.parse(await getDataFromStorage('profileData'));
-      // console.log('getUserDetails', result?.getUserDetails?.[0]?.customFields);
+      console.log(
+        '########## getUserDetails',
+        result?.getUserDetails?.[0]?.customFields
+      );
       const volunteer = result?.getUserDetails?.[0]?.customFields.filter(
         (item) => item?.label === 'IS_VOLUNTEER'
       );
-      setIsVolunteer(volunteer?.[0]?.selectedValues);
-
+      console.log('###### volunteer', volunteer);
+      const isVolunteer = volunteer?.[0]?.selectedValues?.[0];
+      console.log('###### isVolunteer', isVolunteer);
+      setIsVolunteer(isVolunteer);
       if (userType === 'youthnet') {
         setContentShow(false);
       }

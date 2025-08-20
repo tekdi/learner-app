@@ -22,6 +22,7 @@ import { useConfirmation } from '@context/Confirmation/ConfirmationContext';
 import en from './locales/en.json'; // English
 import hi from './locales/hi.json'; // Hindi
 import ma from './locales/ma.json'; // Marathi
+import odia from './locales/odia.json'; //Odia
 import ba from './locales/ba.json'; // Bangla
 import te from './locales/te.json'; // Telugu
 import ka from './locales/ka.json'; // Kannada
@@ -33,6 +34,7 @@ const translations = {
   en,
   hi,
   ma,
+  odia,
   ba,
   te,
   ka,

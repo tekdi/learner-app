@@ -77,3 +77,4 @@ yarn-error.log
 .env.dev
 .env.prod
 .env.uat
+# .cursor/*

@@ -36,7 +36,7 @@ import {
   epubPlayerConfig,
   questionsData,
 } from './data';
-import { getData, storeData } from '../../../utils/Helper/JSHelper';
+import { getData, removeData, storeData } from '../../../utils/Helper/JSHelper';
 import RNFS from 'react-native-fs';
 import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
@@ -168,6 +168,8 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
       content_mime_type == 'video/mp4' ||
       content_mime_type == 'video/webm' ||
+      content_mime_type == 'audio/mp3' ||
+      content_mime_type == 'audio/wav' ||
       content_mime_type == 'application/vnd.ekstep.html-archive'
     ) {
       Orientation.lockToLandscape();
@@ -184,22 +186,26 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.sunbird.questionset'
         ? (contentType = 'quml')
         : content_mime_type == 'application/vnd.ekstep.ecml-archive'
-          ? (contentType = 'ecml')
-          : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-            ? (contentType = 'h5p')
-            : content_mime_type == 'application/vnd.ekstep.html-archive'
-              ? (contentType = 'html')
-              : content_mime_type == 'video/x-youtube'
-                ? (contentType = 'youtube')
-                : content_mime_type == 'application/pdf'
-                  ? (contentType = 'pdf')
-                  : content_mime_type == 'application/epub'
-                    ? (contentType = 'epub')
-                    : content_mime_type == 'video/mp4'
-                      ? (contentType = 'mp4')
-                      : content_mime_type == 'video/webm'
-                        ? (contentType = 'webm')
-                        : '';
+        ? (contentType = 'ecml')
+        : content_mime_type == 'application/vnd.ekstep.h5p-archive'
+        ? (contentType = 'h5p')
+        : content_mime_type == 'application/vnd.ekstep.html-archive'
+        ? (contentType = 'html')
+        : content_mime_type == 'video/x-youtube'
+        ? (contentType = 'youtube')
+        : content_mime_type == 'application/pdf'
+        ? (contentType = 'pdf')
+        : content_mime_type == 'application/epub'
+        ? (contentType = 'epub')
+        : content_mime_type == 'video/mp4'
+        ? (contentType = 'mp4')
+        : content_mime_type == 'video/webm'
+        ? (contentType = 'webm')
+        : content_mime_type == 'audio/mp3'
+        ? (contentType = 'mp3')
+        : content_mime_type == 'audio/wav'
+        ? (contentType = 'wav')
+        : '';
       await storeData('contentId', content_do_id, '');
       await storeData('contentType', contentType, '');
       await storeData('contentMimeType', content_mime_type, '');
@@ -222,29 +228,33 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
-        ? 'sunbird-pdf-player'
-        : content_mime_type == 'application/vnd.sunbird.questionset'
-          ? 'sunbird-quml-player'
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? 'sunbird-video-player'
-            : content_mime_type == 'application/epub'
-              ? 'sunbird-epub-player'
-              : ''
+      ? 'sunbird-pdf-player'
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? 'sunbird-quml-player'
+      : content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'audio/mp3' ||
+        content_mime_type == 'audio/wav'
+      ? 'sunbird-video-player'
+      : content_mime_type == 'application/epub'
+      ? 'sunbird-epub-player'
+      : ''
   );
   const [lib_file] = useState(
     content_mime_type == 'application/vnd.sunbird.questionset'
       ? 'index.html'
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/pdf' ||
-          content_mime_type == 'video/mp4' ||
-          content_mime_type == 'video/webm' ||
-          content_mime_type == 'video/x-youtube' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'application/epub'
-        ? 'index.html'
-        : ''
+        content_mime_type == 'application/pdf' ||
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'audio/mp3' ||
+        content_mime_type == 'audio/wav' ||
+        content_mime_type == 'video/x-youtube' ||
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'application/epub'
+      ? 'index.html'
+      : ''
   );
 
   const [loading, setLoading] = useState(true);
@@ -255,10 +265,10 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
       ? `${content_file}`
       : content_mime_type == 'application/vnd.ekstep.html-archive'
-        ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
-        : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-          ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
-          : `${content_file}/${content_do_id}.json`;
+      ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
+      : content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
+      : `${content_file}/${content_do_id}.json`;
   // console.log('rnfs DocumentDirectoryPath', RNFS.DocumentDirectoryPath);
   // console.log('rnfs ExternalDirectoryPath', RNFS.ExternalDirectoryPath);
   const [is_valid_file, set_is_valid_file] = useState(null);
@@ -283,9 +293,55 @@ const StandAlonePlayer = ({ route }) => {
     try {
       //get telemetry save
       const data = event.nativeEvent.data;
+      // console.log('data_obj data', JSON.stringify(event.nativeEvent));
       let jsonObj = JSON.parse(data);
       let data_obj = jsonObj.data;
       let data_event = jsonObj?.event;
+      let youtubeExit = jsonObj?.youtube;
+      //for youtubeExit
+      if (youtubeExit && youtubeExit == 'Exit') {
+        // console.log('####################');
+        // console.log(
+        //   'data_obj playerevent youtube',
+        //   JSON.stringify(youtubeExit)
+        // );
+        // console.log('####################');
+        contentEidEND = [
+          {
+            eid: 'END',
+            edata: {
+              duration: 0,
+              mode: 'play',
+              pageid: 'sunbird-player-Endpage',
+              summary: [
+                {
+                  progress: 100,
+                },
+                {
+                  totallength: '',
+                },
+                {
+                  visitedlength: '',
+                },
+                {
+                  visitedcontentend: '',
+                },
+                {
+                  totalseekedlength: '',
+                },
+                {
+                  endpageseen: false,
+                },
+              ],
+              type: 'content',
+            },
+          },
+        ];
+        await storeData('contentEidEND', contentEidEND, 'json');
+        //check if exit button pressed
+        fetchExitData();
+        navigation.goBack();
+      }
       //check telemetry
       if (data_obj && data_event != 'playerevent') {
         //add user id in actor
@@ -506,6 +562,7 @@ const StandAlonePlayer = ({ route }) => {
           contentPlayerConfig.data = contentObj?.body;
           contentPlayerConfig.context = {
             host: `file://${content_file}/assets`,
+            contentId: content_do_id,
           };
           //console.log('contentPlayerConfig set', contentPlayerConfig);
           set_is_valid_file(true);
@@ -543,8 +600,11 @@ const StandAlonePlayer = ({ route }) => {
         try {
           contentPlayerConfig.metadata = contentObj;
           contentPlayerConfig.data = '';
-          contentPlayerConfig.context = { host: `file://${content_file}` };
-          //console.log('contentPlayerConfig set', contentPlayerConfig);
+          contentPlayerConfig.context = {
+            host: `file://${content_file}`,
+            contentId: content_do_id,
+          };
+          console.log('contentPlayerConfig set', contentPlayerConfig);
           set_is_valid_file(true);
         } catch (e) {
           set_is_valid_file(false);
@@ -579,6 +639,8 @@ const StandAlonePlayer = ({ route }) => {
             contentObj?.mimeType == 'application/pdf' ||
             contentObj?.mimeType == 'video/mp4' ||
             contentObj?.mimeType == 'video/webm' ||
+            contentObj?.mimeType == 'audio/mp3' ||
+            contentObj?.mimeType == 'audio/wav' ||
             contentObj?.mimeType == 'application/epub'
           ) {
             if (contentObj?.mimeType == 'application/pdf') {
@@ -587,7 +649,9 @@ const StandAlonePlayer = ({ route }) => {
             }
             if (
               contentObj?.mimeType == 'video/mp4' ||
-              contentObj?.mimeType == 'video/webm'
+              contentObj?.mimeType == 'video/webm' ||
+              contentObj?.mimeType == 'audio/mp3' ||
+              contentObj?.mimeType == 'audio/wav'
             ) {
               videoPlayerConfig.metadata = contentObj;
               //console.log('videoPlayerConfig set', videoPlayerConfig);
@@ -606,6 +670,8 @@ const StandAlonePlayer = ({ route }) => {
         contentObj?.mimeType == 'application/pdf' ||
         contentObj?.mimeType == 'video/mp4' ||
         contentObj?.mimeType == 'video/webm' ||
+        contentObj?.mimeType == 'audio/mp3' ||
+        contentObj?.mimeType == 'audio/wav' ||
         contentObj?.mimeType == 'application/epub'
       ) {
         //play offline content
@@ -632,7 +698,9 @@ const StandAlonePlayer = ({ route }) => {
         }
         if (
           contentObj?.mimeType == 'video/mp4' ||
-          contentObj?.mimeType == 'video/webm'
+          contentObj?.mimeType == 'video/webm' ||
+          contentObj?.mimeType == 'audio/mp3' ||
+          contentObj?.mimeType == 'audio/wav'
         ) {
           videoPlayerConfig.metadata = contentObj;
           //console.log('videoPlayerConfig set', videoPlayerConfig);
@@ -661,17 +729,19 @@ const StandAlonePlayer = ({ route }) => {
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
       ? fetchDataEcml()
       : content_mime_type == 'video/x-youtube' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive'
-        ? fetchDataHtmlH5pYoutube()
-        : content_mime_type == 'application/pdf' ||
-            content_mime_type == 'video/mp4' ||
-            content_mime_type == 'video/webm' ||
-            content_mime_type == 'application/epub'
-          ? fetchDataPdfVideoEpub()
-          : content_mime_type == 'application/vnd.sunbird.questionset'
-            ? fetchDataQuml()
-            : '';
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      ? fetchDataHtmlH5pYoutube()
+      : content_mime_type == 'application/pdf' ||
+        content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'audio/mp3' ||
+        content_mime_type == 'audio/wav' ||
+        content_mime_type == 'application/epub'
+      ? fetchDataPdfVideoEpub()
+      : content_mime_type == 'application/vnd.sunbird.questionset'
+      ? fetchDataQuml()
+      : '';
   }, []);
   useEffect(() => {
     const fetchData = async () => {
@@ -683,6 +753,8 @@ const StandAlonePlayer = ({ route }) => {
         content_mime_type == 'application/pdf' ||
         content_mime_type == 'video/mp4' ||
         content_mime_type == 'video/webm' ||
+        content_mime_type == 'audio/mp3' ||
+        content_mime_type == 'audio/wav' ||
         content_mime_type == 'application/epub' ||
         content_mime_type == 'application/vnd.sunbird.questionset'
       ) {
@@ -793,11 +865,11 @@ const StandAlonePlayer = ({ route }) => {
                     'application/vnd.ekstep.ecml-archive'
                       ? fetchDataEcml()
                       : contentObj?.mimeType ==
-                            'application/vnd.ekstep.html-archive' ||
-                          contentObj?.mimeType ==
-                            'application/vnd.ekstep.h5p-archive'
-                        ? await fetchDataHtmlH5pYoutube()
-                        : '';
+                          'application/vnd.ekstep.html-archive' ||
+                        contentObj?.mimeType ==
+                          'application/vnd.ekstep.h5p-archive'
+                      ? await fetchDataHtmlH5pYoutube()
+                      : '';
                   } catch (error) {
                     console.error(`Error extracting zip file: ${error}`);
                   }
@@ -1024,10 +1096,10 @@ const StandAlonePlayer = ({ route }) => {
             window.setData();
         })(); ${disableZoomJS} true;`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
-          content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
-          content_mime_type == 'video/x-youtube'
-        ? `(function() {
+        content_mime_type == 'application/vnd.ekstep.html-archive' ||
+        content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+        content_mime_type == 'video/x-youtube'
+      ? `(function() {
         localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
           {
             contentPlayerConfig: contentPlayerConfig,
@@ -1035,20 +1107,22 @@ const StandAlonePlayer = ({ route }) => {
         )}));
         window.setData();
         })(); true;`
-        : content_mime_type == 'application/pdf'
-          ? `(function() {
+      : content_mime_type == 'application/pdf'
+      ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
         })(); ${disableZoomJS} true;`
-          : content_mime_type == 'video/mp4' ||
-              content_mime_type == 'video/webm'
-            ? `(function() {
+      : content_mime_type == 'video/mp4' ||
+        content_mime_type == 'video/webm' ||
+        content_mime_type == 'audio/mp3' ||
+        content_mime_type == 'audio/wav'
+      ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
         })(); true;`
-            : content_mime_type == 'application/epub'
-              ? `(function() {
+      : content_mime_type == 'application/epub'
+      ? `(function() {
         window.setData('${JSON.stringify(epubPlayerConfig)}');
         })(); ${disableZoomJS} true;`
-              : ``;
+      : ``;
 
   //event when player closed
   useFocusEffect(
@@ -1110,17 +1184,37 @@ const StandAlonePlayer = ({ route }) => {
     let storedContentEidINTERACT = await getData('contentEidINTERACT', 'json');
     let storedContentEidEND = await getData('contentEidEND', 'json');
     console.log('storedContentEidSTART', storedContentEidSTART);
+    console.log('storedContentEidEND', storedContentEidEND);
 
     let detailsObject = [];
     try {
-      if (storedContentEidSTART.length > 0) {
+      if (storedContentEidSTART && storedContentEidSTART.length > 0) {
         detailsObject.push(storedContentEidSTART[0]);
+      } else {
+        //for only html content games push end event manually after close app
+        if (
+          content_mime_type == 'application/vnd.ekstep.html-archive' ||
+          content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+          content_mime_type == 'video/x-youtube' ||
+          content_mime_type == 'application/vnd.ekstep.h5p-archive'
+        ) {
+          detailsObject.push({
+            eid: 'START',
+            edata: {
+              duration: 0,
+              mode: 'play',
+              pageid: 'sunbird-player-Startpage',
+              summary: [],
+              type: 'content',
+            },
+          });
+        }
       }
     } catch (error) {
       console.log('error', error);
     }
     try {
-      if (storedContentEidINTERACT.length > 0) {
+      if (storedContentEidINTERACT && storedContentEidINTERACT.length > 0) {
         detailsObject.push(storedContentEidINTERACT[0]);
       }
     } catch (error) {
@@ -1128,11 +1222,15 @@ const StandAlonePlayer = ({ route }) => {
     }
 
     try {
-      if (storedContentEidEND.length > 0) {
+      if (storedContentEidEND && storedContentEidEND.length > 0) {
         detailsObject.push(storedContentEidEND[0]);
       } else {
         //for only html content games push end event manually after close app
-        if (content_mime_type == 'application/vnd.ekstep.html-archive') {
+        if (
+          content_mime_type == 'application/vnd.ekstep.html-archive' ||
+          content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+          content_mime_type == 'application/vnd.ekstep.h5p-archive'
+        ) {
           detailsObject.push({
             eid: 'END',
             edata: {
@@ -1167,7 +1265,7 @@ const StandAlonePlayer = ({ route }) => {
     } catch (error) {
       console.log('error', error);
     }
-
+    
     let userId = await getDataFromStorage('userId');
     let courseId = await getData('courseId', '');
     let unitId = await getData('unitId', '');
@@ -1177,7 +1275,7 @@ const StandAlonePlayer = ({ route }) => {
     let lastAccessOn = new Date().toISOString();
 
     if (detailsObject && detailsObject.length > 0) {
-      console.log('reached here');
+      console.log('reached here', JSON.stringify(detailsObject));
 
       try {
         let create_tracking = await contentTracking(
@@ -1212,6 +1310,10 @@ const StandAlonePlayer = ({ route }) => {
         console.log(e);
       }
     }
+
+    await removeData('contentEidSTART');
+    await removeData('contentEidINTERACT');
+    await removeData('contentEidEND');
   };
   //event when player closed
 

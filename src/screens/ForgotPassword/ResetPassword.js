@@ -36,6 +36,7 @@ const ResetPassword = () => {
   useEffect(() => {
     const check = async () => {
       const data = JSON.parse(await getDataFromStorage('profileData'));
+      console.log('########## data', data);
       console.log(data?.getUserDetails?.[0]);
 
       setEmail(data?.getUserDetails?.[0]?.email);
@@ -83,12 +84,12 @@ const ResetPassword = () => {
       username: userName,
       password: oldPassword,
     };
-    console.log({ payload });
+    console.log("###### password debug payload",{ payload });
 
     const data = await login(payload);
-    console.log({ data });
+    console.log("###### password debug data",{ data });
 
-    if (data?.params?.status !== 'failed' && !data?.error) {
+    if (Object.keys(data).length !== 0 && data?.params?.status !== 'failed' && !data?.error) {
       resetPasswordAPi();
     } else {
       setOldPasswordError(true);
@@ -113,24 +114,28 @@ const ResetPassword = () => {
   };
 
   function encryptEmail(email) {
-    // Split the email into username and domain
-    console.log({ email });
+    if (email) {
+      // Split the email into username and domain
+      console.log({ email });
 
-    const [emailUsername, domain] = email.split('@');
+      const [emailUsername, domain] = email.split('@');
 
-    // Check if emailUsername is valid
-    if (!emailUsername || emailUsername?.length < 2) {
-      return email; // Return the original email if it's too short
+      // Check if emailUsername is valid
+      if (!emailUsername || emailUsername?.length < 2) {
+        return email; // Return the original email if it's too short
+      }
+
+      // Replace all but the first and last character of the username with asterisks
+      const encryptedUsername =
+        emailUsername.charAt(0) +
+        '*'.repeat(emailUsername.length - 2) + // This will now always be >= 0
+        emailUsername.charAt(emailUsername.length - 1);
+
+      // Return the encrypted email
+      return `${encryptedUsername}@${domain}`;
+    } else {
+      return '';
     }
-
-    // Replace all but the first and last character of the username with asterisks
-    const encryptedUsername =
-      emailUsername.charAt(0) +
-      '*'.repeat(emailUsername.length - 2) + // This will now always be >= 0
-      emailUsername.charAt(emailUsername.length - 1);
-
-    // Return the encrypted email
-    return `${encryptedUsername}@${domain}`;
   }
 
   return (
