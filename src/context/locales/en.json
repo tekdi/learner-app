@@ -546,5 +546,6 @@
   "open_settings": "Open Settings",
   "many_images_selected": "Many Images Selected",
   "many_images_selected_message": "You have selected {count} images. For better performance, we recommend uploading up to 4 images at a time.",
-  "family_member_details": "Family Member Details"
+  "family_member_details": "Family Member Details",
+  "number_of_children": "Number of Children"
 }

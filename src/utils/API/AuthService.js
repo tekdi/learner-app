@@ -12,6 +12,7 @@ import { get, handleResponseException, patch, post } from './RestClient';
 import Config from 'react-native-config';
 import RNFS from 'react-native-fs';
 import { Alert } from 'react-native';
+import { TENANT_DATA } from '../Constants/app-constants';
 
 const getHeaders = async () => {
   const token = await getDataFromStorage('Accesstoken');
@@ -345,7 +346,7 @@ export const courseListApi_testing = async ({
         program:
           userType == 'scp'
             ? ['secondchance', 'Second Chance']
-            : ['Youthnet', 'youthnet', 'YouthNet'],
+            : ['Youthnet', 'youthnet', 'YouthNet' , TENANT_DATA.YOUTHNET],
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }),
         primaryCategory: ['Course'],
       },
@@ -777,7 +778,7 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? [ 'Second Chance'] : ['YouthNet'],
+        program: userType == 'scp' ? [ 'Second Chance'] : [ TENANT_DATA.YOUTHNET],
         board: `${params?.boardName}`,
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
