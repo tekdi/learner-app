@@ -66,6 +66,7 @@ import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { sendOtp, userExist } from '../../utils/API/AuthService';
 import SuggestUsername from './SuggestUsername';
+import { TENANT_DATA } from '../../utils/Constants/app-constants';
 
 const RegistrationForm = ({ fields }) => {
   const { t } = useTranslation();
@@ -152,7 +153,7 @@ const RegistrationForm = ({ fields }) => {
     await storeUsername(profileData?.getUserDetails?.[0]?.username);
 
     const youthnetTenantIds = programData?.filter(
-      (item) => item.name === 'YouthNet'
+      (item) => item.name ===  TENANT_DATA.YOUTHNET
     );
     const scp = programData?.filter(
       (item) => item.name === 'Second Chance Program'
