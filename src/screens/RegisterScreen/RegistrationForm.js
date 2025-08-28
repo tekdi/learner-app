@@ -877,7 +877,7 @@ const RegistrationForm = ({ fields }) => {
   }, [isOtpModalVisible]);
 
   const startOtpTimer = () => {
-    setCount(60); // Reset counter
+    setCount(120); // Reset counter
     const id = setInterval(() => {
       setCount((prevCount) => {
         if (prevCount <= 1) {
