@@ -42,7 +42,7 @@ import { useInternet } from '../../context/NetworkContext';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import GlobalText from '@components/GlobalText/GlobalText';
 import moment from 'moment';
-
+import { TENANT_DATA } from '../../utils/Constants/app-constants';
 const LoginScreen = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -140,7 +140,7 @@ const LoginScreen = () => {
         );
 
         const youthnetTenantIds = tenantDetails
-          ?.filter((item) => item?.name === 'YouthNet')
+          ?.filter((item) => item?.name === TENANT_DATA.YOUTHNET)
           ?.map((item) => item?.tenantId);
 
         const scp = tenantDetails
