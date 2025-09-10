@@ -22,9 +22,11 @@ import {
   getProgramDetails,
   getStudentForm,
   login,
+  notificationSubscribe,
   registerUser,
   setAcademicYear,
   suggestUsername,
+  telemetryTrackingData,
   verifyOtp,
 } from '@src/utils/API/AuthService';
 import HeaderComponent from '@components/CustomHeaderComponent/customheadercomponent';
@@ -34,6 +36,7 @@ import {
   getActiveCohortData,
   getActiveCohortIds,
   getDataFromStorage,
+  getDeviceId,
   getuserDetails,
   getUserId,
   logEventFunction,
@@ -67,6 +70,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { sendOtp, userExist } from '../../utils/API/AuthService';
 import SuggestUsername from './SuggestUsername';
 import { TENANT_DATA } from '../../utils/Constants/app-constants';
+import moment from 'moment';
 
 const RegistrationForm = ({ fields }) => {
   const { t } = useTranslation();
@@ -120,62 +124,106 @@ const RegistrationForm = ({ fields }) => {
 
     const tenantData = userDetails?.tenantData;
     const tenantid = userDetails?.tenantData?.[0]?.tenantId;
+    const enrollmentId = userDetails?.enrollmentId;
     await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
+    await setDataInStorage('userId', user_id || '');
+    await setDataInStorage('enrollmentId', enrollmentId || '');
 
-    await setDataInStorage('userId', user_id);
+    //store dynamic templateId
+    const templateId = userDetails?.tenantData?.[0]?.templateId;
+    await setDataInStorage('templateId', templateId || '');
+
     const academicyear = await setAcademicYear({ tenantid });
     const academicYearId = academicyear?.[0]?.id;
+    await setDataInStorage('academicYearId', academicYearId || '');
+    await setDataInStorage('userTenantid', tenantid || '');
     const cohort = await getCohort({ user_id, tenantid, academicYearId });
-    const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
-    const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
-    await setDataInStorage(
-      'academicYearId',
-      JSON.stringify(academicYearId || '')
-    );
-    await setDataInStorage(
-      'cohortData',
-      JSON.stringify(getActiveCohort?.[0] || '')
-    );
-    const cohort_id = getActiveCohortId?.[0];
-    await setDataInStorage(
-      'cohortId',
-      cohort_id || '00000000-0000-0000-0000-000000000000'
-    );
+    let cohort_id;
+    if (cohort.params?.status !== 'failed') {
+      const getActiveCohort = await getActiveCohortData(cohort);
+      const getActiveCohortId = await getActiveCohortIds(cohort);
+      await setDataInStorage(
+        'cohortData',
+        JSON.stringify(getActiveCohort?.[0]) || ''
+      );
+      cohort_id = getActiveCohortId?.[0];
+    }
+
     const profileData = await getProfileDetails({
       userId: user_id,
     });
+    
     await setDataInStorage('profileData', JSON.stringify(profileData));
     await setDataInStorage(
       'Username',
-      profileData?.getUserDetails?.[0]?.username
+      profileData?.getUserDetails?.[0]?.username || ''
     );
 
     await storeUsername(profileData?.getUserDetails?.[0]?.username);
 
-    const youthnetTenantIds = programData?.filter(
-      (item) => item.name ===  TENANT_DATA.YOUTHNET
-    );
-    const scp = programData?.filter(
-      (item) => item.name === 'Second Chance Program'
+    await setDataInStorage(
+      'cohortId',
+      cohort_id || '00000000-0000-0000-0000-000000000000'
     );
 
-    if (tenantid === scp?.[0]?.tenantId) {
-      await setDataInStorage('userType', 'scp');
-      if (cohort_id) {
-        navigation.navigate('SCPUserTabScreen');
+    // Get tenant details and store contentFilter
+    const tenantDetails = programData || [];
+    const MatchedTenant = tenantDetails.filter(
+      (item) => item?.tenantId === tenantid
+    );
+    
+    await setDataInStorage(
+      'contentFilter',
+      JSON.stringify(MatchedTenant?.[0]?.contentFilter || {})
+    );
+
+    const youthnetTenantIds = programData
+      ?.filter((item) => item?.name === TENANT_DATA.YOUTHNET)
+      ?.map((item) => item?.tenantId);
+
+    const scp = programData
+      ?.filter((item) => item.name === 'Second Chance Program')
+      ?.map((item) => item.tenantId);
+
+    const role = tenantData?.[0]?.roleName;
+
+    if (role == 'Learner' || role == 'Student') {
+      if (tenantid === scp?.[0]) {
+        await setDataInStorage('userType', 'scp');
+        if (cohort_id) {
+          navigation.navigate('SCPUserTabScreen');
+        } else {
+          navigation.navigate('Dashboard');
+        }
       } else {
-        navigation.navigate('Dashboard');
+        if (tenantid === youthnetTenantIds?.[0]) {
+          await setDataInStorage('userType', 'youthnet');
+          // navigation.navigate('YouthNetTabScreen');
+          navigation.navigate('Dashboard');
+        } else {
+          await setDataInStorage('userType', tenantData?.[0]?.tenantName);
+          navigation.navigate('Dashboard');
+        }
       }
+      const deviceId = await getDeviceId();
+      const action = 'add';
+
+      await notificationSubscribe({ deviceId, user_id, action });
     } else {
-      if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
-        await setDataInStorage('userType', 'youthnet');
-        // navigation.navigate('YouthNetTabScreen');
-        navigation.navigate('Dashboard');
-      } else {
-        await setDataInStorage('userType', 'public');
-        navigation.navigate('Dashboard');
-      }
+      // Handle invalid role case similar to LoginScreen
+      // For now, we'll just navigate but you might want to handle this differently
     }
+    
+    const now = moment();
+    const telemetryPayloadData = {
+      event: 'registration',
+      type: 'click',
+      ets: now.unix(),
+    };
+    await telemetryTrackingData({
+      telemetryPayloadData,
+    });
+    
     setModal(false);
     const obj = {
       eventName: 'logged_in',
@@ -183,8 +231,6 @@ const RegistrationForm = ({ fields }) => {
       screenName: 'Registration',
     };
     await logEventFunction(obj);
-    // const deviceId = await getDeviceId();
-    // await notificationSubscribe({ deviceId, user_id });
   };
 
   const logRegistrationComplete = async () => {

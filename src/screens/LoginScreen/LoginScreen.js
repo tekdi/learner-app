@@ -159,11 +159,15 @@ const LoginScreen = () => {
             }
           } else {
             if (tenantid === youthnetTenantIds?.[0]) {
+              //console.log('youthnetTenantIds', youthnetTenantIds);
               await setDataInStorage('userType', 'youthnet');
               // navigation.navigate('YouthNetTabScreen');
               navigation.navigate('Dashboard');
             } else {
-              await setDataInStorage('userType', 'pragyanpath');
+              //  await setDataInStorage('userType', 'pragyanpath');
+              console.log('tenantData=====>', tenantData);
+              await setDataInStorage('userType', tenantData?.[0]?.tenantName);
+             // console.log('userType', userType);
               navigation.navigate('Dashboard');
             }
           }
