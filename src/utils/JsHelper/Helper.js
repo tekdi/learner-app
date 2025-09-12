@@ -20,6 +20,7 @@ export const getDataFromStorage = async (value) => {
 // Save Refresh Token
 
 export const setDataInStorage = async (name, data) => {
+  console.log('########## setDataInStorage', name, data);
   try {
     await AsyncStorage.setItem(name, data);
   } catch (e) {
