@@ -232,7 +232,37 @@ const ProfileUpdateForm = ({ fields }) => {
     setLoading(true);
     // console.log('data', JSON.stringify(data));
 
-    const payload = await transformPayload(data);
+    // Filter and set empty values for unwanted family member name fields based on family_member_details
+    const filteredData = { ...data };
+    const familyType = data?.family_member_details?.value || data?.family_member_details;
+    
+    // Set empty values for unwanted family member fields based on selection
+    if (!familyType) {
+      // If no family_member_details selected, set all family name fields to empty
+      filteredData.father_name = "";
+      filteredData.mother_name = "";
+      filteredData.spouse_name = "";
+    } else if (familyType === 'mother') {
+      // If mother selected, keep mother_name and set others to empty
+      filteredData.father_name = "";
+      filteredData.spouse_name = "";
+      // mother_name keeps its value
+    } else if (familyType === 'father') {
+      // If father selected, keep father_name and set others to empty
+      filteredData.mother_name = "";
+      filteredData.spouse_name = "";
+      // father_name keeps its value
+    } else if (familyType === 'spouse') {
+      // If spouse selected, keep spouse_name and set others to empty
+      filteredData.father_name = "";
+      filteredData.mother_name = "";
+      // spouse_name keeps its value
+    }
+
+    console.log('Original data:', data);
+    console.log('Filtered data for updateUser:', filteredData);
+
+    const payload = await transformPayload(filteredData);
     const user_id = await getDataFromStorage('userId');
 
     const register = await updateUser({ payload, user_id });
@@ -365,6 +395,38 @@ const ProfileUpdateForm = ({ fields }) => {
     ) {
       return null;
     }
+    
+    // Family member details conditional logic
+    const familyType = formData?.family_member_details?.value || formData?.family_member_details;
+    console.log('familyType:', familyType, 'field.name:', field.name, 'formData.family_member_details:', formData?.family_member_details);
+    
+    // If no family_member_details is selected, hide all family name fields
+    if (
+      !familyType &&
+      ['father_name', 'mother_name', 'spouse_name'].includes(field.name)
+    ) {
+      console.log('Hiding field (no familyType):', field.name);
+      return null;
+    }
+    
+    // If spouse is selected, hide father_name and mother_name
+    if (familyType === 'spouse' && (field.name === 'father_name' || field.name === 'mother_name')) {
+      console.log('Hiding field (spouse selected):', field.name);
+      return null;
+    }
+    
+    // If father is selected, hide spouse_name and mother_name
+    if (familyType === 'father' && (field.name === 'spouse_name' || field.name === 'mother_name')) {
+      console.log('Hiding field (father selected):', field.name);
+      return null;
+    }
+    
+    // If mother is selected, hide father_name and spouse_name
+    if (familyType === 'mother' && (field.name === 'father_name' || field.name === 'spouse_name')) {
+      console.log('Hiding field (mother selected):', field.name);
+      return null;
+    }
+    
     // if (field.name && !field?.isEditable) {
     //   return null;
     // }

@@ -513,9 +513,12 @@ export const courseListApi_New = async ({
 export const profileCourseListApi = async () => {
   const user_id = await getDataFromStorage('userId');
   const url = `${EndUrls.getCourseCompletedList}`; // Define the URL
+  let tenantId = await getTentantId();
+
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
+    tenantId: tenantId,
   };
   const payload = {
     filters: {

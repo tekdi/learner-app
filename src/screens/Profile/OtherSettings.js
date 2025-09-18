@@ -111,6 +111,7 @@ const OtherSettings = ({ route }) => {
       await deleteSavedItem('profileData');
       await deleteSavedItem('tenantData');
       await deleteSavedItem('academicYearId');
+      await deleteSavedItem('userType');
       logoutEvent();
       // Reset the navigation stack and navigate to LoginSignUpScreen
       navigation.dispatch(

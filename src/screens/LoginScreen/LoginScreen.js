@@ -210,7 +210,8 @@ const LoginScreen = () => {
           // navigation.navigate('YouthNetTabScreen');
           navigation.navigate('Dashboard');
         } else {
-          await setDataInStorage('userType', 'pragyanpath');
+          // await setDataInStorage('userType', 'pragyanpath');
+          await setDataInStorage('userType', tenantData?.[0]?.tenantName);
           navigation.navigate('Dashboard');
         }
       }
