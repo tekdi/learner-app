@@ -552,5 +552,9 @@
   "confirm_selection": "निवडीची पुष्टी करा",
   "select_tenant": "टेनंट निवडा",
   "select_role": "भूमिका निवडा",
-  "select_account": "खाता निवडा"
+  "select_account": "खाता निवडा",
+  "not_found_learner_role": "कोणतीही शिकणारा भूमिका सापडली नाही",
+  "cannot_login_no_learner_role": "लॉगिन करू शकत नाही - कोणतीही शिकणारा भूमिका उपलब्ध नाही",
+  "role_not_allowed_error": "ही भूमिका लॉगिनसाठी परवानगी नाही",
+  "okay": "ठीक आहे"
 }

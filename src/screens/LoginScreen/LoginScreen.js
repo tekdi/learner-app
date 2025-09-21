@@ -110,6 +110,7 @@ const LoginScreen = () => {
     roleId,
     roleName
   ) => {
+    setLoading(true);
     setSwitchDialogOpen(false);
 
     // Set the state values
@@ -203,7 +204,7 @@ const LoginScreen = () => {
 
     if (role == 'Learner' || role == 'Student') {
       console.log('#### loginmultirole role', role);
-/*
+
       if (tenantId === scp?.[0]) {
         await setDataInStorage('userType', 'scp');
         if (cohort_id) {
@@ -225,7 +226,7 @@ const LoginScreen = () => {
       const deviceId = await getDeviceId();
       const action = 'add';
 
-      await notificationSubscribe({ deviceId, user_id, action });*/
+      await notificationSubscribe({ deviceId, user_id, action });
     } else {
       setErrmsg('invalid_username_or_password');
     }
@@ -239,6 +240,8 @@ const LoginScreen = () => {
     await telemetryTrackingData({
       telemetryPayloadData,
     });
+
+    setLoading(false);
   };
 
   const callBackError = () => {

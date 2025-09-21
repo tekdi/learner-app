@@ -552,5 +552,9 @@
   "confirm_selection": "चयन की पुष्टि करें",
   "select_tenant": "टेनेंट चुनें",
   "select_role": "भूमिका चुनें",
-  "select_account": "खाता चुनें"
+  "select_account": "खाता चुनें",
+  "not_found_learner_role": "कोई लर्नर भूमिका नहीं मिली",
+  "cannot_login_no_learner_role": "लॉगिन नहीं कर सकते - कोई लर्नर भूमिका उपलब्ध नहीं",
+  "role_not_allowed_error": "यह भूमिका लॉगिन के लिए अनुमतित नहीं है",
+  "okay": "ठीक है"
 }

@@ -555,5 +555,9 @@
   "confirm_selection": "Confirm Selection",
   "select_tenant": "Select Tenant",
   "select_role": "Select Role",
-  "select_account": "Select Account"
+  "select_account": "Select Account",
+  "not_found_learner_role": "No learner role found",
+  "cannot_login_no_learner_role": "Cannot login - No learner role available",
+  "role_not_allowed_error": "This role is not allowed for login",
+  "okay": "Okay"
 }

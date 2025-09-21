@@ -86,11 +86,40 @@ const SwitchAccountDialog = ({
   const handleTenantSelect = (tenant) => {
     setSelectedTenant(tenant);
     setSelectedRole(null);
-    setActiveStep(1);
+
+    // Filter roles to only include allowed ones
+    const allowedRoles = tenant.roles.filter((role) =>
+      allowedRoleIds.includes(role.roleId)
+    );
+
+    if (allowedRoles.length === 1) {
+      // Auto-select the single allowed role and call callback
+      const singleRole = allowedRoles[0];
+      setSelectedRole(singleRole);
+      callbackFunction(
+        tenant.tenantId,
+        tenant.tenantName,
+        singleRole.roleId,
+        singleRole.roleName
+      );
+      handleCloseDialog();
+    } else {
+      // Show role selection dialog
+      setActiveStep(1);
+    }
   };
 
   const handleRoleSelect = (role) => {
-    setSelectedRole(role);
+    if (allowedRoleIds.includes(role.roleId)) {
+      setSelectedRole(role);
+    } else {
+      // Show error for non-allowed role
+      Alert.alert(
+        t('role_not_allowed_error'),
+        `${t('role_not_allowed_error')} - ${role.roleName}`,
+        [{ text: t('okay'), style: 'default' }]
+      );
+    }
   };
 
   const handleBack = () => {
@@ -214,8 +243,26 @@ const SwitchAccountDialog = ({
                   {/* <Text style={styles.tenantType}>{tenant.tenantType}</Text> */}
                   <View style={styles.rolesContainer}>
                     {tenant.roles.map((role) => (
-                      <Chip key={role.roleId} label={role.roleName} />
+                      <Chip
+                        key={role.roleId}
+                        label={role.roleName}
+                        selected={allowedRoleIds.includes(role.roleId)}
+                        style={
+                          !allowedRoleIds.includes(role.roleId)
+                            ? styles.disabledChip
+                            : null
+                        }
+                      />
                     ))}
+                    {tenant.roles.filter((role) =>
+                      allowedRoleIds.includes(role.roleId)
+                    ).length === 0 && (
+                      <View style={styles.noRoleContainer}>
+                        <Text style={styles.cannotLoginText}>
+                          {t('cannot_login_no_learner_role')}
+                        </Text>
+                      </View>
+                    )}
                   </View>
                 </View>
                 {selectedTenant?.tenantId === tenant.tenantId && <CheckIcon />}
@@ -244,31 +291,68 @@ const SwitchAccountDialog = ({
       <Text style={styles.sectionSubtitle}>{t('choose_role_description')}</Text>
 
       <View style={styles.listContainer}>
-        {selectedTenant?.roles?.map((role) => (
-          <TouchableOpacity
-            key={role.roleId}
-            style={[
-              styles.roleCard,
-              selectedRole?.roleId === role.roleId && styles.selectedCard,
-            ]}
-            onPress={() => handleRoleSelect(role)}
-          >
-            <View style={styles.cardContent}>
-              <View style={styles.cardHeader}>
-                <View style={styles.avatarSecondary}>
-                  <PersonIcon />
+        {selectedTenant?.roles?.map((role) => {
+          const isAllowed = allowedRoleIds.includes(role.roleId);
+          return (
+            <TouchableOpacity
+              key={role.roleId}
+              style={[
+                styles.roleCard,
+                selectedRole?.roleId === role.roleId && styles.selectedCard,
+                !isAllowed && styles.disabledRoleCard,
+              ]}
+              onPress={() => handleRoleSelect(role)}
+            >
+              <View style={styles.cardContent}>
+                <View style={styles.cardHeader}>
+                  <View
+                    style={[
+                      styles.avatarSecondary,
+                      !isAllowed && styles.disabledAvatar,
+                    ]}
+                  >
+                    <PersonIcon />
+                  </View>
+                  <View style={styles.cardInfo}>
+                    <Text
+                      style={[
+                        styles.roleName,
+                        !isAllowed && styles.disabledText,
+                      ]}
+                    >
+                      {role.roleName}
+                    </Text>
+                    {/* <Text style={styles.roleId}>
+                      {t('role_id')?.replace('{roleId}', role.roleId)}
+                    </Text> */}
+                    {!isAllowed && (
+                      <Text style={styles.errorText}>
+                        {t('role_not_allowed_error')}
+                      </Text>
+                    )}
+                  </View>
+                  {selectedRole?.roleId === role.roleId && <CheckIcon />}
                 </View>
-                <View style={styles.cardInfo}>
-                  <Text style={styles.roleName}>{role.roleName}</Text>
-                  {/* <Text style={styles.roleId}>
-                    {t('role_id')?.replace('{roleId}', role.roleId)}
-                  </Text> */}
-                </View>
-                {selectedRole?.roleId === role.roleId && <CheckIcon />}
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          );
+        })}
+        {selectedTenant?.roles?.filter((role) =>
+          allowedRoleIds.includes(role.roleId)
+        ).length === 0 && (
+          <View style={styles.noRoleContainer}>
+            {/* <Text style={styles.noRoleText}>{t('not_found_learner_role')}</Text> */}
+            {/* <Text style={styles.roleIdText}>
+              {t('role_id')?.replace(
+                '{roleId}',
+                selectedTenant?.roles?.map((role) => role.roleId).join(', ')
+              )}
+            </Text> */}
+            <Text style={styles.cannotLoginText}>
+              {t('cannot_login_no_learner_role')}
+            </Text>
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -445,7 +529,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    marginLeft: 10,
+    marginLeft: 0,
   },
   sectionSubtitle: {
     fontSize: 14,
@@ -457,7 +541,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     alignSelf: 'flex-start',
-    padding: 8,
+    padding: 0,
     marginBottom: 10,
   },
   backButtonText: {
@@ -634,6 +718,52 @@ const styles = StyleSheet.create({
   },
   confirmButtonTextDisabled: {
     color: '#999',
+  },
+  noRoleContainer: {
+    padding: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noRoleText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
+  roleIdText: {
+    fontSize: 14,
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 8,
+    fontFamily: 'monospace',
+  },
+  cannotLoginText: {
+    fontSize: 14,
+    color: '#ff6b6b',
+    textAlign: 'center',
+    marginTop: 1,
+    fontWeight: 'bold',
+  },
+  disabledChip: {
+    backgroundColor: '#f0f0f0',
+    borderColor: '#ccc',
+  },
+  disabledRoleCard: {
+    opacity: 0.6,
+    backgroundColor: '#f9f9f9',
+    borderColor: '#ddd',
+  },
+  disabledAvatar: {
+    backgroundColor: '#ccc',
+  },
+  disabledText: {
+    color: '#999',
+  },
+  errorText: {
+    fontSize: 12,
+    color: '#ff6b6b',
+    marginTop: 1,
+    fontWeight: 'bold',
   },
 });
 

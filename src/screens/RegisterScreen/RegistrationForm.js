@@ -112,6 +112,7 @@ const RegistrationForm = ({ fields }) => {
   const { isConnected } = useInternet();
 
   const RegisterLogin = async (loginData) => {
+    setLoading(true);
     const payload = {
       username: loginData?.username,
       password: loginData?.password,
@@ -121,7 +122,6 @@ const RegistrationForm = ({ fields }) => {
     await saveRefreshToken(data?.refresh_token || '');
     await saveAccessToken(data?.access_token || '');
 
-
     const userDetails = await getuserDetails();
 
     console.log('#### loginmultirole userDetails', userDetails);
@@ -129,7 +129,7 @@ const RegistrationForm = ({ fields }) => {
     setUserDetails(userDetails);
 
     setSwitchDialogOpen(true);
-
+    setLoading(false);
   };
 
   const [switchDialogOpen, setSwitchDialogOpen] = useState(false);
@@ -145,6 +145,7 @@ const RegistrationForm = ({ fields }) => {
     roleId,
     roleName
   ) => {
+    setLoading(true);
     setSwitchDialogOpen(false);
 
     // Set the state values
@@ -161,7 +162,7 @@ const RegistrationForm = ({ fields }) => {
     console.log('#### loginmultirole roleName', roleName);
 
     console.log('#### loginmultirole userDetails', userDetails);
-    
+
     const user_id = await getUserId();
     const tenantData = [
       userDetails?.tenantData?.find((tenant) => tenant.tenantId === tenantId),
@@ -276,6 +277,7 @@ const RegistrationForm = ({ fields }) => {
     await logEventFunction(obj);
 
     setModal(false);
+    setLoading(false);
   };
 
   const callBackError = () => {
