@@ -167,13 +167,19 @@ const TestView = ({ route }) => {
     console.log('#########atm questionsets');
     if (questionsets && questionsets.length > 0) {
       console.log('#########atm questionsets 1');
+      // console.log('########### questionsets', JSON.stringify(questionsets));
       setAiDataLoading(true);
       let do_ids = questionsets?.map((item) => item?.identifier || '');
       // console.log('do_ids', do_ids);
       let response_ai = await AIAssessmentSearch(do_ids);
       // console.log('response_ai', response_ai);
-      let response_ai_ids =
+      let temp_ai_do_ids =
         response_ai?.data?.map((item) => item?.question_set_id || '') || [];
+      let temp_offline_do_ids = questionsets
+        .filter((item) => item?.evaluationType === 'offline')
+        .map((item) => item?.identifier);
+      let response_ai_ids = [...temp_ai_do_ids, ...temp_offline_do_ids];
+
       console.log('#########atm response_ai_ids', response_ai_ids);
       setAiQuestionSet(response_ai_ids);
       if (response_ai_ids.length > 0) {
@@ -203,9 +209,7 @@ const TestView = ({ route }) => {
 
               // Find record_answer: object with showFlag: true and evaluatedBy: "Manual"
               record_answer = records.find(
-                (record) =>
-                  record &&
-                  record.evaluatedBy !== 'AI'
+                (record) => record && record.evaluatedBy !== 'AI'
               );
             }
 
