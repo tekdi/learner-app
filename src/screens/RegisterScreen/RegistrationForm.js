@@ -71,6 +71,7 @@ import { sendOtp, userExist } from '../../utils/API/AuthService';
 import SuggestUsername from './SuggestUsername';
 import { TENANT_DATA } from '../../utils/Constants/app-constants';
 import moment from 'moment';
+import SwitchAccountDialog from '../../utils/SwitchAccount/SwitchAccount';
 
 const RegistrationForm = ({ fields }) => {
   const { t } = useTranslation();
@@ -119,18 +120,59 @@ const RegistrationForm = ({ fields }) => {
     const data = await login(payload);
     await saveRefreshToken(data?.refresh_token || '');
     await saveAccessToken(data?.access_token || '');
-    const user_id = await getUserId();
+
+
     const userDetails = await getuserDetails();
 
-    const tenantData = userDetails?.tenantData;
-    const tenantid = userDetails?.tenantData?.[0]?.tenantId;
+    console.log('#### loginmultirole userDetails', userDetails);
+
+    setUserDetails(userDetails);
+
+    setSwitchDialogOpen(true);
+
+  };
+
+  const [switchDialogOpen, setSwitchDialogOpen] = useState(false);
+  const [userDetails, setUserDetails] = useState(null);
+  const [tenantId, setTenantId] = useState('');
+  const [tenantName, setTenantName] = useState('');
+  const [roleId, setRoleId] = useState('');
+  const [roleName, setRoleName] = useState('');
+
+  const callBackSwitchDialog = async (
+    tenantId,
+    tenantName,
+    roleId,
+    roleName
+  ) => {
+    setSwitchDialogOpen(false);
+
+    // Set the state values
+    setTenantId(tenantId);
+    setTenantName(tenantName);
+    setRoleId(roleId);
+    setRoleName(roleName);
+
+    const tenantid = tenantId;
+
+    console.log('#### loginmultirole tenantId', tenantId);
+    console.log('#### loginmultirole tenantName', tenantName);
+    console.log('#### loginmultirole roleId', roleId);
+    console.log('#### loginmultirole roleName', roleName);
+
+    console.log('#### loginmultirole userDetails', userDetails);
+    
+    const user_id = await getUserId();
+    const tenantData = [
+      userDetails?.tenantData?.find((tenant) => tenant.tenantId === tenantId),
+    ];
     const enrollmentId = userDetails?.enrollmentId;
     await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
     await setDataInStorage('userId', user_id || '');
     await setDataInStorage('enrollmentId', enrollmentId || '');
 
     //store dynamic templateId
-    const templateId = userDetails?.tenantData?.[0]?.templateId;
+    const templateId = tenantData?.[0]?.templateId;
     await setDataInStorage('templateId', templateId || '');
 
     const academicyear = await setAcademicYear({ tenantid });
@@ -152,7 +194,7 @@ const RegistrationForm = ({ fields }) => {
     const profileData = await getProfileDetails({
       userId: user_id,
     });
-    
+
     await setDataInStorage('profileData', JSON.stringify(profileData));
     await setDataInStorage(
       'Username',
@@ -171,7 +213,7 @@ const RegistrationForm = ({ fields }) => {
     const MatchedTenant = tenantDetails.filter(
       (item) => item?.tenantId === tenantid
     );
-    
+
     await setDataInStorage(
       'contentFilter',
       JSON.stringify(MatchedTenant?.[0]?.contentFilter || {})
@@ -185,7 +227,9 @@ const RegistrationForm = ({ fields }) => {
       ?.filter((item) => item.name === 'Second Chance Program')
       ?.map((item) => item.tenantId);
 
-    const role = tenantData?.[0]?.roleName;
+    const role = roleName;
+    console.log('#### loginmultirole role', role);
+    console.log('#### loginmultirole tenantid', tenantid);
 
     if (role == 'Learner' || role == 'Student') {
       if (tenantid === scp?.[0]) {
@@ -213,7 +257,7 @@ const RegistrationForm = ({ fields }) => {
       // Handle invalid role case similar to LoginScreen
       // For now, we'll just navigate but you might want to handle this differently
     }
-    
+
     const now = moment();
     const telemetryPayloadData = {
       event: 'registration',
@@ -223,14 +267,19 @@ const RegistrationForm = ({ fields }) => {
     await telemetryTrackingData({
       telemetryPayloadData,
     });
-    
-    setModal(false);
+
     const obj = {
       eventName: 'logged_in',
       method: 'button-click',
       screenName: 'Registration',
     };
     await logEventFunction(obj);
+
+    setModal(false);
+  };
+
+  const callBackError = () => {
+    setErr('invalid_username_or_password');
   };
 
   const logRegistrationComplete = async () => {
@@ -403,7 +452,7 @@ const RegistrationForm = ({ fields }) => {
     const getProgramData = async () => {
       const data = await getProgramDetails();
       // const newData = data.filter((item) => item?.name === 'YouthNet');
-      const filtered = data.filter(item => {
+      const filtered = data.filter((item) => {
         const uiConfig = item.params?.uiConfig;
         return uiConfig?.showProgram === true && uiConfig?.showSignup === true;
       });
@@ -491,10 +540,10 @@ const RegistrationForm = ({ fields }) => {
         // Merge new fields into the filtered schema
         const newSchema = [...filteredSchema, ...fields];
         const result = newSchema.filter(
-          (item) => item.label !== "CENTER" && item.label !== "BATCH"
+          (item) => item.label !== 'CENTER' && item.label !== 'BATCH'
         );
-        
-        console.log('newSchema', newSchema)
+
+        console.log('newSchema', newSchema);
         setSchema(result);
 
         // Group fields into pages and update state
@@ -609,7 +658,6 @@ const RegistrationForm = ({ fields }) => {
   };
 
   const renderField = (field) => {
-   
     const age = calculateAge(formData?.dob || '');
     if (
       (field.name === 'guardian_relation' ||
@@ -620,22 +668,31 @@ const RegistrationForm = ({ fields }) => {
     ) {
       return null;
     }
-     const familyType = formData?.family_member_details;
-      if (
-    !familyType &&
-    ['father_name', 'mother_name', 'spouse_name'].includes(field.name)
-  ) {
-    return null;
-  }
-  if (familyType === 'spouse' && (field.name === 'father_name' || field.name === 'mother_name')) {
-    return null;
-  }
-  if (familyType === 'father' && (field.name === 'spouse_name' || field.name === 'mother_name')) {
-    return null;
-  }
-  if (familyType === 'mother' && (field.name === 'father_name' || field.name === 'spouse_name')) {
-    return null;
-  }
+    const familyType = formData?.family_member_details;
+    if (
+      !familyType &&
+      ['father_name', 'mother_name', 'spouse_name'].includes(field.name)
+    ) {
+      return null;
+    }
+    if (
+      familyType === 'spouse' &&
+      (field.name === 'father_name' || field.name === 'mother_name')
+    ) {
+      return null;
+    }
+    if (
+      familyType === 'father' &&
+      (field.name === 'spouse_name' || field.name === 'mother_name')
+    ) {
+      return null;
+    }
+    if (
+      familyType === 'mother' &&
+      (field.name === 'father_name' || field.name === 'spouse_name')
+    ) {
+      return null;
+    }
 
     if (['is_volunteer'].includes(field.name)) {
       return null; // Skip validation for these fields
@@ -977,7 +1034,7 @@ const RegistrationForm = ({ fields }) => {
         questionIndex={currentPage + 1}
         totalForms={pages?.length}
       />
-     {currentPage === 3 && (
+      {currentPage === 3 && (
         <>
           <GlobalText style={[globalStyles.text, { marginLeft: 20 }]}>
             {t('location_des')}
@@ -996,7 +1053,7 @@ const RegistrationForm = ({ fields }) => {
           </View>
         </>
       )}
-      <ScrollView 
+      <ScrollView
         ref={scrollViewRef}
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
@@ -1106,7 +1163,11 @@ const RegistrationForm = ({ fields }) => {
         }}
       >
         {currentPage < pages.length - 1 ? (
-          <PrimaryButton text={t('continue')} isDisabled={currentPage===0 && !formData?.mobile } onPress={handleNext} />
+          <PrimaryButton
+            text={t('continue')}
+            isDisabled={currentPage === 0 && !formData?.mobile}
+            onPress={handleNext}
+          />
         ) : (
           <PrimaryButton
             isDisabled={
@@ -1437,6 +1498,13 @@ const RegistrationForm = ({ fields }) => {
           </TouchableOpacity>
         </Modal>
       )}
+      <SwitchAccountDialog
+        visible={switchDialogOpen}
+        onClose={() => setSwitchDialogOpen(false)}
+        callbackFunction={callBackSwitchDialog}
+        authResponse={userDetails?.tenantData}
+        callBackError={callBackError}
+      />
     </SafeAreaView>
   );
 };

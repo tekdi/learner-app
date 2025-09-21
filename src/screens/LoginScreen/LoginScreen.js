@@ -45,8 +45,6 @@ import moment from 'moment';
 import { TENANT_DATA } from '../../utils/Constants/app-constants';
 import SwitchAccountDialog from '../../utils/SwitchAccount/SwitchAccount';
 
-
-
 const LoginScreen = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
@@ -81,10 +79,10 @@ const LoginScreen = () => {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
 
-        
         const userDetails = await getuserDetails();
 
-        
+        console.log('#### loginmultirole userDetails', userDetails);
+
         setUserDetails(userDetails);
 
         setSwitchDialogOpen(true);
@@ -99,14 +97,12 @@ const LoginScreen = () => {
     }
   };
 
-
   const [switchDialogOpen, setSwitchDialogOpen] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
   const [tenantId, setTenantId] = useState('');
   const [tenantName, setTenantName] = useState('');
   const [roleId, setRoleId] = useState('');
   const [roleName, setRoleName] = useState('');
-
 
   const callBackSwitchDialog = async (
     tenantId,
@@ -122,12 +118,19 @@ const LoginScreen = () => {
     setRoleId(roleId);
     setRoleName(roleName);
 
+    const tenantid = tenantId;
 
-    console.log('#### userDetails', userDetails);
+    console.log('#### loginmultirole tenantId', tenantId);
+    console.log('#### loginmultirole tenantName', tenantName);
+    console.log('#### loginmultirole roleId', roleId);
+    console.log('#### loginmultirole roleName', roleName);
+
+    console.log('#### loginmultirole userDetails', userDetails);
     const user_id = userDetails?.userId;
-    const tenantData = userDetails?.tenantData?.find(
-      (tenant) => tenant.tenantId === tenantId
-    );
+    const tenantData = [
+      userDetails?.tenantData?.find((tenant) => tenant.tenantId === tenantId),
+    ];
+    console.log('#### loginmultirole tenantData', tenantData);
 
     const enrollmentId = userDetails?.enrollmentId;
     await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
@@ -135,14 +138,15 @@ const LoginScreen = () => {
     await setDataInStorage('enrollmentId', enrollmentId || '');
 
     //store dynamci templateId
-    const templateId = tenantData?.templateId;
+    const templateId = tenantData?.[0]?.templateId;
     await setDataInStorage('templateId', templateId || '');
 
-    const academicyear = await setAcademicYear({ tenantId });
+    const academicyear = await setAcademicYear({ tenantid });
     const academicYearId = academicyear?.[0]?.id;
     await setDataInStorage('academicYearId', academicYearId || '');
     await setDataInStorage('userTenantid', tenantId || '');
-    const cohort = await getCohort({ user_id, tenantId, academicYearId });
+    const cohort = await getCohort({ user_id, tenantid, academicYearId });
+    console.log('#### loginmultirole cohort', cohort);
     let cohort_id;
     if (cohort.params?.status !== 'failed') {
       const getActiveCohort = await getActiveCohortData(cohort);
@@ -157,6 +161,7 @@ const LoginScreen = () => {
     const profileData = await getProfileDetails({
       userId: user_id,
     });
+    console.log('#### loginmultirole profileData', profileData);
 
     await setDataInStorage('profileData', JSON.stringify(profileData));
     await setDataInStorage(
@@ -197,6 +202,8 @@ const LoginScreen = () => {
     const role = roleName;
 
     if (role == 'Learner' || role == 'Student') {
+      console.log('#### loginmultirole role', role);
+/*
       if (tenantId === scp?.[0]) {
         await setDataInStorage('userType', 'scp');
         if (cohort_id) {
@@ -218,7 +225,7 @@ const LoginScreen = () => {
       const deviceId = await getDeviceId();
       const action = 'add';
 
-      await notificationSubscribe({ deviceId, user_id, action });
+      await notificationSubscribe({ deviceId, user_id, action });*/
     } else {
       setErrmsg('invalid_username_or_password');
     }
@@ -232,9 +239,11 @@ const LoginScreen = () => {
     await telemetryTrackingData({
       telemetryPayloadData,
     });
-
   };
 
+  const callBackError = () => {
+    setErrmsg('invalid_username_or_password');
+  };
 
   // const handleLogin = async () => {
   //   navigation.navigate('Dashboard');
@@ -336,7 +345,7 @@ const LoginScreen = () => {
             onPress={() => {
               navigation.navigate('ForgotPassword', { enableLogin: true });
             }}
-            style={{ paddingLeft: 20, marginBottom: 30,zIndex:-1 }}
+            style={{ paddingLeft: 20, marginBottom: 30, zIndex: -1 }}
           >
             <GlobalText
               style={[
@@ -409,6 +418,7 @@ const LoginScreen = () => {
         onClose={() => setSwitchDialogOpen(false)}
         callbackFunction={callBackSwitchDialog}
         authResponse={userDetails?.tenantData}
+        callBackError={callBackError}
       />
     </SafeAreaView>
   );

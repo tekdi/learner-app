@@ -543,5 +543,17 @@
   "many_images_selected_message": "You have selected {count} images. For better performance, we recommend uploading up to 4 images at a time.",
   "family_member_details": "Family Member Details",
   "number_of_children": "Number of Children",
-  "number_of_children_in_your_group": "Number of Children in your group"
+  "number_of_children_in_your_group": "Number of Children in your group",
+  "switch_account": "Switch Account",
+  "select_your_organization": "Select Your Organization",
+  "choose_organization_description": "Choose the organization you want to access",
+  "back_arrow": "← Back",
+  "select_role_for": "Select Role for {tenantName}",
+  "choose_role_description": "Choose the role you want to access",
+  "role_id": "Role ID: {roleId}",
+  "cancel": "Cancel",
+  "confirm_selection": "Confirm Selection",
+  "select_tenant": "Select Tenant",
+  "select_role": "Select Role",
+  "select_account": "Select Account"
 }

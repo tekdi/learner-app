@@ -930,13 +930,13 @@ export const getProfileDetails = async (params = {}) => {
     // Construct cURL command
     const curlCommand = `curl -X POST "${url}" ${headerString} -H "Content-Type: application/json" -d '${payloadString}'`;
 
-    // console.log('Generated cURL Command:', curlCommand);
+    console.log('#### loginmultirole Generated cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
       headers: headers || {},
     });
-
+    console.log('#### loginmultirole profileData result', result);
     if (result) {
       await storeApiResponse(
         user_id,

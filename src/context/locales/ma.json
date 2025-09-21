@@ -540,5 +540,17 @@
   "permission_blocked_message": "स्टोरेज परवानगी अवरुद्ध आहे. कृपया ते सेटिंग्ज > ॲप्स > तुमचे ॲप > परवानगी मध्ये सक्षम करा",
   "open_settings": "सेटिंग्ज उघडा",
   "many_images_selected": "अनेक प्रतिमा निवडल्या",
-  "many_images_selected_message": "तुम्ही {count} प्रतिमा निवडल्या आहेत. चांगल्या कामगिरीसाठी, आम्ही एका वेळी जास्तीत जास्त 4 प्रतिमा अपलोड करण्याची शिफारस करतो"
+  "many_images_selected_message": "तुम्ही {count} प्रतिमा निवडल्या आहेत. चांगल्या कामगिरीसाठी, आम्ही एका वेळी जास्तीत जास्त 4 प्रतिमा अपलोड करण्याची शिफारस करतो",
+  "switch_account": "खाते बदला",
+  "select_your_organization": "तुमचे संस्था निवडा",
+  "choose_organization_description": "तुम्हाला प्रवेश करायची असलेली संस्था निवडा",
+  "back_arrow": "← मागे",
+  "select_role_for": "{tenantName} साठी भूमिका निवडा",
+  "choose_role_description": "तुम्हाला प्रवेश करायची असलेली भूमिका निवडा",
+  "role_id": "भूमिका आयडी: {roleId}",
+  "cancel": "रद्द करा",
+  "confirm_selection": "निवडीची पुष्टी करा",
+  "select_tenant": "टेनंट निवडा",
+  "select_role": "भूमिका निवडा",
+  "select_account": "खाता निवडा"
 }

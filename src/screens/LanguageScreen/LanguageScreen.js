@@ -207,8 +207,9 @@ const LanguageScreen = () => {
       const cohort_id = await getDataFromStorage('cohortId');
       const token = await getDataFromStorage('Accesstoken');
       const userType = await getDataFromStorage('userType');
+      const userId = await getDataFromStorage('userId');
 
-      if (token) {
+      if (token && userId) {
         if (isConnected) {
           const refresh_token = await getRefreshToken();
           const data = await refreshToken({

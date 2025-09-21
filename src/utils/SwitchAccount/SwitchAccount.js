@@ -9,25 +9,79 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { useTranslation } from '../../context/LanguageContext';
 
 const SwitchAccountDialog = ({
   visible,
   onClose,
   callbackFunction,
   authResponse,
+  callBackError,
 }) => {
+  const { t } = useTranslation();
   const [activeStep, setActiveStep] = useState(0);
   const [selectedTenant, setSelectedTenant] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const [allowedRoleIds, setAllowedRoleIds] = useState([
+    'eea7ddab-bdf9-4db1-a1bb-43ef503d65ef',
+  ]);
+
   useEffect(() => {
-    if (visible) {
-      setActiveStep(0);
-      setSelectedTenant(null);
-      setSelectedRole(null);
+    if (authResponse && authResponse.length > 0) {
+      let autoLogin = true; // Default to true for auto-login
+      let isAllowed = false;
+      authResponse?.forEach((tenant) => {
+        tenant?.roles?.forEach((role) => {
+          if (allowedRoleIds.includes(role?.roleId)) {
+            isAllowed = true;
+          }
+        });
+      });
+      if (isAllowed === false) {
+        callBackError();
+      } else {
+        // Check if there's only one tenant and one role
+        const totalTenants = authResponse.length;
+        const totalRoles = authResponse.reduce(
+          (total, tenant) => total + tenant.roles.length,
+          0
+        );
+
+        if (totalTenants === 1 && totalRoles === 1) {
+          // Auto-select the single tenant and role
+          const singleTenant = authResponse[0];
+          const singleRole = singleTenant.roles[0];
+
+          // Call the callback function with the auto-selected values
+          callbackFunction(
+            singleTenant.tenantId,
+            singleTenant.tenantName,
+            singleRole.roleId,
+            singleRole.roleName
+          );
+        } else {
+          if (visible) {
+            handleOpenDialog();
+            setActiveStep(0);
+            setSelectedTenant(null);
+            setSelectedRole(null);
+          }
+        }
+      }
     }
   }, [visible]);
+
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    onClose();
+  };
 
   const handleTenantSelect = (tenant) => {
     setSelectedTenant(tenant);
@@ -57,11 +111,11 @@ const SwitchAccountDialog = ({
         selectedRole.roleName
       );
 
-      onClose();
+      handleCloseDialog();
     }
   };
 
-  const steps = ['Select Tenant', 'Select Role'];
+  const steps = [t('select_tenant'), t('select_role')];
 
   const Chip = ({ label, selected = false }) => (
     <View style={[styles.chip, selected && styles.chipSelected]}>
@@ -133,10 +187,10 @@ const SwitchAccountDialog = ({
     <ScrollView style={styles.scrollContainer}>
       <View style={styles.sectionHeader}>
         <BusinessIcon />
-        <Text style={styles.sectionTitle}>Select Your Organization</Text>
+        <Text style={styles.sectionTitle}>{t('select_your_organization')}</Text>
       </View>
       <Text style={styles.sectionSubtitle}>
-        Choose the organization you want to access
+        {t('choose_organization_description')}
       </Text>
 
       <View style={styles.listContainer}>
@@ -157,7 +211,7 @@ const SwitchAccountDialog = ({
                 </View>
                 <View style={styles.cardInfo}>
                   <Text style={styles.tenantName}>{tenant.tenantName}</Text>
-                  <Text style={styles.tenantType}>{tenant.tenantType}</Text>
+                  {/* <Text style={styles.tenantType}>{tenant.tenantType}</Text> */}
                   <View style={styles.rolesContainer}>
                     {tenant.roles.map((role) => (
                       <Chip key={role.roleId} label={role.roleName} />
@@ -177,16 +231,17 @@ const SwitchAccountDialog = ({
     <ScrollView style={styles.scrollContainer}>
       <View style={styles.roleHeader}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Text style={styles.backButtonText}>{t('back_arrow')}</Text>
         </TouchableOpacity>
         <Text style={styles.sectionTitle}>
-          Select Role for {selectedTenant?.tenantName}
+          {t('select_role_for')?.replace(
+            '{tenantName}',
+            selectedTenant?.tenantName
+          )}
         </Text>
       </View>
 
-      <Text style={styles.sectionSubtitle}>
-        Choose the role you want to access
-      </Text>
+      <Text style={styles.sectionSubtitle}>{t('choose_role_description')}</Text>
 
       <View style={styles.listContainer}>
         {selectedTenant?.roles?.map((role) => (
@@ -205,7 +260,9 @@ const SwitchAccountDialog = ({
                 </View>
                 <View style={styles.cardInfo}>
                   <Text style={styles.roleName}>{role.roleName}</Text>
-                  <Text style={styles.roleId}>Role ID: {role.roleId}</Text>
+                  {/* <Text style={styles.roleId}>
+                    {t('role_id')?.replace('{roleId}', role.roleId)}
+                  </Text> */}
                 </View>
                 {selectedRole?.roleId === role.roleId && <CheckIcon />}
               </View>
@@ -218,10 +275,10 @@ const SwitchAccountDialog = ({
 
   return (
     <Modal
-      visible={visible}
+      visible={dialogOpen}
       transparent={true}
       animationType="slide"
-      onRequestClose={onClose}
+      onRequestClose={handleCloseDialog}
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
@@ -229,7 +286,7 @@ const SwitchAccountDialog = ({
           <View style={styles.header}>
             <View style={styles.headerTitle}>
               <PersonIcon />
-              <Text style={styles.headerText}>Switch Account</Text>
+              <Text style={styles.headerText}>{t('select_account')}</Text>
             </View>
             <StepIndicator steps={steps} activeStep={activeStep} />
           </View>
@@ -246,8 +303,11 @@ const SwitchAccountDialog = ({
           {/* Actions */}
           <View style={styles.divider} />
           <View style={styles.actions}>
-            <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
+            <TouchableOpacity
+              onPress={handleCloseDialog}
+              style={styles.cancelButton}
+            >
+              <Text style={styles.cancelButtonText}>{t('cancel')}</Text>
             </TouchableOpacity>
 
             {/* {activeStep === 1 && (
@@ -255,7 +315,7 @@ const SwitchAccountDialog = ({
                 onPress={handleBack}
                 style={styles.backActionButton}
               >
-                <Text style={styles.backActionButtonText}>← Back</Text>
+                <Text style={styles.backActionButtonText}>{t('back_arrow')}</Text>
               </TouchableOpacity>
             )} */}
 
@@ -275,7 +335,7 @@ const SwitchAccountDialog = ({
                     styles.confirmButtonTextDisabled,
                 ]}
               >
-                Confirm Selection
+                {t('confirm_selection')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -454,7 +514,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#2196F3',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -463,7 +523,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#9C27B0',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
