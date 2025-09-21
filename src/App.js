@@ -31,6 +31,8 @@ import { CopilotProvider } from 'react-native-copilot';
 //fix for android version 15
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import RNRestart from 'react-native-restart';
+
 const linking = {
   prefixes: ['pratham://'],
   config: {
@@ -142,7 +144,7 @@ async function checkAndRequestStoragePermission() {
 }
 
 // Deep link handler functions
-const handleDeepLink = async (url) => {
+const handleDeepLink = async (url, isRunning) => {
   if (url) {
     console.log('=== DEEP LINK DETECTED ===');
     console.log('Direct deep link from website:', url);
@@ -237,6 +239,10 @@ const handleDeepLink = async (url) => {
 
     console.log('Final parsed parameters:', params);
     console.log('==========================');
+  }
+  if (isRunning) {
+    // Restart app
+    RNRestart.restart();
   }
 };
 
@@ -458,7 +464,7 @@ const App = () => {
       try {
         const initialUrl = await Linking.getInitialURL();
         if (initialUrl) {
-          handleDeepLink(initialUrl);
+          handleDeepLink(initialUrl, false);
         } else {
           // If no deep link, check for Play Store referrer
           await handlePlayStoreReferrer();
@@ -474,7 +480,7 @@ const App = () => {
 
     // Handle deep link when app is already running
     const linkingListener = Linking.addEventListener('url', (event) => {
-      handleDeepLink(event.url);
+      handleDeepLink(event.url, true);
     });
 
     // Cleanup listener

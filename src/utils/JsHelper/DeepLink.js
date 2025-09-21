@@ -1,5 +1,5 @@
 import { courseDetails, hierarchyContent, readContent } from '../API/ApiCalls';
-import { getDataFromStorage, removeDataFromStorage } from './Helper';
+import { getDataFromStorage, deleteSavedItem } from './Helper';
 
 export const deepLinkCheck = async (navigation) => {
   try {
@@ -7,6 +7,9 @@ export const deepLinkCheck = async (navigation) => {
     console.log('########## deeplinkData found', deeplinkData);
     const deeplinkDataJson = JSON.parse(deeplinkData);
     if (deeplinkDataJson) {
+
+      await deleteSavedItem('deep_link_data');
+
       const { page, type, identifier, program } = deeplinkDataJson;
       console.log('########## page', page);
       console.log('########## type', type);
@@ -37,8 +40,6 @@ export const deepLinkCheck = async (navigation) => {
           unit_id: identifier,
         });
       }
-      
-      await removeDataFromStorage('deep_link_data');
     }
   } catch (e) {}
 };

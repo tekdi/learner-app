@@ -47,6 +47,7 @@ package="com.pratham.learning"
     <!-- for version upgrade API 35 app crash issue on android 9, 10, 11, 12 -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     
+    <!-- android:launchMode="singleTask" fo rdeep link task -->
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -54,7 +55,8 @@ package="com.pratham.learning"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme"
-      android:requestLegacyExternalStorage="true">
+      android:requestLegacyExternalStorage="true"
+      android:launchMode="singleTask">
       
       <!-- File Provider for downloads -->
       <provider
