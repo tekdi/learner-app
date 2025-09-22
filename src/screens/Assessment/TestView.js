@@ -434,16 +434,24 @@ const TestView = ({ route }) => {
   );
 
   const tabs = [
-    {
-      title: t('online_assessment'),
-      content: <OnlineAssessmentContent />,
-      count: onlineAssessments?.length || 0,
-    },
-    {
-      title: t('offline_assessment'),
-      content: <OfflineAssessmentContent />,
-      count: offlineAssessments?.length || 0,
-    },
+    ...(onlineAssessments?.length > 0
+      ? [
+          {
+            title: t('online_assessment'),
+            content: <OnlineAssessmentContent />,
+            count: onlineAssessments?.length || 0,
+          },
+        ]
+      : []),
+    ...(offlineAssessments?.length > 0
+      ? [
+          {
+            title: t('offline_assessment'),
+            content: <OfflineAssessmentContent />,
+            count: offlineAssessments?.length || 0,
+          },
+        ]
+      : []),
   ];
 
   return loading ? (

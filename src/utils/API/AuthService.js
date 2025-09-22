@@ -786,7 +786,7 @@ export const assessmentListApi = async (params = {}) => {
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
         // assessmentType: ['pre-test', 'post-test'],
-        assessmentType: ['Pre Test', 'Post Test', 'Other'],
+        assessmentType: ['Pre Test', 'Post Test', 'Other', 'Unit Test' , 'Mock Test'],
         status: ['Live'],
         primaryCategory: ['Practice Question Set'],
         // new different type
