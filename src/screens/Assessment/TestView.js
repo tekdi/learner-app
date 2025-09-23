@@ -175,8 +175,9 @@ const TestView = ({ route }) => {
       // console.log('response_ai', response_ai);
       let temp_ai_do_ids =
         response_ai?.data?.map((item) => item?.question_set_id || '') || [];
+      // undo this
       let temp_offline_do_ids = questionsets
-        .filter((item) => item?.evaluationType === 'offline')
+        .filter((item) => item?.evaluationType === 'offline_removed')
         .map((item) => item?.identifier);
       let response_ai_ids = [...temp_ai_do_ids, ...temp_offline_do_ids];
 
@@ -471,22 +472,31 @@ const TestView = ({ route }) => {
           {/* <GlobalText style={globalStyles.text}>
             {t('assessment_instructions')}
           </GlobalText> */}
-
-          <View style={styles.tabContainer}>
-            <ATMTabView
-              tabs={tabs}
-              activeTabIndex={activeTabIndex}
-              onTabChange={setActiveTabIndex}
-              activeTabStyle={{ borderBottomWidth: 2, borderColor: '#FDBE16' }}
-              inactiveTabStyle={{
-                borderBottomWidth: 1,
-                borderColor: '#EBE1D4',
-              }}
-              tabTextStyle={{ color: '#888' }}
-              activeTextStyle={{ color: '#000', fontWeight: 'bold' }}
-              t={t}
-            />
-          </View>
+          {/* // undo this */}
+          {tabs.length > 1 || true ? (
+            <View style={styles.tabContainer}>
+              <ATMTabView
+                tabs={tabs}
+                activeTabIndex={activeTabIndex}
+                onTabChange={setActiveTabIndex}
+                activeTabStyle={{
+                  borderBottomWidth: 2,
+                  borderColor: '#FDBE16',
+                }}
+                inactiveTabStyle={{
+                  borderBottomWidth: 1,
+                  borderColor: '#EBE1D4',
+                }}
+                tabTextStyle={{ color: '#888' }}
+                activeTextStyle={{ color: '#000', fontWeight: 'bold' }}
+                t={t}
+              />
+            </View>
+          ) : (
+            <View style={styles.tabContainer}>
+              {tabs.length === 1 && tabs[0]?.content}
+            </View>
+          )}
         </View>
       </View>
     </SafeAreaView>
