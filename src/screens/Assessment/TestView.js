@@ -177,7 +177,7 @@ const TestView = ({ route }) => {
         response_ai?.data?.map((item) => item?.question_set_id || '') || [];
       // undo this
       let temp_offline_do_ids = questionsets
-        .filter((item) => item?.evaluationType === 'offline_removed')
+        .filter((item) => item?.evaluationType === 'offline')
         .map((item) => item?.identifier);
       let response_ai_ids = [...temp_ai_do_ids, ...temp_offline_do_ids];
 
@@ -473,7 +473,7 @@ const TestView = ({ route }) => {
             {t('assessment_instructions')}
           </GlobalText> */}
           {/* // undo this */}
-          {tabs.length > 1 || true ? (
+          {tabs.length > 0 ? (
             <View style={styles.tabContainer}>
               <ATMTabView
                 tabs={tabs}
@@ -494,7 +494,7 @@ const TestView = ({ route }) => {
             </View>
           ) : (
             <View style={styles.tabContainer}>
-              {tabs.length === 1 && tabs[0]?.content}
+              {/* {tabs.length === 1 && tabs[0]?.content} */}
             </View>
           )}
         </View>
