@@ -22,14 +22,26 @@ const NoCertificateBox = ({ userType }) => {
         {t('you_havent_completed_any_courses_yet')}
       </GlobalText>
       <View style={{ width: 210, marginTop: 10 }}>
-        <PrimaryButton
+      <PrimaryButton
           onPress={() => {
-            userType == 'youthnet'
-              ? navigation.navigate('YouthNetStack')
-              : userType == 'scp'
-                ? navigation.navigate('SCPUserStack')
-                : navigation.navigate('DashboardStack');
+            if (userType == 'youthnet') {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'YouthNetTabScreen' }],
+              });
+            } else if (userType == 'scp') {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'SCPUserTabScreen' }],
+              });
+            } else {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Dashboard' }],
+              });
+            }
           }}
+          
           text={
             <SafeAreaView
               style={{ flexDirection: 'row', alignItems: 'center' }}
