@@ -12,7 +12,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useFocusEffect, useNavigationState } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useNavigationState,
+} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/AntDesign';
 
 import { useTranslation } from '../../../context/LanguageContext';
@@ -52,11 +56,12 @@ import {
   storeScrollPosition,
 } from '../../../utils/Helper/JSHelper';
 import { useInternet } from '../../../context/NetworkContext';
+import { deepLinkCheck } from '../../../utils/JsHelper/DeepLink';
 
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
 const Courses = () => {
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
   const { t } = useTranslation();
   const { isConnected } = useInternet();
 
@@ -180,6 +185,8 @@ const Courses = () => {
       setInstant(instant);
     };
     fetch();
+    //check deeplink data
+    deepLinkCheck(navigation);
   }, []);
 
   useEffect(() => {
@@ -492,7 +499,7 @@ const Courses = () => {
               >
                 {youthnet && t('l1_courses')}
               </GlobalText>
-             
+
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <CopilotStep
                   text="You can search courses from here"
@@ -528,27 +535,42 @@ const Courses = () => {
                   }}
                 >
                   <GlobalText style={globalStyles.text}>
-                    {t('filter')} {Object.entries({...orginalFormData, ...parentStaticFormData}).filter(([key, value]) => {
+                    {t('filter')}{' '}
+                    {Object.entries({
+                      ...orginalFormData,
+                      ...parentStaticFormData,
+                    }).filter(([key, value]) => {
                       // Skip keys that are present in contentFilter
                       if (contentFilter && contentFilter[key]) {
                         return false;
                       }
-                      
+
                       // Also skip empty or meaningless values
-                      if (!value || value === '' || value === null || value === undefined) {
+                      if (
+                        !value ||
+                        value === '' ||
+                        value === null ||
+                        value === undefined
+                      ) {
                         return false;
                       }
-                      
+
                       // Skip empty arrays
                       if (Array.isArray(value) && value.length === 0) {
                         return false;
                       }
-                      
+
                       // Check if the value has meaningful content
                       let displayValue = '';
                       if (Array.isArray(value) && value.length > 0) {
-                        if (value[0] && typeof value[0] === 'object' && value[0].name) {
-                          displayValue = value.map(item => item.name).join(', ');
+                        if (
+                          value[0] &&
+                          typeof value[0] === 'object' &&
+                          value[0].name
+                        ) {
+                          displayValue = value
+                            .map((item) => item.name)
+                            .join(', ');
                         } else {
                           displayValue = value.join(', ');
                         }
@@ -559,42 +581,63 @@ const Courses = () => {
                       } else {
                         displayValue = String(value);
                       }
-                      
+
                       return displayValue && displayValue.trim() !== '';
-                    }).length > 0 ? `(${Object.entries({...orginalFormData, ...parentStaticFormData}).filter(([key, value]) => {
-                      // Skip keys that are present in contentFilter
-                      if (contentFilter && contentFilter[key]) {
-                        return false;
-                      }
-                      
-                      // Also skip empty or meaningless values
-                      if (!value || value === '' || value === null || value === undefined) {
-                        return false;
-                      }
-                      
-                      // Skip empty arrays
-                      if (Array.isArray(value) && value.length === 0) {
-                        return false;
-                      }
-                      
-                      // Check if the value has meaningful content
-                      let displayValue = '';
-                      if (Array.isArray(value) && value.length > 0) {
-                        if (value[0] && typeof value[0] === 'object' && value[0].name) {
-                          displayValue = value.map(item => item.name).join(', ');
-                        } else {
-                          displayValue = value.join(', ');
-                        }
-                      } else if (typeof value === 'string') {
-                        displayValue = value;
-                      } else if (typeof value === 'object' && value !== null) {
-                        displayValue = value.name || key;
-                      } else {
-                        displayValue = String(value);
-                      }
-                      
-                      return displayValue && displayValue.trim() !== '';
-                    }).length})` : ''}
+                    }).length > 0
+                      ? `(${
+                          Object.entries({
+                            ...orginalFormData,
+                            ...parentStaticFormData,
+                          }).filter(([key, value]) => {
+                            // Skip keys that are present in contentFilter
+                            if (contentFilter && contentFilter[key]) {
+                              return false;
+                            }
+
+                            // Also skip empty or meaningless values
+                            if (
+                              !value ||
+                              value === '' ||
+                              value === null ||
+                              value === undefined
+                            ) {
+                              return false;
+                            }
+
+                            // Skip empty arrays
+                            if (Array.isArray(value) && value.length === 0) {
+                              return false;
+                            }
+
+                            // Check if the value has meaningful content
+                            let displayValue = '';
+                            if (Array.isArray(value) && value.length > 0) {
+                              if (
+                                value[0] &&
+                                typeof value[0] === 'object' &&
+                                value[0].name
+                              ) {
+                                displayValue = value
+                                  .map((item) => item.name)
+                                  .join(', ');
+                              } else {
+                                displayValue = value.join(', ');
+                              }
+                            } else if (typeof value === 'string') {
+                              displayValue = value;
+                            } else if (
+                              typeof value === 'object' &&
+                              value !== null
+                            ) {
+                              displayValue = value.name || key;
+                            } else {
+                              displayValue = String(value);
+                            }
+
+                            return displayValue && displayValue.trim() !== '';
+                          }).length
+                        })`
+                      : ''}
                   </GlobalText>
                   <Icon
                     name={'caretdown'}
@@ -605,27 +648,39 @@ const Courses = () => {
                 </TouchableOpacity>
               </View>
               {(() => {
-                const hasFilters = Object.entries({...orginalFormData, ...parentStaticFormData}).some(([key, value]) => {
+                const hasFilters = Object.entries({
+                  ...orginalFormData,
+                  ...parentStaticFormData,
+                }).some(([key, value]) => {
                   // Skip keys that are present in contentFilter
                   if (contentFilter && contentFilter[key]) {
                     return false;
                   }
-                  
+
                   // Also skip empty or meaningless values
-                  if (!value || value === '' || value === null || value === undefined) {
+                  if (
+                    !value ||
+                    value === '' ||
+                    value === null ||
+                    value === undefined
+                  ) {
                     return false;
                   }
-                  
+
                   // Skip empty arrays
                   if (Array.isArray(value) && value.length === 0) {
                     return false;
                   }
-                  
+
                   // Check if the value has meaningful content
                   let displayValue = '';
                   if (Array.isArray(value) && value.length > 0) {
-                    if (value[0] && typeof value[0] === 'object' && value[0].name) {
-                      displayValue = value.map(item => item.name).join(', ');
+                    if (
+                      value[0] &&
+                      typeof value[0] === 'object' &&
+                      value[0].name
+                    ) {
+                      displayValue = value.map((item) => item.name).join(', ');
                     } else {
                       displayValue = value.join(', ');
                     }
@@ -636,7 +691,7 @@ const Courses = () => {
                   } else {
                     displayValue = String(value);
                   }
-                  
+
                   return displayValue && displayValue.trim() !== '';
                 });
 
@@ -646,30 +701,49 @@ const Courses = () => {
                       Applied Filters:
                     </GlobalText>
                     <View style={styles.tagsWrapper}>
-                      {Object.entries({...orginalFormData, ...parentStaticFormData}).map(([key, value]) => {
+                      {Object.entries({
+                        ...orginalFormData,
+                        ...parentStaticFormData,
+                      }).map(([key, value]) => {
                         // Skip keys that are present in contentFilter
                         if (contentFilter && contentFilter[key]) {
                           return null;
                         }
-                        
+
                         // Also skip empty or meaningless values
-                        if (!value || value === '' || value === null || value === undefined) {
+                        if (
+                          !value ||
+                          value === '' ||
+                          value === null ||
+                          value === undefined
+                        ) {
                           return null;
                         }
-                        
+
                         // Skip empty arrays
                         if (Array.isArray(value) && value.length === 0) {
                           return null;
                         }
-                        
-                        if (value && value !== '' && value !== null && value !== undefined) {
+
+                        if (
+                          value &&
+                          value !== '' &&
+                          value !== null &&
+                          value !== undefined
+                        ) {
                           let displayValue = '';
-                          
+
                           // Handle array of objects (like subDomain, subject)
                           if (Array.isArray(value) && value.length > 0) {
-                            if (value[0] && typeof value[0] === 'object' && value[0].name) {
+                            if (
+                              value[0] &&
+                              typeof value[0] === 'object' &&
+                              value[0].name
+                            ) {
                               // Extract names from objects and join them
-                              displayValue = value.map(item => item.name).join(', ');
+                              displayValue = value
+                                .map((item) => item.name)
+                                .join(', ');
                             } else {
                               // Handle simple arrays
                               displayValue = value.join(', ');
@@ -677,14 +751,17 @@ const Courses = () => {
                           } else if (typeof value === 'string') {
                             // Handle simple string values
                             displayValue = value;
-                          } else if (typeof value === 'object' && value !== null) {
+                          } else if (
+                            typeof value === 'object' &&
+                            value !== null
+                          ) {
                             // Handle single object
                             displayValue = value.name || key;
                           } else {
                             // Fallback
                             displayValue = String(value);
                           }
-                          
+
                           if (displayValue && displayValue.trim() !== '') {
                             return (
                               <View key={key} style={styles.filterTag}>
@@ -846,7 +923,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   filterTagsContainer: {
-   // marginTop: 5,
+    // marginTop: 5,
     marginBottom: 10,
     paddingHorizontal: 4,
     marginLeft: 10,

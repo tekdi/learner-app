@@ -78,7 +78,7 @@ const ATMTabView = ({
             </View>
 
             <View style={{ paddingBottom: 30 }}>
-              {tabs[selectedTab].content}
+              {tabs[selectedTab]?.content}
             </View>
           </ScrollView>
         </View>

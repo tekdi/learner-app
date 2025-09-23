@@ -86,7 +86,7 @@ const Assessment = ({ header, background }) => {
         ];
 
         // Sort uniqueAssessments according to specified order: Pre Test, Post Test, Other
-        const assessmentOrder = ['Pre Test', 'Post Test', 'Other'];
+        const assessmentOrder = ['Pre Test', 'Post Test', 'Other', 'Mock Test', 'Unit Test' ];
         const sortedUniqueAssessments = uniqueAssessments.sort((a, b) => {
           const indexA = assessmentOrder.indexOf(a);
           const indexB = assessmentOrder.indexOf(b);

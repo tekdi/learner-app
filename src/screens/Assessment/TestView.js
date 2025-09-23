@@ -167,13 +167,20 @@ const TestView = ({ route }) => {
     console.log('#########atm questionsets');
     if (questionsets && questionsets.length > 0) {
       console.log('#########atm questionsets 1');
+      // console.log('########### questionsets', JSON.stringify(questionsets));
       setAiDataLoading(true);
       let do_ids = questionsets?.map((item) => item?.identifier || '');
       // console.log('do_ids', do_ids);
       let response_ai = await AIAssessmentSearch(do_ids);
       // console.log('response_ai', response_ai);
-      let response_ai_ids =
+      let temp_ai_do_ids =
         response_ai?.data?.map((item) => item?.question_set_id || '') || [];
+      // undo this
+      let temp_offline_do_ids = questionsets
+        .filter((item) => item?.evaluationType === 'offline_removed')
+        .map((item) => item?.identifier);
+      let response_ai_ids = [...temp_ai_do_ids, ...temp_offline_do_ids];
+
       console.log('#########atm response_ai_ids', response_ai_ids);
       setAiQuestionSet(response_ai_ids);
       if (response_ai_ids.length > 0) {
@@ -203,9 +210,7 @@ const TestView = ({ route }) => {
 
               // Find record_answer: object with showFlag: true and evaluatedBy: "Manual"
               record_answer = records.find(
-                (record) =>
-                  record &&
-                  record.evaluatedBy !== 'AI'
+                (record) => record && record.evaluatedBy !== 'AI'
               );
             }
 
@@ -430,16 +435,24 @@ const TestView = ({ route }) => {
   );
 
   const tabs = [
-    {
-      title: t('online_assessment'),
-      content: <OnlineAssessmentContent />,
-      count: onlineAssessments?.length || 0,
-    },
-    {
-      title: t('offline_assessment'),
-      content: <OfflineAssessmentContent />,
-      count: offlineAssessments?.length || 0,
-    },
+    ...(onlineAssessments?.length > 0
+      ? [
+          {
+            title: t('online_assessment'),
+            content: <OnlineAssessmentContent />,
+            count: onlineAssessments?.length || 0,
+          },
+        ]
+      : []),
+    ...(offlineAssessments?.length > 0
+      ? [
+          {
+            title: t('offline_assessment'),
+            content: <OfflineAssessmentContent />,
+            count: offlineAssessments?.length || 0,
+          },
+        ]
+      : []),
   ];
 
   return loading ? (
@@ -459,22 +472,31 @@ const TestView = ({ route }) => {
           {/* <GlobalText style={globalStyles.text}>
             {t('assessment_instructions')}
           </GlobalText> */}
-
-          <View style={styles.tabContainer}>
-            <ATMTabView
-              tabs={tabs}
-              activeTabIndex={activeTabIndex}
-              onTabChange={setActiveTabIndex}
-              activeTabStyle={{ borderBottomWidth: 2, borderColor: '#FDBE16' }}
-              inactiveTabStyle={{
-                borderBottomWidth: 1,
-                borderColor: '#EBE1D4',
-              }}
-              tabTextStyle={{ color: '#888' }}
-              activeTextStyle={{ color: '#000', fontWeight: 'bold' }}
-              t={t}
-            />
-          </View>
+          {/* // undo this */}
+          {tabs.length > 1 || true ? (
+            <View style={styles.tabContainer}>
+              <ATMTabView
+                tabs={tabs}
+                activeTabIndex={activeTabIndex}
+                onTabChange={setActiveTabIndex}
+                activeTabStyle={{
+                  borderBottomWidth: 2,
+                  borderColor: '#FDBE16',
+                }}
+                inactiveTabStyle={{
+                  borderBottomWidth: 1,
+                  borderColor: '#EBE1D4',
+                }}
+                tabTextStyle={{ color: '#888' }}
+                activeTextStyle={{ color: '#000', fontWeight: 'bold' }}
+                t={t}
+              />
+            </View>
+          ) : (
+            <View style={styles.tabContainer}>
+              {tabs.length === 1 && tabs[0]?.content}
+            </View>
+          )}
         </View>
       </View>
     </SafeAreaView>

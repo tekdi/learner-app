@@ -200,7 +200,7 @@ export const sendOtp = async (payload) => {
       },
     });
 
-    console.log("########## otp sent",JSON.stringify(result));
+    console.log('########## otp sent', JSON.stringify(result));
 
     if (result?.data) {
       return result?.data;
@@ -346,7 +346,7 @@ export const courseListApi_testing = async ({
         program:
           userType == 'scp'
             ? ['secondchance', 'Second Chance']
-            : ['Youthnet', 'youthnet', 'YouthNet' , TENANT_DATA.YOUTHNET],
+            : ['Youthnet', 'youthnet', 'YouthNet', TENANT_DATA.YOUTHNET],
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }),
         primaryCategory: ['Course'],
       },
@@ -781,14 +781,17 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? [ 'Second Chance'] : [ TENANT_DATA.YOUTHNET],
+        program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
         board: `${params?.boardName}`,
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
         // assessmentType: ['pre-test', 'post-test'],
-        assessmentType: ['Pre Test', 'Post Test', 'Other'],
+        assessmentType: ['Pre Test', 'Post Test', 'Other', 'Unit Test' , 'Mock Test'],
         status: ['Live'],
         primaryCategory: ['Practice Question Set'],
+        // new different type
+        // undo this
+        // evaluationType: ['offline', 'online', 'ai'],
       },
       sort_by: {
         lastUpdatedOn: 'desc',
@@ -930,13 +933,13 @@ export const getProfileDetails = async (params = {}) => {
     // Construct cURL command
     const curlCommand = `curl -X POST "${url}" ${headerString} -H "Content-Type: application/json" -d '${payloadString}'`;
 
-    // console.log('Generated cURL Command:', curlCommand);
+    console.log('#### loginmultirole Generated cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
       headers: headers || {},
     });
-
+    console.log('#### loginmultirole profileData result', result);
     if (result) {
       await storeApiResponse(
         user_id,
