@@ -40,6 +40,7 @@ import BackButtonHandler from '../../../../components/BackNavigation/BackButtonH
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../../components/AppUpdate/AppUpdatePopup';
 import NetworkAlert from '@components/NetworkError/NetworkAlert';
+import { deepLinkCheck } from '../../../../utils/JsHelper/DeepLink';
 
 const SCPDashboard = (props) => {
   const { t } = useTranslation();
@@ -158,6 +159,12 @@ const SCPDashboard = (props) => {
   //   fetchData();
   //   fetchCompleteWeekData();
   // }, []);
+
+  //deeplink
+  useEffect(() => {
+    //check deeplink data
+    deepLinkCheck(navigation);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

@@ -342,14 +342,14 @@ const Profile = () => {
           <View style={{ padding: 10 }}>
             <GlobalText style={[globalStyles.h6, { color: '#78590C' }]}>
               {userType == 'youthnet'
-                ? t('YouthNet')
+                ? 'Vocational Training'
                 : userType == 'scp'
                 ? t('Second Chance Program')
-                : t('Pragyanpath')}
+                : userType}
             </GlobalText>
           </View>
 
-          {userType == 'youthnet' && (
+          {(userType == 'youthnet' || userType == 'Camp to Club') && (
             <>
               <View style={{ marginLeft: 10 }}>
                 <GlobalText
@@ -372,10 +372,54 @@ const Profile = () => {
           <View style={{ backgroundColor: '#FFF8F2', paddingVertical: 20 }}>
             <View style={styles.viewBox}>
               {userDetailss?.map((item, key) => {
+                // Get the actual value
+                const actualValue = item?.value?.[0]?.value || item?.value;
+                
+                // Hide fields with empty values
+                if (!actualValue || actualValue === '') {
+                  return null;
+                }
+                
+                // For family member details, show label and value for the selected family member
+                if (item?.name === 'family_member_details') {
+                  const familyType = actualValue;
+                  const familyMemberField = userDetailss?.find((field) => {
+                    return (
+                      (familyType === 'mother' && field.name === 'mother_name') ||
+                      (familyType === 'father' && field.name === 'father_name') ||
+                      (familyType === 'spouse' && field.name === 'spouse_name')
+                    );
+                  });
+                  
+                  const familyMemberValue = familyMemberField?.value?.[0]?.value || familyMemberField?.value;
+                  
+                  // Get the translated label for the family member field
+                  let familyMemberLabel = '';
+                  if (familyType === 'mother') {
+                    familyMemberLabel = t('mother_name');
+                  } else if (familyType === 'father') {
+                    familyMemberLabel = t('father_name');
+                  } else if (familyType === 'spouse') {
+                    familyMemberLabel = t('spouse_name');
+                  }
+                  
+                  return (
+                    <View key={key} style={{ paddingVertical: 10 }}>
+                      <Label text={`${t(item?.name)}`} />
+                      <TextField text={`${familyMemberLabel}${familyMemberValue ? ` - ${familyMemberValue}` : ''}`} />
+                    </View>
+                  );
+                }
+                
+                // Skip individual family member name fields as they're handled above
+                if (['mother_name', 'father_name', 'spouse_name'].includes(item?.name)) {
+                  return null;
+                }
+                
                 return (
                   <View key={key} style={{ paddingVertical: 10 }}>
                     <Label text={`${t(item?.name)}`} />
-                    <TextField text={item?.value?.[0]?.value || item?.value} />
+                    <TextField text={actualValue} />
                   </View>
                 );
               })}

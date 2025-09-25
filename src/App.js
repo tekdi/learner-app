@@ -12,22 +12,26 @@ import { NetworkProvider } from './context/NetworkContext'; // Adjust path as ne
 import { ConfirmationProvider } from '@context/Confirmation/ConfirmationContext';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import StackScreen from './Routes/Public/StackScreen';
-import { BackHandler, Dimensions, Text, View } from 'react-native';
+import { BackHandler, Dimensions, Text, View, Linking } from 'react-native';
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
 import {
   getDataFromStorage,
   getDeviceId,
   logEventFunction,
+  setDataInStorage,
 } from './utils/JsHelper/Helper';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 import { notificationSubscribe } from './utils/API/AuthService';
+import DeviceInfo from 'react-native-device-info';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import { CopilotProvider } from 'react-native-copilot';
 
 //fix for android version 15
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import RNRestart from 'react-native-restart';
 
 const linking = {
   prefixes: ['pratham://'],
@@ -138,8 +142,291 @@ async function checkAndRequestStoragePermission() {
   }
   return true;
 }
+
+// Deep link handler functions
+const handleDeepLink = async (url, isRunning) => {
+  if (url) {
+    console.log('=== DEEP LINK DETECTED ===');
+    console.log('Direct deep link from website:', url);
+
+    // Parse the deep link parameters - handle custom scheme properly
+    let params = {};
+
+    try {
+      // Method 1: Try using URL constructor (might not work with custom schemes)
+      const urlObj = new URL(url);
+      params = {
+        page: urlObj.searchParams.get('page'),
+        type: urlObj.searchParams.get('type'),
+        identifier: urlObj.searchParams.get('identifier'),
+        program: urlObj.searchParams.get('program'),
+      };
+
+      console.log('Method 1 (URL constructor) - Deep link parameters:', params);
+
+      // Check if we got valid parameters
+      if (
+        !params.page &&
+        !params.type &&
+        !params.identifier &&
+        !params.program
+      ) {
+        throw new Error('No parameters found with URL constructor');
+      }
+    } catch (error) {
+      console.log(
+        'URL constructor failed, using manual parsing:',
+        error.message
+      );
+
+      // Method 2: Manual parsing for custom schemes
+      try {
+        // Split the URL to get the query part
+        const parts = url.split('?');
+        console.log('URL parts:', parts);
+
+        if (parts.length > 1) {
+          const queryString = parts[1];
+          console.log('Query string:', queryString);
+
+          // Parse query parameters manually
+          const urlParams = new URLSearchParams(queryString);
+          params = {
+            page: urlParams.get('page'),
+            type: urlParams.get('type'),
+            identifier: urlParams.get('identifier'),
+            program: urlParams.get('program'),
+          };
+
+          console.log(
+            'Method 2 (Manual parsing) - Deep link parameters:',
+            params
+          );
+        } else {
+          console.log('No query parameters found in URL');
+        }
+      } catch (manualError) {
+        console.log('Manual parsing also failed:', manualError.message);
+
+        // Method 3: Regex fallback
+        try {
+          const pageMatch = url.match(/page=([^&]*)/);
+          const typeMatch = url.match(/type=([^&]*)/);
+          const identifierMatch = url.match(/identifier=([^&]*)/);
+          const programMatch = url.match(/program=([^&]*)/);
+
+          params = {
+            page: pageMatch ? decodeURIComponent(pageMatch[1]) : null,
+            type: typeMatch ? decodeURIComponent(typeMatch[1]) : null,
+            identifier: identifierMatch
+              ? decodeURIComponent(identifierMatch[1])
+              : null,
+            program: programMatch ? decodeURIComponent(programMatch[1]) : null,
+          };
+
+          console.log(
+            'Method 3 (Regex parsing) - Deep link parameters:',
+            params
+          );
+        } catch (regexError) {
+          console.log('All parsing methods failed:', regexError.message);
+        }
+      }
+    }
+
+    // Store the referrer data for your app logic (optional)
+    await setDataInStorage('deep_link_data', JSON.stringify(params));
+
+    console.log('Final parsed parameters:', params);
+    console.log('==========================');
+  }
+  if (isRunning) {
+    // Restart app
+    RNRestart.restart();
+  }
+};
+
+const handlePlayStoreReferrer = async () => {
+  try {
+    // Check if we already processed referrer on first launch
+    const referrerAlreadyProcessed = await getDataFromStorage(
+      'referrer_processed'
+    );
+
+    if (referrerAlreadyProcessed == 'yes') {
+      console.log(
+        'Play Store referrer already processed on first launch - skipping'
+      );
+      return;
+    }
+
+    console.log(
+      'First app launch - checking for Play Store install referrer...'
+    );
+
+    // Get real Play Store install referrer data using DeviceInfo
+    const installReferrer = await DeviceInfo.getInstallReferrer();
+
+    if (installReferrer && installReferrer.trim() !== '') {
+      console.log('=== PLAY STORE REFERRER DETECTED (FIRST LAUNCH) ===');
+      console.log('Raw install referrer from Play Store:', installReferrer);
+
+      // Try to decode the referrer parameters if they are URL encoded
+      let decodedParams = installReferrer;
+      try {
+        decodedParams = decodeURIComponent(installReferrer);
+        console.log('Decoded referrer parameters:', decodedParams);
+      } catch (decodeError) {
+        console.log('Referrer data not URL encoded:', installReferrer);
+        decodedParams = installReferrer;
+      }
+
+      // Try to parse as URL parameters
+      try {
+        const urlParams = new URLSearchParams(decodedParams);
+        const params = {
+          page: urlParams.get('page'),
+          type: urlParams.get('type'),
+          identifier: urlParams.get('identifier'),
+          program: urlParams.get('program'),
+        };
+
+        // Only log parsed params if we found our expected parameters
+        if (params.page || params.type || params.identifier || params.program) {
+          console.log('Parsed referrer parameters:', params);
+          console.log(
+            'Original Play Store URL would be:',
+            `https://play.google.com/store/apps/details?id=com.pratham.learning&referrer=${encodeURIComponent(
+              decodedParams
+            )}`
+          );
+
+          // Store the referrer data for your app logic (optional)
+          await setDataInStorage('deep_link_data', JSON.stringify(params));
+          console.log('Referrer data saved for app usage');
+        } else {
+          console.log(
+            'Referrer data does not contain expected deep link parameters'
+          );
+          console.log('Raw referrer data:', decodedParams);
+        }
+      } catch (parseError) {
+        console.log(
+          'Could not parse referrer as URL parameters:',
+          decodedParams
+        );
+      }
+
+      console.log('=========================================');
+
+      // Mark referrer as processed so we don't process it again
+      await setDataInStorage('referrer_processed', 'yes');
+      console.log(
+        "Referrer marked as processed - won't check again on future launches"
+      );
+    } else {
+      console.log(
+        'No Play Store referrer data found - app installed directly or opened normally'
+      );
+      // Still mark as processed to avoid checking again
+      await setDataInStorage('referrer_processed', 'yes');
+    }
+  } catch (error) {
+    console.log('Error getting Play Store referrer:', error);
+
+    // Mark as processed even on error to avoid repeated attempts
+    await setDataInStorage('referrer_processed', 'yes');
+
+    // Fallback: check for any stored referrer data (for testing)
+    try {
+      const storedReferrer = await getDataFromStorage('playstore_referrer');
+      if (storedReferrer) {
+        console.log('=== SIMULATED REFERRER DATA FOUND (FIRST LAUNCH) ===');
+        console.log('Stored test referrer data:', storedReferrer);
+        console.log('=====================================');
+      }
+    } catch (storageError) {
+      console.log('No referrer data available');
+    }
+  }
+};
+
+// Test function to simulate Play Store referrer data
+/*const simulatePlayStoreReferrer = async (
+  contentType,
+  identifier,
+  programName
+) => {
+  const deepLinkParams = encodeURIComponent(
+    `page=cmslink&type=${contentType}&identifier=${identifier}&program=${programName}`
+  );
+
+  await setDataInStorage('playstore_referrer', deepLinkParams);
+  console.log('=== SIMULATED PLAY STORE REFERRER ===');
+  console.log('Stored referrer data:', deepLinkParams);
+  console.log(
+    'Play Store URL would be:',
+    `https://play.google.com/store/apps/details?id=com.pratham.learning&referrer=${deepLinkParams}`
+  );
+  console.log('=====================================');
+
+  // Now check the referrer data
+  await handlePlayStoreReferrer();
+};
+
+// Test function to clear Play Store referrer data
+const clearPlayStoreReferrer = async () => {
+  await setDataInStorage('playstore_referrer', null);
+  console.log('Cleared Play Store referrer data');
+};
+
+// Test function to reset referrer processed flag (force first launch behavior)
+const resetReferrerProcessedFlag = async () => {
+  await setDataInStorage('referrer_processed', null);
+  console.log(
+    'Reset referrer processed flag - next launch will process referrer again'
+  );
+};*/
+
 const App = () => {
   console.log('started app');
+
+  // Make test functions globally available for development/testing
+  /*if (__DEV__) {
+    global.simulatePlayStoreReferrer = simulatePlayStoreReferrer;
+    global.clearPlayStoreReferrer = clearPlayStoreReferrer;
+    global.resetReferrerProcessedFlag = resetReferrerProcessedFlag;
+
+    // Log instructions for testing
+    console.log('\n=== DEEP LINK TESTING INSTRUCTIONS ===');
+    console.log('1. Test Direct Deep Link:');
+    console.log(
+      '   Use: adb shell am start -W -a android.intent.action.VIEW -d "pratham://learnerapp?page=cmslink&type=video&identifier=123&program=TestProgram" com.pratham.learning'
+    );
+    console.log('\n2. Test Real Play Store Referrer:');
+    console.log('   - Install app from Play Store with referrer URL:');
+    console.log(
+      '   - https://play.google.com/store/apps/details?id=com.pratham.learning&referrer=page%3Dcmslink%26type%3Dvideo%26identifier%3D123%26program%3DTestProgram'
+    );
+    console.log('   - App will automatically detect referrer on launch');
+    console.log('\n3. Test Simulated Referrer (for development):');
+    console.log(
+      '   Use: simulatePlayStoreReferrer("video", "123", "TestProgram")'
+    );
+    console.log('   Clear: clearPlayStoreReferrer()');
+    console.log('\n4. First Launch Testing:');
+    console.log('   Reset flag: resetReferrerProcessedFlag()');
+    console.log(
+      '   (Referrer will only process on FIRST launch after installation)'
+    );
+    console.log(
+      '\nNOTE: Real Play Store referrer data is now being detected using DeviceInfo.getInstallReferrer()'
+    );
+    console.log(
+      'IMPORTANT: Referrer is processed ONLY ONCE on first app launch, then skipped'
+    );
+    console.log('=======================================\n');
+  }*/
   useEffect(() => {
     // const initializeApp = async () => {
     //   const hasPermission = await checkAndRequestStoragePermission();
@@ -168,6 +455,40 @@ const App = () => {
       await logEventFunction(obj);
     };
     logEvent();
+  }, []);
+
+  // Deep link handling useEffect
+  useEffect(() => {
+    // Handle deep link when app is opened from closed state
+    const getInitialURL = async () => {
+      try {
+        const initialUrl = await Linking.getInitialURL();
+        if (initialUrl) {
+          handleDeepLink(initialUrl, false);
+        } else {
+          // If no deep link, check for Play Store referrer
+          await handlePlayStoreReferrer();
+        }
+      } catch (error) {
+        console.log('Error getting initial URL:', error);
+        // Fallback to checking Play Store referrer
+        await handlePlayStoreReferrer();
+      }
+    };
+
+    getInitialURL();
+
+    // Handle deep link when app is already running
+    const linkingListener = Linking.addEventListener('url', (event) => {
+      handleDeepLink(event.url, true);
+    });
+
+    // Cleanup listener
+    return () => {
+      if (linkingListener?.remove) {
+        linkingListener.remove();
+      }
+    };
   }, []);
 
   // Create channel (required for Android O and above)

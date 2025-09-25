@@ -42,6 +42,8 @@ import { useInternet } from '../../context/NetworkContext';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import GlobalText from '@components/GlobalText/GlobalText';
 import moment from 'moment';
+import { TENANT_DATA } from '../../utils/Constants/app-constants';
+import SwitchAccountDialog from '../../utils/SwitchAccount/SwitchAccount';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -76,114 +78,15 @@ const LoginScreen = () => {
       if (data?.access_token) {
         await saveRefreshToken(data?.refresh_token || '');
         await saveAccessToken(data?.access_token || '');
+
         const userDetails = await getuserDetails();
 
-        console.log('#### userDetails', userDetails);
-        const user_id = userDetails?.userId;
-        const tenantData = userDetails?.tenantData;
-        const tenantid = userDetails?.tenantData?.[0]?.tenantId;
-        const enrollmentId = userDetails?.enrollmentId;
-        await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
-        await setDataInStorage('userId', user_id || '');
-        await setDataInStorage('enrollmentId', enrollmentId || '');
+        console.log('#### loginmultirole userDetails', userDetails);
 
-        //store dynamci templateId
-        const templateId = userDetails?.tenantData?.[0]?.templateId;
-        await setDataInStorage('templateId', templateId || '');
+        setUserDetails(userDetails);
 
-        const academicyear = await setAcademicYear({ tenantid });
-        const academicYearId = academicyear?.[0]?.id;
-        await setDataInStorage('academicYearId', academicYearId || '');
-        await setDataInStorage('userTenantid', tenantid || '');
-        const cohort = await getCohort({ user_id, tenantid, academicYearId });
-        let cohort_id;
-        if (cohort.params?.status !== 'failed') {
-          const getActiveCohort = await getActiveCohortData(cohort);
-          const getActiveCohortId = await getActiveCohortIds(cohort);
-          await setDataInStorage(
-            'cohortData',
-            JSON.stringify(getActiveCohort?.[0]) || ''
-          );
-          cohort_id = getActiveCohortId?.[0];
-        }
+        setSwitchDialogOpen(true);
 
-        const profileData = await getProfileDetails({
-          userId: user_id,
-        });
-
-        await setDataInStorage('profileData', JSON.stringify(profileData));
-        await setDataInStorage(
-          'Username',
-          profileData?.getUserDetails?.[0]?.username || ''
-        );
-        await storeUsername(profileData?.getUserDetails?.[0]?.username);
-
-        await setDataInStorage(
-          'cohortId',
-          cohort_id || '00000000-0000-0000-0000-000000000000'
-        );
-        const tenantDetails = (await getProgramDetails()) || [];
-
-        const MatchedTenant = tenantDetails.filter(
-          (item) => item?.tenantId === tenantid
-        );
-
-        // console.log('tenantDetails===>', JSON.stringify(tenantDetails));
-        // console.log(
-        //   'MatchedTenant===>',
-        //   JSON.stringify(MatchedTenant?.[0]?.contentFilter)
-        // );
-
-        await setDataInStorage(
-          'contentFilter',
-          JSON.stringify(MatchedTenant?.[0]?.contentFilter || {})
-        );
-
-        const youthnetTenantIds = tenantDetails
-          ?.filter((item) => item?.name === 'YouthNet')
-          ?.map((item) => item?.tenantId);
-
-        const scp = tenantDetails
-          ?.filter((item) => item.name === 'Second Chance Program')
-          ?.map((item) => item.tenantId);
-
-        const role = tenantData?.[0]?.roleName;
-
-        if (role == 'Learner' || role == 'Student') {
-          if (tenantid === scp?.[0]) {
-            await setDataInStorage('userType', 'scp');
-            if (cohort_id) {
-              navigation.navigate('SCPUserTabScreen');
-            } else {
-              navigation.navigate('Dashboard');
-            }
-          } else {
-            if (tenantid === youthnetTenantIds?.[0]) {
-              await setDataInStorage('userType', 'youthnet');
-              // navigation.navigate('YouthNetTabScreen');
-              navigation.navigate('Dashboard');
-            } else {
-              await setDataInStorage('userType', 'pragyanpath');
-              navigation.navigate('Dashboard');
-            }
-          }
-          const deviceId = await getDeviceId();
-          const action = 'add';
-
-          await notificationSubscribe({ deviceId, user_id, action });
-        } else {
-          setErrmsg('invalid_username_or_password');
-        }
-        const now = moment();
-
-        const telemetryPayloadData = {
-          event: 'login',
-          type: 'click',
-          ets: now.unix(),
-        };
-        await telemetryTrackingData({
-          telemetryPayloadData,
-        });
         setLoading(false);
       } else {
         setLoading(false);
@@ -192,6 +95,157 @@ const LoginScreen = () => {
     } else {
       setNetworkstatus(false);
     }
+  };
+
+  const [switchDialogOpen, setSwitchDialogOpen] = useState(false);
+  const [userDetails, setUserDetails] = useState(null);
+  const [tenantId, setTenantId] = useState('');
+  const [tenantName, setTenantName] = useState('');
+  const [roleId, setRoleId] = useState('');
+  const [roleName, setRoleName] = useState('');
+
+  const callBackSwitchDialog = async (
+    tenantId,
+    tenantName,
+    roleId,
+    roleName
+  ) => {
+    setLoading(true);
+    setSwitchDialogOpen(false);
+
+    // Set the state values
+    setTenantId(tenantId);
+    setTenantName(tenantName);
+    setRoleId(roleId);
+    setRoleName(roleName);
+
+    const tenantid = tenantId;
+
+    console.log('#### loginmultirole tenantId', tenantId);
+    console.log('#### loginmultirole tenantName', tenantName);
+    console.log('#### loginmultirole roleId', roleId);
+    console.log('#### loginmultirole roleName', roleName);
+
+    console.log('#### loginmultirole userDetails', userDetails);
+    const user_id = userDetails?.userId;
+    const tenantData = [
+      userDetails?.tenantData?.find((tenant) => tenant.tenantId === tenantId),
+    ];
+    console.log('#### loginmultirole tenantData', tenantData);
+
+    const enrollmentId = userDetails?.enrollmentId;
+    await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
+    await setDataInStorage('userId', user_id || '');
+    await setDataInStorage('enrollmentId', enrollmentId || '');
+
+    //store dynamci templateId
+    const templateId = tenantData?.[0]?.templateId;
+    await setDataInStorage('templateId', templateId || '');
+
+    const academicyear = await setAcademicYear({ tenantid });
+    const academicYearId = academicyear?.[0]?.id;
+    await setDataInStorage('academicYearId', academicYearId || '');
+    await setDataInStorage('userTenantid', tenantId || '');
+    const cohort = await getCohort({ user_id, tenantid, academicYearId });
+    console.log('#### loginmultirole cohort', cohort);
+    let cohort_id;
+    if (cohort.params?.status !== 'failed') {
+      const getActiveCohort = await getActiveCohortData(cohort);
+      const getActiveCohortId = await getActiveCohortIds(cohort);
+      await setDataInStorage(
+        'cohortData',
+        JSON.stringify(getActiveCohort?.[0]) || ''
+      );
+      cohort_id = getActiveCohortId?.[0];
+    }
+
+    const profileData = await getProfileDetails({
+      userId: user_id,
+    });
+    console.log('#### loginmultirole profileData', profileData);
+
+    await setDataInStorage('profileData', JSON.stringify(profileData));
+    await setDataInStorage(
+      'Username',
+      profileData?.getUserDetails?.[0]?.username || ''
+    );
+    await storeUsername(profileData?.getUserDetails?.[0]?.username);
+
+    await setDataInStorage(
+      'cohortId',
+      cohort_id || '00000000-0000-0000-0000-000000000000'
+    );
+    const tenantDetails = (await getProgramDetails()) || [];
+
+    const MatchedTenant = tenantDetails.filter(
+      (item) => item?.tenantId === tenantId
+    );
+
+    // console.log('tenantDetails===>', JSON.stringify(tenantDetails));
+    // console.log(
+    //   'MatchedTenant===>',
+    //   JSON.stringify(MatchedTenant?.[0]?.contentFilter)
+    // );
+
+    await setDataInStorage(
+      'contentFilter',
+      JSON.stringify(MatchedTenant?.[0]?.contentFilter || {})
+    );
+
+    const youthnetTenantIds = tenantDetails
+      ?.filter((item) => item?.name === TENANT_DATA.YOUTHNET)
+      ?.map((item) => item?.tenantId);
+
+    const scp = tenantDetails
+      ?.filter((item) => item.name === 'Second Chance Program')
+      ?.map((item) => item.tenantId);
+
+    const role = roleName;
+
+    if (role == 'Learner' || role == 'Student') {
+      console.log('#### loginmultirole role', role);
+
+      if (tenantId === scp?.[0]) {
+        await setDataInStorage('userType', 'scp');
+        if (cohort_id) {
+          navigation.navigate('SCPUserTabScreen');
+        } else {
+          navigation.navigate('Dashboard');
+        }
+      } else {
+        if (tenantId === youthnetTenantIds?.[0]) {
+          await setDataInStorage('userType', 'youthnet');
+          // navigation.navigate('YouthNetTabScreen');
+          navigation.navigate('Dashboard');
+        } else {
+          // await setDataInStorage('userType', 'pragyanpath');
+          await setDataInStorage('userType', tenantData?.[0]?.tenantName);
+          navigation.navigate('Dashboard');
+        }
+      }
+      const deviceId = await getDeviceId();
+      const action = 'add';
+
+      await notificationSubscribe({ deviceId, user_id, action });
+    } else {
+      setErrmsg('invalid_username_or_password');
+    }
+    const now = moment();
+
+    const telemetryPayloadData = {
+      event: 'login',
+      type: 'click',
+      ets: now.unix(),
+    };
+    await telemetryTrackingData({
+      telemetryPayloadData,
+    });
+
+    setLoading(false);
+  };
+
+  const callBackError = () => {
+    setErrmsg('invalid_username_or_password');
   };
 
   // const handleLogin = async () => {
@@ -294,7 +348,7 @@ const LoginScreen = () => {
             onPress={() => {
               navigation.navigate('ForgotPassword', { enableLogin: true });
             }}
-            style={{ paddingLeft: 20, marginBottom: 30,zIndex:-1 }}
+            style={{ paddingLeft: 20, marginBottom: 30, zIndex: -1 }}
           >
             <GlobalText
               style={[
@@ -361,6 +415,13 @@ const LoginScreen = () => {
         closeModal={() => {
           setNetworkstatus(!networkstatus);
         }}
+      />
+      <SwitchAccountDialog
+        visible={switchDialogOpen}
+        onClose={() => setSwitchDialogOpen(false)}
+        callbackFunction={callBackSwitchDialog}
+        authResponse={userDetails?.tenantData}
+        callBackError={callBackError}
       />
     </SafeAreaView>
   );
