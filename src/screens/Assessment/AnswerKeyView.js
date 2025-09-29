@@ -5,11 +5,11 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   Dimensions,
   useWindowDimensions,
 } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import Header from '../../components/Layout/Header';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
@@ -31,7 +31,11 @@ import Config from 'react-native-config';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
-import { hierarchyContent, listQuestion, questionsetRead } from '../../utils/API/ApiCalls';
+import {
+  hierarchyContent,
+  listQuestion,
+  questionsetRead,
+} from '../../utils/API/ApiCalls';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -52,7 +56,6 @@ const AnswerKeyView = ({ route }) => {
   const [networkstatus, setNetworkstatus] = useState(true);
   const [questionSolutions, setQuestionSolutions] = useState({});
 
-
   const countEmptyResValues = (data) => {
     return data?.reduce((count, item) => {
       return item.resValue === '[]' ? count + 1 : count;
@@ -70,40 +73,46 @@ const AnswerKeyView = ({ route }) => {
   // Function to find solutions for questions
   const findQuestionSolutions = (questions, currentQuestions) => {
     const solutions = {};
-    
+
     console.log('Finding solutions for questions:', {
       questionsCount: questions?.length,
-      currentQuestionsCount: currentQuestions?.length
+      currentQuestionsCount: currentQuestions?.length,
     });
-    
-    currentQuestions.forEach(currentQuestion => {
-      const matchingQuestion = questions.find(q => q.identifier === currentQuestion.questionId);
+
+    currentQuestions.forEach((currentQuestion) => {
+      const matchingQuestion = questions.find(
+        (q) => q.identifier === currentQuestion.questionId
+      );
       console.log('Matching question:', {
         questionId: currentQuestion.questionId,
         found: !!matchingQuestion,
-        hasSolutions: !!(matchingQuestion?.editorState?.solutions)
+        hasSolutions: !!matchingQuestion?.editorState?.solutions,
       });
-      
+
       if (matchingQuestion && matchingQuestion.editorState?.solutions) {
-        solutions[currentQuestion.questionId] = matchingQuestion.editorState.solutions;
-        console.log('Solution found for question:', currentQuestion.questionId, matchingQuestion.editorState.solutions);
+        solutions[currentQuestion.questionId] =
+          matchingQuestion.editorState.solutions;
+        console.log(
+          'Solution found for question:',
+          currentQuestion.questionId,
+          matchingQuestion.editorState.solutions
+        );
       }
     });
-    
+
     console.log('Final solutions object:', solutions);
     return solutions;
   };
 
   useFocusEffect(
     useCallback(() => {
-
       fetchData();
     }, [navigation])
   );
   const downloadContentQuML = async (content_do_id) => {
     console.log('downloadContentQuML', content_do_id);
     setLoading(true);
-    
+
     try {
       // Get data online
       let content_response = await hierarchyContent(content_do_id);
@@ -111,17 +120,17 @@ const AnswerKeyView = ({ route }) => {
         console.log('No content response received');
         return null;
       }
-      
+
       let contentObj = content_response?.result?.questionSet;
       // Fix for response with questionset
       if (!contentObj) {
         contentObj = content_response?.result?.questionset;
       }
-      
+
       if (contentObj?.mimeType == 'application/vnd.sunbird.questionset') {
         // Find outcomeDeclaration
         let questionsetRead_response = await questionsetRead(content_do_id);
-        
+
         if (
           questionsetRead_response != null &&
           questionsetRead_response?.result?.questionset
@@ -130,11 +139,11 @@ const AnswerKeyView = ({ route }) => {
             questionsetRead_response?.result?.questionset?.outcomeDeclaration;
         }
       }
-      
+
       // Get child nodes and questions
       let childNodes = contentObj?.childNodes;
       let removeNodes = [];
-      
+
       if (contentObj?.children) {
         for (let i = 0; i < contentObj.children.length; i++) {
           if (contentObj.children[i]?.identifier) {
@@ -142,40 +151,33 @@ const AnswerKeyView = ({ route }) => {
           }
         }
       }
-      
+
       let identifiers = childNodes.filter(
         (item) => !removeNodes.includes(item)
       );
-      
+
       let questions = [];
       const chunks = [];
       let chunkSize = 10;
-      
+
       for (let i = 0; i < identifiers.length; i += chunkSize) {
         chunks.push(identifiers.slice(i, i + chunkSize));
       }
-      
+
       console.log('chunks', chunks);
-      
+
       for (const chunk of chunks) {
-        let response_question = await listQuestion(
-          questionListUrl,
-          chunk
-        );
+        let response_question = await listQuestion(questionListUrl, chunk);
         if (response_question?.result?.questions) {
-          for (
-            let i = 0;
-            i < response_question.result.questions.length;
-            i++
-          ) {
+          for (let i = 0; i < response_question.result.questions.length; i++) {
             questions.push(response_question.result.questions[i]);
           }
         }
       }
-      
+
       console.log('questions----------', questions.length);
       console.log('identifiers', identifiers.length);
-      
+
       if (questions.length == identifiers.length) {
         // Add questions in contentObj for offline use
         let temp_contentObj = contentObj;
@@ -201,16 +203,19 @@ const AnswerKeyView = ({ route }) => {
             }
           }
         }
-        
+
         contentObj = temp_contentObj;
-        
+
         // Return question_result
         let question_result = {
           questions: questions,
           count: questions.length,
         };
-        
-        console.log('question_result:', question_result?.questions?.[0]?.identifier);
+
+        console.log(
+          'question_result:',
+          question_result?.questions?.[0]?.identifier
+        );
         return question_result;
       } else {
         console.log('Questions count mismatch');
@@ -234,23 +239,26 @@ const AnswerKeyView = ({ route }) => {
         contentId,
       });
       handleDownload(data);
-      
+
       const OfflineassessmentAnswerKey = JSON.parse(
         await getDataFromStorage(`assessmentAnswerKey${contentId}`)
       );
-      
+
       if (OfflineassessmentAnswerKey) {
         const finalData = getLastIndexData(OfflineassessmentAnswerKey);
         const unanswered = countEmptyResValues(finalData?.score_details);
         setUnansweredCount(unanswered);
         setScoreData(finalData);
         setNetworkstatus(true);
-        
+
         // Get question solutions AFTER setting scoreData
         try {
           const result = await downloadContentQuML(contentId);
           if (result && result.questions) {
-            const solutions = findQuestionSolutions(result.questions, finalData?.score_details || []);
+            const solutions = findQuestionSolutions(
+              result.questions,
+              finalData?.score_details || []
+            );
             setQuestionSolutions(solutions);
             console.log('Solutions set successfully:', solutions);
           }
@@ -260,7 +268,7 @@ const AnswerKeyView = ({ route }) => {
       } else {
         setNetworkstatus(false);
       }
-      
+
       setLoading(false);
     } catch (err) {
       console.error('Error in fetchData:', err);
@@ -293,7 +301,7 @@ const AnswerKeyView = ({ route }) => {
     startIndex,
     endIndex
   );
-  console.log("currentQuestions", currentQuestions);
+  console.log('currentQuestions', currentQuestions);
   const handleNext = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
@@ -309,12 +317,12 @@ const AnswerKeyView = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaWrapper style={{ flex: 1 }}>
       <SecondaryHeader logo />
       {loading ? (
         <ActiveLoading />
       ) : (
-        <SafeAreaView style={globalStyles.container}>
+        <View style={globalStyles.container}>
           <View style={globalStyles.flexrow}>
             <TouchableOpacity
               onPress={() => {
@@ -404,15 +412,20 @@ const AnswerKeyView = ({ route }) => {
                     {`Ans. `}
                     {(() => {
                       try {
-                        console.log('resValue:', item?.resValue, 'type:', typeof item?.resValue);
-                        
+                        console.log(
+                          'resValue:',
+                          item?.resValue,
+                          'type:',
+                          typeof item?.resValue
+                        );
+
                         if (!item?.resValue || item.resValue === '[]') {
                           return 'NA';
                         }
-                        
+
                         const parsed = JSON.parse(item.resValue);
                         console.log('Parsed resValue:', parsed);
-                        
+
                         if (Array.isArray(parsed) && parsed.length > 0) {
                           const firstItem = parsed[0];
                           if (firstItem?.label) {
@@ -421,18 +434,30 @@ const AnswerKeyView = ({ route }) => {
                               .replace(/^\d+\.\s*/, '');
                           }
                         }
-                        
+
                         return 'NA';
                       } catch (error) {
-                        console.error('Error parsing resValue:', error, 'resValue:', item?.resValue);
+                        console.error(
+                          'Error parsing resValue:',
+                          error,
+                          'resValue:',
+                          item?.resValue
+                        );
                         return 'NA';
                       }
                     })()}
                   </GlobalText>
-                  
+
                   {/* Debug: Log solution data */}
-                  {console.log('Debug - questionId:', item.questionId, 'questionSolutions:', questionSolutions["do_21438672721553817618"], 'hasSolution:', !!questionSolutions[item.questionId])}
-                  
+                  {console.log(
+                    'Debug - questionId:',
+                    item.questionId,
+                    'questionSolutions:',
+                    questionSolutions['do_21438672721553817618'],
+                    'hasSolution:',
+                    !!questionSolutions[item.questionId]
+                  )}
+
                   {/* Display solution if available */}
                   {questionSolutions[item.questionId?.toString()] && (
                     <View style={styles.solutionContainer}>
@@ -443,12 +468,16 @@ const AnswerKeyView = ({ route }) => {
                         <RenderHtml
                           contentWidth={width - 80}
                           baseStyle={baseStyle}
-                          source={{ html: questionSolutions[item.questionId][0]?.value || '' }}
+                          source={{
+                            html:
+                              questionSolutions[item.questionId][0]?.value ||
+                              '',
+                          }}
                         />
                       </View>
                     </View>
                   )}
-                  
+
                   {/* Test: Always show some debug info */}
                   {/* <View style={{ padding: 5, backgroundColor: '#e0e0e0', marginTop: 5 }}>
                     <GlobalText style={{ fontSize: 12, color: '#666' }}>
@@ -494,7 +523,7 @@ const AnswerKeyView = ({ route }) => {
               />
             </TouchableOpacity>
           </View>
-        </SafeAreaView>
+        </View>
       )}
       <NetworkAlert
         onTryAgain={fetchData}
@@ -503,7 +532,7 @@ const AnswerKeyView = ({ route }) => {
           setNetworkstatus(!networkstatus);
         }}
       />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

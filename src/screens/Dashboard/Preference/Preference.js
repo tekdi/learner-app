@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView } from 'react-native';
+import SafeAreaWrapper from '../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import Header from '../../../components/Layout/Header';
 import PreferenceHeader from './PreferenceHeader';
 import PreferenceForm from './PreferenceForm';
@@ -8,10 +8,10 @@ const Preference = () => {
   return (
     <>
       <Header />
-      <SafeAreaView style={{ top: 10 }}>
+      <SafeAreaWrapper style={{ top: 10 }}>
         <PreferenceHeader />
         <PreferenceForm />
-      </SafeAreaView>
+      </SafeAreaWrapper>
     </>
   );
 };

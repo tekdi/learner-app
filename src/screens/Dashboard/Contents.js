@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   BackHandler,
   Image,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -12,6 +11,7 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import {
   useFocusEffect,
   useNavigation,
@@ -286,7 +286,7 @@ const Contents = () => {
   };
 
   return (
-    <SafeAreaView
+    <SafeAreaWrapper
       key={refreshKey}
       style={{ flex: 1, backgroundColor: 'white' }}
     >
@@ -296,6 +296,7 @@ const Contents = () => {
         ref={scrollViewRef}
         onScroll={handleScroll}
         scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: 100 }}
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
         }
@@ -304,7 +305,7 @@ const Contents = () => {
           {loading ? (
             <ActiveLoading />
           ) : (
-            <SafeAreaView>
+            <View>
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
                 <GlobalText style={styles.text2}>
@@ -391,7 +392,7 @@ const Contents = () => {
                   </View>
                 )}
               </View>
-            </SafeAreaView>
+            </View>
           )}
           {showExitModal && (
             <BackButtonHandler
@@ -402,7 +403,7 @@ const Contents = () => {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

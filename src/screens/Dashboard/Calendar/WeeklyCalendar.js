@@ -5,9 +5,9 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   Image,
 } from 'react-native';
+import SafeAreaWrapper from '../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import globalStyles from '../../../utils/Helper/Style';
 import eventcal from '../../../assets/images/png/eventcal.png';
 
@@ -101,7 +101,7 @@ const WeeklyCalendar = ({ setDate, postdays, allEventData }) => {
   // console.log('eventDate', JSON.stringify(eventDate));
 
   return (
-    <SafeAreaView>
+    <SafeAreaWrapper>
       <FlatList
         ref={flatListRef}
         data={last30Days}
@@ -136,7 +136,7 @@ const WeeklyCalendar = ({ setDate, postdays, allEventData }) => {
         getItemLayout={getItemLayout}
         onScrollToIndexFailed={handleScrollToIndexFailed}
       />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

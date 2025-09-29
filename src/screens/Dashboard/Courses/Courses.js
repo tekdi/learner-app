@@ -6,12 +6,12 @@ import {
   BackHandler,
   Image,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
+import SafeAreaWrapper from '../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import {
   useFocusEffect,
   useNavigation,
@@ -406,7 +406,7 @@ const Courses = () => {
   };
 
   return (
-    <SafeAreaView
+    <SafeAreaWrapper
       key={refreshKey}
       style={{ flex: 1, backgroundColor: 'white' }}
     >
@@ -417,6 +417,7 @@ const Courses = () => {
         ref={scrollViewRef}
         onScroll={handleScroll}
         scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: 100 }}
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
         }
@@ -896,7 +897,7 @@ const Courses = () => {
           />
         </FilterDrawer>
       )}
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

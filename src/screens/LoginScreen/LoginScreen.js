@@ -8,7 +8,7 @@ import {
   ScrollView,
   StatusBar,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import { useState, React, useEffect } from 'react';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useNavigation } from '@react-navigation/native';
@@ -271,7 +271,7 @@ const LoginScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView style={globalStyles.container}>
+    <SafeAreaWrapper style={globalStyles.container}>
       {loading ? (
         <ActiveLoading />
       ) : (
@@ -423,7 +423,7 @@ const LoginScreen = () => {
         authResponse={userDetails?.tenantData}
         callBackError={callBackError}
       />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 const styles = StyleSheet.create({

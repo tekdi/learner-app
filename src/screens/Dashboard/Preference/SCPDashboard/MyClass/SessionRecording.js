@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import SafeAreaWrapper from '../../../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import SessionRecordingCard from './SessionRecordingCard';
 import { IndexPath, Layout, Select, SelectItem } from '@ui-kitten/components';
 import globalStyles from '../../../../../utils/Helper/Style';
@@ -9,7 +10,7 @@ const SessionRecording = (props) => {
   const [selectedIndex, setSelectedIndex] = useState(new IndexPath(0));
 
   return (
-    <SafeAreaView>
+    <SafeAreaWrapper>
       <View
         style={[
           globalStyles.flexrow,
@@ -39,7 +40,7 @@ const SessionRecording = (props) => {
       </View>
 
       <SessionRecordingCard />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

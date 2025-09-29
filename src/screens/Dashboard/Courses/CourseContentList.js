@@ -6,12 +6,12 @@ import {
   BackHandler,
   Image,
   Modal,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
+import SafeAreaWrapper from '../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import TextField from '../../../components/TextField/TextField';
 import {
   courseDetails,
@@ -330,7 +330,7 @@ const CourseContentList = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaWrapper style={{ flex: 1 }}>
       <SecondaryHeader />
       {loading && <ActivityIndicator style={{ top: 300 }} />}
       <>
@@ -717,7 +717,7 @@ const CourseContentList = ({ route }) => {
           setNetworkstatus(!networkstatus);
         }}
       />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

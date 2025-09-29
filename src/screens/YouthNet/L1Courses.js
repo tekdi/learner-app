@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   BackHandler,
   Image,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -12,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import {
   useFocusEffect,
   useNavigation,
@@ -222,7 +222,7 @@ const L1Courses = () => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaWrapper style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
       <AppUpdatePopup />
       <ScrollView nestedScrollEnabled>
@@ -230,7 +230,7 @@ const L1Courses = () => {
           {loading ? (
             <ActiveLoading />
           ) : (
-            <SafeAreaView>
+            <View>
               <View style={styles.view}>
                 <StatusBar
                   barStyle="dark-content"
@@ -349,7 +349,7 @@ const L1Courses = () => {
                   </TouchableOpacity>
                 </View>
               </View> */}
-            </SafeAreaView>
+            </View>
           )}
           {showExitModal && (
             <BackButtonHandler
@@ -373,7 +373,7 @@ const L1Courses = () => {
           />
         )}
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

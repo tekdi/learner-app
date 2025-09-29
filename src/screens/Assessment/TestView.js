@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   View,
   ActivityIndicator,
 } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../../components/Layout/Header';
 import AssessmentHeader from './AssessmentHeader';
@@ -458,7 +458,7 @@ const TestView = ({ route }) => {
   return loading ? (
     <ActiveLoading />
   ) : (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaWrapper style={{ flex: 1 }}>
       <SecondaryHeader logo />
       <View style={{ flex: 1 }}>
         <AssessmentHeader
@@ -499,7 +499,7 @@ const TestView = ({ route }) => {
           )}
         </View>
       </View>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 
