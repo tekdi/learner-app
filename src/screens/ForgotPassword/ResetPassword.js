@@ -236,7 +236,7 @@ const ResetPassword = () => {
                       { textAlign: 'center', marginVertical: 10 },
                     ]}
                   >
-                    {t(modalError.toLowerCase().replace(/\s+/g, '_'))}
+                    {t(failed_to_reset_password)}
                   </Text>
                 ) : (
                   <>
@@ -252,8 +252,9 @@ const ResetPassword = () => {
                         { textAlign: 'center', marginVertical: 10 },
                       ]}
                     >
-                      {t('we_sent_an_email_to')} {encryptEmail(email)}{' '}
-                      {t('with_a_link_to_get_back_to_your_account')}
+                      {/* {t('we_sent_an_email_to')} {encryptEmail(email)}{' '}
+                      {t('with_a_link_to_get_back_to_your_account')} */}
+                      {t('your_password_has_been_successfully_reset')}
                     </Text>
                   </>
                 )}

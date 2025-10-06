@@ -211,6 +211,8 @@
   "dont_have_account": "Don’t have an account? Register now",
   "email": "Email Id",
   "we_sent_an_email_to": "We sent an email to",
+  "your_password_has_been_successfully_reset": "Your password has been successfully reset",
+  "failed_to_reset_password": "Failed to reset password",
   "with_a_link_to_get_back_to_your_account": "with a link to get back to your account",
   "username_does_not_exist": "Username does not exist",
   "cancel_download": "Cancel Download",
