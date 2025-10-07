@@ -6,9 +6,9 @@ import {
   TouchableOpacity,
   Modal,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
 } from 'react-native';
+import SafeAreaWrapper from '../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import globalStyles from '../../../utils/Helper/Style';
 import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
@@ -124,7 +124,7 @@ const TimeTable = () => {
     fetchCompleteMonthData();
   }, []);
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaWrapper style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
       <View style={styles.card}>
         <View style={styles.leftContainer}>
@@ -203,7 +203,7 @@ const TimeTable = () => {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

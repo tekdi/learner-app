@@ -69,12 +69,12 @@ const ImageListView = ({
         {t('Selected Images')} ({images.length})
       </GlobalText>
 
-      {showWarning && images.length > 4 && (
+      {showWarning && images.length > 20 && (
         <View style={ATMAssessmentStyles.warningContainer}>
           <GlobalText style={ATMAssessmentStyles.warningText}>
             {t('You have selected')} {images.length} {t('images')}.
             {t(
-              'For better performance, we recommend uploading up to 4 images at a time'
+              'For better performance, we recommend uploading up to 20 images at a time'
             )}
             .
           </GlobalText>

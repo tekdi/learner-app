@@ -4,11 +4,11 @@ import {
   BackHandler,
   Image,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
 } from 'react-native';
+import SafeAreaWrapper from '../../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import SecondaryHeader from '../../../../components/Layout/SecondaryHeader';
 import wave from '../../../../assets/images/png/wave.png';
 import { useTranslation } from '../../../../context/LanguageContext';
@@ -220,7 +220,7 @@ const SCPDashboard = (props) => {
   };
 
   return (
-    <SafeAreaView
+    <SafeAreaWrapper
       key={refreshKey}
       style={{ flex: 1, backgroundColor: 'white' }}
     >
@@ -366,7 +366,7 @@ const SCPDashboard = (props) => {
           setNetworkstatus(!networkstatus);
         }}
       />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

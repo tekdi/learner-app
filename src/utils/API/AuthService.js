@@ -791,7 +791,7 @@ export const assessmentListApi = async (params = {}) => {
         primaryCategory: ['Practice Question Set'],
         // new different type
         // undo this
-        // evaluationType: ['offline', 'online', 'ai'],
+        evaluationType: ['offline', 'online', 'ai'],
       },
       sort_by: {
         lastUpdatedOn: 'desc',

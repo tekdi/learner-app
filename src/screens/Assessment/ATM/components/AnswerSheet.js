@@ -56,7 +56,7 @@ const parseResValue = (resValue)=> {
             selectedItem.AI_suggestion ||
             selectedItem.aiSuggestion ||
             selectedItem.explanation ||
-            'No AI suggestion available',
+            'No suggestion available',
         };
       }
     }
@@ -90,13 +90,13 @@ const parseResValue = (resValue)=> {
         parsed.AI_suggestion ||
         parsed.aiSuggestion ||
         parsed.explanation ||
-        'No AI suggestion available',
+        'No suggestion available',
     };
   } catch (error) {
     // If JSON parsing fails, treat as plain text
     return {
       response: resValue || 'No response available',
-      aiSuggestion: 'No AI suggestion available',
+      aiSuggestion: 'No suggestion available',
     };
   }
 };
@@ -133,7 +133,7 @@ const AISuggestion = React.memo(({ aiSuggestion }) => {
 
   if (
     !aiSuggestion ||
-    aiSuggestion === 'No AI suggestion available' ||
+    aiSuggestion === 'No suggestion available' ||
     aiSuggestion.trim() === ''
   ) {
     return null;
