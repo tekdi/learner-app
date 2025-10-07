@@ -134,7 +134,24 @@ export const LanguageProvider = ({ children }) => {
     }
   };
 
-  const t = (key) => translations[language][key] || key;
+  const t = (key) => {
+    // First try to get translation from current language
+    const currentTranslation = translations[language]?.[key];
+    if (currentTranslation) {
+      return currentTranslation;
+    }
+    
+    // If not found and current language is not English, fallback to English
+    if (language !== 'en') {
+      const englishTranslation = translations['en']?.[key];
+      if (englishTranslation) {
+        return englishTranslation;
+      }
+    }
+    
+    // If still not found, return the key itself as last resort
+    return key;
+  };
 
   const value = useMemo(
     () => ({ language, setLanguage: handleLanguageChange, t, rtlLanguages }),
