@@ -4,7 +4,7 @@ import {
   // SafeAreaView,
   StyleSheet,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import {
   getGeoLocation,
   getStudentForm,
@@ -908,7 +908,7 @@ const RegisterScreen = () => {
   return loading ? (
     <Loading />
   ) : (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaWrapper style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -917,7 +917,7 @@ const RegisterScreen = () => {
         <RegistrationForm geoData={geoData} fields={mainSchema} />
         <NetworkAlert onTryAgain={fetchData} isConnected={!networkError} />
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 const styles = StyleSheet.create({

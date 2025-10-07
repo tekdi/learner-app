@@ -2,18 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   FlatList,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import Icon from 'react-native-vector-icons/Octicons';
 import CourseCard from '../../components/CourseCard/CourseCard';
 import { useTranslation } from '../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 
-import GlobalText from "@components/GlobalText/GlobalText";
+import GlobalText from '@components/GlobalText/GlobalText';
 
 const ViewAllContent = ({ route }) => {
   const { t } = useTranslation();
@@ -37,7 +37,7 @@ const ViewAllContent = ({ route }) => {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 10, top: 60 }}>
+    <SafeAreaWrapper style={{ flex: 1, padding: 10, top: 60 }}>
       {/* <Header /> */}
       <View style={{ marginBottom: 120 }}>
         <View
@@ -71,7 +71,7 @@ const ViewAllContent = ({ route }) => {
           windowSize={21} // Controls the number of items rendered around the current index
         />
       </View>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

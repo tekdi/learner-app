@@ -9,7 +9,7 @@ import {
   BackHandler,
   // SafeAreaView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import CustomRadioCard from '@components/CustomRadioCard/CustomRadioCard';
 import RadioButton from '@components/CustomRadioCard/RadioButton';
@@ -1021,7 +1021,7 @@ const RegistrationForm = ({ fields }) => {
   }
 
   return (
-    <SafeAreaView style={{ padding: 10, flex: 1, paddingTop: 0 }}>
+    <SafeAreaWrapper style={{ padding: 10 }}>
       {currentPage > 0 && (
         <TouchableOpacity style={styles.backbutton} onPress={handlePrevious}>
           <Image
@@ -1507,7 +1507,7 @@ const RegistrationForm = ({ fields }) => {
         authResponse={userDetails?.tenantData}
         callBackError={callBackError}
       />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

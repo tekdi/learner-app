@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Platform,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from '../../context/LanguageContext';
+import {
+  useTabBarStyle,
+  useTabLabelStyle,
+} from '../../utils/Helper/TabScreenHelper';
 import DashboardStack from './DashboardStack';
 import SurveyStack from '../Youthnet/SurveyStack';
 import ExploreStack from '../Youthnet/ExploreStack';
@@ -31,6 +42,9 @@ const TabScreen = () => {
   const [CopilotStopped, setCopilotStopped] = useState(false);
   const [isVolunteer, setIsVolunteer] = useState(false);
   const { start, goToNth, unregisterStep, copilotEvents } = useCopilot();
+  const insets = useSafeAreaInsets();
+  const tabBarStyle = useTabBarStyle();
+  const tabLabelStyle = useTabLabelStyle();
 
   // useEffect(() => {
   //   const COPILOT_ENABLE = Config.COPILOT_ENABLE;
@@ -72,11 +86,11 @@ const TabScreen = () => {
       initialRouteName="DashboardStack"
       screenOptions={() => ({
         headerShown: false,
-        tabBarStyle: styles.footer,
+        tabBarStyle: tabBarStyle,
         tabBarActiveTintColor: '#987100',
         tabBarInactiveTintColor: 'gray',
         tabBarActiveBackgroundColor: '#F7ECDF',
-        tabBarLabelStyle: styles.tabLabel, // Add this for padding below label
+        tabBarLabelStyle: tabLabelStyle,
       })}
     >
       <Tab.Screen
@@ -214,15 +228,6 @@ const TabScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  footer: {
-    height: 70,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  tabLabel: {
-    paddingBottom: 10, // Add 10px padding below the label
-  },
-});
+// Styles are now handled by TabScreenHelper utility
 
 export default TabScreen;

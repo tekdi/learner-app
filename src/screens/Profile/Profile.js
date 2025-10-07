@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import { useTranslation } from '../../context/LanguageContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -279,7 +279,7 @@ const Profile = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaWrapper style={styles.safeArea}>
       <SecondaryHeader logo />
       {loading ? (
         <ActiveLoading />
@@ -289,6 +289,7 @@ const Profile = () => {
             <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
           }
           style={[globalStyles.container, { padding: 0 }]}
+          contentContainerStyle={{ paddingBottom: 100 }}
         >
           <View style={styles.view}>
             <GlobalText style={globalStyles.h3}>{t('my_profile')}</GlobalText>
@@ -374,25 +375,29 @@ const Profile = () => {
               {userDetailss?.map((item, key) => {
                 // Get the actual value
                 const actualValue = item?.value?.[0]?.value || item?.value;
-                
+
                 // Hide fields with empty values
                 if (!actualValue || actualValue === '') {
                   return null;
                 }
-                
+
                 // For family member details, show label and value for the selected family member
                 if (item?.name === 'family_member_details') {
                   const familyType = actualValue;
                   const familyMemberField = userDetailss?.find((field) => {
                     return (
-                      (familyType === 'mother' && field.name === 'mother_name') ||
-                      (familyType === 'father' && field.name === 'father_name') ||
+                      (familyType === 'mother' &&
+                        field.name === 'mother_name') ||
+                      (familyType === 'father' &&
+                        field.name === 'father_name') ||
                       (familyType === 'spouse' && field.name === 'spouse_name')
                     );
                   });
-                  
-                  const familyMemberValue = familyMemberField?.value?.[0]?.value || familyMemberField?.value;
-                  
+
+                  const familyMemberValue =
+                    familyMemberField?.value?.[0]?.value ||
+                    familyMemberField?.value;
+
                   // Get the translated label for the family member field
                   let familyMemberLabel = '';
                   if (familyType === 'mother') {
@@ -402,20 +407,28 @@ const Profile = () => {
                   } else if (familyType === 'spouse') {
                     familyMemberLabel = t('spouse_name');
                   }
-                  
+
                   return (
                     <View key={key} style={{ paddingVertical: 10 }}>
                       <Label text={`${t(item?.name)}`} />
-                      <TextField text={`${familyMemberLabel}${familyMemberValue ? ` - ${familyMemberValue}` : ''}`} />
+                      <TextField
+                        text={`${familyMemberLabel}${
+                          familyMemberValue ? ` - ${familyMemberValue}` : ''
+                        }`}
+                      />
                     </View>
                   );
                 }
-                
+
                 // Skip individual family member name fields as they're handled above
-                if (['mother_name', 'father_name', 'spouse_name'].includes(item?.name)) {
+                if (
+                  ['mother_name', 'father_name', 'spouse_name'].includes(
+                    item?.name
+                  )
+                ) {
                   return null;
                 }
-                
+
                 return (
                   <View key={key} style={{ paddingVertical: 10 }}>
                     <Label text={`${t(item?.name)}`} />
@@ -475,7 +488,7 @@ const Profile = () => {
           setNetworkstatus(!networkstatus);
         }}
       />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

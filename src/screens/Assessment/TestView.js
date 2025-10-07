@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   View,
   ActivityIndicator,
 } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../../components/Layout/Header';
 import AssessmentHeader from './AssessmentHeader';
@@ -177,7 +177,7 @@ const TestView = ({ route }) => {
         response_ai?.data?.map((item) => item?.question_set_id || '') || [];
       // undo this
       let temp_offline_do_ids = questionsets
-        .filter((item) => item?.evaluationType === 'offline_removed')
+        .filter((item) => item?.evaluationType === 'offline')
         .map((item) => item?.identifier);
       let response_ai_ids = [...temp_ai_do_ids, ...temp_offline_do_ids];
 
@@ -458,7 +458,7 @@ const TestView = ({ route }) => {
   return loading ? (
     <ActiveLoading />
   ) : (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaWrapper style={{ flex: 1 }}>
       <SecondaryHeader logo />
       <View style={{ flex: 1 }}>
         <AssessmentHeader
@@ -473,7 +473,7 @@ const TestView = ({ route }) => {
             {t('assessment_instructions')}
           </GlobalText> */}
           {/* // undo this */}
-          {tabs.length > 1 || true ? (
+          {tabs.length > 0 ? (
             <View style={styles.tabContainer}>
               <ATMTabView
                 tabs={tabs}
@@ -494,12 +494,12 @@ const TestView = ({ route }) => {
             </View>
           ) : (
             <View style={styles.tabContainer}>
-              {tabs.length === 1 && tabs[0]?.content}
+              {/* {tabs.length === 1 && tabs[0]?.content} */}
             </View>
           )}
         </View>
       </View>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

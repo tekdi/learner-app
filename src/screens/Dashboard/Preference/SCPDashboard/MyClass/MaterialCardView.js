@@ -7,7 +7,8 @@ import {
   SolutionEventDetails,
   targetedSolutions,
 } from '../../../../../utils/API/AuthService';
-import { SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
+import SafeAreaWrapper from '../../../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import SecondaryHeader from '../../../../../components/Layout/SecondaryHeader';
 import globalStyles from '../../../../../utils/Helper/Style';
 import { useTranslation } from '../../../../../context/LanguageContext';
@@ -71,7 +72,7 @@ const MaterialCardView = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaWrapper style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader />
       {loading ? (
         <ActiveLoading />
@@ -108,7 +109,7 @@ const MaterialCardView = ({ route }) => {
           )}
         </ScrollView>
       )}
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   Modal,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
   RefreshControl,
 } from 'react-native';
+import SafeAreaWrapper from '../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import globalStyles from '../../../utils/Helper/Style';
 import SecondaryHeader from '../../../components/Layout/SecondaryHeader';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
@@ -81,7 +81,7 @@ const FullAttendance = () => {
   };
 
   return (
-    <SafeAreaView
+    <SafeAreaWrapper
       key={refreshKey}
       style={{ flex: 1, backgroundColor: 'white' }}
     >
@@ -137,7 +137,7 @@ const FullAttendance = () => {
           setNetworkstatus(!networkstatus);
         }}
       />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 
