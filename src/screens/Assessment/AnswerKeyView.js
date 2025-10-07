@@ -5,11 +5,11 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   Dimensions,
   useWindowDimensions,
 } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import Header from '../../components/Layout/Header';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
@@ -18,6 +18,7 @@ import moment from 'moment';
 import { getAssessmentAnswerKey } from '../../utils/API/AuthService';
 import {
   capitalizeFirstLetter,
+  findObjectByIdentifier,
   getDataFromStorage,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
@@ -26,9 +27,15 @@ import RenderHtml from 'react-native-render-html';
 import globalStyles from '../../utils/Helper/Style';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../context/NetworkContext';
+import Config from 'react-native-config';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
+import {
+  hierarchyContent,
+  listQuestion,
+  questionsetRead,
+} from '../../utils/API/ApiCalls';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -39,6 +46,7 @@ const AnswerKeyView = ({ route }) => {
   const { isConnected } = useInternet();
   const { title, contentId } = route.params;
   const { height } = Dimensions.get('window');
+  const questionListUrl = Config.QUESTION_LIST_URL;
 
   const [scoreData, setScoreData] = useState();
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,6 +54,7 @@ const AnswerKeyView = ({ route }) => {
   const [unansweredCount, setUnansweredCount] = useState(0);
   const flatListRef = useRef(null);
   const [networkstatus, setNetworkstatus] = useState(true);
+  const [questionSolutions, setQuestionSolutions] = useState({});
 
   const countEmptyResValues = (data) => {
     return data?.reduce((count, item) => {
@@ -61,35 +70,210 @@ const AnswerKeyView = ({ route }) => {
     return dataArray[dataArray.length - 1];
   };
 
+  // Function to find solutions for questions
+  const findQuestionSolutions = (questions, currentQuestions) => {
+    const solutions = {};
+
+    console.log('Finding solutions for questions:', {
+      questionsCount: questions?.length,
+      currentQuestionsCount: currentQuestions?.length,
+    });
+
+    currentQuestions.forEach((currentQuestion) => {
+      const matchingQuestion = questions.find(
+        (q) => q.identifier === currentQuestion.questionId
+      );
+      console.log('Matching question:', {
+        questionId: currentQuestion.questionId,
+        found: !!matchingQuestion,
+        hasSolutions: !!matchingQuestion?.editorState?.solutions,
+      });
+
+      if (matchingQuestion && matchingQuestion.editorState?.solutions) {
+        solutions[currentQuestion.questionId] =
+          matchingQuestion.editorState.solutions;
+        console.log(
+          'Solution found for question:',
+          currentQuestion.questionId,
+          matchingQuestion.editorState.solutions
+        );
+      }
+    });
+
+    console.log('Final solutions object:', solutions);
+    return solutions;
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchData();
     }, [navigation])
   );
-
-  const fetchData = async () => {
+  const downloadContentQuML = async (content_do_id) => {
+    console.log('downloadContentQuML', content_do_id);
     setLoading(true);
-    const cohort_id = await getDataFromStorage('cohortId');
-    const user_id = await getDataFromStorage('userId');
-    const data = await getAssessmentAnswerKey({
-      user_id,
-      cohort_id,
-      contentId,
-    });
-    handleDownload(data);
-    const OfflineassessmentAnswerKey = JSON.parse(
-      await getDataFromStorage(`assessmentAnswerKey${contentId}`)
-    );
-    if (OfflineassessmentAnswerKey) {
-      const finalData = getLastIndexData(OfflineassessmentAnswerKey);
-      const unanswered = countEmptyResValues(finalData?.score_details);
-      setUnansweredCount(unanswered);
-      setScoreData(finalData);
-      setNetworkstatus(true);
-    } else {
-      setNetworkstatus(false);
+
+    try {
+      // Get data online
+      let content_response = await hierarchyContent(content_do_id);
+      if (content_response == null) {
+        console.log('No content response received');
+        return null;
+      }
+
+      let contentObj = content_response?.result?.questionSet;
+      // Fix for response with questionset
+      if (!contentObj) {
+        contentObj = content_response?.result?.questionset;
+      }
+
+      if (contentObj?.mimeType == 'application/vnd.sunbird.questionset') {
+        // Find outcomeDeclaration
+        let questionsetRead_response = await questionsetRead(content_do_id);
+
+        if (
+          questionsetRead_response != null &&
+          questionsetRead_response?.result?.questionset
+        ) {
+          contentObj.outcomeDeclaration =
+            questionsetRead_response?.result?.questionset?.outcomeDeclaration;
+        }
+      }
+
+      // Get child nodes and questions
+      let childNodes = contentObj?.childNodes;
+      let removeNodes = [];
+
+      if (contentObj?.children) {
+        for (let i = 0; i < contentObj.children.length; i++) {
+          if (contentObj.children[i]?.identifier) {
+            removeNodes.push(contentObj.children[i].identifier);
+          }
+        }
+      }
+
+      let identifiers = childNodes.filter(
+        (item) => !removeNodes.includes(item)
+      );
+
+      let questions = [];
+      const chunks = [];
+      let chunkSize = 10;
+
+      for (let i = 0; i < identifiers.length; i += chunkSize) {
+        chunks.push(identifiers.slice(i, i + chunkSize));
+      }
+
+      console.log('chunks', chunks);
+
+      for (const chunk of chunks) {
+        let response_question = await listQuestion(questionListUrl, chunk);
+        if (response_question?.result?.questions) {
+          for (let i = 0; i < response_question.result.questions.length; i++) {
+            questions.push(response_question.result.questions[i]);
+          }
+        }
+      }
+
+      console.log('questions----------', questions.length);
+      console.log('identifiers', identifiers.length);
+
+      if (questions.length == identifiers.length) {
+        // Add questions in contentObj for offline use
+        let temp_contentObj = contentObj;
+        if (contentObj?.children) {
+          for (let i = 0; i < contentObj.children.length; i++) {
+            if (contentObj.children[i]?.children) {
+              for (
+                let j = 0;
+                j < contentObj.children[i]?.children.length;
+                j++
+              ) {
+                let temp_obj = contentObj.children[i].children[j];
+                if (temp_obj?.identifier) {
+                  const identifierToFind = temp_obj.identifier;
+                  const result_question = findObjectByIdentifier(
+                    questions,
+                    identifierToFind
+                  );
+                  // Replace with question
+                  temp_contentObj.children[i].children[j] = result_question;
+                }
+              }
+            }
+          }
+        }
+
+        contentObj = temp_contentObj;
+
+        // Return question_result
+        let question_result = {
+          questions: questions,
+          count: questions.length,
+        };
+
+        console.log(
+          'question_result:',
+          question_result?.questions?.[0]?.identifier
+        );
+        return question_result;
+      } else {
+        console.log('Questions count mismatch');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error in downloadContentQuML:', error);
+      return null;
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const cohort_id = await getDataFromStorage('cohortId');
+      const user_id = await getDataFromStorage('userId');
+      const data = await getAssessmentAnswerKey({
+        user_id,
+        cohort_id,
+        contentId,
+      });
+      handleDownload(data);
+
+      const OfflineassessmentAnswerKey = JSON.parse(
+        await getDataFromStorage(`assessmentAnswerKey${contentId}`)
+      );
+
+      if (OfflineassessmentAnswerKey) {
+        const finalData = getLastIndexData(OfflineassessmentAnswerKey);
+        const unanswered = countEmptyResValues(finalData?.score_details);
+        setUnansweredCount(unanswered);
+        setScoreData(finalData);
+        setNetworkstatus(true);
+
+        // Get question solutions AFTER setting scoreData
+        try {
+          const result = await downloadContentQuML(contentId);
+          if (result && result.questions) {
+            const solutions = findQuestionSolutions(
+              result.questions,
+              finalData?.score_details || []
+            );
+            setQuestionSolutions(solutions);
+            console.log('Solutions set successfully:', solutions);
+          }
+        } catch (error) {
+          console.error('Error getting question solutions:', error);
+        }
+      } else {
+        setNetworkstatus(false);
+      }
+
+      setLoading(false);
+    } catch (err) {
+      console.error('Error in fetchData:', err);
+      setLoading(false);
+    }
   };
 
   const handleDownload = async (data) => {
@@ -117,7 +301,7 @@ const AnswerKeyView = ({ route }) => {
     startIndex,
     endIndex
   );
-
+  console.log('currentQuestions', currentQuestions);
   const handleNext = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
@@ -133,12 +317,12 @@ const AnswerKeyView = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaWrapper style={{ flex: 1 }}>
       <SecondaryHeader logo />
       {loading ? (
         <ActiveLoading />
       ) : (
-        <SafeAreaView style={globalStyles.container}>
+        <View style={globalStyles.container}>
           <View style={globalStyles.flexrow}>
             <TouchableOpacity
               onPress={() => {
@@ -226,10 +410,80 @@ const AnswerKeyView = ({ route }) => {
                     ]}
                   >
                     {`Ans. `}
-                    {JSON.parse(item?.resValue)?.[0]
-                      ?.label.replace(/<\/?[^>]+(>|$)/g, '')
-                      .replace(/^\d+\.\s*/, '') || 'NA'}
+                    {(() => {
+                      try {
+                        console.log(
+                          'resValue:',
+                          item?.resValue,
+                          'type:',
+                          typeof item?.resValue
+                        );
+
+                        if (!item?.resValue || item.resValue === '[]') {
+                          return 'NA';
+                        }
+
+                        const parsed = JSON.parse(item.resValue);
+                        console.log('Parsed resValue:', parsed);
+
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                          const firstItem = parsed[0];
+                          if (firstItem?.label) {
+                            return firstItem.label
+                              .replace(/<\/?[^>]+(>|$)/g, '')
+                              .replace(/^\d+\.\s*/, '');
+                          }
+                        }
+
+                        return 'NA';
+                      } catch (error) {
+                        console.error(
+                          'Error parsing resValue:',
+                          error,
+                          'resValue:',
+                          item?.resValue
+                        );
+                        return 'NA';
+                      }
+                    })()}
                   </GlobalText>
+
+                  {/* Debug: Log solution data */}
+                  {console.log(
+                    'Debug - questionId:',
+                    item.questionId,
+                    'questionSolutions:',
+                    questionSolutions['do_21438672721553817618'],
+                    'hasSolution:',
+                    !!questionSolutions[item.questionId]
+                  )}
+
+                  {/* Display solution if available */}
+                  {questionSolutions[item.questionId?.toString()] && (
+                    <View style={styles.solutionContainer}>
+                      <View style={styles.solutionRow}>
+                        <GlobalText style={styles.solutionLabel}>
+                          {t('Solution') || 'Solution'}:
+                        </GlobalText>
+                        <RenderHtml
+                          contentWidth={width - 80}
+                          baseStyle={baseStyle}
+                          source={{
+                            html:
+                              questionSolutions[item.questionId][0]?.value ||
+                              '',
+                          }}
+                        />
+                      </View>
+                    </View>
+                  )}
+
+                  {/* Test: Always show some debug info */}
+                  {/* <View style={{ padding: 5, backgroundColor: '#e0e0e0', marginTop: 5 }}>
+                    <GlobalText style={{ fontSize: 12, color: '#666' }}>
+                      Debug: Question ID: {item.questionId} | Has Solution: {questionSolutions[item.questionId] ? 'Yes' : 'No'}
+                    </GlobalText>
+                  </View> */}
                 </View>
               )}
               contentContainerStyle={{ paddingBottom: 20 }}
@@ -269,7 +523,7 @@ const AnswerKeyView = ({ route }) => {
               />
             </TouchableOpacity>
           </View>
-        </SafeAreaView>
+        </View>
       )}
       <NetworkAlert
         onTryAgain={fetchData}
@@ -278,7 +532,7 @@ const AnswerKeyView = ({ route }) => {
           setNetworkstatus(!networkstatus);
         }}
       />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 
@@ -312,6 +566,25 @@ const styles = StyleSheet.create({
     color: 'black',
     marginVertical: 5,
     marginRight: 10,
+  },
+  solutionContainer: {
+    marginTop: 2,
+    padding: 6,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 4,
+    borderLeftWidth: 3,
+    borderLeftColor: '#007bff',
+  },
+  solutionRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
+  },
+  solutionLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#495057',
+    marginBottom: 2,
   },
   navigationContainer: {
     flexDirection: 'row',

@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   BackHandler,
   FlatList,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import SafeAreaWrapper from '../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import TextField from '../../../components/TextField/TextField';
 import {
   courseDetails,
@@ -137,7 +137,7 @@ const UnitList = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaWrapper style={{ flex: 1 }}>
       <SecondaryHeader />
       {loading && <ActivityIndicator style={{ top: 300 }} />}
       <ScrollView>
@@ -209,7 +209,7 @@ const UnitList = ({ route }) => {
           })}
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

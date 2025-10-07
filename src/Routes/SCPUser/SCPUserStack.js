@@ -8,6 +8,10 @@ import TimeTable from '../../screens/Dashboard/Calendar/TimeTable';
 import PreviousClassMaterialFullView from '../../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterialFullView';
 import SubjectDetails from '../../screens/Dashboard/Preference/SCPDashboard/SubjectDetails';
 
+//for deep link
+import CourseContentList from '@src/screens/Dashboard/Courses/CourseContentList';
+import UnitList from '@src/screens/Dashboard/Courses/UnitList';
+
 const Stack = createNativeStackNavigator();
 
 const SCPUserStack = () => {
@@ -46,6 +50,17 @@ const SCPUserStack = () => {
       <Stack.Screen
         name="SubjectDetails"
         component={SubjectDetails}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      {/* //for deep link course */}
+      <Stack.Screen
+        name="CourseContentList"
+        component={CourseContentList}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="UnitList"
+        component={UnitList}
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
     </Stack.Navigator>

@@ -6,7 +6,7 @@ import {
   Text,
   PermissionsAndroid,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import backIcon from '../../assets/images/png/arrow-back-outline.png';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -75,7 +75,7 @@ const RegisterStart = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaWrapper style={styles.container}>
       <View style={{ flex: 1 }}>
         <View
           style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
@@ -116,7 +116,7 @@ const RegisterStart = () => {
         </View>
       </View>
       <NetworkAlert onTryAgain={handleClick} isConnected={isConnected} />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

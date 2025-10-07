@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { SafeAreaView, View } from 'react-native';
+import { View } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import globalStyles from '@src/utils/Helper/Style';
 import GlobalText from '@components/GlobalText/GlobalText';
 import { useTranslation } from '@context/LanguageContext';
@@ -13,7 +14,7 @@ const NoCertificateBox = ({ userType }) => {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={globalStyles.container}>
+    <SafeAreaWrapper style={globalStyles.container}>
       <GlobalText
         numberOfLines={4}
         ellipsizeMode="tail"
@@ -24,16 +25,25 @@ const NoCertificateBox = ({ userType }) => {
       <View style={{ width: 210, marginTop: 10 }}>
         <PrimaryButton
           onPress={() => {
-            userType == 'youthnet'
-              ? navigation.navigate('YouthNetStack')
-              : userType == 'scp'
-                ? navigation.navigate('SCPUserStack')
-                : navigation.navigate('DashboardStack');
+            if (userType == 'youthnet') {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'YouthNetTabScreen' }],
+              });
+            } else if (userType == 'scp') {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'SCPUserTabScreen' }],
+              });
+            } else {
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Dashboard' }],
+              });
+            }
           }}
           text={
-            <SafeAreaView
-              style={{ flexDirection: 'row', alignItems: 'center' }}
-            >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <GlobalText style={[globalStyles.subHeading]}>
                 {t('explore_courses')}
               </GlobalText>
@@ -42,11 +52,11 @@ const NoCertificateBox = ({ userType }) => {
                 style={{ marginHorizontal: 10, color: 'black' }}
                 size={20}
               />
-            </SafeAreaView>
+            </View>
           }
         />
       </View>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

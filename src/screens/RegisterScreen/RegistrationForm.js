@@ -9,7 +9,7 @@ import {
   BackHandler,
   // SafeAreaView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import CustomRadioCard from '@components/CustomRadioCard/CustomRadioCard';
 import RadioButton from '@components/CustomRadioCard/RadioButton';
@@ -22,9 +22,11 @@ import {
   getProgramDetails,
   getStudentForm,
   login,
+  notificationSubscribe,
   registerUser,
   setAcademicYear,
   suggestUsername,
+  telemetryTrackingData,
   verifyOtp,
 } from '@src/utils/API/AuthService';
 import HeaderComponent from '@components/CustomHeaderComponent/customheadercomponent';
@@ -34,6 +36,7 @@ import {
   getActiveCohortData,
   getActiveCohortIds,
   getDataFromStorage,
+  getDeviceId,
   getuserDetails,
   getUserId,
   logEventFunction,
@@ -66,6 +69,9 @@ import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { sendOtp, userExist } from '../../utils/API/AuthService';
 import SuggestUsername from './SuggestUsername';
+import { TENANT_DATA } from '../../utils/Constants/app-constants';
+import moment from 'moment';
+import SwitchAccountDialog from '../../utils/SwitchAccount/SwitchAccount';
 
 const RegistrationForm = ({ fields }) => {
   const { t } = useTranslation();
@@ -106,6 +112,7 @@ const RegistrationForm = ({ fields }) => {
   const { isConnected } = useInternet();
 
   const RegisterLogin = async (loginData) => {
+    setLoading(true);
     const payload = {
       username: loginData?.username,
       password: loginData?.password,
@@ -114,76 +121,167 @@ const RegistrationForm = ({ fields }) => {
     const data = await login(payload);
     await saveRefreshToken(data?.refresh_token || '');
     await saveAccessToken(data?.access_token || '');
-    const user_id = await getUserId();
+
     const userDetails = await getuserDetails();
 
-    const tenantData = userDetails?.tenantData;
-    const tenantid = userDetails?.tenantData?.[0]?.tenantId;
-    await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
+    console.log('#### loginmultirole userDetails', userDetails);
 
-    await setDataInStorage('userId', user_id);
+    setUserDetails(userDetails);
+
+    setSwitchDialogOpen(true);
+    setLoading(false);
+  };
+
+  const [switchDialogOpen, setSwitchDialogOpen] = useState(false);
+  const [userDetails, setUserDetails] = useState(null);
+  const [tenantId, setTenantId] = useState('');
+  const [tenantName, setTenantName] = useState('');
+  const [roleId, setRoleId] = useState('');
+  const [roleName, setRoleName] = useState('');
+
+  const callBackSwitchDialog = async (
+    tenantId,
+    tenantName,
+    roleId,
+    roleName
+  ) => {
+    setLoading(true);
+    setSwitchDialogOpen(false);
+
+    // Set the state values
+    setTenantId(tenantId);
+    setTenantName(tenantName);
+    setRoleId(roleId);
+    setRoleName(roleName);
+
+    const tenantid = tenantId;
+
+    console.log('#### loginmultirole tenantId', tenantId);
+    console.log('#### loginmultirole tenantName', tenantName);
+    console.log('#### loginmultirole roleId', roleId);
+    console.log('#### loginmultirole roleName', roleName);
+
+    console.log('#### loginmultirole userDetails', userDetails);
+
+    const user_id = await getUserId();
+    const tenantData = [
+      userDetails?.tenantData?.find((tenant) => tenant.tenantId === tenantId),
+    ];
+    const enrollmentId = userDetails?.enrollmentId;
+    await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
+    await setDataInStorage('userId', user_id || '');
+    await setDataInStorage('enrollmentId', enrollmentId || '');
+
+    //store dynamic templateId
+    const templateId = tenantData?.[0]?.templateId;
+    await setDataInStorage('templateId', templateId || '');
+
     const academicyear = await setAcademicYear({ tenantid });
     const academicYearId = academicyear?.[0]?.id;
+    await setDataInStorage('academicYearId', academicYearId || '');
+    await setDataInStorage('userTenantid', tenantid || '');
     const cohort = await getCohort({ user_id, tenantid, academicYearId });
-    const getActiveCohort = await getActiveCohortData(cohort?.cohortData);
-    const getActiveCohortId = await getActiveCohortIds(cohort?.cohortData);
-    await setDataInStorage(
-      'academicYearId',
-      JSON.stringify(academicYearId || '')
-    );
-    await setDataInStorage(
-      'cohortData',
-      JSON.stringify(getActiveCohort?.[0] || '')
-    );
-    const cohort_id = getActiveCohortId?.[0];
-    await setDataInStorage(
-      'cohortId',
-      cohort_id || '00000000-0000-0000-0000-000000000000'
-    );
+    let cohort_id;
+    if (cohort.params?.status !== 'failed') {
+      const getActiveCohort = await getActiveCohortData(cohort);
+      const getActiveCohortId = await getActiveCohortIds(cohort);
+      await setDataInStorage(
+        'cohortData',
+        JSON.stringify(getActiveCohort?.[0]) || ''
+      );
+      cohort_id = getActiveCohortId?.[0];
+    }
+
     const profileData = await getProfileDetails({
       userId: user_id,
     });
+
     await setDataInStorage('profileData', JSON.stringify(profileData));
     await setDataInStorage(
       'Username',
-      profileData?.getUserDetails?.[0]?.username
+      profileData?.getUserDetails?.[0]?.username || ''
     );
 
     await storeUsername(profileData?.getUserDetails?.[0]?.username);
 
-    const youthnetTenantIds = programData?.filter(
-      (item) => item.name === 'YouthNet'
-    );
-    const scp = programData?.filter(
-      (item) => item.name === 'Second Chance Program'
+    await setDataInStorage(
+      'cohortId',
+      cohort_id || '00000000-0000-0000-0000-000000000000'
     );
 
-    if (tenantid === scp?.[0]?.tenantId) {
-      await setDataInStorage('userType', 'scp');
-      if (cohort_id) {
-        navigation.navigate('SCPUserTabScreen');
+    // Get tenant details and store contentFilter
+    const tenantDetails = programData || [];
+    const MatchedTenant = tenantDetails.filter(
+      (item) => item?.tenantId === tenantid
+    );
+
+    await setDataInStorage(
+      'contentFilter',
+      JSON.stringify(MatchedTenant?.[0]?.contentFilter || {})
+    );
+
+    const youthnetTenantIds = programData
+      ?.filter((item) => item?.name === TENANT_DATA.YOUTHNET)
+      ?.map((item) => item?.tenantId);
+
+    const scp = programData
+      ?.filter((item) => item.name === 'Second Chance Program')
+      ?.map((item) => item.tenantId);
+
+    const role = roleName;
+    console.log('#### loginmultirole role', role);
+    console.log('#### loginmultirole tenantid', tenantid);
+
+    if (role == 'Learner' || role == 'Student') {
+      if (tenantid === scp?.[0]) {
+        await setDataInStorage('userType', 'scp');
+        if (cohort_id) {
+          navigation.navigate('SCPUserTabScreen');
+        } else {
+          navigation.navigate('Dashboard');
+        }
       } else {
-        navigation.navigate('Dashboard');
+        if (tenantid === youthnetTenantIds?.[0]) {
+          await setDataInStorage('userType', 'youthnet');
+          // navigation.navigate('YouthNetTabScreen');
+          navigation.navigate('Dashboard');
+        } else {
+          await setDataInStorage('userType', tenantData?.[0]?.tenantName);
+          navigation.navigate('Dashboard');
+        }
       }
+      const deviceId = await getDeviceId();
+      const action = 'add';
+
+      await notificationSubscribe({ deviceId, user_id, action });
     } else {
-      if (tenantid === youthnetTenantIds?.[0]?.tenantId) {
-        await setDataInStorage('userType', 'youthnet');
-        // navigation.navigate('YouthNetTabScreen');
-        navigation.navigate('Dashboard');
-      } else {
-        await setDataInStorage('userType', 'public');
-        navigation.navigate('Dashboard');
-      }
+      // Handle invalid role case similar to LoginScreen
+      // For now, we'll just navigate but you might want to handle this differently
     }
-    setModal(false);
+
+    const now = moment();
+    const telemetryPayloadData = {
+      event: 'registration',
+      type: 'click',
+      ets: now.unix(),
+    };
+    await telemetryTrackingData({
+      telemetryPayloadData,
+    });
+
     const obj = {
       eventName: 'logged_in',
       method: 'button-click',
       screenName: 'Registration',
     };
     await logEventFunction(obj);
-    // const deviceId = await getDeviceId();
-    // await notificationSubscribe({ deviceId, user_id });
+
+    setModal(false);
+    setLoading(false);
+  };
+
+  const callBackError = () => {
+    setErr('invalid_username_or_password');
   };
 
   const logRegistrationComplete = async () => {
@@ -356,7 +454,7 @@ const RegistrationForm = ({ fields }) => {
     const getProgramData = async () => {
       const data = await getProgramDetails();
       // const newData = data.filter((item) => item?.name === 'YouthNet');
-      const filtered = data.filter(item => {
+      const filtered = data.filter((item) => {
         const uiConfig = item.params?.uiConfig;
         return uiConfig?.showProgram === true && uiConfig?.showSignup === true;
       });
@@ -444,10 +542,10 @@ const RegistrationForm = ({ fields }) => {
         // Merge new fields into the filtered schema
         const newSchema = [...filteredSchema, ...fields];
         const result = newSchema.filter(
-          (item) => item.label !== "CENTER" && item.label !== "BATCH"
+          (item) => item.label !== 'CENTER' && item.label !== 'BATCH'
         );
-        
-        console.log('newSchema', newSchema)
+
+        console.log('newSchema', newSchema);
         setSchema(result);
 
         // Group fields into pages and update state
@@ -562,7 +660,6 @@ const RegistrationForm = ({ fields }) => {
   };
 
   const renderField = (field) => {
-   
     const age = calculateAge(formData?.dob || '');
     if (
       (field.name === 'guardian_relation' ||
@@ -573,22 +670,31 @@ const RegistrationForm = ({ fields }) => {
     ) {
       return null;
     }
-     const familyType = formData?.family_member_details;
-      if (
-    !familyType &&
-    ['father_name', 'mother_name', 'spouse_name'].includes(field.name)
-  ) {
-    return null;
-  }
-  if (familyType === 'spouse' && (field.name === 'father_name' || field.name === 'mother_name')) {
-    return null;
-  }
-  if (familyType === 'father' && (field.name === 'spouse_name' || field.name === 'mother_name')) {
-    return null;
-  }
-  if (familyType === 'mother' && (field.name === 'father_name' || field.name === 'spouse_name')) {
-    return null;
-  }
+    const familyType = formData?.family_member_details;
+    if (
+      !familyType &&
+      ['father_name', 'mother_name', 'spouse_name'].includes(field.name)
+    ) {
+      return null;
+    }
+    if (
+      familyType === 'spouse' &&
+      (field.name === 'father_name' || field.name === 'mother_name')
+    ) {
+      return null;
+    }
+    if (
+      familyType === 'father' &&
+      (field.name === 'spouse_name' || field.name === 'mother_name')
+    ) {
+      return null;
+    }
+    if (
+      familyType === 'mother' &&
+      (field.name === 'father_name' || field.name === 'spouse_name')
+    ) {
+      return null;
+    }
 
     if (['is_volunteer'].includes(field.name)) {
       return null; // Skip validation for these fields
@@ -877,7 +983,7 @@ const RegistrationForm = ({ fields }) => {
   }, [isOtpModalVisible]);
 
   const startOtpTimer = () => {
-    setCount(60); // Reset counter
+    setCount(120); // Reset counter
     const id = setInterval(() => {
       setCount((prevCount) => {
         if (prevCount <= 1) {
@@ -915,7 +1021,7 @@ const RegistrationForm = ({ fields }) => {
   }
 
   return (
-    <SafeAreaView style={{ padding: 10, flex: 1, paddingTop: 0 }}>
+    <SafeAreaWrapper style={{ padding: 10 }}>
       {currentPage > 0 && (
         <TouchableOpacity style={styles.backbutton} onPress={handlePrevious}>
           <Image
@@ -930,7 +1036,7 @@ const RegistrationForm = ({ fields }) => {
         questionIndex={currentPage + 1}
         totalForms={pages?.length}
       />
-     {currentPage === 3 && (
+      {currentPage === 3 && (
         <>
           <GlobalText style={[globalStyles.text, { marginLeft: 20 }]}>
             {t('location_des')}
@@ -949,7 +1055,7 @@ const RegistrationForm = ({ fields }) => {
           </View>
         </>
       )}
-      <ScrollView 
+      <ScrollView
         ref={scrollViewRef}
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
@@ -1059,7 +1165,11 @@ const RegistrationForm = ({ fields }) => {
         }}
       >
         {currentPage < pages.length - 1 ? (
-          <PrimaryButton text={t('continue')} isDisabled={currentPage===0 && !formData?.mobile } onPress={handleNext} />
+          <PrimaryButton
+            text={t('continue')}
+            isDisabled={currentPage === 0 && !formData?.mobile}
+            onPress={handleNext}
+          />
         ) : (
           <PrimaryButton
             isDisabled={
@@ -1390,7 +1500,14 @@ const RegistrationForm = ({ fields }) => {
           </TouchableOpacity>
         </Modal>
       )}
-    </SafeAreaView>
+      <SwitchAccountDialog
+        visible={switchDialogOpen}
+        onClose={() => setSwitchDialogOpen(false)}
+        callbackFunction={callBackSwitchDialog}
+        authResponse={userDetails?.tenantData}
+        callBackError={callBackError}
+      />
+    </SafeAreaWrapper>
   );
 };
 

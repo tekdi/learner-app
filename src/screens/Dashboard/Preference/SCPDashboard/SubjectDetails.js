@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import SecondaryHeader from '../../../../components/Layout/SecondaryHeader';
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import SafeAreaWrapper from '../../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import globalStyles from '../../../../utils/Helper/Style';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -223,7 +223,7 @@ const SubjectDetails = ({ route }) => {
   );
 
   return (
-    <SafeAreaView style={{ backgroundColor: 'white', flex: 1 }}>
+    <SafeAreaWrapper style={{ backgroundColor: 'white', flex: 1 }}>
       <SecondaryHeader logo />
       <View style={styles.leftContainer}>
         <TouchableOpacity
@@ -268,7 +268,7 @@ const SubjectDetails = ({ route }) => {
           title={'post_requisites_2'}
         />
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 
