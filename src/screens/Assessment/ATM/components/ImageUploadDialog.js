@@ -288,7 +288,7 @@ const ImageUploadDialog = ({
               <GlobalText style={styles.formatInfo}>
                 {t('Format: jpg, size: 50 MB')}
                 {'\n'}
-                {t('Up to 4 images')}
+                {t('Up to 20 images')}
               </GlobalText>
 
               {/* Expandable Instructions */}
@@ -335,6 +335,12 @@ const ImageUploadDialog = ({
                   ]}
                 >
                   <View style={styles.instructionsList}>
+                    <View style={styles.instructionItem}>
+                      <Icon name="check-circle" size={16} color="#4CAF50" />
+                      <GlobalText style={styles.instructionText}>
+                        {t('Re-verify the image after selection. Once submitted for evaluation, it cannot be resubmitted.')}
+                      </GlobalText>
+                    </View>
                     <View style={styles.instructionItem}>
                       <Icon name="check-circle" size={16} color="#4CAF50" />
                       <GlobalText style={styles.instructionText}>
@@ -393,11 +399,11 @@ const ImageUploadDialog = ({
               )}
 
               {/* Warning for too many images */}
-              {selectedImages.length > 4 && (
+              {selectedImages.length > 20 && (
                 <View style={styles.warningContainer}>
                   <GlobalText style={styles.warningText}>
                     {t('You have selected')} {selectedImages.length}{' '}
-                    {t('images')}. {t('We recommend uploading up to 4 images')}.
+                    {t('images')}. {t('We recommend uploading up to 20 images')}.
                   </GlobalText>
                 </View>
               )}

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import SafeAreaWrapper from '../../../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import SecondaryHeader from '../../../../../components/Layout/SecondaryHeader';
 import { useTranslation } from '../../../../../context/LanguageContext';
 import globalStyles from '../../../../../utils/Helper/Style';
@@ -62,7 +62,7 @@ const MyClassDashboard = () => {
   };
 
   return (
-    <SafeAreaView key={refreshKey} style={{ backgroundColor: 'white' }}>
+    <SafeAreaWrapper key={refreshKey} style={{ backgroundColor: 'white' }}>
       <SecondaryHeader logo />
 
       <View style={{ padding: 0 }}>
@@ -80,7 +80,7 @@ const MyClassDashboard = () => {
           // activeTextStyle={{ color: 'black', fontWeight: 'bold' }}
         />
       </View>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

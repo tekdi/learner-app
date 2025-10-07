@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import { useTranslation } from '../../context/LanguageContext';
 import Header from '../../components/Layout/Header';
 import TestBox from '../../components/TestBox.js/TestBox';
@@ -86,7 +87,13 @@ const Assessment = ({ header, background }) => {
         ];
 
         // Sort uniqueAssessments according to specified order: Pre Test, Post Test, Other
-        const assessmentOrder = ['Pre Test', 'Post Test', 'Other', 'Mock Test', 'Unit Test' ];
+        const assessmentOrder = [
+          'Pre Test',
+          'Post Test',
+          'Other',
+          'Mock Test',
+          'Unit Test',
+        ];
         const sortedUniqueAssessments = uniqueAssessments.sort((a, b) => {
           const indexA = assessmentOrder.indexOf(a);
           const indexB = assessmentOrder.indexOf(b);
@@ -164,7 +171,7 @@ const Assessment = ({ header, background }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaWrapper style={{ flex: 1, backgroundColor: 'white' }}>
       {!header && <SecondaryHeader logo />}
       {loading ? (
         <ActiveLoading />
@@ -201,7 +208,7 @@ const Assessment = ({ header, background }) => {
           setNetworkstatus(!networkstatus);
         }}
       />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

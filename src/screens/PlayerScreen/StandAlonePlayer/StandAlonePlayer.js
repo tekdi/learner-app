@@ -8,14 +8,16 @@ import {
   ActivityIndicator,
   Alert,
   StatusBar,
-  SafeAreaView,
   I18nManager,
+  Dimensions,
 } from 'react-native';
+import SafeAreaWrapper from '../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import { PermissionsAndroid } from 'react-native';
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { BackHandler } from 'react-native';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { WebView } from 'react-native-webview';
 import { Platform } from 'react-native';
@@ -73,11 +75,56 @@ const StandAlonePlayer = ({ route }) => {
   //for rtl
   const isRTL = I18nManager.isRTL;
 
+  // Get safe area insets for better Android 15 compatibility
+  const insets = useSafeAreaInsets();
+
+  // Get screen dimensions for Android 15 compatibility
+  const screenData = Dimensions.get('screen');
+  const windowData = Dimensions.get('window');
+  const statusBarHeight = StatusBar.currentHeight || 0;
+  const navigationBarHeight = Math.max(
+    0,
+    screenData.height - windowData.height - statusBarHeight
+  );
+
+  // Use safe area insets if available, otherwise fallback to calculated values
+  const topPadding =
+    Platform.OS === 'android'
+      ? insets.top > 0
+        ? insets.top
+        : statusBarHeight
+      : 0;
+  const bottomPadding =
+    Platform.OS === 'android'
+      ? insets.bottom > 0
+        ? insets.bottom
+        : Math.max(navigationBarHeight, 24)
+      : 0;
+
+  // Handle landscape orientation with side navigation buttons
+  const leftPadding = Platform.OS === 'android' ? insets.left : 0;
+  const rightPadding = Platform.OS === 'android' ? insets.right : 0;
+
+  // Additional padding for landscape orientation to ensure content doesn't go behind side navigation
+  const isLandscape = orientation === 'landscape';
+  const landscapeLeftPadding =
+    isLandscape && Platform.OS === 'android'
+      ? Math.max(leftPadding, 8)
+      : leftPadding;
+  const landscapeRightPadding =
+    isLandscape && Platform.OS === 'android'
+      ? Math.max(rightPadding, 8)
+      : rightPadding;
+
   // console.log('############### isRTL', isRTL);
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      //paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0, // Removes top padding for Android
+      backgroundColor: '#ffffff',
+      paddingTop: topPadding,
+      paddingBottom: bottomPadding,
+      paddingLeft: landscapeLeftPadding,
+      paddingRight: landscapeRightPadding,
     },
     webview: {
       flex: 1,
@@ -175,6 +222,16 @@ const StandAlonePlayer = ({ route }) => {
       Orientation.lockToLandscape();
     }
 
+    // Add orientation change listener for dynamic padding adjustment
+    const orientationListener = Dimensions.addEventListener(
+      'change',
+      ({ screen }) => {
+        const newOrientation =
+          screen.width > screen.height ? 'landscape' : 'portrait';
+        setOrientation(newOrientation);
+      }
+    );
+
     const fetchData = async () => {
       let tempUserId = await getDataFromStorage('userId');
       let tempUserName = await getDataFromStorage('Username');
@@ -217,6 +274,7 @@ const StandAlonePlayer = ({ route }) => {
     // Unlock orientation when component is unmounted
     return () => {
       Orientation.lockToPortrait();
+      orientationListener?.remove();
     };
   }, []);
 
@@ -260,6 +318,9 @@ const StandAlonePlayer = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [alertModal, setAlertModal] = useState(false);
   const [errorDetail, setErrorDetail] = useState('unsupported_content');
+  const [orientation, setOrientation] = useState(
+    screenData.width > screenData.height ? 'landscape' : 'portrait'
+  );
   const content_file = `${RNFS.DocumentDirectoryPath}/${content_do_id}`;
   const streamingPath =
     content_mime_type == 'application/vnd.ekstep.ecml-archive'
@@ -1265,7 +1326,7 @@ const StandAlonePlayer = ({ route }) => {
     } catch (error) {
       console.log('error', error);
     }
-    
+
     let userId = await getDataFromStorage('userId');
     let courseId = await getData('courseId', '');
     let unitId = await getData('unitId', '');
@@ -1319,29 +1380,43 @@ const StandAlonePlayer = ({ route }) => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.middle_screen}>
-          <ActivityIndicator size="large" color="#0000ff" />
-          {progress > 0 && progress < 100 ? (
-            <GlobalText
-              style={{ color: '#000000' }}
-            >{`Loading: ${progress.toFixed(2)}%`}</GlobalText>
-          ) : loading_text != '' ? (
-            <GlobalText style={{ color: '#000000' }}>{loading_text}</GlobalText>
-          ) : (
-            <></>
-          )}
+      <>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor="#ffffff"
+          translucent={false}
+          hidden={false}
+        />
+        <View style={styles.container}>
+          <View style={styles.middle_screen}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            {progress > 0 && progress < 100 ? (
+              <GlobalText
+                style={{ color: '#000000' }}
+              >{`Loading: ${progress.toFixed(2)}%`}</GlobalText>
+            ) : loading_text != '' ? (
+              <GlobalText style={{ color: '#000000' }}>
+                {loading_text}
+              </GlobalText>
+            ) : (
+              <></>
+            )}
+          </View>
         </View>
-      </SafeAreaView>
+      </>
     );
   }
 
   return (
     <>
-      {/* Hides the status bar */}
-      <StatusBar hidden={true} />
-      <SafeAreaView style={styles.container}>
-        {/* <StatusBar barStyle="dark-content" /> */}
+      {/* Configure status bar for Android 15 compatibility */}
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#ffffff"
+        translucent={false}
+        hidden={false}
+      />
+      <View style={styles.container}>
         {is_valid_file == false ? (
           <View style={styles.middle_screen}>
             <GlobalText>Invalid Player File</GlobalText>
@@ -1408,7 +1483,7 @@ const StandAlonePlayer = ({ route }) => {
         )}
         <TestResultModal modal={modal} title={title} />
         {alertModal && <MimeAlertModal textTitle={errorDetail} />}
-      </SafeAreaView>
+      </View>
     </>
   );
 };

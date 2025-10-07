@@ -5,7 +5,6 @@ import {
   Text,
   FlatList,
   StyleSheet,
-  SafeAreaView,
   TouchableOpacity,
   Dimensions,
   useWindowDimensions,
@@ -16,6 +15,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
+import SafeAreaWrapper from '../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../../context/LanguageContext';
@@ -604,12 +604,12 @@ const ATMAssessment = ({ route }) => {
   });
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaWrapper style={{ flex: 1 }}>
       <SecondaryHeader logo />
       {loading ? (
         <ActiveLoading />
       ) : (
-        <SafeAreaView style={[globalStyles.container, { flex: 1 }]}>
+        <View style={[globalStyles.container, { flex: 1 }]}>
           <View style={globalStyles.flexrow}>
             <TouchableOpacity
               onPress={() => {
@@ -992,7 +992,7 @@ const ATMAssessment = ({ route }) => {
             iconColor={alertConfig.iconColor}
             showCloseButton={alertConfig.showCloseButton}
           />
-        </SafeAreaView>
+        </View>
       )}
       <NetworkAlert
         onTryAgain={fetchData}
@@ -1001,7 +1001,7 @@ const ATMAssessment = ({ route }) => {
           setNetworkstatus(!networkstatus);
         }}
       />
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

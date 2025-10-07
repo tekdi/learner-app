@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native';
+import SafeAreaWrapper from '../../../../../components/SafeAreaWrapper/SafeAreaWrapper';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import globalStyles from '../../../../../utils/Helper/Style';
 
@@ -8,7 +8,7 @@ import GlobalText from '@components/GlobalText/GlobalText';
 
 const SessionRecordingCard = () => {
   return (
-    <SafeAreaView>
+    <SafeAreaWrapper>
       <View style={styles.view}>
         <GlobalText
           style={[globalStyles.subHeading, { color: '#7C766F' }, styles.margin]}
@@ -34,7 +34,7 @@ const SessionRecordingCard = () => {
           </GlobalText>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

@@ -8,7 +8,7 @@ import {
   Image,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import { Layout } from '@ui-kitten/components';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import Logo from '../../assets/images/png/logo.png';
@@ -297,7 +297,7 @@ const LanguageScreen = () => {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaWrapper style={styles.safeArea}>
       <AppUpdatePopup />
       <StatusBar barStyle="dark-content" backgroundColor="transparent" />
       <Layout style={styles.container}>
@@ -357,8 +357,7 @@ const LanguageScreen = () => {
           </View>
         </View>
       </Layout>
-
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

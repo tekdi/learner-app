@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { SafeAreaView, View } from 'react-native';
+import { View } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import globalStyles from '@src/utils/Helper/Style';
 import GlobalText from '@components/GlobalText/GlobalText';
 import { useTranslation } from '@context/LanguageContext';
@@ -13,7 +14,7 @@ const NoCertificateBox = ({ userType }) => {
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={globalStyles.container}>
+    <SafeAreaWrapper style={globalStyles.container}>
       <GlobalText
         numberOfLines={4}
         ellipsizeMode="tail"
@@ -22,7 +23,7 @@ const NoCertificateBox = ({ userType }) => {
         {t('you_havent_completed_any_courses_yet')}
       </GlobalText>
       <View style={{ width: 210, marginTop: 10 }}>
-      <PrimaryButton
+        <PrimaryButton
           onPress={() => {
             if (userType == 'youthnet') {
               navigation.reset({
@@ -41,11 +42,8 @@ const NoCertificateBox = ({ userType }) => {
               });
             }
           }}
-          
           text={
-            <SafeAreaView
-              style={{ flexDirection: 'row', alignItems: 'center' }}
-            >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <GlobalText style={[globalStyles.subHeading]}>
                 {t('explore_courses')}
               </GlobalText>
@@ -54,11 +52,11 @@ const NoCertificateBox = ({ userType }) => {
                 style={{ marginHorizontal: 10, color: 'black' }}
                 size={20}
               />
-            </SafeAreaView>
+            </View>
           }
         />
       </View>
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 
