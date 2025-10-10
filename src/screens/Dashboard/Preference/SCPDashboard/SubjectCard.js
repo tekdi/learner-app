@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,21 +15,60 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from '../../../../context/LanguageContext';
-import { formatDateTimeRange } from '../../../../utils/JsHelper/Helper';
+import { formatDateTimeRange, getDataFromStorage } from '../../../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
 import menu_book from '../../../../assets/images/png/menu_book.png';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import ZoomMeeting from '../../../../components/ZoomMeeting/ZoomMeeting';
+import { parseZoomLink } from '../../../../utils/Helper/ZoomHelper';
 
 const SubjectCard = ({ item }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showZoomMeeting, setShowZoomMeeting] = useState(false);
+  const [storedUsername, setStoredUsername] = useState('');
+  const [meetingDetails, setMeetingDetails] = useState(null);
   const { t } = useTranslation();
   const navigation = useNavigation();
+
+  // Load stored username on component mount
+  useEffect(() => {
+    const loadUsername = async () => {
+      try {
+        const username = await getDataFromStorage('Username');
+        if (username) {
+          setStoredUsername(username);
+        }
+      } catch (error) {
+        console.error('Error loading username:', error);
+      }
+    };
+    loadUsername();
+  }, []);
 
   const handleCopyLink = (zoomLink) => {
     Clipboard.setString(zoomLink); // Copy the Zoom link to the clipboard
     setShowToast(true); // Show toast message
+  };
+
+  const handleJoinZoomMeeting = (zoomLink) => {
+    try {
+      const parsed = parseZoomLink(zoomLink);
+      if (parsed.isValid) {
+        setMeetingDetails(parsed);
+        setShowZoomMeeting(true);
+        console.log('✅ Joining Zoom meeting:', parsed.meetingNumber);
+      } else {
+        console.error('❌ Invalid Zoom link:', parsed.error);
+        // Fallback to opening in browser/external app
+        Linking.openURL(zoomLink);
+      }
+    } catch (error) {
+      console.error('Error parsing Zoom link:', error);
+      // Fallback to opening in browser/external app
+      Linking.openURL(zoomLink);
+    }
   };
 
   return (
@@ -67,7 +106,7 @@ const SubjectCard = ({ item }) => {
           {item?.onlineDetails && (
             <>
               <TouchableOpacity
-                onPress={() => Linking.openURL(item?.onlineDetails?.url)}
+                onPress={() => handleJoinZoomMeeting(item?.onlineDetails?.url)}
               >
                 <GlobalText style={styles.zoomLink}>
                   {item?.onlineDetails?.url}
@@ -177,6 +216,31 @@ const SubjectCard = ({ item }) => {
           </View>
         )}
       </View>
+
+      {/* Zoom Meeting Component - Opens in-app when user clicks on Zoom link */}
+      {showZoomMeeting && meetingDetails && (
+        <ZoomMeeting
+          meetingNumber={meetingDetails.meetingNumber}
+          password={meetingDetails.password}
+          displayName={storedUsername || 'Student'}
+          autoJoin={true} // Automatically join the meeting
+          onMeetingJoined={() => {
+            console.log('Zoom meeting joined successfully from SubjectCard');
+            // Hide the component after a short delay for smooth transition
+            setTimeout(() => {
+              setShowZoomMeeting(false);
+            }, 2000);
+          }}
+          onMeetingEnd={() => {
+            console.log('User left Zoom meeting from SubjectCard');
+            setShowZoomMeeting(false);
+          }}
+          onMeetingError={(error) => {
+            console.error('Zoom meeting error from SubjectCard:', error);
+            // Keep showing the component so user can retry
+          }}
+        />
+      )}
     </Layout>
   );
 };
