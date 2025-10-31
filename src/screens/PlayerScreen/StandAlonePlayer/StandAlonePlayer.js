@@ -477,10 +477,13 @@ const StandAlonePlayer = ({ route }) => {
           let identifierWithoutImg = jsonObj.identifierWithoutImg;
           let maxScore = jsonObj.maxScore;
           let seconds = jsonObj.seconds;
-          // console.log('scoreDetails', scoreDetails);
+          console.log(
+            '####### debug timespent scoreDetails',
+            JSON.stringify(scoreDetails)
+          );
           console.log('identifierWithoutImg', identifierWithoutImg);
-          // console.log('maxScore', maxScore);
-          // console.log('seconds', seconds);
+          console.log('####### debug timespent maxScore', maxScore);
+          console.log('####### debug timespent seconds', seconds);
           // let userId = 'fb6b2e58-0f14-4d4f-90e4-bae092e7a951';
           let lastAttemptedOn = new Date().toISOString();
 
