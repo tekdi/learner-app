@@ -68,6 +68,9 @@ import { useTranslation } from '../../../context/LanguageContext';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 
+//youtube player changes
+import YoutubePlayer from 'react-native-youtube-iframe';
+
 const StandAlonePlayer = ({ route }) => {
   //multi language setup
   const { t, language } = useTranslation();
@@ -668,7 +671,10 @@ const StandAlonePlayer = ({ route }) => {
             host: `file://${content_file}`,
             contentId: content_do_id,
           };
-          console.log('contentPlayerConfig set', contentPlayerConfig);
+          console.log(
+            'contentPlayerConfig set json',
+            JSON.stringify(contentPlayerConfig)
+          );
           set_is_valid_file(true);
         } catch (e) {
           set_is_valid_file(false);
@@ -1444,6 +1450,193 @@ const StandAlonePlayer = ({ route }) => {
               }}
             />
           </View>
+        ) : content_mime_type == 'video/x-youtube' ? (
+          (() => {
+            // Utility function to extract YouTube video ID from various URL types
+            function extractYouTubeVideoId(url) {
+              if (!url) return null;
+              // Remove surrounding spaces
+              url = url.trim();
+              // Patterns to match various YouTube share URL formats
+              // Return the first match group that's not undefined
+              // Examples:
+              //  - https://youtu.be/<id>
+              //  - https://youtube.com/watch?v=<id>
+              //  - https://www.youtube.com/embed/<id>
+              //  - https://www.youtube.com/watch?v=<id>&feature=share
+              //  - https://m.youtube.com/v/<id>
+              //  - https://music.youtube.com/watch?v=<id>
+              const patterns = [
+                /youtu\.be\/([a-zA-Z0-9_-]{11})/, // youtu.be/<id>
+                /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/, // .../embed/<id>
+                /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/, // .../v/<id>
+                /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/, // .../shorts/<id>
+                /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/, // .../watch?v=<id>
+                /youtube\.com\/watch\?.*&v=([a-zA-Z0-9_-]{11})/, // .../watch?...&v=<id>
+                /youtube\.com\/.*[?&]v=([a-zA-Z0-9_-]{11})/, // ...?[any]&v=<id>
+              ];
+              for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                  return match[1];
+                }
+              }
+              // If all patterns fail, try generic: get v param out
+              try {
+                const urlObj = new URL(url);
+                if (
+                  urlObj.hostname.endsWith('youtube.com') ||
+                  urlObj.hostname.endsWith('youtu.be')
+                ) {
+                  if (urlObj.searchParams.has('v')) {
+                    const v = urlObj.searchParams.get('v');
+                    // Validate length (YouTube IDs are 11 characters)
+                    if (v && v.length === 11) return v;
+                  }
+                }
+              } catch (e) {
+                // Ignore parse error
+              }
+              return null;
+            }
+
+            const artifactUrl = contentPlayerConfig?.metadata?.artifactUrl;
+            const youTubeId = extractYouTubeVideoId(artifactUrl);
+
+            // Calculate available dimensions accounting for safe area padding
+            const availableHeight =
+              screenData.height - topPadding - bottomPadding;
+            const availableWidth =
+              windowData.width - landscapeLeftPadding - landscapeRightPadding;
+
+            // YouTube player event handlers
+            const handleYouTubeStateChange = async (state) => {
+              console.log('YouTube Player State:', state);
+
+              // Track START event when video starts playing
+              if (state === 'playing') {
+                console.log('YouTube video started playing');
+                contentEidSTART = [
+                  {
+                    eid: 'START',
+                    edata: {
+                      duration: 0,
+                      mode: 'play',
+                      pageid: 'sunbird-player-Startpage',
+                      summary: [],
+                      type: 'content',
+                    },
+                  },
+                ];
+                await storeData('contentEidSTART', contentEidSTART, 'json');
+              }
+
+              // Track END event when video ends
+              if (state === 'ended') {
+                console.log('YouTube video ended');
+                contentEidEND = [
+                  {
+                    eid: 'END',
+                    edata: {
+                      duration: 0,
+                      mode: 'play',
+                      pageid: 'sunbird-player-Endpage',
+                      summary: [
+                        {
+                          progress: 100,
+                        },
+                        {
+                          totallength: '',
+                        },
+                        {
+                          visitedlength: '',
+                        },
+                        {
+                          visitedcontentend: '',
+                        },
+                        {
+                          totalseekedlength: '',
+                        },
+                        {
+                          endpageseen: false,
+                        },
+                      ],
+                      type: 'content',
+                    },
+                  },
+                ];
+                await storeData('contentEidEND', contentEidEND, 'json');
+                // Optionally navigate back or handle video end
+
+                // Exit fullscreen when video ends
+                // Orientation.lockToPortrait();
+
+                // Add a small delay to ensure fullscreen exits before navigation
+                setTimeout(() => {
+                  // Lock to portrait and navigate back
+                  // Orientation.lockToPortrait();
+                  // fetchExitData();
+                  // navigation.goBack();
+                }, 500);
+              }
+            };
+
+            const handleYouTubeReady = () => {
+              console.log('YouTube player is ready');
+            };
+
+            const handleYouTubeError = (error) => {
+              console.log('YouTube player error:', error);
+            };
+
+            return (
+              <View
+                style={{
+                  width: availableWidth,
+                  height: availableHeight,
+                  overflow: 'hidden',
+                }}
+              >
+                <YoutubePlayer
+                  height={availableHeight}
+                  width={availableWidth}
+                  play={true}
+                  videoId={youTubeId}
+                  onChangeState={handleYouTubeStateChange}
+                  onReady={handleYouTubeReady}
+                  onError={handleYouTubeError}
+                  webViewProps={{
+                    scrollEnabled: false,
+                    showsVerticalScrollIndicator: false,
+                    showsHorizontalScrollIndicator: false,
+                    bounces: false,
+                    injectedJavaScript: `
+                      document.body.style.overflow = 'hidden';
+                      document.documentElement.style.overflow = 'hidden';
+                      const player = document.querySelector('iframe');
+                      if (player) {
+                        player.style.position = 'absolute';
+                        player.style.top = '0';
+                        player.style.left = '0';
+                        player.style.width = '100%';
+                        player.style.height = '100vh';
+                      }
+                      true;
+                    `,
+                    style: {
+                      backgroundColor: 'black',
+                    },
+                  }}
+                  initialPlayerParams={{
+                    modestbranding: 1,
+                    rel: 0,
+                    controls: 1,
+                    playsinline: 1,
+                  }}
+                />
+              </View>
+            );
+          })()
         ) : (
           <WebView
             ref={webviewRef}
@@ -1453,7 +1646,9 @@ const StandAlonePlayer = ({ route }) => {
             }
             style={styles.webview}
             userAgent={
-              lib_folder == 'sunbird-content-player'
+              content_mime_type == 'video/x-youtube'
+                ? undefined
+                : lib_folder == 'sunbird-content-player'
                 ? desktopUserAgent
                 : undefined
             }
@@ -1474,6 +1669,7 @@ const StandAlonePlayer = ({ route }) => {
               console.warn('WebView error: ', nativeEvent);
             }}
             onNavigationStateChange={handleNavigationStateChange}
+            allowsInlineMediaPlayback={true}
             /*
             //for rtl
             style={[
