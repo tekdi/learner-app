@@ -55,6 +55,7 @@ const AnswerKeyView = ({ route }) => {
   const flatListRef = useRef(null);
   const [networkstatus, setNetworkstatus] = useState(true);
   const [questionSolutions, setQuestionSolutions] = useState({});
+  console.log('questionSolutions=====>', questionSolutions);
 
   const countEmptyResValues = (data) => {
     return data?.reduce((count, item) => {
@@ -430,8 +431,18 @@ const AnswerKeyView = ({ route }) => {
                           const firstItem = parsed[0];
                           if (firstItem?.label) {
                             return firstItem.label
-                              .replace(/<\/?[^>]+(>|$)/g, '')
-                              .replace(/^\d+\.\s*/, '');
+                              .replace(/<\/?[^>]+(>|$)/g, '') // Remove HTML tags
+                              .replace(/&nbsp;/g, ' ') // Replace &nbsp; with regular space
+                              .replace(/&amp;/g, '&') // Replace &amp; with &
+                              .replace(/&lt;/g, '<') // Replace &lt; with <
+                              .replace(/&gt;/g, '>') // Replace &gt; with >
+                              .replace(/&quot;/g, '"') // Replace &quot; with "
+                              .replace(/^\d+\.\s*/, '') // Remove numbered prefixes like "1. "
+                              .replace(/^\([क-ह]\)\s*/, '') // Remove Devanagari option prefixes like "(क) "
+                              .replace(/^\([a-z]\)\s*/, '') // Remove English option prefixes like "(a) "
+                              .replace(/^\([A-Z]\)\s*/, '') // Remove uppercase English option prefixes like "(A) "
+                              .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+                              .trim(); // Remove leading and trailing whitespace
                           }
                         }
 
