@@ -254,7 +254,7 @@ const SCPDashboard = (props) => {
             <GlobalText
               style={[globalStyles.subHeading, { fontWeight: 'bold' }]}
             >
-              {t('previous_class_materials')} {t('post_requisites')}
+              {t('homework_and_practice')} 
             </GlobalText>
             <GlobalText
               style={globalStyles.subHeading}
