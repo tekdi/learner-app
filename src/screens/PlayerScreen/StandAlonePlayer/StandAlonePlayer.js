@@ -142,6 +142,35 @@ const StandAlonePlayer = ({ route }) => {
       left: 0,
       right: 0,
     },
+    completionText: {
+      fontSize: 24,
+      fontFamily: 'Poppins-Medium',
+      color: '#1F1B13',
+      fontWeight: '600',
+      marginBottom: 30,
+      textAlign: 'center',
+    },
+    exitButton: {
+      backgroundColor: '#FDBE16',
+      borderRadius: 30,
+      height: 60,
+      width: '70%',
+      maxWidth: 300,
+      justifyContent: 'center',
+      alignItems: 'center',
+      elevation: 4,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+    },
+    exitButtonText: {
+      fontSize: 18,
+      fontFamily: 'Roboto-Black',
+      color: '#1F1B13',
+      fontWeight: '700',
+      textAlign: 'center',
+    },
   });
 
   console.log('route', route);
@@ -209,6 +238,9 @@ const StandAlonePlayer = ({ route }) => {
   let contentEidSTART = [];
   let contentEidINTERACT = [];
   let contentEidEND = [];
+
+  //youtube player end screen tracking
+  const [youtubePlayerEndScreen, setYoutubePlayerEndScreen] = useState(false);
 
   useEffect(() => {
     // Lock the screen to landscape mode
@@ -1451,166 +1483,187 @@ const StandAlonePlayer = ({ route }) => {
             />
           </View>
         ) : content_mime_type == 'video/x-youtube' ? (
-          (() => {
-            // Utility function to extract YouTube video ID from various URL types
-            function extractYouTubeVideoId(url) {
-              if (!url) return null;
-              // Remove surrounding spaces
-              url = url.trim();
-              // Patterns to match various YouTube share URL formats
-              // Return the first match group that's not undefined
-              // Examples:
-              //  - https://youtu.be/<id>
-              //  - https://youtube.com/watch?v=<id>
-              //  - https://www.youtube.com/embed/<id>
-              //  - https://www.youtube.com/watch?v=<id>&feature=share
-              //  - https://m.youtube.com/v/<id>
-              //  - https://music.youtube.com/watch?v=<id>
-              const patterns = [
-                /youtu\.be\/([a-zA-Z0-9_-]{11})/, // youtu.be/<id>
-                /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/, // .../embed/<id>
-                /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/, // .../v/<id>
-                /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/, // .../shorts/<id>
-                /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/, // .../watch?v=<id>
-                /youtube\.com\/watch\?.*&v=([a-zA-Z0-9_-]{11})/, // .../watch?...&v=<id>
-                /youtube\.com\/.*[?&]v=([a-zA-Z0-9_-]{11})/, // ...?[any]&v=<id>
-              ];
-              for (const pattern of patterns) {
-                const match = url.match(pattern);
-                if (match && match[1]) {
-                  return match[1];
-                }
-              }
-              // If all patterns fail, try generic: get v param out
-              try {
-                const urlObj = new URL(url);
-                if (
-                  urlObj.hostname.endsWith('youtube.com') ||
-                  urlObj.hostname.endsWith('youtu.be')
-                ) {
-                  if (urlObj.searchParams.has('v')) {
-                    const v = urlObj.searchParams.get('v');
-                    // Validate length (YouTube IDs are 11 characters)
-                    if (v && v.length === 11) return v;
+          youtubePlayerEndScreen === true ? (
+            <View style={styles.middle_screen}>
+              <GlobalText style={styles.completionText}>
+                You Completed the Video
+              </GlobalText>
+              <TouchableOpacity
+                style={styles.exitButton}
+                onPress={() => {
+                  Orientation.lockToPortrait();
+                  fetchExitData();
+                  navigation.goBack();
+                }}
+                activeOpacity={0.8}
+              >
+                <GlobalText style={styles.exitButtonText}>
+                  Exit Player
+                </GlobalText>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            (() => {
+              // Utility function to extract YouTube video ID from various URL types
+              function extractYouTubeVideoId(url) {
+                if (!url) return null;
+                // Remove surrounding spaces
+                url = url.trim();
+                // Patterns to match various YouTube share URL formats
+                // Return the first match group that's not undefined
+                // Examples:
+                //  - https://youtu.be/<id>
+                //  - https://youtube.com/watch?v=<id>
+                //  - https://www.youtube.com/embed/<id>
+                //  - https://www.youtube.com/watch?v=<id>&feature=share
+                //  - https://m.youtube.com/v/<id>
+                //  - https://music.youtube.com/watch?v=<id>
+                const patterns = [
+                  /youtu\.be\/([a-zA-Z0-9_-]{11})/, // youtu.be/<id>
+                  /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/, // .../embed/<id>
+                  /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/, // .../v/<id>
+                  /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/, // .../shorts/<id>
+                  /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/, // .../watch?v=<id>
+                  /youtube\.com\/watch\?.*&v=([a-zA-Z0-9_-]{11})/, // .../watch?...&v=<id>
+                  /youtube\.com\/.*[?&]v=([a-zA-Z0-9_-]{11})/, // ...?[any]&v=<id>
+                ];
+                for (const pattern of patterns) {
+                  const match = url.match(pattern);
+                  if (match && match[1]) {
+                    return match[1];
                   }
                 }
-              } catch (e) {
-                // Ignore parse error
+                // If all patterns fail, try generic: get v param out
+                try {
+                  const urlObj = new URL(url);
+                  if (
+                    urlObj.hostname.endsWith('youtube.com') ||
+                    urlObj.hostname.endsWith('youtu.be')
+                  ) {
+                    if (urlObj.searchParams.has('v')) {
+                      const v = urlObj.searchParams.get('v');
+                      // Validate length (YouTube IDs are 11 characters)
+                      if (v && v.length === 11) return v;
+                    }
+                  }
+                } catch (e) {
+                  // Ignore parse error
+                }
+                return null;
               }
-              return null;
-            }
 
-            const artifactUrl = contentPlayerConfig?.metadata?.artifactUrl;
-            const youTubeId = extractYouTubeVideoId(artifactUrl);
+              const artifactUrl = contentPlayerConfig?.metadata?.artifactUrl;
+              const youTubeId = extractYouTubeVideoId(artifactUrl);
 
-            // Calculate available dimensions accounting for safe area padding
-            const availableHeight =
-              screenData.height - topPadding - bottomPadding;
-            const availableWidth =
-              windowData.width - landscapeLeftPadding - landscapeRightPadding;
+              // Calculate available dimensions accounting for safe area padding
+              const availableHeight =
+                screenData.height - topPadding - bottomPadding;
+              const availableWidth =
+                windowData.width - landscapeLeftPadding - landscapeRightPadding;
 
-            // YouTube player event handlers
-            const handleYouTubeStateChange = async (state) => {
-              console.log('YouTube Player State:', state);
+              // YouTube player event handlers
+              const handleYouTubeStateChange = async (state) => {
+                console.log('YouTube Player State:', state);
 
-              // Track START event when video starts playing
-              if (state === 'playing') {
-                console.log('YouTube video started playing');
-                contentEidSTART = [
-                  {
-                    eid: 'START',
-                    edata: {
-                      duration: 0,
-                      mode: 'play',
-                      pageid: 'sunbird-player-Startpage',
-                      summary: [],
-                      type: 'content',
+                // Track START event when video starts playing
+                if (state === 'playing') {
+                  console.log('YouTube video started playing');
+                  contentEidSTART = [
+                    {
+                      eid: 'START',
+                      edata: {
+                        duration: 0,
+                        mode: 'play',
+                        pageid: 'sunbird-player-Startpage',
+                        summary: [],
+                        type: 'content',
+                      },
                     },
-                  },
-                ];
-                await storeData('contentEidSTART', contentEidSTART, 'json');
-              }
+                  ];
+                  await storeData('contentEidSTART', contentEidSTART, 'json');
+                }
 
-              // Track END event when video ends
-              if (state === 'ended') {
-                console.log('YouTube video ended');
-                contentEidEND = [
-                  {
-                    eid: 'END',
-                    edata: {
-                      duration: 0,
-                      mode: 'play',
-                      pageid: 'sunbird-player-Endpage',
-                      summary: [
-                        {
-                          progress: 100,
-                        },
-                        {
-                          totallength: '',
-                        },
-                        {
-                          visitedlength: '',
-                        },
-                        {
-                          visitedcontentend: '',
-                        },
-                        {
-                          totalseekedlength: '',
-                        },
-                        {
-                          endpageseen: false,
-                        },
-                      ],
-                      type: 'content',
+                // Track END event when video ends
+                if (state === 'ended') {
+                  console.log('YouTube video ended');
+                  contentEidEND = [
+                    {
+                      eid: 'END',
+                      edata: {
+                        duration: 0,
+                        mode: 'play',
+                        pageid: 'sunbird-player-Endpage',
+                        summary: [
+                          {
+                            progress: 100,
+                          },
+                          {
+                            totallength: '',
+                          },
+                          {
+                            visitedlength: '',
+                          },
+                          {
+                            visitedcontentend: '',
+                          },
+                          {
+                            totalseekedlength: '',
+                          },
+                          {
+                            endpageseen: false,
+                          },
+                        ],
+                        type: 'content',
+                      },
                     },
-                  },
-                ];
-                await storeData('contentEidEND', contentEidEND, 'json');
-                // Optionally navigate back or handle video end
+                  ];
+                  await storeData('contentEidEND', contentEidEND, 'json');
+                  // Optionally navigate back or handle video end
 
-                // Exit fullscreen when video ends
-                // Orientation.lockToPortrait();
+                  // Exit fullscreen when video ends
+                  Orientation.lockToPortrait();
+                  setYoutubePlayerEndScreen(true);
 
-                // Add a small delay to ensure fullscreen exits before navigation
-                setTimeout(() => {
-                  // Lock to portrait and navigate back
-                  // Orientation.lockToPortrait();
-                  // fetchExitData();
-                  // navigation.goBack();
-                }, 500);
-              }
-            };
+                  // Add a small delay to ensure fullscreen exits before navigation
+                  setTimeout(() => {
+                    // Lock to portrait and navigate back
+                    // Orientation.lockToPortrait();
+                    // fetchExitData();
+                    // navigation.goBack();
+                  }, 500);
+                }
+              };
 
-            const handleYouTubeReady = () => {
-              console.log('YouTube player is ready');
-            };
+              const handleYouTubeReady = () => {
+                console.log('YouTube player is ready');
+              };
 
-            const handleYouTubeError = (error) => {
-              console.log('YouTube player error:', error);
-            };
+              const handleYouTubeError = (error) => {
+                console.log('YouTube player error:', error);
+              };
 
-            return (
-              <View
-                style={{
-                  width: availableWidth,
-                  height: availableHeight,
-                  overflow: 'hidden',
-                }}
-              >
-                <YoutubePlayer
-                  height={availableHeight}
-                  width={availableWidth}
-                  play={true}
-                  videoId={youTubeId}
-                  onChangeState={handleYouTubeStateChange}
-                  onReady={handleYouTubeReady}
-                  onError={handleYouTubeError}
-                  webViewProps={{
-                    scrollEnabled: false,
-                    showsVerticalScrollIndicator: false,
-                    showsHorizontalScrollIndicator: false,
-                    bounces: false,
-                    injectedJavaScript: `
+              return (
+                <View
+                  style={{
+                    width: availableWidth,
+                    height: availableHeight,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <YoutubePlayer
+                    height={availableHeight}
+                    width={availableWidth}
+                    play={true}
+                    videoId={youTubeId}
+                    onChangeState={handleYouTubeStateChange}
+                    onReady={handleYouTubeReady}
+                    onError={handleYouTubeError}
+                    webViewProps={{
+                      scrollEnabled: false,
+                      showsVerticalScrollIndicator: false,
+                      showsHorizontalScrollIndicator: false,
+                      bounces: false,
+                      injectedJavaScript: `
                       document.body.style.overflow = 'hidden';
                       document.documentElement.style.overflow = 'hidden';
                       const player = document.querySelector('iframe');
@@ -1623,20 +1676,21 @@ const StandAlonePlayer = ({ route }) => {
                       }
                       true;
                     `,
-                    style: {
-                      backgroundColor: 'black',
-                    },
-                  }}
-                  initialPlayerParams={{
-                    modestbranding: 1,
-                    rel: 0,
-                    controls: 1,
-                    playsinline: 1,
-                  }}
-                />
-              </View>
-            );
-          })()
+                      style: {
+                        backgroundColor: 'black',
+                      },
+                    }}
+                    initialPlayerParams={{
+                      modestbranding: 1,
+                      rel: 0,
+                      controls: 1,
+                      playsinline: 1,
+                    }}
+                  />
+                </View>
+              );
+            })()
+          )
         ) : (
           <WebView
             ref={webviewRef}

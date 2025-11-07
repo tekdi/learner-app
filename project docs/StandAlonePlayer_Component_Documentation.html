@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>StandAlonePlayer Component Documentation</title>
+    <style>
+      body {
+        font-family: 'Calibri', 'Arial', sans-serif;
+        font-size: 11pt;
+        line-height: 1.5;
+        margin: 1in;
+        color: #000000;
+      }
+      h1 {
+        font-size: 24pt;
+        font-weight: bold;
+        color: #2e74b5;
+        margin-top: 24pt;
+        margin-bottom: 12pt;
+        page-break-after: avoid;
+      }
+      h2 {
+        font-size: 18pt;
+        font-weight: bold;
+        color: #2e74b5;
+        margin-top: 18pt;
+        margin-bottom: 10pt;
+        page-break-after: avoid;
+      }
+      h3 {
+        font-size: 14pt;
+        font-weight: bold;
+        color: #2e74b5;
+        margin-top: 14pt;
+        margin-bottom: 8pt;
+        page-break-after: avoid;
+      }
+      h4 {
+        font-size: 12pt;
+        font-weight: bold;
+        margin-top: 12pt;
+        margin-bottom: 6pt;
+        page-break-after: avoid;
+      }
+      p {
+        margin-top: 6pt;
+        margin-bottom: 6pt;
+        text-align: justify;
+      }
+      ul,
+      ol {
+        margin-top: 6pt;
+        margin-bottom: 6pt;
+        padding-left: 36pt;
+      }
+      li {
+        margin-top: 3pt;
+        margin-bottom: 3pt;
+      }
+      code {
+        font-family: 'Courier New', monospace;
+        font-size: 10pt;
+        background-color: #f2f2f2;
+        padding: 2pt 4pt;
+        border: 1pt solid #d0d0d0;
+      }
+      pre {
+        font-family: 'Courier New', monospace;
+        font-size: 9pt;
+        background-color: #f2f2f2;
+        border: 1pt solid #d0d0d0;
+        padding: 12pt;
+        margin: 12pt 0;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 12pt 0;
+        page-break-inside: avoid;
+      }
+      th {
+        background-color: #2e74b5;
+        color: #ffffff;
+        font-weight: bold;
+        padding: 8pt;
+        text-align: left;
+        border: 1pt solid #000000;
+      }
+      td {
+        padding: 8pt;
+        border: 1pt solid #000000;
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      hr {
+        border: none;
+        border-top: 1pt solid #000000;
+        margin: 18pt 0;
+      }
+      .toc {
+        margin: 18pt 0;
+      }
+      .toc ol {
+        list-style-type: decimal;
+      }
+      .toc li {
+        margin: 6pt 0;
+      }
+      strong {
+        font-weight: bold;
+      }
+      em {
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>StandAlonePlayer Component Documentation</h1>
+
+    <h2>Table of Contents</h2>
+    <div class="toc">
+      <ol>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#supported-mime-types">Supported MIME Types</a></li>
+        <li><a href="#dependencies">Dependencies</a></li>
+        <li><a href="#installation-steps">Installation Steps</a></li>
+        <li><a href="#setup-instructions">Setup Instructions</a></li>
+        <li><a href="#usage-examples">Usage Examples</a></li>
+        <li><a href="#route-parameters">Route Parameters</a></li>
+        <li><a href="#component-features">Component Features</a></li>
+        <li><a href="#file-structure">File Structure</a></li>
+        <li><a href="#configuration">Configuration</a></li>
+        <li><a href="#player-libraries-setup">Player Libraries Setup</a></li>
+        <li><a href="#api-requirements">API Requirements</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+      </ol>
+    </div>
+
+    <hr />
+
+    <h2 id="overview">Overview</h2>
+
+    <p>
+      The <strong>StandAlonePlayer</strong> is a unified React Native component
+      that can play multiple types of educational content in a single, reusable
+      screen. It supports various MIME types including videos, PDFs, interactive
+      content, assessments, and more. This component eliminates the need for
+      separate player screens for each content type, providing a streamlined
+      solution for content playback.
+    </p>
+
+    <h3>Key Features</h3>
+
+    <ul>
+      <li>
+        <strong>Multi-format Support</strong>: Handles 10+ different content
+        MIME types
+      </li>
+      <li>
+        <strong>Offline &amp; Online Playback</strong>: Supports both online
+        streaming and offline downloaded content
+      </li>
+      <li>
+        <strong>Automatic Content Detection</strong>: Automatically selects the
+        appropriate player based on MIME type
+      </li>
+      <li>
+        <strong>Telemetry Tracking</strong>: Built-in tracking for content
+        consumption analytics
+      </li>
+      <li>
+        <strong>Assessment Support</strong>: Integrated assessment/quiz player
+        with result tracking
+      </li>
+      <li>
+        <strong>Android 15 Compatibility</strong>: Includes safe area handling
+        for modern Android devices
+      </li>
+      <li>
+        <strong>Orientation Management</strong>: Automatic landscape/portrait
+        locking based on content type
+      </li>
+      <li>
+        <strong>YouTube Integration</strong>: Native YouTube player support
+      </li>
+    </ul>
+
+    <hr />
+
+    <h2 id="supported-mime-types">Supported MIME Types</h2>
+
+    <p>The component supports the following content types:</p>
+
+    <h3>1. Sunbird Content Player</h3>
+
+    <ul>
+      <li>
+        <code>application/vnd.ekstep.ecml-archive</code> - ECML interactive
+        content
+      </li>
+      <li>
+        <code>application/vnd.ekstep.html-archive</code> - HTML5 games/content
+      </li>
+      <li>
+        <code>application/vnd.ekstep.h5p-archive</code> - H5P interactive
+        content
+      </li>
+      <li><code>video/x-youtube</code> - YouTube videos</li>
+    </ul>
+
+    <h3>2. Sunbird PDF Player</h3>
+
+    <ul>
+      <li><code>application/pdf</code> - PDF documents</li>
+    </ul>
+
+    <h3>3. Sunbird EPUB Player</h3>
+
+    <ul>
+      <li><code>application/epub</code> - EPUB e-books</li>
+    </ul>
+
+    <h3>4. Sunbird Video Player</h3>
+
+    <ul>
+      <li><code>video/mp4</code> - MP4 video files</li>
+      <li><code>video/webm</code> - WebM video files</li>
+      <li><code>audio/mp3</code> - MP3 audio files</li>
+      <li><code>audio/wav</code> - WAV audio files</li>
+    </ul>
+
+    <h3>5. Sunbird QuML Player</h3>
+
+    <ul>
+      <li>
+        <code>application/vnd.sunbird.questionset</code> - Question
+        sets/assessments
+      </li>
+    </ul>
+
+    <hr />
+
+    <h2 id="dependencies">Dependencies</h2>
+
+    <h3>Required NPM Packages</h3>
+
+    <pre>
+{
+  "react": "18.2.0",
+  "react-native": "0.74.2",
+  "@react-navigation/native": "^6.1.17",
+  "@react-navigation/native-stack": "^6.9.26",
+  "react-native-webview": "^13.12.5",
+  "react-native-youtube-iframe": "^2.4.1",
+  "react-native-fs": "^2.20.0",
+  "react-native-zip-archive": "^7.0.0",
+  "react-native-orientation-locker": "^1.7.0",
+  "react-native-safe-area-context": "^4.10.5",
+  "react-native-config": "^1.5.2",
+  "@react-native-async-storage/async-storage": "^1.24.0"
+}</pre
+    >
+
+    <h3>Additional Dependencies</h3>
+
+    <ul>
+      <li>
+        <code>react-native-safe-area-context</code> - For safe area insets
+      </li>
+      <li><code>@react-navigation/native</code> - For navigation</li>
+      <li><code>react-native-config</code> - For environment configuration</li>
+    </ul>
+
+    <hr />
+
+    <h2 id="installation-steps">Installation Steps</h2>
+
+    <h3>Step 1: Install NPM Dependencies</h3>
+
+    <pre>
+npm install react-native-webview
+npm install react-native-youtube-iframe
+npm install react-native-fs
+npm install react-native-zip-archive
+npm install react-native-orientation-locker
+npm install react-native-safe-area-context
+npm install react-native-config
+npm install @react-navigation/native
+npm install @react-navigation/native-stack
+npm install @react-native-async-storage/async-storage</pre
+    >
+
+    <h3>Step 2: Install Native Dependencies (iOS)</h3>
+
+    <pre>
+cd ios
+pod install
+cd ..</pre
+    >
+
+    <h3>Step 3: Android Permissions</h3>
+
+    <p>
+      Add the following permissions to
+      <code>android/app/src/main/AndroidManifest.xml</code>:
+    </p>
+
+    <pre>
+&lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+&lt;uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /&gt;
+&lt;uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /&gt;</pre
+    >
+
+    <h3>Step 4: Copy Player Libraries</h3>
+
+    <p>
+      The component requires Sunbird player libraries to be placed in the native
+      assets:
+    </p>
+
+    <p><strong>For Android:</strong></p>
+
+    <ul>
+      <li>
+        Copy player libraries to: <code>android/app/src/main/assets/libs/</code>
+      </li>
+      <li>
+        Required folders:
+        <ul>
+          <li><code>sunbird-content-player/</code></li>
+          <li><code>sunbird-pdf-player/</code></li>
+          <li><code>sunbird-epub-player/</code></li>
+          <li><code>sunbird-video-player/</code></li>
+          <li><code>sunbird-quml-player/</code></li>
+        </ul>
+      </li>
+    </ul>
+
+    <p><strong>For iOS:</strong></p>
+
+    <ul>
+      <li>
+        Copy player libraries to:
+        <code>ios/learnerapp/assets/assets/libs/</code>
+      </li>
+      <li>Same folder structure as Android</li>
+    </ul>
+
+    <h3>Step 5: Copy Component Files</h3>
+
+    <p>Copy the following files to your project:</p>
+
+    <pre>
+src/screens/PlayerScreen/StandAlonePlayer/
+├── StandAlonePlayer.js
+└── data.js</pre
+    >
+
+    <hr />
+
+    <h2 id="setup-instructions">Setup Instructions</h2>
+
+    <h3>Step 1: Add to Navigation Stack</h3>
+
+    <p>
+      In your navigation file (e.g.,
+      <code>src/Routes/Public/StackScreen.js</code>):
+    </p>
+
+    <pre>
+import StandAlonePlayer from '../../screens/PlayerScreen/StandAlonePlayer/StandAlonePlayer';
+
+// Inside your Stack.Navigator
+&lt;Stack.Screen
+  name="StandAlonePlayer"
+  component={StandAlonePlayer}
+  options={{
+    headerShown: false,
+    lazy: true,
+  }}
+/&gt;;</pre
+    >
+
+    <h3>Step 2: Create Required Utility Functions</h3>
+
+    <p>
+      The component requires several utility functions. Ensure these exist in
+      your project:
+    </p>
+
+    <p>
+      <strong>File: <code>src/utils/API/ApiCalls.js</code></strong>
+    </p>
+
+    <ul>
+      <li>
+        <code>readContent(content_do_id)</code> - Fetches content metadata
+      </li>
+      <li>
+        <code>hierarchyContent(content_do_id)</code> - Fetches question set
+        hierarchy
+      </li>
+      <li>
+        <code>listQuestion(url, identifiers)</code> - Fetches questions for
+        assessments
+      </li>
+      <li><code>assessmentTracking(...)</code> - Saves assessment results</li>
+      <li>
+        <code>telemetryTracking(telemetryArray)</code> - Saves telemetry events
+      </li>
+      <li>
+        <code>contentTracking(...)</code> - Saves content consumption tracking
+      </li>
+    </ul>
+
+    <p>
+      <strong>File: <code>src/utils/Helper/JSHelper.js</code></strong>
+    </p>
+
+    <ul>
+      <li><code>getData(key, type)</code> - Retrieves data from storage</li>
+      <li><code>storeData(key, value, type)</code> - Stores data in storage</li>
+      <li><code>removeData(key)</code> - Removes data from storage</li>
+    </ul>
+
+    <p>
+      <strong>File: <code>src/utils/JsHelper/Helper.js</code></strong>
+    </p>
+
+    <ul>
+      <li>
+        <code>getDataFromStorage(key)</code> - Gets data from AsyncStorage
+      </li>
+      <li>
+        <code>findObjectByIdentifier(array, identifier)</code> - Finds object by
+        identifier
+      </li>
+      <li>
+        <code>logEventFunction(eventObject)</code> - Logs analytics events
+      </li>
+    </ul>
+
+    <p>
+      <strong>File: <code>src/utils/API/AuthService.js</code></strong>
+    </p>
+
+    <ul>
+      <li>
+        <code>storeAsessmentOffline(userId, identifier, payload)</code> - Stores
+        assessment offline
+      </li>
+      <li>
+        <code>storeTelemetryOffline(userId, telemetryArray)</code> - Stores
+        telemetry offline
+      </li>
+      <li>
+        <code>storeTrackingOffline(...)</code> - Stores content tracking offline
+      </li>
+    </ul>
+
+    <h3>Step 3: Environment Configuration</h3>
+
+    <p>Create a <code>.env</code> file with required configuration:</p>
+
+    <pre>QUESTION_LIST_URL=https://your-api-url/list/questions</pre>
+
+    <h3>Step 4: Required Components</h3>
+
+    <p>Ensure these components exist in your project:</p>
+
+    <ul>
+      <li><code>src/components/SafeAreaWrapper/SafeAreaWrapper.js</code></li>
+      <li><code>src/components/GlobalText/GlobalText.js</code></li>
+      <li><code>src/screens/Assessment/TestResultModal.js</code></li>
+      <li><code>src/components/MimeAletModal/MimeAlertModal.js</code></li>
+    </ul>
+
+    <h3>Step 5: Language Context Setup</h3>
+
+    <p>The component uses a translation context. Ensure you have:</p>
+
+    <pre>
+// src/context/LanguageContext.js
+import { useTranslation } from '../../../context/LanguageContext';</pre
+    >
+
+    <hr />
+
+    <h2 id="usage-examples">Usage Examples</h2>
+
+    <h3>Example 1: Basic Content Playback</h3>
+
+    <pre>
+import { useNavigation } from '@react-navigation/native';
+
+const MyComponent = () => {
+  const navigation = useNavigation();
+
+  const playContent = () => {
+    navigation.navigate('StandAlonePlayer', {
+      content_do_id: 'content-123',
+      content_mime_type: 'application/pdf',
+      title: 'My PDF Document',
+      isOffline: false,
+      course_id: 'course-456',
+      unit_id: 'unit-789',
+    });
+  };
+
+  return &lt;Button title="Play Content" onPress={playContent} /&gt;;
+};</pre
+    >
+
+    <h3>Example 2: Playing YouTube Video</h3>
+
+    <pre>
+navigation.navigate('StandAlonePlayer', {
+  content_do_id: 'youtube-content-123',
+  content_mime_type: 'video/x-youtube',
+  title: 'Educational Video',
+  isOffline: false,
+  course_id: 'course-456',
+  unit_id: 'unit-789',
+});</pre
+    >
+
+    <h3>Example 3: Playing Assessment/Quiz</h3>
+
+    <pre>
+navigation.navigate('StandAlonePlayer', {
+  content_do_id: 'assessment-123',
+  content_mime_type: 'application/vnd.sunbird.questionset',
+  title: 'Math Quiz',
+  isOffline: false,
+  course_id: 'course-456',
+  unit_id: 'unit-789',
+});</pre
+    >
+
+    <h3>Example 4: Playing Offline Content</h3>
+
+    <pre>
+navigation.navigate('StandAlonePlayer', {
+  content_do_id: 'content-123',
+  content_mime_type: 'video/mp4',
+  title: 'Offline Video',
+  isOffline: true,
+  course_id: 'course-456',
+  unit_id: 'unit-789',
+});</pre
+    >
+
+    <h3>Example 5: From Content Card (Real Implementation)</h3>
+
+    <pre>
+// From src/screens/Dashboard/ContentCard.js
+const handlePress = (data) => {
+  navigation.push('StandAlonePlayer', {
+    content_do_id: data?.identifier || data?.id,
+    content_mime_type: data?.mimeType || data?.app,
+    isOffline: false,
+    course_id: course_id,
+    unit_id: unit_id,
+  });
+};</pre
+    >
+
+    <h3>Example 6: From Deep Link</h3>
+
+    <pre>
+// From src/utils/JsHelper/DeepLink.js
+navigation.push('StandAlonePlayer', {
+  content_do_id: identifier,
+  content_mime_type: content_response?.result?.content?.mimeType,
+  isOffline: false,
+  course_id: identifier,
+  unit_id: identifier,
+});</pre
+    >
+
+    <hr />
+
+    <h2 id="route-parameters">Route Parameters</h2>
+
+    <p>The component accepts the following route parameters:</p>
+
+    <table>
+      <tr>
+        <th>Parameter</th>
+        <th>Type</th>
+        <th>Required</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><code>content_do_id</code></td>
+        <td>string</td>
+        <td>Yes</td>
+        <td>Unique identifier for the content</td>
+      </tr>
+      <tr>
+        <td><code>content_mime_type</code></td>
+        <td>string</td>
+        <td>Yes</td>
+        <td>MIME type of the content (see supported types)</td>
+      </tr>
+      <tr>
+        <td><code>title</code></td>
+        <td>string</td>
+        <td>No</td>
+        <td>Display title for the content</td>
+      </tr>
+      <tr>
+        <td><code>isOffline</code></td>
+        <td>boolean</td>
+        <td>No</td>
+        <td>Whether content is available offline (default: false)</td>
+      </tr>
+      <tr>
+        <td><code>course_id</code></td>
+        <td>string</td>
+        <td>No</td>
+        <td>Course identifier for tracking</td>
+      </tr>
+      <tr>
+        <td><code>unit_id</code></td>
+        <td>string</td>
+        <td>No</td>
+        <td>Unit identifier for tracking</td>
+      </tr>
+    </table>
+
+    <h3>Parameter Details</h3>
+
+    <p><strong>content_do_id</strong></p>
+
+    <ul>
+      <li>Unique identifier for the content item</li>
+      <li>Used to fetch content metadata and files</li>
+      <li>Example: <code>"do_1234567890"</code></li>
+    </ul>
+
+    <p><strong>content_mime_type</strong></p>
+
+    <ul>
+      <li>Must be one of the supported MIME types listed above</li>
+      <li>Determines which player library to use</li>
+      <li>Example: <code>"application/pdf"</code></li>
+    </ul>
+
+    <p><strong>title</strong></p>
+
+    <ul>
+      <li>Optional display title</li>
+      <li>Used in modals and result screens</li>
+      <li>Example: <code>"Introduction to Mathematics"</code></li>
+    </ul>
+
+    <p><strong>isOffline</strong></p>
+
+    <ul>
+      <li>Boolean flag indicating offline availability</li>
+      <li>If true, component looks for locally stored content first</li>
+      <li>Default: <code>false</code></li>
+    </ul>
+
+    <p><strong>course_id</strong></p>
+
+    <ul>
+      <li>Optional course identifier</li>
+      <li>Used for content tracking and analytics</li>
+      <li>Example: <code>"course_123"</code></li>
+    </ul>
+
+    <p><strong>unit_id</strong></p>
+
+    <ul>
+      <li>Optional unit/module identifier</li>
+      <li>Used for content tracking and analytics</li>
+      <li>Example: <code>"unit_456"</code></li>
+    </ul>
+
+    <hr />
+
+    <h2 id="component-features">Component Features</h2>
+
+    <h3>1. Automatic Content Detection</h3>
+
+    <p>
+      The component automatically detects the content type based on
+      <code>content_mime_type</code> and loads the appropriate player.
+    </p>
+
+    <h3>2. Offline Content Support</h3>
+
+    <ul>
+      <li>Automatically checks for offline content</li>
+      <li>Downloads content if not available locally</li>
+      <li>Supports offline playback for all content types</li>
+    </ul>
+
+    <h3>3. Content Download</h3>
+
+    <ul>
+      <li>Automatic download for ECML, HTML, H5P, and YouTube content</li>
+      <li>Progress tracking during download</li>
+      <li>Automatic extraction of ZIP files</li>
+    </ul>
+
+    <h3>4. Telemetry Tracking</h3>
+
+    <ul>
+      <li>Tracks START, INTERACT, and END events</li>
+      <li>Stores telemetry offline if network unavailable</li>
+      <li>Syncs telemetry when network available</li>
+    </ul>
+
+    <h3>5. Assessment Results</h3>
+
+    <ul>
+      <li>Displays assessment results in modal</li>
+      <li>Tracks scores and time spent</li>
+      <li>Stores results offline if needed</li>
+    </ul>
+
+    <h3>6. Orientation Management</h3>
+
+    <ul>
+      <li>Automatically locks to landscape for video/interactive content</li>
+      <li>Locks to portrait for PDFs and assessments</li>
+      <li>Handles orientation changes gracefully</li>
+    </ul>
+
+    <h3>7. Safe Area Handling</h3>
+
+    <ul>
+      <li>Android 15 compatible safe area insets</li>
+      <li>Handles notches and navigation bars</li>
+      <li>Landscape mode padding for side navigation</li>
+    </ul>
+
+    <h3>8. YouTube Integration</h3>
+
+    <ul>
+      <li>
+        Native YouTube player using <code>react-native-youtube-iframe</code>
+      </li>
+      <li>Extracts video ID from various YouTube URL formats</li>
+      <li>Tracks video start and end events</li>
+    </ul>
+
+    <h3>9. Error Handling</h3>
+
+    <ul>
+      <li>Displays error modals for unsupported content</li>
+      <li>Handles network errors gracefully</li>
+      <li>Shows download buttons when content unavailable</li>
+    </ul>
+
+    <h3>10. Back Button Handling</h3>
+
+    <ul>
+      <li>Custom back button handler</li>
+      <li>Saves tracking data before navigation</li>
+      <li>Prevents accidental app exit</li>
+    </ul>
+
+    <hr />
+
+    <h2 id="file-structure">File Structure</h2>
+
+    <pre>
+src/screens/PlayerScreen/StandAlonePlayer/
+├── StandAlonePlayer.js    # Main component file
+└── data.js                # Player configuration objects
+
+Required Supporting Files:
+src/utils/API/
+├── ApiCalls.js            # API functions
+└── AuthService.js         # Offline storage functions
+
+src/utils/Helper/
+└── JSHelper.js            # Storage helper functions
+
+src/utils/JsHelper/
+└── Helper.js              # Utility functions
+
+src/components/
+├── SafeAreaWrapper/       # Safe area component
+├── GlobalText/            # Text component
+└── MimeAletModal/         # Error modal
+
+src/screens/Assessment/
+└── TestResultModal.js     # Assessment result modal</pre
+    >
+
+    <hr />
+
+    <h2 id="configuration">Configuration</h2>
+
+    <h3>Player Configuration Objects</h3>
+
+    <p>
+      The component uses configuration objects defined in <code>data.js</code>:
+    </p>
+
+    <ol>
+      <li><strong>qumlPlayerConfig</strong> - For question sets/assessments</li>
+      <li>
+        <strong>contentPlayerConfig</strong> - For ECML, HTML, H5P content
+      </li>
+      <li><strong>pdfPlayerConfig</strong> - For PDF documents</li>
+      <li><strong>videoPlayerConfig</strong> - For video/audio files</li>
+      <li><strong>epubPlayerConfig</strong> - For EPUB e-books</li>
+    </ol>
+
+    <h3>Customizing Player Config</h3>
+
+    <p>
+      Edit <code>src/screens/PlayerScreen/StandAlonePlayer/data.js</code> to
+      customize:
+    </p>
+
+    <ul>
+      <li>Side menu options (share, download, exit, print, replay)</li>
+      <li>End page display</li>
+      <li>User data</li>
+      <li>Context information</li>
+    </ul>
+
+    <h3>Environment Variables</h3>
+
+    <p>Required environment variables (in <code>.env</code>):</p>
+
+    <pre>QUESTION_LIST_URL=https://api.example.com/list/questions</pre>
+
+    <hr />
+
+    <h2 id="player-libraries-setup">Player Libraries Setup</h2>
+
+    <h3>Android Setup</h3>
+
+    <ol>
+      <li>
+        <strong>Create assets directory:</strong>
+        <pre>android/app/src/main/assets/libs/</pre>
+      </li>
+      <li>
+        <strong>Copy player libraries:</strong>
+        <ul>
+          <li>Download Sunbird player libraries</li>
+          <li>Extract to <code>android/app/src/main/assets/libs/</code></li>
+          <li>
+            Structure should be:
+            <pre>
+libs/
+├── sunbird-content-player/
+│   └── index.html
+├── sunbird-pdf-player/
+│   └── index.html
+├── sunbird-epub-player/
+│   └── index.html
+├── sunbird-video-player/
+│   └── index.html
+└── sunbird-quml-player/
+    └── index.html</pre
+            >
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>Update build.gradle (if needed):</strong>
+        <pre>
+android {
+    ...
+    packagingOptions {
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+    }
+}</pre
+        >
+      </li>
+    </ol>
+
+    <h3>iOS Setup</h3>
+
+    <ol>
+      <li>
+        <strong>Create assets directory:</strong>
+        <pre>ios/learnerapp/assets/assets/libs/</pre>
+      </li>
+      <li>
+        <strong>Copy player libraries:</strong>
+        <ul>
+          <li>Same structure as Android</li>
+          <li>Add to Xcode project</li>
+          <li>Ensure "Create folder references" is selected</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Update Info.plist:</strong>
+        <pre>
+&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;
+&lt;dict&gt;
+    &lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;
+    &lt;true/&gt;
+&lt;/dict&gt;</pre
+        >
+      </li>
+    </ol>
+
+    <hr />
+
+    <h2 id="api-requirements">API Requirements</h2>
+
+    <h3>Required API Endpoints</h3>
+
+    <ol>
+      <li>
+        <strong>Content Read API</strong>
+        <ul>
+          <li>Endpoint: <code>GET /content/v3/read/{contentId}</code></li>
+          <li>
+            Returns: Content metadata with artifactUrl, downloadUrl, mimeType
+          </li>
+        </ul>
+      </li>
+      <li>
+        <strong>Hierarchy Content API</strong>
+        <ul>
+          <li>Endpoint: <code>GET /content/v3/hierarchy/{contentId}</code></li>
+          <li>Returns: Question set hierarchy with childNodes</li>
+        </ul>
+      </li>
+      <li>
+        <strong>List Questions API</strong>
+        <ul>
+          <li>Endpoint: <code>POST /list/questions</code></li>
+          <li>Body: Array of question identifiers</li>
+          <li>Returns: Question objects</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Assessment Tracking API</strong>
+        <ul>
+          <li>Endpoint: <code>POST /assessment/track</code></li>
+          <li>Body: Score details, max score, time spent</li>
+          <li>Returns: Assessment result</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Telemetry Tracking API</strong>
+        <ul>
+          <li>Endpoint: <code>POST /telemetry</code></li>
+          <li>Body: Array of telemetry events</li>
+          <li>Returns: Success status</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Content Tracking API</strong>
+        <ul>
+          <li>Endpoint: <code>POST /content/track</code></li>
+          <li>Body: User ID, course ID, content ID, tracking details</li>
+          <li>Returns: Success status</li>
+        </ul>
+      </li>
+    </ol>
+
+    <h3>API Response Format</h3>
+
+    <p><strong>Content Read Response:</strong></p>
+
+    <pre>
+{
+  "result": {
+    "content": {
+      "identifier": "do_123",
+      "mimeType": "application/pdf",
+      "artifactUrl": "https://...",
+      "downloadUrl": "https://...",
+      "name": "Content Title"
+    }
+  }
+}</pre
+    >
+
+    <p><strong>Question Set Response:</strong></p>
+
+    <pre>
+{
+  "result": {
+    "questionset": {
+      "identifier": "do_123",
+      "mimeType": "application/vnd.sunbird.questionset",
+      "childNodes": ["q1", "q2", "q3"],
+      "outcomeDeclaration": {...}
+    }
+  }
+}</pre
+    >
+
+    <hr />
+
+    <h2 id="troubleshooting">Troubleshooting</h2>
+
+    <h3>Issue 1: Player Not Loading</h3>
+
+    <p><strong>Symptoms:</strong> Blank screen or error message</p>
+
+    <p><strong>Solutions:</strong></p>
+
+    <ol>
+      <li>Verify player libraries are in correct location</li>
+      <li>Check file paths in <code>htmlFilePath</code> variable</li>
+      <li>Ensure WebView permissions are granted</li>
+      <li>Check console for JavaScript errors</li>
+    </ol>
+
+    <h3>Issue 2: Content Not Downloading</h3>
+
+    <p>
+      <strong>Symptoms:</strong> Download button appears but nothing happens
+    </p>
+
+    <p><strong>Solutions:</strong></p>
+
+    <ol>
+      <li>Check network connectivity</li>
+      <li>Verify API endpoints are correct</li>
+      <li>Check storage permissions</li>
+      <li>Verify <code>downloadUrl</code> in content metadata</li>
+    </ol>
+
+    <h3>Issue 3: YouTube Videos Not Playing</h3>
+
+    <p><strong>Symptoms:</strong> YouTube player shows error</p>
+
+    <p><strong>Solutions:</strong></p>
+
+    <ol>
+      <li>Verify YouTube video ID extraction</li>
+      <li>Check internet connectivity</li>
+      <li>
+        Verify <code>react-native-youtube-iframe</code> is properly installed
+      </li>
+      <li>Check YouTube API key (if required)</li>
+    </ol>
+
+    <h3>Issue 4: Assessment Results Not Saving</h3>
+
+    <p>
+      <strong>Symptoms:</strong> Results modal doesn't appear or data not saved
+    </p>
+
+    <p><strong>Solutions:</strong></p>
+
+    <ol>
+      <li>Check <code>assessmentTracking</code> API endpoint</li>
+      <li>Verify user ID is set</li>
+      <li>Check network connectivity</li>
+      <li>Verify offline storage functions</li>
+    </ol>
+
+    <h3>Issue 5: Orientation Not Locking</h3>
+
+    <p><strong>Symptoms:</strong> Screen rotates when it shouldn't</p>
+
+    <p><strong>Solutions:</strong></p>
+
+    <ol>
+      <li>Verify <code>react-native-orientation-locker</code> is installed</li>
+      <li>Check orientation lock code in useEffect</li>
+      <li>Ensure proper cleanup in useEffect return</li>
+    </ol>
+
+    <h3>Issue 6: Safe Area Issues on Android 15</h3>
+
+    <p><strong>Symptoms:</strong> Content hidden behind navigation bars</p>
+
+    <p><strong>Solutions:</strong></p>
+
+    <ol>
+      <li>Verify <code>react-native-safe-area-context</code> is installed</li>
+      <li>Check safe area insets calculation</li>
+      <li>Verify padding values in styles</li>
+    </ol>
+
+    <h3>Issue 7: Telemetry Not Syncing</h3>
+
+    <p>
+      <strong>Symptoms:</strong> Telemetry events not appearing in analytics
+    </p>
+
+    <p><strong>Solutions:</strong></p>
+
+    <ol>
+      <li>Check <code>telemetryTracking</code> API endpoint</li>
+      <li>Verify telemetry object structure</li>
+      <li>Check offline storage functions</li>
+      <li>Verify sync on app resume</li>
+    </ol>
+
+    <h3>Common Debugging Steps</h3>
+
+    <ol>
+      <li>
+        <strong>Enable Console Logging:</strong>
+        <ul>
+          <li>Uncomment console.log statements in component</li>
+          <li>Check React Native debugger</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Check Storage:</strong>
+        <pre>
+// In component
+const checkStorage = async () => {
+  const data = await getData('contentId', '');
+  console.log('Stored content:', data);
+};</pre
+        >
+      </li>
+      <li>
+        <strong>Verify Route Params:</strong>
+        <pre>console.log('Route params:', route.params);</pre>
+      </li>
+      <li>
+        <strong>Check WebView Messages:</strong>
+        <ul>
+          <li>Monitor <code>handleMessage</code> function</li>
+          <li>Log all incoming messages</li>
+        </ul>
+      </li>
+    </ol>
+
+    <hr />
+
+    <h2>Best Practices</h2>
+
+    <ol>
+      <li>
+        <strong>Always Provide Required Params:</strong>
+        <ul>
+          <li>
+            Ensure <code>content_do_id</code> and
+            <code>content_mime_type</code> are always provided
+          </li>
+          <li>Validate MIME type before navigation</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Handle Loading States:</strong>
+        <ul>
+          <li>Show loading indicators while content loads</li>
+          <li>Handle download progress for large files</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Error Handling:</strong>
+        <ul>
+          <li>Always handle network errors</li>
+          <li>Provide fallback UI for unsupported content</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Memory Management:</strong>
+        <ul>
+          <li>Clean up event listeners on unmount</li>
+          <li>Release orientation locks when done</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Offline Support:</strong>
+        <ul>
+          <li>Check offline availability before navigation</li>
+          <li>Provide download option for offline content</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Tracking:</strong>
+        <ul>
+          <li>Ensure user ID is set before playing content</li>
+          <li>Track content consumption for analytics</li>
+        </ul>
+      </li>
+    </ol>
+
+    <hr />
+
+    <h2>Version Information</h2>
+
+    <ul>
+      <li><strong>Component Version:</strong> 1.0.0</li>
+      <li><strong>React Native Version:</strong> 0.74.2</li>
+      <li><strong>Last Updated:</strong> 2024</li>
+      <li><strong>Compatibility:</strong> Android 5.0+, iOS 11.0+</li>
+    </ul>
+
+    <hr />
+
+    <h2>Support &amp; Contact</h2>
+
+    <p>For issues, questions, or contributions:</p>
+
+    <ul>
+      <li>Check the troubleshooting section above</li>
+      <li>Review the code comments in <code>StandAlonePlayer.js</code></li>
+      <li>Refer to Sunbird player documentation for player-specific issues</li>
+    </ul>
+
+    <hr />
+
+    <h2>License</h2>
+
+    <p>
+      This component is part of the Pratham Learning App project. Please refer
+      to the main project license for usage terms.
+    </p>
+
+    <hr />
+
+    <h2>Appendix: Complete Navigation Example</h2>
+
+    <pre>
+// Complete example with error handling
+import React from 'react';
+import { View, Button, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useInternet } from '../context/NetworkContext';
+
+const ContentPlayerExample = ({ content }) => {
+  const navigation = useNavigation();
+  const { isConnected } = useInternet();
+
+  const playContent = async () => {
+    try {
+      // Validate content
+      if (!content?.identifier || !content?.mimeType) {
+        Alert.alert('Error', 'Invalid content data');
+        return;
+      }
+
+      // Check offline availability
+      const isOffline = await checkOfflineContent(content.identifier);
+
+      // Navigate to player
+      navigation.navigate('StandAlonePlayer', {
+        content_do_id: content.identifier,
+        content_mime_type: content.mimeType,
+        title: content.name || 'Content',
+        isOffline: isOffline,
+        course_id: content.courseId || '',
+        unit_id: content.unitId || '',
+      });
+    } catch (error) {
+      console.error('Error playing content:', error);
+      Alert.alert('Error', 'Failed to play content');
+    }
+  };
+
+  return (
+    &lt;View&gt;
+      &lt;Button title="Play Content" onPress={playContent} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+export default ContentPlayerExample;</pre
+    >
+
+    <hr />
+
+    <p><strong>End of Documentation</strong></p>
+  </body>
+</html>
+
