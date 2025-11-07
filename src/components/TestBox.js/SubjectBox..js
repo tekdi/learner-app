@@ -133,7 +133,7 @@ const SubjectBox = ({
 
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
+  // const time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
   const [downloadIcon, setDownloadIcon] = useState(download);
   const [downloadStatus, setDownloadStatus] = useState('');
   const questionListUrl = Config.QUESTION_LIST_URL;
