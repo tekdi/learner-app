@@ -627,7 +627,7 @@ const RegistrationForm = ({ fields }) => {
           return; // Skip validation for these fields
         }
         if (
-          (field?.validation?.isRequired === true && !value) ||
+          (field?.isRequired === true && !value) ||
           // (field.name === 'blocks' && !value) ||
           // (field.name === 'states' && !value) ||
           // (field.name === 'districts' && !value) ||
