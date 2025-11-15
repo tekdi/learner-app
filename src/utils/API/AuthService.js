@@ -720,7 +720,19 @@ export const getProgramDetails = async () => {
     });
 
     if (result) {
-      return result?.data?.result;
+      //before parent tenant change
+      // return result?.data?.result;
+
+      //parent tenant fix
+      const currentOrigin = 'http://localhost:3002';
+      const matchingTenants =
+        result?.data?.result?.filter((tenant) =>
+          tenant?.params?.uiConfig?.enable_domain?.includes(currentOrigin)
+        ) || [];
+      const programsData =
+        matchingTenants.flatMap((t) => t?.children || []) || [];
+      console.log('programsData', programsData);
+      return programsData;
     } else {
       return {};
     }
@@ -786,7 +798,13 @@ export const assessmentListApi = async (params = {}) => {
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
         // assessmentType: ['pre-test', 'post-test'],
-        assessmentType: ['Pre Test', 'Post Test', 'Other', 'Unit Test' , 'Mock Test'],
+        assessmentType: [
+          'Pre Test',
+          'Post Test',
+          'Other',
+          'Unit Test',
+          'Mock Test',
+        ],
         status: ['Live'],
         primaryCategory: ['Practice Question Set'],
         // new different type
