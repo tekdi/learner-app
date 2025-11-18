@@ -6,12 +6,31 @@ const NetworkContext = createContext();
 
 // Provider component
 export const NetworkProvider = ({ children }) => {
-  const [isConnected, setIsConnected] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
+    // Helper function to determine connectivity
+    const getConnectionStatus = (state) => {
+      // In NetInfo v11+, isConnected can be null initially
+      // Use isInternetReachable for actual internet connectivity
+      // Fallback to isConnected if isInternetReachable is null
+      if (state.isInternetReachable !== null) {
+        return state.isInternetReachable;
+      }
+      return state.isConnected === true;
+    };
+
+    // Fetch initial network state
+    const checkInitialState = async () => {
+      const state = await NetInfo.fetch();
+      setIsConnected(getConnectionStatus(state));
+    };
+
+    checkInitialState();
+
     // Subscribe to internet connection updates
     const unsubscribe = NetInfo.addEventListener((state) => {
-      setIsConnected(state.isConnected);
+      setIsConnected(getConnectionStatus(state));
     });
 
     // Cleanup on unmount
