@@ -454,6 +454,7 @@ const ProfileUpdateForm = ({ fields }) => {
               formData={formData}
               handleValue={handleInputChange}
               errors={errors}
+              editable={!['first_name', 'last_name', 'firstName', 'lastName'].includes(field.name)}
             />
           </View>
         );
