@@ -618,7 +618,24 @@ const StandAlonePlayer = ({ route }) => {
                 firstName: userName,
                 lastName: '',
               };
-              //console.log('################# qumlPlayerConfig', JSON.stringify(qumlPlayerConfig));
+              //fix for maxScore getting zero in backend then do not play the content
+              let maxScore_Temp = contentObj?.maxScore;
+              if (!maxScore_Temp) {
+                maxScore_Temp =
+                  contentObj?.outcomeDeclaration?.maxScore?.defaultValue;
+              }
+              if (
+                maxScore_Temp == 0 ||
+                maxScore_Temp == null ||
+                maxScore_Temp == undefined
+              ) {
+                setAlertModal(true);
+                setErrorDetail('unsupported_content');
+              }
+              // console.log(
+              //   '################# qumlPlayerConfig',
+              //   JSON.stringify(qumlPlayerConfig)
+              // );
               set_is_valid_file(true);
             } catch (e) {
               console.log(e);

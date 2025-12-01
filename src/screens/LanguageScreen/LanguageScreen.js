@@ -209,6 +209,12 @@ const LanguageScreen = () => {
       const userType = await getDataFromStorage('userType');
       const userId = await getDataFromStorage('userId');
 
+      // console.log('userId', userId);
+      // console.log('token', token);
+      // console.log('userType', userType);
+      // console.log('cohort_id', cohort_id);
+      // console.log('isConnected', isConnected);
+
       if (token && userId) {
         if (isConnected) {
           const refresh_token = await getRefreshToken();

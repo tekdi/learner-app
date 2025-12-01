@@ -36,7 +36,7 @@ const TestResultModal = ({ modal, title }) => {
       await setDataInStorage('isFromPlayer', 'yes');
       navigation.navigate('SCPUserTabScreen');
       navigation.navigate('MyClass');
-      navigation.navigate('TestView', { title: title });
+      navigation.navigate('TestView', { title: title || '-' });
       // After navigating to the 'Profile' tab, reset the stack inside the tab
       // navigation.reset({
       //   index: 0, // Reset to the first index screen of the tab for assessment
@@ -57,7 +57,7 @@ const TestResultModal = ({ modal, title }) => {
         <View style={styles.alertBox}>
           <View style={styles.View}>
             <GlobalText style={globalStyles.heading}>
-              {t(capitalizeFirstLetter(title))}
+              {t(capitalizeFirstLetter(title || '-'))}
             </GlobalText>
           </View>
           <TouchableOpacity
@@ -72,7 +72,7 @@ const TestResultModal = ({ modal, title }) => {
             <GlobalText style={[globalStyles.heading2, { marginVertical: 10 }]}>
               {t('test_completed')}
             </GlobalText>
-            {modal?.totalMaxScore && (
+            {modal?.totalMaxScore!=0 && (
               <GlobalText
                 style={[
                   globalStyles.subHeading,
