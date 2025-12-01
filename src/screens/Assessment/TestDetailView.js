@@ -49,12 +49,15 @@ const instructions = [
 
 const TestDetailView = ({ route }) => {
   const { title, data } = route.params;
-  let time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
-  if (time == 'NaN') {
-    time = convertSecondsToMinutes(
-      JSON.parse(data?.timeLimits)?.questionSet?.max
-    );
-  }
+  let time = 0;
+  try {
+    time = convertSecondsToMinutes(JSON.parse(data?.timeLimits)?.maxTime);
+    if (time == 'NaN') {
+      time = convertSecondsToMinutes(
+        JSON.parse(data?.timeLimits)?.questionSet?.max
+      );
+    }
+  } catch (e) {}
   const { t } = useTranslation();
   const { isConnected } = useInternet();
   const [networkstatus, setNetworkstatus] = useState(true);
