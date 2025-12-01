@@ -222,7 +222,7 @@ const OtherSettings = ({ route }) => {
                   </View>
                 </TouchableOpacity>
               )}
-
+{/* 
               <TouchableOpacity
                 style={[globalStyles.flexrow, styles.borderColor]}
                 onPress={() => {
@@ -249,7 +249,7 @@ const OtherSettings = ({ route }) => {
                     size={30}
                   />
                 </View>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity
                 style={[globalStyles.flexrow, styles.borderColor]}
                 onPress={() => {
