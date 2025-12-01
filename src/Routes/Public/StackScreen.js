@@ -31,6 +31,7 @@ import EnableLocationScreen from '../../screens/Location/EnableLocationScreen';
 import DashboardStack from './DashboardStack';
 import SCPUserTabScreen from '../SCPUser/SCPUserTabScreen';
 import YouthNetTabScreen from '../Youthnet/YouthNetTabScreen';
+import UnauthorizedScreen from '../../screens/Unauthorized/UnauthorizedScreen';
 
 const StackScreen = () => {
   const Stack = createNativeStackNavigator();
@@ -262,6 +263,11 @@ const StackScreen = () => {
       <Stack.Screen
         name="ForgotPassword"
         component={ForgotPassword} // Changed to Assessment for now
+        options={{ headerShown: false, lazy: true }}
+      />
+      <Stack.Screen
+        name="UnauthorizedScreen"
+        component={UnauthorizedScreen}
         options={{ headerShown: false, lazy: true }}
       />
     </Stack.Navigator>
