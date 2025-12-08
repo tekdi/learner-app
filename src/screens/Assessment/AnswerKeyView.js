@@ -57,6 +57,28 @@ const AnswerKeyView = ({ route }) => {
   const [questionSolutions, setQuestionSolutions] = useState({});
   console.log('questionSolutions=====>', questionSolutions);
 
+  // Function to remove image tags and their parent figure elements from HTML
+  const removeImagesFromHTML = (htmlString) => {
+    if (!htmlString || typeof htmlString !== 'string') {
+      return htmlString;
+    }
+
+    // Remove figure elements containing images
+    let cleanedHtml = htmlString.replace(
+      /<figure[^>]*class=["']image["'][^>]*>[\s\S]*?<\/figure>/gi,
+      ''
+    );
+
+    // Remove standalone img tags
+    cleanedHtml = cleanedHtml.replace(/<img[^>]*>/gi, '');
+
+    // Clean up any empty paragraphs or extra whitespace
+    cleanedHtml = cleanedHtml.replace(/<p>\s*<\/p>/gi, '');
+    cleanedHtml = cleanedHtml.replace(/\s+/g, ' ').trim();
+
+    return cleanedHtml;
+  };
+
   const countEmptyResValues = (data) => {
     return data?.reduce((count, item) => {
       return item.resValue === '[]' ? count + 1 : count;
@@ -176,7 +198,7 @@ const AnswerKeyView = ({ route }) => {
         }
       }
 
-      console.log('questions----------', questions.length);
+      console.log('questions========>', JSON.stringify(questions));
       console.log('identifiers', identifiers.length);
 
       if (questions.length == identifiers.length) {
@@ -480,9 +502,10 @@ const AnswerKeyView = ({ route }) => {
                           contentWidth={width - 80}
                           baseStyle={baseStyle}
                           source={{
-                            html:
+                            html: removeImagesFromHTML(
                               questionSolutions[item.questionId][0]?.value ||
-                              '',
+                                ''
+                            ),
                           }}
                         />
                       </View>

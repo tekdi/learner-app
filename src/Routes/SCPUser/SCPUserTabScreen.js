@@ -1,22 +1,57 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from '../../context/LanguageContext';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import SCPUserStack from './SCPUserStack';
 import MyClassStack from './MyClassStack';
 import ProfileStack from '../Public/ProfileStack';
+import DashboardStack from '../Public/DashboardStack';
 import profile from '../../assets/images/png/profile.png';
 import profile_filled from '../../assets/images/png/profile_filled.png';
 import home from '../../assets/images/png/home.png';
 import home_filled from '../../assets/images/png/home_filled.png';
 import book_filled from '../../assets/images/png/book_filled.png';
 import book from '../../assets/images/png/book.png';
+import Coursesfilled from '../../assets/images/png/Coursesfilled.png';
+import Coursesunfilled from '../../assets/images/png/Coursesunfilled.png';
+import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
+import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 
 const Tab = createBottomTabNavigator();
+const WalkthroughableView = walkthroughable(View);
 
 const SCPUserTabScreen = () => {
   const { t } = useTranslation();
+  const { copilotEvents } = useCopilot();
+  const [CopilotStopped, setCopilotStopped] = useState(false);
+  const [showCoursesTab, setShowCoursesTab] = useState(false);
+
+  useEffect(() => {
+    copilotEvents?.on('stop', () => setCopilotStopped(true));
+  }, [copilotEvents]);
+
+  useEffect(() => {
+    const fetchCohortData = async () => {
+      try {
+        const cohortparse = await getDataFromStorage('cohortData');
+        if (!cohortparse) {
+          setShowCoursesTab(false);
+          return;
+        }
+        const data = JSON.parse(cohortparse);
+        const eligible =
+          data?.type === 'BATCH' &&
+          data?.cohortMemberStatus === 'active' &&
+          data?.cohortStatus === 'active';
+        setShowCoursesTab(!!eligible);
+      } catch (error) {
+        setShowCoursesTab(false);
+      }
+    };
+
+    fetchCohortData();
+  }, []);
 
   return (
     <Tab.Navigator
@@ -70,11 +105,41 @@ const SCPUserTabScreen = () => {
         tabBarLabelStyle: styles.tabLabel, // Add this for padding below label
       })}
     >
+      
       <Tab.Screen
         name="SCPUserStack"
         component={SCPUserStack}
         options={{ tabBarLabel: t('home') }}
       />
+      {showCoursesTab && (
+        <Tab.Screen
+          name="DashboardStack"
+          options={{
+            tabBarLabel: t('courses'),
+            tabBarButton: (props) => (
+              <CopilotStep
+                text="This is the courses tab. Tap here to explore courses!"
+                order={3}
+                name="coursesTab"
+              >
+                <WalkthroughableView style={{ flex: 1 }}>
+                  <TouchableOpacity {...props} />
+                </WalkthroughableView>
+              </CopilotStep>
+            ),
+            tabBarIcon: ({ focused }) => (
+              <Image
+                source={focused ? Coursesfilled : Coursesunfilled}
+                style={{ width: 30, height: 30 }}
+              />
+            ),
+          }}
+        >
+          {(props) => (
+            <DashboardStack {...props} CopilotStopped={CopilotStopped} />
+          )}
+        </Tab.Screen>
+      )}
       <Tab.Screen
         name="MyClass"
         component={MyClassStack}
