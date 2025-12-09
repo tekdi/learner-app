@@ -278,8 +278,12 @@ const Courses = () => {
     //       ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
     //       : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
     let contentFilter = JSON.parse(await getDataFromStorage('contentFilter'));
-    console.log('contentFilter', contentFilter);
-    setContentFilter(contentFilter);
+    console.log('mergedFilter==========>', mergedFilter);
+    const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+    const channelId = tenantData?.[0]?.channelId;
+    if(channelId == 'scp-channel'){
+      mergedFilter.targetBoardIds = ["scp-framework_board_maharashtraeducationboard"];
+    }
     let data = await courseListApi_New({
       searchText,
       mergedFilter,
