@@ -21,6 +21,7 @@ const LearningResources = ({ route }) => {
     let prerequisites = [];
     let postrequisites = [];
     let contentList = [];
+    let during = [];
 
     data.forEach((item) => {
       if (item.type === 'prerequisite') {
@@ -30,11 +31,15 @@ const LearningResources = ({ route }) => {
         postrequisites.push(item?.id?.toLowerCase());
         contentList.push(item?.id);
       }
+      else if (item.type === 'during') {
+        during.push(item?.id?.toLowerCase());
+        contentList.push(item?.id);
+      }
     });
 
     // console.log('sdsads', { prerequisites, postrequisites, contentList });
 
-    return { prerequisites, postrequisites, contentList };
+    return { prerequisites, postrequisites, contentList , during };
   }
 
   const getDoitsDetails = async (contentList) => {
@@ -88,7 +93,7 @@ const LearningResources = ({ route }) => {
         try {
           // Separate prerequisites and postrequisites from resources
           const data = separatePrerequisitesAndPostrequisites(resources);
-          // console.log({ data });
+           console.log('data======>', { data });
 
           // Track the data
           await trackingData(data);
@@ -100,6 +105,7 @@ const LearningResources = ({ route }) => {
           // Initialize arrays for prerequisites and postrequisites
           const prerequisites = [];
           const postrequisites = [];
+          const during = [];
 
           // Filter prerequisites
           // result?.content?.forEach((item) => {
@@ -140,9 +146,15 @@ const LearningResources = ({ route }) => {
               postrequisites.push(matchedItem);
             }
           });
+          data?.during?.forEach((id) => {
+            const matchedItem = allItems.find((item) => item.identifier === id);
+            if (matchedItem) {
+              during.push(matchedItem);
+            }
+          });
 
           // Update state with filtered data
-          setResourceData({ prerequisites, postrequisites });
+          setResourceData({ prerequisites, postrequisites, during });
         } catch (error) {
           console.error('Error fetching data:', error);
         }
@@ -170,6 +182,11 @@ const LearningResources = ({ route }) => {
             trackData={trackData}
             resourceData={resourceData}
             title={'post_requisites_2'}
+          />
+           <ContentAccordion
+            trackData={trackData}
+            resourceData={resourceData}
+            title={'during'}
           />
         </ScrollView>
       )}
