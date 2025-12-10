@@ -282,7 +282,7 @@ const Courses = () => {
     const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
     const channelId = tenantData?.[0]?.channelId;
     if(channelId == 'scp-channel'){
-      mergedFilter.targetBoardIds = ["scp-framework_board_maharashtraeducationboard"];
+      mergedFilter.targetBoardIds = ["scp-framework_board_cocurricular"];
     }
     let data = await courseListApi_New({
       searchText,
