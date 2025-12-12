@@ -61,12 +61,9 @@ const DateTimePicker = ({
   minDate.setMonth(0); // January
   minDate.setDate(1); // 1st day
 
-  // maxDate = today - minAge years (youngest selectable date)
-  // Example: If today is 2024 and minAge is 14, maxDate year = 2010
+  // maxDate = today (no future dates allowed)
+  // Users can only select today or past dates
   const maxDate = new Date(today);
-  maxDate.setFullYear(currentYear - minAge);
-  maxDate.setMonth(11); // December
-  maxDate.setDate(31); // Last day
 
   return (
     <View style={styles.container}>
