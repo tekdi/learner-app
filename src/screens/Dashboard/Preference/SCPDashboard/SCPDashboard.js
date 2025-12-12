@@ -273,6 +273,36 @@ const SCPDashboard = (props) => {
             />
           </View>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('DuringSession');
+          }}
+          style={[styles.box]}
+        >
+          <View style={{ width: '90%' }}>
+            <GlobalText
+              style={[globalStyles.subHeading, { fontWeight: 'bold' }]}
+            >
+              {t('during_session') || 'During Session'} 
+            </GlobalText>
+            <GlobalText
+              style={globalStyles.subHeading}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
+              {t('complete_activities_during_session') || 'Complete activities during session'}
+            </GlobalText>
+          </View>
+          <View>
+            <Octicons
+              name="arrow-right"
+              style={{ marginHorizontal: 10 }}
+              color={'#000'}
+              size={20}
+            />
+          </View>
+        </TouchableOpacity>
+        
         <View style={{ marginVertical: 20, borderRadius: 15 }}>
           <AttendanceCard attendance={10} />
         </View>
