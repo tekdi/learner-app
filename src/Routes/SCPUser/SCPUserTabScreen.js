@@ -111,7 +111,18 @@ const SCPUserTabScreen = () => {
         component={SCPUserStack}
         options={{ tabBarLabel: t('home') }}
       />
-      {showCoursesTab && (
+     
+      <Tab.Screen
+        name="MyClass"
+        component={MyClassStack}
+        options={{ tabBarLabel: t('my_class') }}
+      />
+      {/* <Tab.Screen
+        name="AssessmentStack"
+        component={AssessmentStack}
+        options={{ tabBarLabel: t('assessment') }}
+      /> */}
+       {showCoursesTab && (
         <Tab.Screen
           name="DashboardStack"
           options={{
@@ -140,16 +151,6 @@ const SCPUserTabScreen = () => {
           )}
         </Tab.Screen>
       )}
-      <Tab.Screen
-        name="MyClass"
-        component={MyClassStack}
-        options={{ tabBarLabel: t('my_class') }}
-      />
-      {/* <Tab.Screen
-        name="AssessmentStack"
-        component={AssessmentStack}
-        options={{ tabBarLabel: t('assessment') }}
-      /> */}
       <Tab.Screen
         name="Profile"
         component={ProfileStack}
