@@ -47,22 +47,23 @@ const DateTimePicker = ({
     hideDatePicker(); // Ensure modal closes properly
   };
 
-  // const minDate = new Date(1985, 0, 1); // January 1, 1995
-  // const maxDate = new Date(2024, 11, 31); // December 31, 2005
-
   const today = new Date();
+  const currentYear = today.getFullYear();
 
-  // validation values
-  const minValue = 10;
-  const maxValue = 100;
+  // Get validation values from field, with defaults if not provided
+  const minAge = field?.validation?.minValue || 14; // Minimum age (e.g., 14 years)
+  const maxAge = field?.validation?.maxValue || 100; // Maximum age (e.g., 100 years)
 
-  // minDate = today - minValue years
+  // minDate = today - maxAge years (oldest selectable date)
+  // Example: If today is 2024 and maxAge is 100, minDate year = 1924
   const minDate = new Date(today);
-  minDate.setFullYear(minDate.getFullYear() - field?.validation?.maxValue);
+  minDate.setFullYear(currentYear - maxAge);
+  minDate.setMonth(0); // January
+  minDate.setDate(1); // 1st day
 
-  // maxDate = minDate + maxValue years
+  // maxDate = today (no future dates allowed)
+  // Users can only select today or past dates
   const maxDate = new Date(today);
-  minDate.setFullYear(minDate.getFullYear() - field?.validation?.minValue);
 
   return (
     <View style={styles.container}>

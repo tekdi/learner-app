@@ -11,6 +11,7 @@ import { filterContent, staticFilterContent } from '@src/utils/API/AuthService';
 import ActiveLoading from '@src/screens/LoadingScreen/ActiveLoading';
 import { useInternet } from '../../context/NetworkContext';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 
 const FilterList = ({
   setParentFormData,
@@ -34,6 +35,7 @@ const FilterList = ({
   const [userSelectedStaticFormData, setUserSelectedStaticFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [expandedSections, setExpandedSections] = useState({});
+  const [channelId, setChannelId] = useState(null);
   const { isConnected } = useInternet();
   console.log('staticFormData---', staticFormData);
   
@@ -405,6 +407,20 @@ const FilterList = ({
     }
   }, []);
 
+  // Fetch channelId on component mount
+  useEffect(() => {
+    const fetchChannelId = async () => {
+      try {
+        const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+        const channelIdValue = tenantData?.[0]?.channelId;
+        setChannelId(channelIdValue);
+      } catch (error) {
+        console.error('Error fetching channelId:', error);
+      }
+    };
+    fetchChannelId();
+  }, []);
+
   const findAndRemoveIndexes = (currentSelectedIndex, maxIndex, form) => {
     return form.map((item) => ({
       ...item,
@@ -671,16 +687,24 @@ const FilterList = ({
     const defaultFormData = getDefaultFormData();
     const defaultStaticFormData = getDefaultStaticFormData();
     
+    // Remove grade from default form data, but keep board
+    const filteredDefaultFormData = { ...defaultFormData };
+    if (filteredDefaultFormData.gradeLevel && channelId === 'scp-channel') {
+      delete filteredDefaultFormData.gradeLevel;
+    }
+    // Keep board if it exists
+    // (board is already included if it has a single option)
+    
     console.log('=== CLEARING FILTERS ===');
-    console.log('Preserving default formData:', defaultFormData);
+    console.log('Preserving default formData:', filteredDefaultFormData);
     console.log('Preserving default staticFormData:', defaultStaticFormData);
     console.log('========================');
     
     // Set to default values instead of empty objects
-    setFormData(defaultFormData);
+    setFormData(filteredDefaultFormData);
     setStaticFormData(defaultStaticFormData);
     setParentFormData({});
-    setOrginalFormData(defaultFormData);
+    setOrginalFormData(filteredDefaultFormData);
     setParentStaticFormData(defaultStaticFormData);
   };
 
@@ -746,7 +770,7 @@ const FilterList = ({
                   )}
 
                   {/* Dynamic Filters (Categories/Subdomains) */}
-                  {sortFilterSections(renderForm || []).map((item, key) => {
+                  {channelId !== 'scp-channel' && sortFilterSections(renderForm || []).map((item, key) => {
                     return (
                       (item?.name !== 'Domain' || isExplore == true) && (
                         renderFilterSection(item, key, false)

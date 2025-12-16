@@ -76,8 +76,16 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
           let contentFilter = JSON.parse(
             await getDataFromStorage('contentFilter')
           );
+              const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
+          
+          const channelId = tenantData?.[0]?.channelId;
+         let mergedFilter={}
+    if(channelId == 'scp-channel'){
+      mergedFilter.targetBoardIds = ["scp-framework_board_cocurricular"];
+    }
           let data = await courseListApi_New({
             inprogress_do_ids,
+            mergedFilter,
             offset,
             contentFilter,
           });

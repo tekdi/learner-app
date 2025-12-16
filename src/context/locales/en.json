@@ -563,5 +563,11 @@
   "not_found_learner_role": "No learner role found",
   "cannot_login_no_learner_role": "Cannot login - No learner role available",
   "role_not_allowed_error": "This role is not allowed for login",
-  "okay": "Okay"
+  "okay": "Okay",
+  "go_to_login": "Go to Login",
+  "go_to_home_page": "Go to Home Page",
+  "unauthorized_message": "You do not have permission to access this content. Please login or return to the home page.",
+  "unauthorized": "Unauthorized Access",
+  "during_session": "Learn",
+  "complete_activities_during_session": "Complete activities for during session"
 }

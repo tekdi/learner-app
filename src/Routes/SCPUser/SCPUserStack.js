@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SCPDashboard from '../../screens/Dashboard/Preference/SCPDashboard/SCPDashboard';
 import SessionView from '../../screens/Dashboard/Preference/SCPDashboard/SessionView';
 import PreviousClassMaterial from '../../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterial';
+import DuringSession from '../../screens/Dashboard/Preference/SCPDashboard/DuringSession';
 import FullAttendance from '../../screens/Dashboard/Calendar/FullAttendance';
 import TimeTable from '../../screens/Dashboard/Calendar/TimeTable';
 import PreviousClassMaterialFullView from '../../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterialFullView';
@@ -40,6 +41,11 @@ const SCPUserStack = () => {
       <Stack.Screen
         name="PreviousClassMaterial"
         component={PreviousClassMaterial}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="DuringSession"
+        component={DuringSession}
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
       <Stack.Screen
