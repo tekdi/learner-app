@@ -26,6 +26,10 @@ const SCPUserTabScreen = () => {
   const { copilotEvents } = useCopilot();
   const [CopilotStopped, setCopilotStopped] = useState(false);
   const [showCoursesTab, setShowCoursesTab] = useState(false);
+  const [showMyClassTab, setShowMyClassTab] = useState(false);
+  const [showHomeTab, setShowHomeTab] = useState(false);
+
+
 
   useEffect(() => {
     copilotEvents?.on('stop', () => setCopilotStopped(true));
@@ -36,7 +40,9 @@ const SCPUserTabScreen = () => {
       try {
         const cohortparse = await getDataFromStorage('cohortData');
         if (!cohortparse) {
-          setShowCoursesTab(false);
+         // setShowCoursesTab(false);
+          setShowHomeTab(false);
+          setShowMyClassTab(false);
           return;
         }
         const data = JSON.parse(cohortparse);
@@ -44,7 +50,8 @@ const SCPUserTabScreen = () => {
           data?.type === 'BATCH' &&
           data?.cohortMemberStatus === 'active' &&
           data?.cohortStatus === 'active';
-        setShowCoursesTab(!!eligible);
+        setShowMyClassTab(!!eligible);
+        setShowHomeTab(!!eligible);
       } catch (error) {
         setShowCoursesTab(false);
       }
@@ -106,23 +113,23 @@ const SCPUserTabScreen = () => {
       })}
     >
       
-      <Tab.Screen
+      {showHomeTab && (<Tab.Screen
         name="SCPUserStack"
         component={SCPUserStack}
         options={{ tabBarLabel: t('home') }}
-      />
+      />)}
      
-      <Tab.Screen
+      {showMyClassTab && (<Tab.Screen
         name="MyClass"
         component={MyClassStack}
         options={{ tabBarLabel: t('my_class') }}
-      />
+      />)}
       {/* <Tab.Screen
         name="AssessmentStack"
         component={AssessmentStack}
         options={{ tabBarLabel: t('assessment') }}
       /> */}
-       {showCoursesTab && (
+       {  (
         <Tab.Screen
           name="DashboardStack"
           options={{
