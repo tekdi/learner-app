@@ -206,12 +206,15 @@ const LoginScreen = () => {
       console.log('#### loginmultirole role', role);
 
       if (tenantId === scp?.[0]) {
+        console.log('####loginintoscp', scp);
         await setDataInStorage('userType', 'scp');
-        if (cohort_id) {
-          navigation.navigate('SCPUserTabScreen');
-        } else {
-          navigation.navigate('Dashboard');
-        }
+        navigation.navigate('SCPUserTabScreen');
+
+        // if (cohort_id) {
+        //   navigation.navigate('SCPUserTabScreen');
+        // } else {
+        //   navigation.navigate('Dashboard');
+        // }
       } else {
         if (tenantId === youthnetTenantIds?.[0]) {
           await setDataInStorage('userType', 'youthnet');
