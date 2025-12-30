@@ -63,10 +63,13 @@ class CrossPlatformDownloadHelper {
       let permissionName;
 
       if (Platform.Version >= 33) {
-        // Android 13+ (API 33+)
-        permission = PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
-        permissionName = 'READ_MEDIA_IMAGES';
-        console.log('Android 13+ - using READ_MEDIA_IMAGES');
+        // Android 13+ (API 33+) - Downloads don't require READ_MEDIA_IMAGES
+        // We only need WRITE_EXTERNAL_STORAGE for saving files, but it's often not needed on Android 13+
+        // For downloads, we can use app's external storage without permissions
+        console.log(
+          'Android 13+ - no permission needed for downloads (using app storage)'
+        );
+        return true; // Downloads work without explicit permission on Android 13+
       } else if (Platform.Version >= 29) {
         // Android 10-12 (API 29-32)
         permission = PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE;
