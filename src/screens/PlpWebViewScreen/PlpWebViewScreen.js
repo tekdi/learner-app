@@ -322,10 +322,7 @@ const PlpWebViewScreen = () => {
         console.log('Login into Only One Program data:', message.data);
 
 
-        // const token ="eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJha0d1WG1zVTVxMXhOczZxUkVTWWZkTkRyUWRiZ2ZGekRFMEswRkFDNUVzIn0.eyJleHAiOjE3NjY3MzkzMjMsImlhdCI6MTc2NjY1MjkyMywianRpIjoiYzRmMmU1NDgtZjY5OS00OWNhLThlM2MtODgyZGFiYjViMTE4IiwiaXNzIjoiaHR0cHM6Ly9xYS1rZXljbG9hay5wcmF0aGFtZGlnaXRhbC5vcmcvYXV0aC9yZWFsbXMvcHJhdGhhbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIwZDE5NzlkYy03MGVmLTQ4MzktYTZmMS0xYzg5NTI3YjQxYjIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJwcmF0aGFtIiwic2Vzc2lvbl9zdGF0ZSI6ImY3ZDk0ZjU4LTI2YmItNDljNS1hNDhlLTVkOWJkN2RlZThjYyIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiLyoiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iLCJkZWZhdWx0LXJvbGVzLXByYXRoYW0iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByYXRoYW0tcm9sZSBlbWFpbCBwcm9maWxlIiwic2lkIjoiZjdkOTRmNTgtMjZiYi00OWM1LWE0OGUtNWQ5YmQ3ZGVlOGNjIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJuYW1lIjoic2FzcyAuIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWJjZC4xNiIsInVzZXJfcm9sZXMiOiJMZWFybmVyIiwiZ2l2ZW5fbmFtZSI6InNhc3MiLCJmYW1pbHlfbmFtZSI6Ii4ifQ.Yw-2g0SFpVfR6o1cge7Uyey5hHA3V95Nd3Y7ZLa_M9QzW1Lq86WY-DkTnxIaKrDFIbfSo-zNM8aO_rdTcig79DsWV-PtxZqDR-Dw1s5NQFsbT0RiI48HBB9wuwQZXWMV13840hPt_Hax96cu22ojeaq-KUfxQIQGOI1uAwulCHQcoHHgr2I4h-CtRL-NcZf_dFwbgnET1DvERf5BNJmlFAerlJCK97mXALgDq7_pdfRkJQ_upRJF-JT0WVMTG0eaCCKMULkQ0gwBJoawtuK0etJGHZLKF7tIlGParjMzMVrx0SZvQp4MoLDuvRzPFcWwpycaFwptTqqdWRokRrVRqw"
-        // const userId = "0d1979dc-70ef-4839-a6f1-1c89527b41b2"
-        // const tenantId ="fd8f3180-9988-495b-8a0d-ed201d7d28df";
-        // const refreshToken = ""
+        
         await handleProgramLogin(tenantId, userId, token, refreshToken);
         //  const refreshToken = ""
       }
