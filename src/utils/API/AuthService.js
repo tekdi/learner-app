@@ -982,6 +982,25 @@ export const getProfileDetails = async (params = {}) => {
   }
 };
 
+export const getUserDetails = async (params = {}) => {
+  try {
+    const url = `${EndUrls.userDetails}/${params?.user_id}`; // Define the URL
+    const headers = await getHeaders();
+    const result = await get(url, {
+      headers: headers || {},
+    });
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  }
+  catch (e) {
+    console.log(e)
+  }
+};
+
+
 export const getAssessmentStatus = async (params = {}) => {
   try {
     const url = `${EndUrls.AssessmentStatus}`; // Define the URL

@@ -32,6 +32,8 @@ import DashboardStack from './DashboardStack';
 import SCPUserTabScreen from '../SCPUser/SCPUserTabScreen';
 import YouthNetTabScreen from '../Youthnet/YouthNetTabScreen';
 import UnauthorizedScreen from '../../screens/Unauthorized/UnauthorizedScreen';
+import PlpWebViewScreen from '../../screens/PlpWebViewScreen/PlpWebViewScreen';
+import ProgramsScreen from '../../screens/ProgramsScreen/ProgramsScreen';
 
 const StackScreen = () => {
   const Stack = createNativeStackNavigator();
@@ -268,6 +270,16 @@ const StackScreen = () => {
       <Stack.Screen
         name="UnauthorizedScreen"
         component={UnauthorizedScreen}
+        options={{ headerShown: false, lazy: true }}
+      />
+      <Stack.Screen
+        name="PlpWebViewScreen"
+        component={PlpWebViewScreen}
+        options={{ headerShown: false, lazy: true }}
+      />
+      <Stack.Screen
+        name="ProgramsScreen"
+        component={ProgramsScreen}
         options={{ headerShown: false, lazy: true }}
       />
     </Stack.Navigator>
