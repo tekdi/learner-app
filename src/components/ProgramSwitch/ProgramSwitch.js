@@ -157,6 +157,9 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       const selectedTenantData = [
         userDetails?.tenantData?.find((t) => t.tenantId === tenantId),
       ];
+      const uiConfig = selectedTenantData?.[0]?.params?.uiConfig;
+      await setDataInStorage('uiConfig', JSON.stringify(uiConfig));
+      console.log('#### loginmultirole uiConfig', JSON.stringify(uiConfig));
       console.log('#### loginmultirole selectedTenantData', selectedTenantData);
 
       if (!selectedTenantData[0]) {

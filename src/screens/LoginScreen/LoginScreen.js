@@ -541,6 +541,9 @@ const LoginScreen = () => {
   const tenantData = [
     userDetails?.tenantData?.find((tenant) => tenant.tenantId === tenantId),
   ];
+  const uiConfig = tenantData?.[0]?.params?.uiConfig;
+  await setDataInStorage('uiConfig', JSON.stringify(uiConfig));
+  console.log('#### loginmultirole uiConfig', JSON.stringify(uiConfig));
   console.log('#### loginmultirole tenantData', tenantData);
 
   const enrollmentId = userDetails?.enrollmentId;
