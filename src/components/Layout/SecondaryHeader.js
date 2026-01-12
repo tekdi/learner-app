@@ -111,9 +111,8 @@ const SecondaryHeader = ({ logo }) => {
                 style={styles.userTypeContainer}
                 onPress={handleProgramSwitchToggle}
               >
-                <GlobalText style={styles.userTypeText}>
-                             {userType ==="scp" ? "Second Chance Program" : userType ==="youthnet" ? "Vocational Traning" : userType }
-                
+                <GlobalText style={styles.userTypeText} numberOfLines={1}>
+                  {userType === "scp" ? "Second Chance Program" : userType === "youthnet" ? "Vocational Training" : userType}
                 </GlobalText>
                 <Ionicons
                   name="chevron-down"
@@ -197,11 +196,14 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   select: {
-    width: 100,
+    width: 110,
+    flexShrink: 0,
   },
   centerContainer: {
+    flex: 1,
     alignItems: 'center',
     flexDirection: 'row',
+    marginRight: 10,
   },
   image: {
     height: 50,
@@ -217,12 +219,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#E5E5E5',
+    flexShrink: 1,
+    maxWidth: '70%',
   },
   userTypeText: {
     fontSize: 14,
     color: '#4D4639',
     fontFamily: 'Poppins-Medium',
     marginRight: 4,
+    flexShrink: 1,
   },
   dropdownIcon: {
     marginLeft: 2,
