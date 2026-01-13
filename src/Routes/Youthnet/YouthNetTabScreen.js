@@ -12,11 +12,17 @@ import home from '../../assets/images/png/home.png';
 import home_filled from '@src/assets/images/png/home_filled.png';
 import explore_FILL from '@src/assets/images/png/explore_FILL.png';
 import explore_UNFILLED from '@src/assets/images/png/explore_UNFILLED.png';
+import {
+  useTabBarStyle,
+  useTabLabelStyle,
+} from '../../utils/Helper/TabScreenHelper';
 
 const Tab = createBottomTabNavigator();
 
 const YouthNetTabScreen = () => {
   const { t } = useTranslation();
+  const tabBarStyle = useTabBarStyle();
+  const tabLabelStyle = useTabLabelStyle();
 
   return (
     <Tab.Navigator
@@ -63,11 +69,11 @@ const YouthNetTabScreen = () => {
             }
           }
         },
-        tabBarStyle: styles.footer,
+        tabBarStyle: tabBarStyle,
         tabBarActiveTintColor: '#987100',
         tabBarInactiveTintColor: 'gray',
         tabBarActiveBackgroundColor: '#F7ECDF',
-        tabBarLabelStyle: styles.tabLabel, // Add this for padding below label
+        tabBarLabelStyle: tabLabelStyle,
       })}
     >
       <Tab.Screen

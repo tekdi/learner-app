@@ -17,6 +17,10 @@ import Coursesfilled from '../../assets/images/png/Coursesfilled.png';
 import Coursesunfilled from '../../assets/images/png/Coursesunfilled.png';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import {
+  useTabBarStyle,
+  useTabLabelStyle,
+} from '../../utils/Helper/TabScreenHelper';
 
 const Tab = createBottomTabNavigator();
 const WalkthroughableView = walkthroughable(View);
@@ -28,6 +32,8 @@ const SCPUserTabScreen = () => {
   const [showCoursesTab, setShowCoursesTab] = useState(false);
   const [showMyClassTab, setShowMyClassTab] = useState(false);
   const [showHomeTab, setShowHomeTab] = useState(false);
+  const tabBarStyle = useTabBarStyle();
+  const tabLabelStyle = useTabLabelStyle();
 
 
 
@@ -105,11 +111,11 @@ const SCPUserTabScreen = () => {
             }
           }
         },
-        tabBarStyle: styles.footer,
+        tabBarStyle: tabBarStyle,
         tabBarActiveTintColor: '#987100',
         tabBarInactiveTintColor: 'gray',
         tabBarActiveBackgroundColor: '#F7ECDF',
-        tabBarLabelStyle: styles.tabLabel, // Add this for padding below label
+        tabBarLabelStyle: tabLabelStyle,
       })}
     >
       
