@@ -24,6 +24,10 @@ import {
   setDataInStorage 
 } from '../../utils/JsHelper/Helper';
 import { getCohort } from '../../utils/API/AuthService';
+import {
+  useTabBarStyle,
+  useTabLabelStyle,
+} from '../../utils/Helper/TabScreenHelper';
 
 const Tab = createBottomTabNavigator();
 const WalkthroughableView = walkthroughable(View);
@@ -38,6 +42,10 @@ const SCPUserTabScreen = () => {
   const [showCoursesTab, setShowCoursesTab] = useState(false);
   const [showMyClassTab, setShowMyClassTab] = useState(false);
   const [showHomeTab, setShowHomeTab] = useState(false);
+  const tabBarStyle = useTabBarStyle();
+  const tabLabelStyle = useTabLabelStyle();
+
+
 
   useEffect(() => {
     copilotEvents?.on('stop', () => setCopilotStopped(true));
@@ -250,11 +258,11 @@ const SCPUserTabScreen = () => {
             }
           }
         },
-        tabBarStyle: styles.footer,
+        tabBarStyle: tabBarStyle,
         tabBarActiveTintColor: '#987100',
         tabBarInactiveTintColor: 'gray',
         tabBarActiveBackgroundColor: '#F7ECDF',
-        tabBarLabelStyle: styles.tabLabel, // Add this for padding below label
+        tabBarLabelStyle: tabLabelStyle,
       })}
     >
       
