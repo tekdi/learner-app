@@ -229,6 +229,7 @@ const ProfileUpdateForm = ({ fields }) => {
   };
 
   const onSubmit = async (data) => {
+    console.log("onSubmit=====>",JSON.stringify(data));
     setLoading(true);
     // console.log('data', JSON.stringify(data));
 
@@ -336,7 +337,22 @@ const ProfileUpdateForm = ({ fields }) => {
       const age = calculateAge(formData?.dob || '');
 
       if (field) {
-        const value = formData[field.name] || '';
+        // Extract value - handle both object and string formats
+        const fieldValue = formData[field.name];
+        let value = '';
+        
+        if (fieldValue !== null && fieldValue !== undefined) {
+          if (typeof fieldValue === 'object' && !Array.isArray(fieldValue)) {
+            // If it's an object, extract the value property
+            value = fieldValue.value !== undefined ? String(fieldValue.value) : '';
+          } else if (Array.isArray(fieldValue)) {
+            // If it's an array, join the values or use first value
+            value = fieldValue.length > 0 ? String(fieldValue[0]?.value || fieldValue[0] || '') : '';
+          } else {
+            // If it's a string or number, convert to string
+            value = String(fieldValue);
+          }
+        }
 
         if (
           [
@@ -357,6 +373,36 @@ const ProfileUpdateForm = ({ fields }) => {
           parseInt(age, 10) >= 18
         ) {
           return; // Skip validation for these fields
+        }
+
+        // Skip validation for family member fields that are hidden
+        const familyType = formData?.family_member_details?.value || formData?.family_member_details;
+        if (familyType === 'mother' && field.name === 'father_name') {
+          return; // Skip validation for hidden fields
+        }
+        if (familyType === 'mother' && field.name === 'spouse_name') {
+          return; // Skip validation for hidden fields
+        }
+        if (familyType === 'father' && field.name === 'mother_name') {
+          return; // Skip validation for hidden fields
+        }
+        if (familyType === 'father' && field.name === 'spouse_name') {
+          return; // Skip validation for hidden fields
+        }
+        if (familyType === 'spouse' && field.name === 'father_name') {
+          return; // Skip validation for hidden fields
+        }
+        if (familyType === 'spouse' && field.name === 'mother_name') {
+          return; // Skip validation for hidden fields
+        }
+        if (!familyType && ['father_name', 'mother_name', 'spouse_name'].includes(field.name)) {
+          return; // Skip validation for hidden fields
+        }
+
+        // Skip validation for mobile field when age is below 18
+        const ageValue = age ? parseInt(age, 10) : null;
+        if (field.name === 'mobile' && ageValue !== null && ageValue < 18) {
+          return; // Skip validation for hidden mobile field
         }
 
         if (field.isRequired && !value) {
