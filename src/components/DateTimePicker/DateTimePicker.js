@@ -54,16 +54,20 @@ const DateTimePicker = ({
   const minAge = field?.validation?.minValue || 14; // Minimum age (e.g., 14 years)
   const maxAge = field?.validation?.maxValue || 100; // Maximum age (e.g., 100 years)
 
-  // minDate = today - maxAge years (oldest selectable date)
-  // Example: If today is 2024 and maxAge is 100, minDate year = 1924
-  const minDate = new Date(today);
+  // minDate = currentYear - maxAge years (oldest selectable date)
+  // Example: If currentYear is 2026 and maxAge is 100, minDate year = 1926
+  const minDate = new Date();
   minDate.setFullYear(currentYear - maxAge);
   minDate.setMonth(0); // January
   minDate.setDate(1); // 1st day
 
-  // maxDate = today (no future dates allowed)
-  // Users can only select today or past dates
-  const maxDate = new Date(today);
+  // maxDate = currentYear - minAge years (youngest selectable date)
+  // Example: If currentYear is 2026 and minAge is 14, maxDate year = 2012
+  // Users must be at least minAge years old
+  const maxDate = new Date();
+  maxDate.setFullYear(currentYear - minAge);
+  maxDate.setMonth(11); // December
+  maxDate.setDate(31); // Last day
 
   return (
     <View style={styles.container}>

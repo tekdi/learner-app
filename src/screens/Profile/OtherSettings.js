@@ -45,6 +45,7 @@ const OtherSettings = ({ route }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [userType, setUserType] = useState();
   const [cohortId, setCohortId] = useState();
+  const [isEditProfileEnabled, setIsEditProfileEnabled] = useState(false);
   const { isConnected } = useInternet();
 
   const { t } = useTranslation();
@@ -53,10 +54,38 @@ const OtherSettings = ({ route }) => {
   const fetchData = async () => {
     const userTypes = await getDataFromStorage('userType');
     const getCohortId = await getDataFromStorage('cohortId');
+    // Try both possible keys for uiConfig
+    let uiConfig = await getDataFromStorage('uiConfig');
+    if (!uiConfig) {
+      uiConfig = await getDataFromStorage('uiconfig');
+    }
+    
+    console.log('uiConfig from storage:', uiConfig);
+    console.log('uiConfig type:', typeof uiConfig);
+    
     setUserType(userTypes);
     setCohortId(getCohortId);
+    
+    // Parse uiconfig and check if isEditProfile is true
+    if (uiConfig) {
+      try {
+        const parsedConfig = typeof uiConfig === 'string' ? JSON.parse(uiConfig) : uiConfig;
+        console.log('Parsed uiConfig:', parsedConfig);
+        console.log('isEditProfile value:', parsedConfig?.isEditProfile);
+        const shouldShowEditProfile = parsedConfig?.isEditProfile === true;
+        console.log('Should show edit profile:', shouldShowEditProfile);
+        setIsEditProfileEnabled(shouldShowEditProfile);
+      } catch (error) {
+        console.log('Error parsing uiconfig:', error);
+        setIsEditProfileEnabled(false);
+      }
+    } else {
+      console.log('uiConfig is null or undefined');
+      setIsEditProfileEnabled(false);
+    }
   };
   console.log('cohortId', cohortId);
+  console.log('isEditProfileEnabled state:', isEditProfileEnabled);
 
   useFocusEffect(
     useCallback(() => {
@@ -187,98 +216,91 @@ const OtherSettings = ({ route }) => {
               />
             </View>
           </TouchableOpacity>
-          {(userType === 'scp' &&
-            cohortId !== '00000000-0000-0000-0000-000000000000') ||
-          !isConnected ? (
-            <></>
-          ) : (
-            <>
-              {userType !== 'pragyanpath' && (
-                <TouchableOpacity
-                  style={[globalStyles.flexrow, styles.borderColor]}
-                  onPress={() => {
-                    navigation.navigate('ProfileUpdateScreen');
-                  }}
-                >
-                  <View
-                    style={[
-                      globalStyles.flexrow,
-                      { justifyContent: 'space-between', width: '100%' },
-                    ]}
-                  >
-                    <GlobalText
-                      style={[globalStyles.h6, { color: '#4D4639' }]}
-                      numberOfLines={2}
-                      ellipsizeMode="tail"
-                    >
-                      {t('edit_profile')}
-                    </GlobalText>
-                    <Icon
-                      name="angle-right"
-                      style={{ marginHorizontal: 10 }}
-                      color={'#000'}
-                      size={30}
-                    />
-                  </View>
-                </TouchableOpacity>
-              )}
-{/* 
-              <TouchableOpacity
-                style={[globalStyles.flexrow, styles.borderColor]}
-                onPress={() => {
-                  navigation.navigate('ResetUsername');
-                }}
+          
+          {isEditProfileEnabled && (
+            <TouchableOpacity
+              style={[globalStyles.flexrow, styles.borderColor]}
+              onPress={() => {
+                navigation.navigate('ProfileUpdateScreen');
+              }}
+            >
+              <View
+                style={[
+                  globalStyles.flexrow,
+                  { justifyContent: 'space-between', width: '100%' },
+                ]}
               >
-                <View
-                  style={[
-                    globalStyles.flexrow,
-                    { justifyContent: 'space-between', width: '100%' },
-                  ]}
+                <GlobalText
+                  style={[globalStyles.h6, { color: '#4D4639' }]}
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
                 >
-                  <GlobalText
-                    style={[globalStyles.h6, { color: '#4D4639' }]}
-                    numberOfLines={2}
-                    ellipsizeMode="tail"
-                  >
-                    {t('change_username')}
-                  </GlobalText>
-                  <Icon
-                    name="angle-right"
-                    style={{ marginHorizontal: 10 }}
-                    color={'#000'}
-                    size={30}
-                  />
-                </View>
-              </TouchableOpacity> */}
-              <TouchableOpacity
-                style={[globalStyles.flexrow, styles.borderColor]}
-                onPress={() => {
-                  navigation.navigate('ResetPassword');
-                }}
-              >
-                <View
-                  style={[
-                    globalStyles.flexrow,
-                    { justifyContent: 'space-between', width: '100%' },
-                  ]}
-                >
-                  <GlobalText
-                    style={[globalStyles.h6, { color: '#4D4639' }]}
-                    numberOfLines={2}
-                    ellipsizeMode="tail"
-                  >
-                    {t('change_password')}
-                  </GlobalText>
-                  <Icon
-                    name="angle-right"
-                    style={{ marginHorizontal: 10 }}
-                    color={'#000'}
-                    size={30}
-                  />
-                </View>
-              </TouchableOpacity>
-            </>
+                  {t('edit_profile')}
+                </GlobalText>
+                <Icon
+                  name="angle-right"
+                  style={{ marginHorizontal: 10 }}
+                  color={'#000'}
+                  size={30}
+                />
+              </View>
+            </TouchableOpacity>
           )}
+{/* 
+          <TouchableOpacity
+            style={[globalStyles.flexrow, styles.borderColor]}
+            onPress={() => {
+              navigation.navigate('ResetUsername');
+            }}
+          >
+            <View
+              style={[
+                globalStyles.flexrow,
+                { justifyContent: 'space-between', width: '100%' },
+              ]}
+            >
+              <GlobalText
+                style={[globalStyles.h6, { color: '#4D4639' }]}
+                numberOfLines={2}
+                ellipsizeMode="tail"
+              >
+                {t('change_username')}
+              </GlobalText>
+              <Icon
+                name="angle-right"
+                style={{ marginHorizontal: 10 }}
+                color={'#000'}
+                size={30}
+              />
+            </View>
+          </TouchableOpacity> */}
+          <TouchableOpacity
+            style={[globalStyles.flexrow, styles.borderColor]}
+            onPress={() => {
+              navigation.navigate('ResetPassword');
+            }}
+          >
+            <View
+              style={[
+                globalStyles.flexrow,
+                { justifyContent: 'space-between', width: '100%' },
+              ]}
+            >
+              <GlobalText
+                style={[globalStyles.h6, { color: '#4D4639' }]}
+                numberOfLines={2}
+                ellipsizeMode="tail"
+              >
+                {t('change_password')}
+              </GlobalText>
+              <Icon
+                name="angle-right"
+                style={{ marginHorizontal: 10 }}
+                color={'#000'}
+                size={30}
+              />
+            </View>
+          </TouchableOpacity>
           <TouchableOpacity
             style={[globalStyles.flexrow, styles.borderColor]}
             onPress={openInAppBrowser}

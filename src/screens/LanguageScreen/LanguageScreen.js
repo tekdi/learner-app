@@ -295,7 +295,7 @@ const LanguageScreen = () => {
   );
 
   const handlethis = () => {
-    navigation.navigate('LoginSignUpScreen');
+    navigation.navigate('PlpWebViewScreen');
   };
 
   if (loading) {

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View, AppState } from 'react-native';
+import { useFocusEffect, useNavigation, useIsFocused } from '@react-navigation/native';
 import { useTranslation } from '../../context/LanguageContext';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import SCPUserStack from './SCPUserStack';
@@ -16,7 +17,13 @@ import book from '../../assets/images/png/book.png';
 import Coursesfilled from '../../assets/images/png/Coursesfilled.png';
 import Coursesunfilled from '../../assets/images/png/Coursesunfilled.png';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
-import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import { 
+  getDataFromStorage, 
+  getActiveCohortData, 
+  getActiveCohortIds,
+  setDataInStorage 
+} from '../../utils/JsHelper/Helper';
+import { getCohort } from '../../utils/API/AuthService';
 import {
   useTabBarStyle,
   useTabLabelStyle,
@@ -28,6 +35,9 @@ const WalkthroughableView = walkthroughable(View);
 const SCPUserTabScreen = () => {
   const { t } = useTranslation();
   const { copilotEvents } = useCopilot();
+  const navigation = useNavigation();
+  const isFocused = useIsFocused();
+  const appState = useRef(AppState.currentState);
   const [CopilotStopped, setCopilotStopped] = useState(false);
   const [showCoursesTab, setShowCoursesTab] = useState(false);
   const [showMyClassTab, setShowMyClassTab] = useState(false);
@@ -41,12 +51,19 @@ const SCPUserTabScreen = () => {
     copilotEvents?.on('stop', () => setCopilotStopped(true));
   }, [copilotEvents]);
 
-  useEffect(() => {
-    const fetchCohortData = async () => {
-      try {
+  // Function to update cohort data from API and refresh tabs
+  const refreshCohortData = useCallback(async () => {
+    try {
+      // Get required data from storage
+      const tenantData = JSON.parse(await getDataFromStorage('tenantData') || '[]');
+      const tenantid = tenantData?.[0]?.tenantId;
+      const user_id = await getDataFromStorage('userId');
+      const academicYearId = await getDataFromStorage('academicYearId');
+
+      if (!tenantid || !user_id || !academicYearId) {
+        // If required data is missing, try to read from existing storage
         const cohortparse = await getDataFromStorage('cohortData');
         if (!cohortparse) {
-         // setShowCoursesTab(false);
           setShowHomeTab(false);
           setShowMyClassTab(false);
           return;
@@ -58,13 +75,143 @@ const SCPUserTabScreen = () => {
           data?.cohortStatus === 'active';
         setShowMyClassTab(!!eligible);
         setShowHomeTab(!!eligible);
-      } catch (error) {
-        setShowCoursesTab(false);
+        return;
       }
-    };
 
-    fetchCohortData();
+      // Fetch fresh cohort data from API
+      const cohort = await getCohort({
+        user_id,
+        tenantid,
+        academicYearId,
+      });
+
+      if (cohort?.params?.status !== 'failed' && cohort) {
+        const getActiveCohort = await getActiveCohortData(cohort);
+        const getActiveCohortId = await getActiveCohortIds(cohort);
+        
+        // Update cohortData in storage
+        await setDataInStorage(
+          'cohortData',
+          JSON.stringify(getActiveCohort?.[0]) || ''
+        );
+        
+        // Update cohortId in storage
+        const cohort_id = getActiveCohortId?.[0];
+        await setDataInStorage(
+          'cohortId',
+          cohort_id || '00000000-0000-0000-0000-000000000000'
+        );
+
+        // Update tab visibility based on cohort data
+        const cohortData = getActiveCohort?.[0];
+        const eligible =
+          cohortData?.type === 'BATCH' &&
+          cohortData?.cohortMemberStatus === 'active' &&
+          cohortData?.cohortStatus === 'active';
+        setShowMyClassTab(!!eligible);
+        setShowHomeTab(!!eligible);
+      } else {
+        // If API call failed, read from existing storage
+        const cohortparse = await getDataFromStorage('cohortData');
+        if (!cohortparse) {
+          setShowHomeTab(false);
+          setShowMyClassTab(false);
+          return;
+        }
+        const data = JSON.parse(cohortparse);
+        const eligible =
+          data?.type === 'BATCH' &&
+          data?.cohortMemberStatus === 'active' &&
+          data?.cohortStatus === 'active';
+        setShowMyClassTab(!!eligible);
+        setShowHomeTab(!!eligible);
+      }
+    } catch (error) {
+      console.error('Error refreshing cohort data:', error);
+      // Fallback to reading from storage on error
+      try {
+        const cohortparse = await getDataFromStorage('cohortData');
+        if (!cohortparse) {
+          setShowHomeTab(false);
+          setShowMyClassTab(false);
+          return;
+        }
+        const data = JSON.parse(cohortparse);
+        const eligible =
+          data?.type === 'BATCH' &&
+          data?.cohortMemberStatus === 'active' &&
+          data?.cohortStatus === 'active';
+        setShowMyClassTab(!!eligible);
+        setShowHomeTab(!!eligible);
+      } catch (storageError) {
+        setShowHomeTab(false);
+        setShowMyClassTab(false);
+      }
+    }
   }, []);
+
+  // Initial load on mount
+  useEffect(() => {
+    refreshCohortData();
+  }, [refreshCohortData]);
+
+  // Refresh cohort data when screen comes into focus (on reload/navigation)
+  useFocusEffect(
+    useCallback(() => {
+      refreshCohortData();
+    }, [refreshCohortData])
+  );
+
+  // Add navigation state listener to refresh on navigation state changes
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('state', () => {
+      // Refresh when navigation state changes (handles reload scenarios)
+      refreshCohortData();
+    });
+
+    return unsubscribe;
+  }, [navigation, refreshCohortData]);
+
+  // Add AppState listener to refresh when app comes to foreground
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        // App has come to the foreground, refresh cohort data
+        refreshCohortData();
+      }
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription?.remove();
+    };
+  }, [refreshCohortData]);
+
+  // Refresh when screen becomes focused (handles reload scenarios)
+  useEffect(() => {
+    if (isFocused) {
+      refreshCohortData();
+    }
+  }, [isFocused, refreshCohortData]);
+
+  // Periodic check when screen is focused (catches edge cases where other listeners might miss)
+  useEffect(() => {
+    if (!isFocused) return;
+
+    // Check every 3 seconds when screen is focused to catch any storage updates
+    const intervalId = setInterval(() => {
+      if (isFocused && AppState.currentState === 'active') {
+        refreshCohortData();
+      }
+    }, 3000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isFocused, refreshCohortData]);
 
   return (
     <Tab.Navigator
