@@ -24,7 +24,11 @@ const ProfileUpdateScreen = () => {
     const programForm = await getStudentForm(tenantId);
     setDataInStorage('studentProgramForm', JSON.stringify(programForm?.fields));
     const newSchema = [...data.fields, ...programForm.fields];
-    const updatedSchema = updateOrder(newSchema);
+    const filteredSchema = newSchema.filter(
+      (field) => field.name !== 'center' && field.name !== 'batch'
+    );
+    const updatedSchema = updateOrder(filteredSchema);
+    console.log("updatedSchema",updatedSchema);
     if (data?.error) {
       setNetworkError(true);
     } else {

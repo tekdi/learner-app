@@ -56,7 +56,7 @@ const ProfileUpdateForm = ({ fields }) => {
   const [districtData, setDistrictData] = useState([]);
   const [blockData, setBlockData] = useState([]);
   const [villageData, setVillageData] = useState([]);
-  const [updateFormData, setUpdateFormData] = useState([]);
+  const [updateFormData, setUpdateFormData] = useState({});
 
   const logProfileEditInProgress = async () => {
     const obj = {
@@ -385,13 +385,46 @@ const ProfileUpdateForm = ({ fields }) => {
   };
 
   const renderField = (field) => {
-    const age = calculateAge(formData?.dob || '');
+    const dob = formData?.dob || '';
+    let age = null;
+    let ageValue = null;
+    
+    // Calculate age if DOB exists
+    if (dob) {
+      try {
+        age = calculateAge(dob);
+        ageValue = age !== null && age !== undefined && !isNaN(age) ? parseInt(age, 10) : null;
+      } catch (error) {
+        console.log('Error calculating age:', error);
+        ageValue = null;
+      }
+    }
+    
+    const isAge18OrAbove = ageValue !== null && ageValue >= 18;
+    const isAgeBelow18 = ageValue !== null && ageValue < 18;
+    
+    // Debug logging for mobile field visibility
+    if (field.name === 'mobile' || field.name === 'phone_num' || field.name === 'phone_number') {
+      console.log(`Field: ${field.name}, DOB: ${dob}, Age: ${ageValue}, isAgeBelow18: ${isAgeBelow18}`);
+    }
+    
+    // Hide guardian fields for users 18 or above
     if (
       (field.name === 'guardian_relation' ||
         field.name === 'guardian_name' ||
         field.name === 'parent_phone') &&
-      age &&
-      parseInt(age, 10) >= 18
+      isAge18OrAbove
+    ) {
+      return null;
+    }
+    
+    // Hide phone/mobile number field when age is below 18
+    // Show mobile for users 18 or above, hide it when age is below 18
+    if (
+      (field.name === 'phone_num' || 
+       field.name === 'phone_number' || 
+       field.name === 'mobile') &&
+      isAgeBelow18
     ) {
       return null;
     }
@@ -565,7 +598,9 @@ const ProfileUpdateForm = ({ fields }) => {
   };
   const handleSubmit = () => {
     if (validateFields()) {
-      onSubmit(updateFormData);
+      // Merge formData with updateFormData to ensure all fields are included
+      const mergedData = { ...formData, ...updateFormData };
+      onSubmit(mergedData);
     }
   };
 

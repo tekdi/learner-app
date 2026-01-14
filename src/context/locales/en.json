@@ -569,5 +569,18 @@
   "unauthorized_message": "You do not have permission to access this content. Please login or return to the home page.",
   "unauthorized": "Unauthorized Access",
   "during_session": "Learn",
-  "complete_activities_during_session": "Complete activities for during session"
+  "complete_activities_during_session": "Complete activities for during session",
+  "hamara_gaon": "hamara gaon",
+
+    "smile_program": "smile program",
+    "pratham_read_india_initiative_rii": "pratham readindia initiative rii",
+    "government_partnership": "government partnership",
+    "summer_camp_volunteer": "summer camp volunteer",
+    "HAMARA_GAON": "Hamara Gaon",
+    "SMILE_PROGRAM": "Smile Program",
+    "PRATHAM_READ_INDIA_INITIATIVE_RII": "Pratham Read India Initiative RII",
+    "GOVERNMENT_PARTNERSHIP": "Government Partnership",
+    "SUMMER_CAMP_VOLUNTEER": "Summer Camp Volunteer",
+    "WHAT_PROGRAM_ARE_YOU_PART_OF": "What Program Are You Part Of",
+    "WHAT PROGRAM ARE YOU PART OF": "What Program Are You Part Of"
 }
