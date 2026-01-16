@@ -77,7 +77,41 @@ export const readContent = async (content_do_id) => {
       console.log('############');
       console.log('############ read content', response);
       console.log('############');
+
       api_response = response.data;
+
+      // Remove single quotes from description and keywords if they exist
+      if (api_response?.result?.content) {
+        //remove single quotes from name
+        if (
+          api_response.result.content.name &&
+          typeof api_response.result.content.name === 'string'
+        ) {
+          api_response.result.content.name =
+            api_response.result.content.name.replace(/'/g, ' ');
+        }
+        // Remove single quotes from description
+        if (
+          api_response.result.content.description &&
+          typeof api_response.result.content.description === 'string'
+        ) {
+          api_response.result.content.description =
+            api_response.result.content.description.replace(/'/g, ' ');
+        }
+        // Remove single quotes from keywords array items
+        if (
+          api_response.result.content.keywords &&
+          Array.isArray(api_response.result.content.keywords)
+        ) {
+          api_response.result.content.keywords =
+            api_response.result.content.keywords.map((keyword) => {
+              if (typeof keyword === 'string') {
+                return keyword.replace(/'/g, ' ');
+              }
+              return keyword;
+            });
+        }
+      }
     })
     .catch((error) => {
       console.log('############');
