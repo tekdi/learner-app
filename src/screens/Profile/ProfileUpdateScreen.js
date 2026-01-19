@@ -15,7 +15,13 @@ const ProfileUpdateScreen = () => {
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState(false);
   const updateOrder = (data) => {
-    return data.map((item) => ({ ...item, order: '1' }));
+    return data.map((item) => {
+      // Make father_name, mother_name, and spouse_name required if they exist in the schema
+      if (['father_name', 'mother_name', 'spouse_name'].includes(item.name)) {
+        return { ...item, order: '1', isRequired: true };
+      }
+      return { ...item, order: '1' };
+    });
   };
   const fetchData = async () => {
     const data = await getStudentForm();
