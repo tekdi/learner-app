@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import {
   useFocusEffect,
   useNavigation,
@@ -293,7 +294,7 @@ const ExploreTab = () => {
     address: 'tesdfksdfdknfdskfn dkfndskfdsnf ',
   };
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaWrapper style={{ flex: 1, backgroundColor: 'white' }}>
       <SecondaryHeader logo />
       <AppUpdatePopup />
       <ScrollView
@@ -502,7 +503,7 @@ const ExploreTab = () => {
           ></TouchableOpacity>
         </FilterDrawer>
       )}
-    </SafeAreaView>
+    </SafeAreaWrapper>
   );
 };
 

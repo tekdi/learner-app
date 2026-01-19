@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from '../../context/LanguageContext';
 import {
   useTabBarStyle,
@@ -35,12 +36,14 @@ import explore_UNFILLED from '@src/assets/images/png/explore_UNFILLED.png';
 const Tab = createBottomTabNavigator();
 const WalkthroughableView = walkthroughable(View); // Wrap Image component
 
-const TabScreen = () => {
+  const TabScreen = () => {
+  console.log('###### TabScreen----yyyyy');
   const { t } = useTranslation();
   const [contentShow, setContentShow] = useState(true);
   const [CopilotStarted, setCopilotStarted] = useState(false);
   const [CopilotStopped, setCopilotStopped] = useState(false);
   const [isVolunteer, setIsVolunteer] = useState(false);
+  const [userType, setUserType] = useState('');
   const { start, goToNth, unregisterStep, copilotEvents } = useCopilot();
   const insets = useSafeAreaInsets();
   const tabBarStyle = useTabBarStyle();
@@ -58,28 +61,48 @@ const TabScreen = () => {
   //   copilotEvents.on('stop', () => setCopilotStopped(true));
   // }, [start, copilotEvents]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let userType = await getDataFromStorage('userType');
-      const result = JSON.parse(await getDataFromStorage('profileData'));
-      console.log(
-        '########## getUserDetails',
-        result?.getUserDetails?.[0]?.customFields
-      );
-      const volunteer = result?.getUserDetails?.[0]?.customFields.filter(
-        (item) => item?.label === 'IS_VOLUNTEER'
-      );
-      console.log('###### volunteer', volunteer);
-      const isVolunteer = volunteer?.[0]?.selectedValues?.[0];
-      console.log('###### isVolunteer', isVolunteer);
-      setIsVolunteer(isVolunteer);
-      if (userType === 'youthnet') {
-        setContentShow(false);
-      }
-    };
+  // Use useFocusEffect to re-run when screen comes into focus
+  // This will trigger when userType changes in storage
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          let currentUserType = await getDataFromStorage('userType');
+          console.log('###### Fetched userType:', currentUserType);
+          
+          const result = JSON.parse(await getDataFromStorage('profileData'));
+          console.log(
+            '########## getUserDetails',
+            result?.getUserDetails?.[0]?.customFields
+          );
+          
+          const volunteer = result?.getUserDetails?.[0]?.customFields.filter(
+            (item) => item?.label === 'IS_VOLUNTEER'
+          );
+          console.log('###### volunteer', volunteer);
+          
+          const isVolunteerValue = volunteer?.[0]?.selectedValues?.[0];
+          console.log('###### isVolunteer', isVolunteerValue);
+          
+          setIsVolunteer(isVolunteerValue);
+          setUserType(currentUserType);
+          
+          // Update contentShow based on userType
+          if (currentUserType === 'youthnet') {
+            console.log('###### youthnetTab - hiding content, showing explore');
+            setContentShow(false);
+          } else {
+            console.log('###### regularTab - showing content, hiding explore');
+            setContentShow(true);
+          }
+        } catch (error) {
+          console.error('###### Error fetching data:', error);
+        }
+      };
 
-    fetchData();
-  }, []);
+      fetchData();
+    }, [])
+  );
 
   return (
     <Tab.Navigator

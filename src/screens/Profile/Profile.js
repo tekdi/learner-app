@@ -422,7 +422,7 @@ const Profile = () => {
 
                 // Skip individual family member name fields as they're handled above
                 if (
-                  ['mother_name', 'father_name', 'spouse_name'].includes(
+                  ['mother_name', 'father_name', 'spouse_name', 'tenantStatus'].includes(
                     item?.name
                   )
                 ) {

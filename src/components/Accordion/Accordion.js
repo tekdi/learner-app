@@ -29,7 +29,7 @@ import { courseTrackingStatus } from '../../utils/API/ApiCalls';
 import GlobalText from '@components/GlobalText/GlobalText';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
 
-function getFilteredData(data, subTopic) {
+function getFilteredData(data, subTopic, resourceType = null) {
   return data
     .map((item) => {
       // Check if any child has a name matching the subTopic
@@ -45,6 +45,7 @@ function getFilteredData(data, subTopic) {
 
       const prerequisites = [];
       const postrequisites = [];
+      const during = [];
 
       // Process filtered children
       filteredChildren?.forEach((child) => {
@@ -61,18 +62,25 @@ function getFilteredData(data, subTopic) {
             .filter((resource) => resource.type === 'postrequisite')
             .map((resource) => resource?.id?.toLowerCase())
         );
+
+        during.push(
+          ...learningResources
+            .filter((resource) => resource.type === 'during')
+            .map((resource) => resource?.id?.toLowerCase())
+        );
       });
 
       return {
         name: item.name, // Include the name of the item for reference
         prerequisites: prerequisites,
         postrequisites: postrequisites,
-        contentIdList: [...prerequisites, ...postrequisites],
+        during: during,
+        contentIdList: [...prerequisites, ...postrequisites, ...during],
       };
     })
     .filter((result) => result !== null); // Filter out null values
 }
-const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
+const Accordion = ({ item, postrequisites, during, title, setTrack, subTopic }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [resourceData, setResourceData] = useState([]);
@@ -141,7 +149,12 @@ const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
 
       let userId = await getDataFromStorage('userId');
       let course_track_data;
-      if (postrequisites) {
+      if (during) {
+        course_track_data = await courseTrackingStatus(
+          userId,
+          filterData?.[0]?.during || []
+        );
+      } else if (postrequisites) {
         course_track_data = await courseTrackingStatus(
           userId,
           filterData?.[0]?.contentIdList
@@ -166,9 +179,10 @@ const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
       if (filterData) {
         const result = await getDoidsDetails(filterData?.[0]?.contentIdList);
 
-        // Initialize arrays for prerequisites and postrequisites
+        // Initialize arrays for prerequisites, postrequisites, and during
         const prerequisites = [];
         const postrequisites = [];
+        const duringResources = [];
 
         // Filter prerequisites
         result?.content?.forEach((item) => {
@@ -185,6 +199,13 @@ const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
             )
           ) {
             postrequisites.push(item); // Push filtered items
+          }
+          if (
+            filterData?.[0]?.during?.includes(
+              item?.identifier?.toLowerCase()
+            )
+          ) {
+            duringResources.push(item); // Push filtered items
           }
         });
 
@@ -204,9 +225,16 @@ const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
           ) {
             postrequisites.push(item); // Push filtered items
           }
+          if (
+            filterData?.[0]?.during?.includes(
+              item?.identifier?.toLowerCase()
+            )
+          ) {
+            duringResources.push(item); // Push filtered items
+          }
         });
 
-        setResourceData({ prerequisites, postrequisites });
+        setResourceData({ prerequisites, postrequisites, during: duringResources });
       }
       setLoading(false);
 
@@ -279,7 +307,8 @@ const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
           ) : (
             <ScrollView>
               {resourceData?.postrequisites?.length > 0 ||
-              resourceData?.prerequisites?.length > 0 ? (
+              resourceData?.prerequisites?.length > 0 ||
+              resourceData?.during?.length > 0 ? (
                 <View
                   style={{
                     padding: 10,
@@ -289,7 +318,31 @@ const Accordion = ({ item, postrequisites, title, setTrack, subTopic }) => {
                     flexDirection: 'row',
                   }}
                 >
-                  {!postrequisites ? (
+                  {during ? (
+                    resourceData?.during?.length > 0 ? (
+                      resourceData?.during?.map((data, index) => {
+                        return (
+                          <ContentCard
+                            key={index}
+                            item={data}
+                            index={index}
+                            course_id={data?.identifier}
+                            unit_id={data?.identifier}
+                            TrackData={trackData}
+                          />
+                        );
+                      })
+                    ) : (
+                      <GlobalText
+                        style={[
+                          globalStyles.text,
+                          { marginLeft: 10, marginTop: 10 },
+                        ]}
+                      >
+                        {t('no_topics')}
+                      </GlobalText>
+                    )
+                  ) : !postrequisites ? (
                     <>
                       {resourceData?.prerequisites?.map((data, index) => {
                         return (

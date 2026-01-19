@@ -11,10 +11,58 @@ export const deepLinkCheck = async (navigation) => {
       await deleteSavedItem('deep_link_data');
 
       const { page, type, identifier, program } = deeplinkDataJson;
+      const parentData = await courseDetails(identifier);
+      const parentProgram = parentData?.result?.content?.program;
       console.log('########## page', page);
       console.log('########## type', type);
       console.log('########## identifier', identifier);
       console.log('########## program', program);
+
+      // Check program authorization
+       {
+        try {
+          // Get stored program from tenantData
+          const tenantData = JSON.parse(await getDataFromStorage('tenantData')) || {};
+          const storedProgram = tenantData?.[0]?.tenantName;
+          
+
+          // Normalize programs for comparison (handle both array and string)
+          // const normalizeProgram = (prog) => {
+          //   if (!prog) return null;
+          //   if (Array.isArray(prog)) {
+          //     return prog.map(p => String(p).toLowerCase().trim());
+          //   }
+          //   return [String(prog).toLowerCase().trim()];
+          // };
+
+          // const normalizedDeepLinkProgram = normalizeProgram(parentProgram);
+          // const normalizedStoredProgram = normalizeProgram(storedProgram);
+
+          // Check if programs don't match
+          if(parentData){
+            // const deepLinkPrograms = normalizedDeepLinkProgram;
+            // const storedPrograms = normalizedStoredProgram;
+            
+            // Check if any deep link program matches any stored program
+            const hasMatch = parentProgram?.some(deepLinkProg => 
+              storedProgram.includes(deepLinkProg)
+            );
+            
+            
+            if (!hasMatch) {
+              console.log('Unauthorized: Program mismatch in DeepLink', {
+                deepLinkProgram: program,
+                storedProgram: storedProgram
+              });
+              navigation.navigate('UnauthorizedScreen');
+              return;
+            }
+          }
+        } catch (error) {
+          console.log('Error checking program in DeepLink:', error);
+          // Continue with normal flow if check fails
+        }
+      }
 
       //navigate
       if (type == 'course') {
@@ -41,5 +89,7 @@ export const deepLinkCheck = async (navigation) => {
         });
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.log('Error in deepLinkCheck:', e);
+  }
 };

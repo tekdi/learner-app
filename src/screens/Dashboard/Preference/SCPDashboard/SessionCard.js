@@ -82,9 +82,9 @@ const SessionCard = ({ percentage }) => {
                 >
                   {t('prepare_for')} {getTomorrowDate()} {t('sessions')}
                 </GlobalText>
-                <GlobalText style={[globalStyles.subHeading]}>
+                {/* <GlobalText style={[globalStyles.subHeading]}>
                   {t('pre_requisites')}
-                </GlobalText>
+                </GlobalText> */}
               </View>
 
               <Octicons

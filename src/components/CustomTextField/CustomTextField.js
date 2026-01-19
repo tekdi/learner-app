@@ -22,6 +22,7 @@ const CustomTextField = ({
   autoCapitalize,
   keyboardType,
   text,
+  editable = true,
 }) => {
   const { t } = useTranslation();
   const [showToast, setShowToast] = useState(false);
@@ -35,13 +36,18 @@ const CustomTextField = ({
       <TextInput
         style={[
           styles.input,
-          { borderColor: errors[field.name] ? 'red' : '#DADADA' },
+          { 
+            borderColor: errors[field.name] ? 'red' : '#DADADA',
+            backgroundColor: editable ? 'white' : '#F5F5F5',
+            color: editable ? 'black' : '#A0A0A0'
+          },
         ]}
         value={formData[field.name] || ''}
         onChangeText={(text) => handleValue(field.name, text.trim())}
         secureTextEntry={secureTextEntry}
         autoCapitalize={autoCapitalize} // Disable auto-capitalization
         keyboardType={keyboardType} // Opens numeric keyboard by default
+        editable={editable}
       />
       {text && (
         <TouchableOpacity
@@ -100,6 +106,7 @@ CustomTextField.propTypes = {
   control: PropTypes.object,
   errors: PropTypes.object,
   secureTextEntry: PropTypes.any,
+  editable: PropTypes.bool,
 };
 
 export default CustomTextField;

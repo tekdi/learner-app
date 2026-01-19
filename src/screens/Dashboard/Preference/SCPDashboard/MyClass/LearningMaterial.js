@@ -18,11 +18,12 @@ const LearningMaterial = () => {
   const [selectedIds, setSelectedIds] = useState(null);
   const [courseTypes, setCourseTypes] = useState([]);
   const [courseSubjectList, setCourseSubjectList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [subjects, setSubjects] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
+      try{
       setLoading(true);
       const boardData = await LearningMaterialAPI();
 
@@ -31,6 +32,7 @@ const LearningMaterial = () => {
       console.log('cohortData', JSON.stringify(cohortData));
 
       const frameworks = boardData?.result?.framework;
+
 
       const board = cohortData?.customField.find(
         (item) => item.label === 'BOARD'
@@ -116,7 +118,14 @@ const LearningMaterial = () => {
 
       // setCourseSubjectList(courseSubjectLists);
       setCourseTypes(courseType);
-      setLoading(false);
+      }
+      catch(error){
+        console.log('error======>', error);
+
+      }
+      finally{
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);

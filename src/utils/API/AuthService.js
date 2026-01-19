@@ -720,7 +720,19 @@ export const getProgramDetails = async () => {
     });
 
     if (result) {
-      return result?.data?.result;
+      //before parent tenant change
+      // return result?.data?.result;
+
+      //parent tenant fix
+      const currentOrigin = 'http://localhost:3002';
+      const matchingTenants =
+        result?.data?.result?.filter((tenant) =>
+          tenant?.params?.uiConfig?.enable_domain?.includes(currentOrigin)
+        ) || [];
+      const programsData =
+        matchingTenants.flatMap((t) => t?.children || []) || [];
+      console.log('programsData', programsData);
+      return programsData;
     } else {
       return {};
     }
@@ -786,7 +798,13 @@ export const assessmentListApi = async (params = {}) => {
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
         // assessmentType: ['pre-test', 'post-test'],
-        assessmentType: ['Pre Test', 'Post Test', 'Other', 'Unit Test' , 'Mock Test'],
+        assessmentType: [
+          'Pre Test',
+          'Post Test',
+          'Other',
+          'Unit Test',
+          'Mock Test',
+        ],
         status: ['Live'],
         primaryCategory: ['Practice Question Set'],
         // new different type
@@ -963,6 +981,25 @@ export const getProfileDetails = async (params = {}) => {
     return result_offline;
   }
 };
+
+export const getUserDetails = async (params = {}) => {
+  try {
+    const url = `${EndUrls.userDetails}/${params?.user_id}`; // Define the URL
+    const headers = await getHeaders();
+    const result = await get(url, {
+      headers: headers || {},
+    });
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  }
+  catch (e) {
+    console.log(e)
+  }
+};
+
 
 export const getAssessmentStatus = async (params = {}) => {
   try {

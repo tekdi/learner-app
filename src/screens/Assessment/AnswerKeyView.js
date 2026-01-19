@@ -55,6 +55,29 @@ const AnswerKeyView = ({ route }) => {
   const flatListRef = useRef(null);
   const [networkstatus, setNetworkstatus] = useState(true);
   const [questionSolutions, setQuestionSolutions] = useState({});
+  console.log('questionSolutions=====>', questionSolutions);
+
+  // Function to remove image tags and their parent figure elements from HTML
+  const removeImagesFromHTML = (htmlString) => {
+    if (!htmlString || typeof htmlString !== 'string') {
+      return htmlString;
+    }
+
+    // Remove figure elements containing images
+    let cleanedHtml = htmlString.replace(
+      /<figure[^>]*class=["']image["'][^>]*>[\s\S]*?<\/figure>/gi,
+      ''
+    );
+
+    // Remove standalone img tags
+    cleanedHtml = cleanedHtml.replace(/<img[^>]*>/gi, '');
+
+    // Clean up any empty paragraphs or extra whitespace
+    cleanedHtml = cleanedHtml.replace(/<p>\s*<\/p>/gi, '');
+    cleanedHtml = cleanedHtml.replace(/\s+/g, ' ').trim();
+
+    return cleanedHtml;
+  };
 
   const countEmptyResValues = (data) => {
     return data?.reduce((count, item) => {
@@ -175,7 +198,7 @@ const AnswerKeyView = ({ route }) => {
         }
       }
 
-      console.log('questions----------', questions.length);
+      console.log('questions========>', JSON.stringify(questions));
       console.log('identifiers', identifiers.length);
 
       if (questions.length == identifiers.length) {
@@ -430,8 +453,18 @@ const AnswerKeyView = ({ route }) => {
                           const firstItem = parsed[0];
                           if (firstItem?.label) {
                             return firstItem.label
-                              .replace(/<\/?[^>]+(>|$)/g, '')
-                              .replace(/^\d+\.\s*/, '');
+                              .replace(/<\/?[^>]+(>|$)/g, '') // Remove HTML tags
+                              .replace(/&nbsp;/g, ' ') // Replace &nbsp; with regular space
+                              .replace(/&amp;/g, '&') // Replace &amp; with &
+                              .replace(/&lt;/g, '<') // Replace &lt; with <
+                              .replace(/&gt;/g, '>') // Replace &gt; with >
+                              .replace(/&quot;/g, '"') // Replace &quot; with "
+                              .replace(/^\d+\.\s*/, '') // Remove numbered prefixes like "1. "
+                              .replace(/^\([क-ह]\)\s*/, '') // Remove Devanagari option prefixes like "(क) "
+                              .replace(/^\([a-z]\)\s*/, '') // Remove English option prefixes like "(a) "
+                              .replace(/^\([A-Z]\)\s*/, '') // Remove uppercase English option prefixes like "(A) "
+                              .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+                              .trim(); // Remove leading and trailing whitespace
                           }
                         }
 
@@ -469,9 +502,10 @@ const AnswerKeyView = ({ route }) => {
                           contentWidth={width - 80}
                           baseStyle={baseStyle}
                           source={{
-                            html:
+                            html: removeImagesFromHTML(
                               questionSolutions[item.questionId][0]?.value ||
-                              '',
+                                ''
+                            ),
                           }}
                         />
                       </View>
