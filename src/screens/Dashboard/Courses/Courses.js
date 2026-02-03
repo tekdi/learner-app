@@ -279,6 +279,9 @@ const Courses = () => {
     //       : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
     let contentFilter = JSON.parse(await getDataFromStorage('contentFilter'));
     console.log('mergedFilter==========>', mergedFilter);
+    if (Array.isArray(mergedFilter.program) && mergedFilter.program.length === 0) {
+      delete mergedFilter.program;
+    }
     const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
     const channelId = tenantData?.[0]?.channelId;
     if(channelId == 'scp-channel'){
