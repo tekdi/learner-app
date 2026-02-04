@@ -627,7 +627,8 @@ const StandAlonePlayer = ({ route }) => {
               if (
                 maxScore_Temp == 0 ||
                 maxScore_Temp == null ||
-                maxScore_Temp == undefined
+                maxScore_Temp == undefined ||
+                maxScore_Temp == '0'
               ) {
                 setAlertModal(true);
                 setErrorDetail('unsupported_content');
