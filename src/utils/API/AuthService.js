@@ -793,8 +793,10 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
-        board: `${params?.boardName}`,
+       program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
+       // board: `${params?.boardName}`,
+        "se_boards": [`${params?.boardName}`],
+
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
         // assessmentType: ['pre-test', 'post-test'],
@@ -809,7 +811,7 @@ export const assessmentListApi = async (params = {}) => {
         primaryCategory: ['Practice Question Set'],
         // new different type
         // undo this
-        evaluationType: ['offline', 'online', 'ai'],
+       // evaluationType: ['offline', 'online', 'ai'],
       },
       sort_by: {
         lastUpdatedOn: 'desc',
