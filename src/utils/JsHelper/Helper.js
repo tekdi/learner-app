@@ -215,11 +215,15 @@ export const logEventFunction = async ({ eventName, method, screenName }) => {
   const timestamp = new Date().toLocaleString(); // Get the current timestamp
 
   let userId = await getDataFromStorage('userId');
+  
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData')) || {};
+  const storedProgram = tenantData?.[0]?.tenantName;
 
   analytics().logEvent(eventName, {
     method: method,
     screen_name: screenName,
     userId: userId || '-',
+    program: storedProgram || '-',
     timestamp: timestamp, // Adding the timestamp as a parameter
   });
 };
