@@ -30,14 +30,30 @@ const CoursesBox = ({
   // console.log('ContentData', ContentData);
   // console.log('##########');
   const handlePress = (item) => {
-    //console.log('Card pressed!', item);
+    // console.log('CourseContentList pressed!', item);
     // console.log('identifier', item?.identifier);
     // console.log('item', item?.leafNodes);
-    navigation.push('CourseContentList', {
-      do_id: item?.identifier,
-      course_id: item?.identifier,
-      content_list_node: item?.leafNodes,
-    });
+    
+    // Check if leafNodes is undefined or empty
+    if (!item?.leafNodes || item?.leafNodes.length === 0) {
+      console.log('No leafNodes found, navigating directly to StandAlonePlayer');
+      // Navigate directly to StandAlonePlayer for direct content consumption
+      navigation.push('StandAlonePlayer', {
+        content_do_id: item?.identifier,
+        content_mime_type: item?.mimeType || 'application/vnd.ekstep.content-collection',
+        title: item?.name || 'Content',
+        isOffline: false,
+        course_id: item?.identifier,
+        unit_id: item?.identifier,
+      });
+    } else {
+      // Navigate to CourseContentList for courses with multiple content items
+      navigation.push('CourseContentList', {
+        do_id: item?.identifier,
+        course_id: item?.identifier,
+        content_list_node: item?.leafNodes,
+      });
+    }
   };
 
   const renderItem = ({ item, index }) => (

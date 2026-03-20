@@ -418,6 +418,7 @@ export const courseListApi_New = async ({
   offset,
   inprogress_do_ids,
   contentFilter,
+  customProp='',
 }) => {
   const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
   const channelId = tenantData?.[0]?.channelId;
@@ -443,7 +444,7 @@ export const courseListApi_New = async ({
         program: contentFilter?.program,
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
         status: ['Live'],
-        primaryCategory: ['Course'],
+        primaryCategory: customProp === 'forchildren' ? ["Activity", "Story"] : ['Course'],
         ...(mergedFilter && mergedFilter),
       },
       limit: 10,

@@ -387,13 +387,13 @@ const CourseContentList = ({ route }) => {
               </View>
             </View>
 
-            {!enrollStatus ? (
+            {!enrollStatus && isConnected ? (
               <View style={{ width: '90%', alignSelf: 'center' }}>
                 <PrimaryButton onPress={handleEnroll} text={t('enroll_now')} />
               </View>
             ) : (
               certificateId &&
-              userType !== 'pragyanpath' &&  userType !== 'scp' && (
+              userType !== 'pragyanpath' && userType !== 'scp' && (
                 <View
                   style={{
                     width: '90%',

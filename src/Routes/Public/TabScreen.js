@@ -40,6 +40,8 @@ const WalkthroughableView = walkthroughable(View); // Wrap Image component
   console.log('###### TabScreen----yyyyy');
   const { t } = useTranslation();
   const [contentShow, setContentShow] = useState(true);
+  const [selfChildrenTabShow, setSelfChildrenTabShow] = useState(false);
+
   const [CopilotStarted, setCopilotStarted] = useState(false);
   const [CopilotStopped, setCopilotStopped] = useState(false);
   const [isVolunteer, setIsVolunteer] = useState(false);
@@ -88,12 +90,17 @@ const WalkthroughableView = walkthroughable(View); // Wrap Image component
           setUserType(currentUserType);
           
           // Update contentShow based on userType
-          if (currentUserType === 'youthnet') {
+          if (currentUserType === 'youthnet' ) {
             console.log('###### youthnetTab - hiding content, showing explore');
             setContentShow(false);
           } else {
             console.log('###### regularTab - showing content, hiding explore');
             setContentShow(true);
+          }
+          if (currentUserType === 'Camp to Club') {
+            setSelfChildrenTabShow(true);
+          } else {
+            setSelfChildrenTabShow(false);
           }
         } catch (error) {
           console.error('###### Error fetching data:', error);
@@ -116,7 +123,7 @@ const WalkthroughableView = walkthroughable(View); // Wrap Image component
         tabBarLabelStyle: tabLabelStyle,
       })}
     >
-      <Tab.Screen
+      {!selfChildrenTabShow && (<Tab.Screen
         name="DashboardStack"
         options={{
           tabBarLabel: t('courses'),
@@ -142,9 +149,46 @@ const WalkthroughableView = walkthroughable(View); // Wrap Image component
         {(props) => (
           <DashboardStack {...props} CopilotStopped={CopilotStopped} />
         )}
+      </Tab.Screen>)}
+
+      {selfChildrenTabShow && (<>
+        <Tab.Screen
+        name="CoursesForChildren"
+        options={{
+          tabBarLabel: t('for_children') || 'For Children',
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={focused ? Coursesfilled : Coursesunfilled}
+              style={{ width: 30, height: 30 }}
+            />
+          ),
+        }}
+      >
+        {(props) => (
+          <DashboardStack {...props} CopilotStopped={CopilotStopped} customProp="forchildren" />
+        )}
       </Tab.Screen>
 
-      {contentShow && (
+      <Tab.Screen
+        name="CoursesForSelf"
+        options={{
+          tabBarLabel: t('for_self') || 'For Self',
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={focused ? Coursesfilled : Coursesunfilled}
+              style={{ width: 30, height: 30 }}
+            />
+          ),
+        }}
+      >
+        {(props) => (
+          <DashboardStack {...props} CopilotStopped={CopilotStopped} customProp="self" />
+        )}
+      </Tab.Screen>
+      </>
+       )}
+
+      {contentShow && !selfChildrenTabShow && (
         <Tab.Screen
           name="content"
           component={Contents}

@@ -7,11 +7,11 @@ import UnitList from '../../screens/Dashboard/Courses/UnitList';
 
 const Stack = createNativeStackNavigator();
 
-const DashboardStack = ({ CopilotStopped }) => {
+const DashboardStack = ({ CopilotStopped, customProp = null }) => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Courses" options={{ lazy: true }}>
-        {(props) => <Courses {...props} CopilotStopped={CopilotStopped} />}
+        {(props) => <Courses {...props} CopilotStopped={CopilotStopped} customProp={customProp} />}
       </Stack.Screen>
       <Stack.Screen
         name="CourseContentList"
