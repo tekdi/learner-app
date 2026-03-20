@@ -24,6 +24,7 @@ import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
 import { notificationSubscribe } from './utils/API/AuthService';
 import DeviceInfo from 'react-native-device-info';
+import { navigationRef } from './utils/NavigationService';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import { CopilotProvider } from 'react-native-copilot';
@@ -549,7 +550,7 @@ const App = () => {
                 tooltipStyle={{ backgroundColor: 'black' }}
                 androidStatusBarVisible={true}
               >
-                <NavigationContainer linking={linking}>
+                <NavigationContainer ref={navigationRef} linking={linking}>
                   <Suspense
                     fallback={<GlobalText>Loading Screen...</GlobalText>}
                   >

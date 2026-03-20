@@ -60,7 +60,7 @@ import { deepLinkCheck } from '../../../utils/JsHelper/DeepLink';
 
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
-const Courses = () => {
+const Courses = ({ route, CopilotStopped, customProp = null }) => {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { isConnected } = useInternet();
@@ -292,6 +292,7 @@ const Courses = () => {
       mergedFilter,
       offset,
       contentFilter,
+      customProp,
     });
 
     try {
