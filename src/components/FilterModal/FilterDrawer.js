@@ -1,16 +1,18 @@
 import globalStyles from '@src/utils/Helper/Style';
-import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import React, { useEffect, useRef } from 'react';
+import { Text, TouchableOpacity, StyleSheet, Dimensions, Animated } from 'react-native';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const DRAWER_WIDTH = SCREEN_WIDTH * 0.8; // 80% width of the screen
+const DRAWER_WIDTH = SCREEN_WIDTH * 0.8;
 
 const FilterDrawer = ({ isVisible, onClose, children }) => {
-  const translateX = useSharedValue(isVisible ? 0 : -DRAWER_WIDTH);
+  const translateX = useRef(new Animated.Value(isVisible ? 0 : -DRAWER_WIDTH)).current;
 
-  React.useEffect(() => {
-    translateX.value = withSpring(isVisible ? 0 : -DRAWER_WIDTH);
+  useEffect(() => {
+    Animated.spring(translateX, {
+      toValue: isVisible ? 0 : -DRAWER_WIDTH,
+      useNativeDriver: true,
+    }).start();
   }, [isVisible]);
 
   return (
@@ -41,10 +43,6 @@ const styles = StyleSheet.create({
   closeButton: {
     alignSelf: 'flex-end',
     padding: 10,
-  },
-  closeText: {
-    fontSize: 18,
-    fontWeight: 'bold',
   },
 });
 

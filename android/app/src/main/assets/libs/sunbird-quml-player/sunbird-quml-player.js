@@ -100445,9 +100445,18 @@ class MainPlayerComponent {
   }
   setInitialScores(activeSectionIndex = 0) {
     const alphabets = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    const getAlphabetIndex =(index) =>{
+        let n = index;
+        let label = '';
+        while (n >= 0) {
+          label = String.fromCharCode(65 + (n % 26)) + label;
+          n = Math.floor(n / 26) - 1;
+        }
+        return label;
+      };
     this.sections.forEach((section, i) => {
       this.mainProgressBar.push({
-        index: alphabets[i].toLocaleUpperCase(),
+        index: getAlphabetIndex(i),//alphabets[i].toLocaleUpperCase(),
         class: 'unattempted',
         value: undefined,
         score: 0,
