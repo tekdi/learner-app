@@ -13,7 +13,6 @@ module.exports = {
         },
       },
     ],
-    // Reanimated 4 + RN New Arch: worklets plugin must be last (replaces reanimated/plugin)
-    'react-native-worklets/plugin',
+    'react-native-reanimated/plugin', // Ensure this is the LAST plugin
   ],
 };
