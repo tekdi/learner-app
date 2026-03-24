@@ -78,6 +78,3 @@ yarn-error.log
 .env.prod
 .env.uat
 # .cursor/*
-
-# Do not push autolinking.json file
-android/build
