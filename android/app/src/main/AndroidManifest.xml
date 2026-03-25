@@ -16,6 +16,8 @@ package="com.pratham.learning"
 
     <!-- Camera and Storage permissions for image upload functionality -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     
     <!-- Download and storage permissions for image download functionality -->
