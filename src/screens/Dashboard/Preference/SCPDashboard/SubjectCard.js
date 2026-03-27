@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,28 +8,55 @@ import {
   Linking,
   ImageBackground,
   Image,
+  Modal,
+  SafeAreaView,
+  StatusBar,
 } from 'react-native';
 import { Layout } from '@ui-kitten/components';
 import globalStyles from '../../../../utils/Helper/Style';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from '../../../../context/LanguageContext';
-import { formatDateTimeRange } from '../../../../utils/JsHelper/Helper';
+import { formatDateTimeRange, getStoredUsername } from '../../../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
 import menu_book from '../../../../assets/images/png/menu_book.png';
+import ZoomWebView from '../../../../components/ZoomWebView/ZoomWebView';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 
 const SubjectCard = ({ item }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showZoomModal, setShowZoomModal] = useState(false);
+  const [userName, setUserName] = useState('');
   const { t } = useTranslation();
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const storedUsername = await getStoredUsername();
+        if (storedUsername) {
+          setUserName(storedUsername);
+        }
+      } catch (error) {
+        console.log('Error fetching user name:', error);
+      }
+    };
+    fetchUserName();
+  }, []);
 
   const handleCopyLink = (zoomLink) => {
     Clipboard.setString(zoomLink); // Copy the Zoom link to the clipboard
     setShowToast(true); // Show toast message
+  };
+
+  const handleOpenZoom = () => {
+    if (item?.onlineDetails?.url) {
+      setShowZoomModal(true);
+    }
   };
 
   return (
@@ -67,7 +94,7 @@ const SubjectCard = ({ item }) => {
           {item?.onlineDetails && (
             <>
               <TouchableOpacity
-                onPress={() => Linking.openURL(item?.onlineDetails?.url)}
+                onPress={handleOpenZoom}
               >
                 <GlobalText style={styles.zoomLink}>
                   {item?.onlineDetails?.url}
@@ -177,6 +204,32 @@ const SubjectCard = ({ item }) => {
           </View>
         )}
       </View>
+
+      {/* Zoom WebView Modal */}
+      <Modal
+        visible={showZoomModal}
+        animationType="slide"
+        onRequestClose={() => setShowZoomModal(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <StatusBar barStyle="light-content" backgroundColor="#1f1f1f" />
+          <View style={styles.modalHeader}>
+            <GlobalText style={styles.modalHeaderText}>Zoom Meeting</GlobalText>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowZoomModal(false)}
+            >
+              <Ionicons name="close" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+          {item?.onlineDetails?.url && (
+            <ZoomWebView
+              uri={item.onlineDetails.url}
+              userName={userName}
+            />
+          )}
+        </SafeAreaView>
+      </Modal>
     </Layout>
   );
 };
@@ -227,6 +280,28 @@ const styles = StyleSheet.create({
   accordionDetails: {
     color: '#0D599E',
     marginLeft: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#1f1f1f',
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+  },
+  modalHeaderText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  closeButton: {
+    padding: 8,
   },
 });
 

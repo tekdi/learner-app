@@ -253,6 +253,24 @@ export const storeUsername = async (username) => {
   }
 };
 
+export const getStoredUsername = async () => {
+  try {
+    // Fetch stored usernames
+    const storedUsernames = await AsyncStorage.getItem('usernames');
+    if (storedUsernames) {
+      const usernamesArray = JSON.parse(storedUsernames);
+      // Return the most recent username (last item in array)
+      if (usernamesArray && usernamesArray.length > 0) {
+        return usernamesArray[usernamesArray.length - 1];
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('Error retrieving username:', error);
+    return null;
+  }
+};
+
 //translate digits in language
 const regionalDigits = {
   en: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
