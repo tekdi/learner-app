@@ -383,6 +383,125 @@ const ZoomWebView: React.FC<ZoomWebViewProps> = ({ uri, userName }) => {
           }
         }, true);
         
+        // ============================================
+        // HIDE "JOIN FROM APP" & AUTO-CLICK "JOIN FROM BROWSER"
+        // ============================================
+        (function handleZoomLaunchPage() {
+
+          // Phrases whose buttons/links must be HIDDEN
+          var HIDE_PHRASES = [
+            'join from app',
+            'open zoom',
+            'open in app',
+            'launch zoom',
+            'launch app',
+            'download zoom',
+            'google play',
+            'join from your computer',
+          ];
+
+          // Phrases whose buttons must be AUTO-CLICKED (browser join)
+          var CLICK_PHRASES = [
+            'join from browser',
+            'join from your browser',
+            'join from the browser',
+            'join in browser',
+          ];
+
+          // CSS selectors known to wrap the "open in app" elements
+          var HIDE_SELECTORS = [
+            '.launch-app-btn',
+            '#btn-join-app',
+            '.app-banner',
+            '.open-app-banner',
+            '.zm-btn-legacy.open-in-desktop',
+            '[class*="open-in-app"]',
+            '[class*="openInApp"]',
+            '[class*="launch-app"]',
+            '[id*="open-in-app"]',
+            '[id*="launch-app"]',
+            '.meeting-app-download-section',
+            '.app-download-btn',
+            '.footer-download-app',
+            '.download-app-section',
+            // "Or" divider + download row shown in screenshot
+            '.download-app-row',
+            '[class*="download-app"]',
+          ];
+
+          var browserBtnClicked = false;
+
+          function processPage() {
+            // --- 1. Hide by CSS selector ---
+            HIDE_SELECTORS.forEach(function(sel) {
+              try {
+                document.querySelectorAll(sel).forEach(function(el) {
+                  el.style.setProperty('display', 'none', 'important');
+                });
+              } catch(e) {}
+            });
+
+            // --- 2. Walk every visible <a> and <button> ---
+            document.querySelectorAll('a, button').forEach(function(el) {
+              var text = (el.textContent || '').toLowerCase().trim();
+
+              // Auto-click "Join from browser" ONCE
+              if (!browserBtnClicked) {
+                var shouldClick = CLICK_PHRASES.some(function(phrase) {
+                  return text === phrase || text.includes(phrase);
+                });
+                if (shouldClick) {
+                  browserBtnClicked = true;
+                  console.log('✅ Auto-clicking "Join from browser":', el.textContent.trim());
+                  el.click();
+                  return; // don't hide this button
+                }
+              }
+
+              // Hide "Join from App" and download-related buttons
+              var shouldHide = HIDE_PHRASES.some(function(phrase) {
+                return text.includes(phrase);
+              });
+              if (shouldHide) {
+                el.style.setProperty('display', 'none', 'important');
+                // Hide parent wrapper if it only contains this element
+                var parent = el.parentElement;
+                if (parent && parent.children.length === 1) {
+                  parent.style.setProperty('display', 'none', 'important');
+                }
+              }
+            });
+
+            // --- 3. Hide "Or" separator + download row (siblings of hidden elements) ---
+            // Look for any element whose text is just "or" / "Or"
+            document.querySelectorAll('div, span, p, hr').forEach(function(el) {
+              var text = (el.textContent || '').trim().toLowerCase();
+              if (text === 'or') {
+                el.style.setProperty('display', 'none', 'important');
+              }
+            });
+          }
+
+          // Run immediately
+          processPage();
+
+          // Run on DOM events
+          document.addEventListener('DOMContentLoaded', processPage);
+          window.addEventListener('load', processPage);
+
+          // Watch for Zoom's async UI injection
+          var obs = new MutationObserver(function() { processPage(); });
+          obs.observe(document.documentElement, { childList: true, subtree: true });
+
+          // Sweep every 300 ms for the first 15 seconds
+          var count = 0;
+          var timer = setInterval(function() {
+            processPage();
+            if (++count >= 50) clearInterval(timer);
+          }, 300);
+
+        })();
+
         let isUserInteracting = false;
         let filledInputs = new Set();
         let interactionTimeout = null;
