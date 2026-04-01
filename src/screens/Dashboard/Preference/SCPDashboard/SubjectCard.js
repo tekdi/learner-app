@@ -100,7 +100,7 @@ const SubjectCard = ({ item }) => {
                   {item?.onlineDetails?.url}
                 </GlobalText>
               </TouchableOpacity>
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={() => handleCopyLink(item?.onlineDetails?.url)}
               >
                 <Icon
@@ -108,7 +108,7 @@ const SubjectCard = ({ item }) => {
                   color={showToast ? '#1A8825' : '#0D599E'}
                   size={20}
                 />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </>
           )}
         </View>
