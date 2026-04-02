@@ -116,10 +116,12 @@ export const restoreScrollPosition = async (scrollViewRef, page) => {
   const savedPosition = await getStoredScrollPosition(page);
   if (scrollViewRef.current) {
     setTimeout(() => {
-      scrollViewRef.current.scrollTo({
-        y: savedPosition + 10,
-        animated: false,
-      });
+      if (scrollViewRef.current) {
+        scrollViewRef.current.scrollTo({
+          y: savedPosition + 10,
+          animated: false,
+        });
+      }
     }, 500);
   }
 };

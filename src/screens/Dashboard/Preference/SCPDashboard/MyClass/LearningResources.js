@@ -181,13 +181,14 @@ const LearningResources = ({ route }) => {
           <ContentAccordion
             trackData={trackData}
             resourceData={resourceData}
-            title={'post_requisites_2'}
-          />
-           <ContentAccordion
-            trackData={trackData}
-            resourceData={resourceData}
             title={'during'}
           />
+          <ContentAccordion
+            trackData={trackData}
+            resourceData={resourceData}
+            title={'post_requisites_2'}
+          />
+           
         </ScrollView>
       )}
     </>

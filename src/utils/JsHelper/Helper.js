@@ -4,6 +4,7 @@ import { getAccessToken } from '../API/AuthService';
 import analytics from '@react-native-firebase/analytics';
 import RNFS from 'react-native-fs';
 import messaging from '@react-native-firebase/messaging';
+import { getCurrentRouteParams } from '../NavigationService';
 
 // Get Saved Data from AsyncStorage
 
@@ -214,13 +215,25 @@ export const capitalizeNameWithSpace = (name) => {
 export const logEventFunction = async ({ eventName, method, screenName }) => {
   const timestamp = new Date().toLocaleString(); // Get the current timestamp
 
+  // Get route parameters directly from navigation
+  const routeParams = getCurrentRouteParams();
+  const { content_do_id, content_list_node, unit_id,course_id } = routeParams;
+console.log('eventName=====>', eventName);
   let userId = await getDataFromStorage('userId');
+  
+  const tenantData = JSON.parse(await getDataFromStorage('tenantData')) || {};
+  const storedProgram = tenantData?.[0]?.tenantName;
 
   analytics().logEvent(eventName, {
     method: method,
     screen_name: screenName,
     userId: userId || '-',
+    program: storedProgram || '-',
     timestamp: timestamp, // Adding the timestamp as a parameter
+    ...(content_list_node && { content_list_node: content_list_node }),
+    ...(content_do_id && { content_do_id: content_do_id }),
+    ...(course_id && { course_id: course_id }),
+    ...(unit_id && { unit_id: unit_id }),
   });
 };
 
@@ -237,6 +250,24 @@ export const storeUsername = async (username) => {
     }
   } catch (error) {
     console.error('Error storing username:', error);
+  }
+};
+
+export const getStoredUsername = async () => {
+  try {
+    // Fetch stored usernames
+    const storedUsernames = await AsyncStorage.getItem('usernames');
+    if (storedUsernames) {
+      const usernamesArray = JSON.parse(storedUsernames);
+      // Return the most recent username (last item in array)
+      if (usernamesArray && usernamesArray.length > 0) {
+        return usernamesArray[usernamesArray.length - 1];
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('Error retrieving username:', error);
+    return null;
   }
 };
 

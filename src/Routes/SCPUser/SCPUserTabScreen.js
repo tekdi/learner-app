@@ -213,6 +213,13 @@ const SCPUserTabScreen = () => {
     };
   }, [isFocused, refreshCohortData]);
 
+  // Ensure Home tab is selected after login/mount if available
+  useEffect(() => {
+    if (showHomeTab) {
+      navigation.navigate('SCPUserStack');
+    }
+  }, [showHomeTab, navigation]);
+
   return (
     <Tab.Navigator
       initialRouteName="SCPUserStack"

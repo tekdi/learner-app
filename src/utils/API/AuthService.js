@@ -418,6 +418,7 @@ export const courseListApi_New = async ({
   offset,
   inprogress_do_ids,
   contentFilter,
+  customProp='',
 }) => {
   const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
   const channelId = tenantData?.[0]?.channelId;
@@ -443,7 +444,7 @@ export const courseListApi_New = async ({
         program: contentFilter?.program,
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
         status: ['Live'],
-        primaryCategory: ['Course'],
+        primaryCategory: customProp === 'forchildren' ? ["Activity", "Story"] : ['Course'],
         ...(mergedFilter && mergedFilter),
       },
       limit: 10,
@@ -793,8 +794,10 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
+       program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
         board: `${params?.boardName}`,
+       // "se_boards": [`${params?.boardName}`],
+
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
         // assessmentType: ['pre-test', 'post-test'],
