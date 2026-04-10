@@ -78,12 +78,7 @@ const UnitList = ({ route }) => {
 
       // console.log('############ in focus unit list');
       setLoading(true);
-      //bug fix for not realtime tracking
-      //fetchDataTrack();
-      setTimeout(() => {
-        // Code to run after 1 second
-        fetchDataTrack();
-      }, 1000); // 1000 milliseconds = 1 second
+      fetchDataTrack();
 
       // Clean up the event listener on component unmount
       return () => {

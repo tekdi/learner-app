@@ -1391,6 +1391,23 @@ export const deleteTrackingOffline = async (id) => {
     console.log(e);
   }
 };
+export const deleteTrackingOfflineByRecord = async (
+  user_id,
+  course_id,
+  content_id,
+  lastAccessOn
+) => {
+  try {
+    await deleteData({
+      tableName: 'Tracking_Offline_2',
+      where: { user_id, course_id, content_id, lastAccessOn },
+    })
+      .then(() => console.log('deleted synced tracking record from SQLite'))
+      .catch((err) => console.error('deleteTrackingOfflineByRecord err', err));
+  } catch (e) {
+    console.log(e);
+  }
+};
 export const getSyncTrackingOfflineCourse = async (user_id, course_id) => {
   try {
     //get result
