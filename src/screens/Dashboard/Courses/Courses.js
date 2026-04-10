@@ -136,7 +136,12 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
           course_track_data?.data.find((course) => course.userId === userId)
             ?.course || [];
       }
-      // setTrackData(courseTrackData);
+      // Ensure every course has an entry so card components trigger SQLite check
+      for (const courseId of courseList) {
+        if (!courseTrackData.some((c) => c.courseId === courseId)) {
+          courseTrackData.push({ courseId, completed_list: [], in_progress_list: [] });
+        }
+      }
       setTrackData(courseTrackData);
     } catch (e) {
       console.log('Error:', e);
