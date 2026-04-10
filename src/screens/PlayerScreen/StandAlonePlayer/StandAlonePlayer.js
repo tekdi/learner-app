@@ -266,10 +266,26 @@ const StandAlonePlayer = ({ route }) => {
         setOrientation(newOrientation);
       }
     );
-
+                    
+    const capitalizeName = (name) => {
+      return name
+        ?.split(' ') // Split the name by spaces into an array of words
+        ?.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
+        ?.join(' '); // Join the words back into a single string
+    };
+    
     const fetchData = async () => {
       let tempUserId = await getDataFromStorage('userId');
-      let tempUserName = await getDataFromStorage('Username');
+      //get username
+      // let tempUserName = await getDataFromStorage('Username');
+      //get profile data firstname and lastname
+      const resultProfileData = JSON.parse(await getDataFromStorage('profileData'));
+      const tempUserName = resultProfileData?.getUserDetails?.[0]?.firstName &&
+      resultProfileData?.getUserDetails?.[0]?.lastName &&
+      capitalizeName(
+        `${resultProfileData?.getUserDetails?.[0]?.firstName} ${resultProfileData?.getUserDetails?.[0]?.lastName}!`
+      );
+                    
       console.log('tempUserId', tempUserId);
       console.log('tempUserName', tempUserName);
       setUserId(tempUserId);
