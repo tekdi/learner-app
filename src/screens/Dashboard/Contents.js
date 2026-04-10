@@ -107,11 +107,12 @@ const Contents = () => {
           course_track_data?.data.find((course) => course.userId === userId)
             ?.course || [];
       }
-      // setTrackData(courseTrackData);
-      console.log(
-        '########## courseTrackData',
-        JSON.stringify(courseTrackData)
-      );
+      // Ensure every content has an entry so card components trigger SQLite check
+      for (const courseId of contentIdList) {
+        if (!courseTrackData.some((c) => c.courseId === courseId)) {
+          courseTrackData.push({ courseId, completed_list: [], in_progress_list: [] });
+        }
+      }
       setTrackData(courseTrackData);
     } catch (e) {
       console.log('Error:', e);

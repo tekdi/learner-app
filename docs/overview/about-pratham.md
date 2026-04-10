@@ -1,0 +1,6 @@
+# Overview
+Pratham Education Foundation (Pratham) is one of the largest NGOs in India, with a track record of innovative, rigorously evaluated programs that have inspired similar initiatives across three continents. Pratham’s journey began in 1995 in Mumbai with the mission: Every Child in School and Learning Well. From the slums of India’s biggest city to today’s presence in more than 26 states and union territories, our journey has been one of learning and scale—from evidence to practice, from small innovations to systemic reforms. Pratham’s work extends from programs for early and elementary years to initiatives for girls and women, and youth skilling.
+
+We reach 7 million children and youth in a typical year through a combination of efforts: working directly with children and youth in communities, as well as through collaborations with state and district-level governments.
+
+From Early Childhood Education to Elementary Education, Pratham identifies education-related gaps and opportunities in each segment and develops context-based solutions. We collaborate with children, schools, families, and communities through direct programs and government partnerships.

@@ -55,6 +55,7 @@ import {
   storeAsessmentOffline,
   storeTelemetryOffline,
   storeTrackingOffline,
+  deleteTrackingOfflineByRecord,
 } from '../../../utils/API/AuthService';
 import TestResultModal from '../../Assessment/TestResultModal';
 import MimeAlertModal from '../../../components/MimeAletModal/MimeAlertModal';
@@ -437,7 +438,7 @@ const StandAlonePlayer = ({ route }) => {
         ];
         await storeData('contentEidEND', contentEidEND, 'json');
         //check if exit button pressed
-        fetchExitData();
+        await fetchExitData();
         navigation.goBack();
       }
       //check telemetry
@@ -496,7 +497,7 @@ const StandAlonePlayer = ({ route }) => {
         // console.log('####################');
         //check if exit button pressed
         if (data_obj?.eid == 'HEARTBEAT' && data_obj?.edata?.type == 'EXIT') {
-          fetchExitData();
+          await fetchExitData();
           navigation.goBack();
         }
       }
@@ -1300,11 +1301,17 @@ const StandAlonePlayer = ({ route }) => {
   //event when player closed
   useFocusEffect(
     useCallback(() => {
+      let isExiting = false;
       const onBackPress = () => {
-        // Handle back button press
+        if (isExiting) return true; // already saving — ignore repeated presses
+        isExiting = true;
         console.log('useFocusEffect Back button pressed or screen closed');
-        fetchExitData();
-        return false; // Return true if you want to block the back action, false to allow it
+        // fetchExitData now completes after the fast SQLite write, so the wait
+        // is imperceptible. Navigate back only after it resolves.
+        fetchExitData().finally(() => {
+          navigation.goBack();
+        });
+        return true; // block default back; we handle navigation above
       };
 
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
@@ -1450,38 +1457,47 @@ const StandAlonePlayer = ({ route }) => {
     if (detailsObject && detailsObject.length > 0) {
       console.log('reached here', JSON.stringify(detailsObject));
 
-      try {
-        let create_tracking = await contentTracking(
-          userId,
-          courseId,
-          contentId,
-          contentType,
-          contentMime,
-          lastAccessOn,
-          detailsObject,
-          unitId
-        );
-        console.log('create_tracking', create_tracking);
-        if (create_tracking && create_tracking?.response?.responseCode == 201) {
-          console.log('saved data');
-        } else {
-          console.log('no internet available');
-          //store result in offline mode
-          await storeTrackingOffline(
-            userId,
-            courseId,
-            contentId,
-            contentType,
-            contentMime,
-            lastAccessOn,
-            detailsObject,
-            unitId
-          );
-        }
-        logEvent();
-      } catch (e) {
-        console.log(e);
-      }
+      // Always write to SQLite first so progress is visible the moment the
+      // user returns to UnitList, regardless of network speed.
+      await storeTrackingOffline(
+        userId,
+        courseId,
+        contentId,
+        contentType,
+        contentMime,
+        lastAccessOn,
+        detailsObject,
+        unitId
+      );
+
+      // Fire API in background. If it succeeds, delete the SQLite record so
+      // SyncCard doesn't re-submit it and create a duplicate server entry.
+      // If it fails, the SQLite record stays and SyncCard will sync it later.
+      contentTracking(
+        userId,
+        courseId,
+        contentId,
+        contentType,
+        contentMime,
+        lastAccessOn,
+        detailsObject,
+        unitId
+      )
+        .then((create_tracking) => {
+          if (create_tracking?.response?.responseCode == 201) {
+            deleteTrackingOfflineByRecord(
+              userId,
+              courseId,
+              contentId,
+              lastAccessOn
+            );
+          }
+        })
+        .catch((e) => {
+          console.log('contentTracking error, will sync via SyncCard', e);
+        });
+
+      logEvent();
     }
 
     await removeData('contentEidSTART');
@@ -1561,9 +1577,9 @@ const StandAlonePlayer = ({ route }) => {
               </GlobalText>
               <TouchableOpacity
                 style={styles.exitButton}
-                onPress={() => {
+                onPress={async () => {
                   Orientation.lockToPortrait();
-                  fetchExitData();
+                  await fetchExitData();
                   navigation.goBack();
                 }}
                 activeOpacity={0.8}

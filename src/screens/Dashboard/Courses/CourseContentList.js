@@ -167,8 +167,11 @@ const CourseContentList = ({ route }) => {
           course_track_data?.data.find((course) => course.userId === userId)
             ?.course || [];
       }
+      // Ensure the current course has an entry so card components trigger SQLite check
+      if (!courseTrackData.some((c) => c.courseId === course_id)) {
+        courseTrackData.push({ courseId: course_id, completed_list: [], in_progress_list: [] });
+      }
 
-      console.log('#### debug progress courseTrackData', courseTrackData);
       setTrackData(courseTrackData);
 
       setLoading(false); // Ensure to stop loading when data fetch completes
@@ -277,11 +280,15 @@ const CourseContentList = ({ route }) => {
   const handleEnroll = async () => {
     if (!isConnected) {
       setNetworkstatus(false);
+      return;
     }
     const data = await courseEnroll({ course_id });
     if (data?.params?.status === 'successful') {
       setIsModal(true);
       setEnrollStatus(true);
+      // Refresh and persist the enrolled status to SQLite so it
+      // survives a force-kill and is read correctly when offline.
+      await fetchEnrollStatus();
     }
   };
 
