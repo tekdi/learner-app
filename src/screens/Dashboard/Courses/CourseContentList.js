@@ -277,11 +277,15 @@ const CourseContentList = ({ route }) => {
   const handleEnroll = async () => {
     if (!isConnected) {
       setNetworkstatus(false);
+      return;
     }
     const data = await courseEnroll({ course_id });
     if (data?.params?.status === 'successful') {
       setIsModal(true);
       setEnrollStatus(true);
+      // Refresh and persist the enrolled status to SQLite so it
+      // survives a force-kill and is read correctly when offline.
+      await fetchEnrollStatus();
     }
   };
 
