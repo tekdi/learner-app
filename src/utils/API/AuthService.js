@@ -5,7 +5,7 @@ import {
   getDataFromStorage,
   getTentantId,
 } from '../JsHelper/Helper';
-import { deleteData, getData, insertData } from '../JsHelper/SqliteHelper';
+import { deleteData, getData, insertData, getDataOrderById } from '../JsHelper/SqliteHelper';
 import EndUrls from './EndUrls';
 import { get, handleResponseException, patch, post } from './RestClient';
 //for react native config env : dev uat prod
@@ -1357,6 +1357,35 @@ export const getSyncTrackingOffline = async (user_id) => {
     await getData({
       tableName: 'Tracking_Offline_2',
       where: data_get,
+    })
+      .then((rows) => {
+        //console.log('rows', rows);
+        if (rows.length > 0) {
+          try {
+            result_data = rows;
+          } catch (e) {}
+        }
+      })
+      .catch((err) => {
+        console.error('err', err);
+      });
+    return result_data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+export const getSyncTrackingOfflineOrderById = async (user_id) => {
+  try {
+    //get result
+    const data_get = {
+      user_id: user_id,
+    };
+    let result_data = null;
+    await getDataOrderById({
+      tableName: 'Tracking_Offline_2',
+      where: data_get,
+      orderBy: 'order by id ASC',
     })
       .then((rows) => {
         //console.log('rows', rows);
