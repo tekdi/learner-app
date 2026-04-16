@@ -1,45 +1,97 @@
 // syncService.js
 
 import { AppState } from 'react-native';
-import { getData } from '../utils/JsHelper/SqliteHelper';
-import { getSyncTrackingOfflineOrderById } from '../utils/API/AuthService';
+import {
+  deleteTrackingOffline,
+  getSyncTrackingOfflineOrderById,
+} from '../utils/API/AuthService';
+import { getDataFromStorage } from '../utils/JsHelper/Helper';
+import { contentTracking, contentTrackingSync } from '../utils/API/ApiCalls';
 
 let intervalRef = null;
-let isSyncing = false;
 let appStateSubscription = null;
 
-const SYNC_INTERVAL = 5000; // 5 sec
+// Serializes sync runs: interval / resume triggers queue here; each run waits for the previous to finish.
+let syncRunChain = Promise.resolve();
 
-// 👉 Your actual sync logic (replace this)
-const syncQueue = async () => {
-  if (isSyncing) return;
+const SYNC_INTERVAL = 10000; // 10 sec
+
+const runSync = async () => {
+  console.log('🔄 Sync started');
 
   try {
-    isSyncing = true;
-
-    console.log('🔄 Sync started');
-
     // TODO:
     // 1. Read from AsyncStorage queue
     // 2. Call API
     // 3. Remove successful entries
 
-    // Example:
-    // const queue = await getQueue();
-    // await sendToServer(queue);
+    const token = await getDataFromStorage('Accesstoken');
+    const userId = await getDataFromStorage('userId');
+    if (token && userId) {
+      const result_sync_offline_tracking =
+        await getSyncTrackingOfflineOrderById(userId);
+      if (result_sync_offline_tracking != null) {
+        console.log(
+          'result_sync_offline_tracking',
+          result_sync_offline_tracking
+        );
+        //create content
+        for (let i = 0; i < result_sync_offline_tracking.length; i++) {
+          let cntent_tracking = result_sync_offline_tracking[i];
+          try {
+            let detailsObject = JSON.parse(cntent_tracking?.detailsObject);
+            let create_tracking = await contentTrackingSync(
+              cntent_tracking?.user_id,
+              cntent_tracking?.course_id,
+              cntent_tracking?.content_id,
+              cntent_tracking?.content_type,
+              cntent_tracking?.content_mime,
+              cntent_tracking?.lastAccessOn,
+              detailsObject,
+              cntent_tracking?.unit_id
+            );
+            if (
+              create_tracking &&
+              create_tracking?.response?.responseCode == 201
+            ) {
+              //success
+              console.log('create_tracking', create_tracking);
+              let isGenerateCertificate = true;
+              //check is course or not
+              if (
+                cntent_tracking?.course_id != cntent_tracking?.content_id &&
+                isGenerateCertificate == true
+              ) {
+                //check certififcate issue or not
+                console.log('check certififcate issue or not');
+                
+              }
 
-    // step 1 get all offline data from id as ascending order from asessment_offline_2 table
-    let result_sync_offline_tracking =
-      await getSyncTrackingOfflineOrderById(user_id);
-
-    console.log('result_sync_offline_tracking', result_sync_offline_tracking);
-
+              //delete from storage
+              // await deleteTrackingOffline(cntent_tracking?.id);
+            }
+          } catch (e) {
+            //console.log('error in result_sync_offline ', e);
+          }
+        }
+        // Wait for 20 seconds before proceeding further
+        // await new Promise((resolve) => setTimeout(resolve, 20000));
+        // console.log('20 seconds passed');
+      }
+    }
     console.log('✅ Sync completed');
   } catch (err) {
     console.log('❌ Sync failed', err);
-  } finally {
-    isSyncing = false;
   }
+};
+
+const syncQueue = () => {
+  syncRunChain = syncRunChain
+    .then(() => runSync())
+    .catch((err) => {
+      // Keep the chain alive if runSync throws outside its try/catch
+      console.log('❌ Sync failed', err);
+    });
 };
 
 // ▶ Start interval
