@@ -209,7 +209,7 @@ export const courseDetails = async (content_do_id) => {
   -H "accept: */*" \\
   -H "Content-Type: application/json"`;
 
-  console.log('Generated cURL Command:', curlCommand);
+  // console.log('Generated cURL Command:', curlCommand);
 
   try {
     const response = await axios.request(config);
@@ -571,6 +571,18 @@ export const contentTrackingSync = async (
     throw new Error(
       error.response?.data?.message || 'Content Submission Failed'
     );
+  }
+};
+
+export const courseHierarchy = async (courseId) => {
+  let response = null;
+  try {
+    const url = EndUrls.CourseHierarchy;
+    const headers = await getHeaders();
+    const data = JSON.stringify({ courseId: courseId });
+
+  } catch (error) {
+    // throw new Error(error.response?.data?.message || 'Course Hierarchy Failed');
   }
 };
 

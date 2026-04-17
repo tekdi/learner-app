@@ -5,7 +5,12 @@ import {
   getDataFromStorage,
   getTentantId,
 } from '../JsHelper/Helper';
-import { deleteData, getData, insertData, getDataOrderById } from '../JsHelper/SqliteHelper';
+import {
+  deleteData,
+  getData,
+  insertData,
+  getDataOrderById,
+} from '../JsHelper/SqliteHelper';
 import EndUrls from './EndUrls';
 import { get, handleResponseException, patch, post } from './RestClient';
 //for react native config env : dev uat prod
@@ -418,7 +423,7 @@ export const courseListApi_New = async ({
   offset,
   inprogress_do_ids,
   contentFilter,
-  customProp='',
+  customProp = '',
 }) => {
   const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
   const channelId = tenantData?.[0]?.channelId;
@@ -444,7 +449,8 @@ export const courseListApi_New = async ({
         program: contentFilter?.program,
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
         status: ['Live'],
-        primaryCategory: customProp === 'forchildren' ? ["Activity", "Story"] : ['Course'],
+        primaryCategory:
+          customProp === 'forchildren' ? ['Activity', 'Story'] : ['Course'],
         ...(mergedFilter && mergedFilter),
       },
       limit: 10,
@@ -794,9 +800,9 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-       program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
+        program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
         board: `${params?.boardName}`,
-       // "se_boards": [`${params?.boardName}`],
+        // "se_boards": [`${params?.boardName}`],
 
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
@@ -894,6 +900,64 @@ export const getDoits = async ({ payload }) => {
   } catch (e) {
     let result_offline = await getApiResponse(user_id, url, 'post', payload);
     return result_offline;
+  }
+};
+
+//sync course details get
+export const syncCourseDetails = async (courseId) => {
+  const url = `${EndUrls.contentSearch}`; // Define the URL
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  const payload = {
+    request: {
+      filters: {
+        identifier: courseId,
+      },
+      fields: [
+        'name',
+        'englishName',
+        'appIcon',
+        'description',
+        'posterImage',
+        'mimeType',
+        'identifier',
+        'resourceType',
+        'primaryCategory',
+        'contentType',
+        'trackable',
+        'children',
+        'leafNodes',
+      ],
+      limit: 1,
+      offset: 0,
+    },
+  };
+  try {
+    const curlCommand = `
+curl -X POST '${url}' \\
+-H 'Content-Type: application/json' \\
+-H 'Accept: application/json' \\
+-d '${JSON.stringify(payload)}'
+    `;
+    // console.log('CURL Command:\n', curlCommand); // Log the generated curl command
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      params: {
+        orgdetails: 'orgName,email',
+        licenseDetails: 'name,description,url',
+      },
+      headers: headers || {},
+    });
+    if (result && result?.data?.result?.content?.length > 0) {
+      return result?.data?.result?.content[0] || null;
+    } else {
+      return null;
+    }
+  } catch (e) {
+    return null;
   }
 };
 
@@ -997,12 +1061,10 @@ export const getUserDetails = async (params = {}) => {
     } else {
       return {};
     }
-  }
-  catch (e) {
-    console.log(e)
+  } catch (e) {
+    console.log(e);
   }
 };
-
 
 export const getAssessmentStatus = async (params = {}) => {
   try {
@@ -1032,6 +1094,35 @@ export const getAssessmentStatus = async (params = {}) => {
 
     if (result?.data) {
       return result?.data?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+
+export const getAssessmentStatusSync = async (payload) => {
+  try {
+    const url = `${EndUrls.AssessmentStatus}`; // Define the URL
+
+    const headers = await getHeaders();
+
+    const curlCommand = `curl -X POST '${url}' \\ 
+    ${Object.entries(headers || {})
+      .map(([key, value]) => `  -H '${key}: ${value}' \\`)
+      .join('\n')} 
+      -d '${JSON.stringify(payload)}'`;
+
+    console.log('#########atm do_ids cURL Command:', curlCommand);
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result?.data) {
+      return result?.data;
     } else {
       return {};
     }
