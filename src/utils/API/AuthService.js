@@ -2182,7 +2182,7 @@ export const issueCertificate = async ({ payload }) => {
       payload
     )}' ${url}`;
 
-    console.log('cURL Command:', curlCommand);
+    console.log('issueCertificate cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {

@@ -115,6 +115,7 @@ async function updateCOurseAndIssueCertificate({
   unitId,
   isGenerateCertificate,
 }) {
+  let isCertificateIssued = false;
   try {
     const response = await courseTrackingStatus(userId, [course?.identifier]);
     // console.log('response', response);
@@ -163,6 +164,7 @@ async function updateCOurseAndIssueCertificate({
                 courseName: course?.name ?? '',
               },
             });
+            isCertificateIssued = true;
             console.log('qwerty issueCertificate response', response);
           } catch (error) {
             await updateCourseStatus({
@@ -187,6 +189,7 @@ async function updateCOurseAndIssueCertificate({
     console.error('Error in updateCOurseAndIssueCertificate:', error);
     throw error;
   }
+  return isCertificateIssued;
 }
 async function calculateCourseStatus({ statusData, allCourseIds, courseId }) {
   const completedList = new Set(statusData?.completed_list || []);
@@ -273,7 +276,6 @@ async function checkCriteriaForCertificate(reqBody) {
       if (questionSetData.length > 0) {
         // Process each question set data
         let criteriaCompleted = false;
-        let statusUrl = syncConfig.assessmentStatusUrl;
         // Collect all contentIds and unitIds
         const contentIds = questionSetData.map((item) => item.contentId);
         const unitIds = questionSetData.map((item) => item.unitId);
@@ -343,6 +345,22 @@ async function checkCriteriaForCertificate(reqBody) {
     return false;
   }
 }
+//call below function course card list
+export const courseListSyncFromCardList = async (coursescontent, userId ) => {
+  // console.log('###########qwerty coursescontent', coursescontent);
+  let isCertificateIssued = false;
+  if (coursescontent != null) {
+    console.log('course detail found');
+    isCertificateIssued = await updateCOurseAndIssueCertificate({
+      userId: userId,
+      course: coursescontent,
+      unitId: null,
+      isGenerateCertificate: true,
+    });
+  }
+  return isCertificateIssued;
+};
+
 //end of function for update course and issue certificate
 
 const syncQueue = () => {
