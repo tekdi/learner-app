@@ -51,22 +51,22 @@ const SCPDashboard = (props) => {
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
+  const monthKeys = [
+    'january',
+    'february',
+    'march',
+    'april',
+    'may',
+    'june',
+    'july',
+    'august',
+    'september',
+    'october',
+    'november',
+    'december',
   ];
 
-  const currentMonthName = monthNames[new Date().getMonth()];
+  const currentMonthName = t(monthKeys[new Date().getMonth()]);
   const [showExitModal, setShowExitModal] = useState(false);
   const [networkstatus, setNetworkstatus] = useState(true);
 
