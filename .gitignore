@@ -79,6 +79,8 @@ yarn-error.log
 .env.uat
 # .cursor/*
 
-# Large Zoom SDK files (use Git LFS instead)
+# Large Zoom SDK files - must be placed manually (too large for GitHub)
 android/app/libs/mobilertc.aar
 android/app/libs/*.aar
+android/libs/mobilertc.aar
+android/libs/*.aar

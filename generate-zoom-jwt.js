@@ -9,7 +9,8 @@ const path = require("path");
  */
 
 // Determine which env file to use (default: dev)
-const envFile = process.argv[2] === 'uat' ? '.env.uat' : '.env.dev';
+const arg = process.argv[2];
+const envFile = arg === 'uat' ? '.env.uat' : arg === 'prod' ? '.env.prod' : '.env.dev';
 const envPath = path.join(__dirname, envFile);
 
 console.log(`\n📄 Using environment file: ${envFile}`);
@@ -46,8 +47,8 @@ const payload = {
   appKey: SDK_KEY,
   sdkKey: SDK_KEY,
   iat: now,
-  exp: now + 60 * 60 * 48, // valid for 48 hours
-  tokenExp: now + 60 * 60 * 48
+  exp: now + 60 * 60 * 24 * 30, // valid for 30 days
+  tokenExp: now + 60 * 60 * 24 * 30
 };
 
 const token = jwt.sign(payload, SDK_SECRET, { algorithm: "HS256" });
@@ -58,8 +59,8 @@ console.log("==============================================\n");
 console.log("Token (copy this):\n");
 console.log(token);
 console.log("\n==============================================");
-console.log("Valid for: 48 hours");
-console.log("Expires at:", new Date((now + 60 * 60 * 48) * 1000).toLocaleString());
+console.log("Valid for: 30 days");
+console.log("Expires at:", new Date((now + 60 * 60 * 24 * 30) * 1000).toLocaleString());
 console.log("==============================================\n");
 
 // Update the .env file with new token
@@ -83,4 +84,4 @@ console.log(`2. If you're updating production, also update .env.prod (if you hav
 console.log("3. Rebuild your app:");
 console.log("   npm run android:dev   (for dev build)");
 console.log("   npm run android:uat   (for uat build)");
-console.log("\n⏰ Remember to regenerate this token in 48 hours!\n");
+console.log("\n⏰ Remember to regenerate this token in 30 days!\n");
