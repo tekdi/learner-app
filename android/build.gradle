@@ -1,7 +1,7 @@
 buildscript {
     ext {
         buildToolsVersion = "35.0.0"
-        minSdkVersion = 26
+        minSdkVersion = 28  // Updated to 28 for Zoom SDK 6.6.0 compatibility
         compileSdkVersion = 35
         targetSdkVersion = 35
         ndkVersion = "26.1.10909125"
@@ -10,6 +10,10 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        // Zoom SDK Maven Repository
+        maven {
+            url 'https://github.com/zoom/zoom-sdk-android/raw/master/mobilertc-android-studio/release'
+        }
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.6.0")
@@ -24,6 +28,8 @@ buildscript {
 //react-native-background-fetch
 allprojects {
     repositories {
+        google()
+        mavenCentral()
         mavenLocal()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
@@ -36,6 +42,10 @@ allprojects {
         maven {
           // react-native-background-fetch
           url("${project(':react-native-background-fetch').projectDir}/libs")
+        }
+        // Zoom SDK Maven Repository
+        maven {
+            url 'https://github.com/zoom/zoom-sdk-android/raw/master/mobilertc-android-studio/release'
         }
     }
 }
