@@ -604,13 +604,23 @@ export const getOptionsByCategory = (frameworks, categoryCode) => {
   );
 
   // Return the mapped terms
-  return category
-    ? category.terms.map((term) => ({
-        name: term.name,
-        code: term.code,
-        associations: term.associations,
-      }))
-    : [];
+  // return category
+  //   ? category.terms.map((term) => ({
+  //       name: term.name,
+  //       code: term.code,
+  //       associations: term.associations,
+  //     }))
+  //   : [];
+
+    return (
+      category?.terms
+        ?.filter((term) => term.status !== "retired") // ✅ exclude retired
+        .map((term) => ({
+          name: term.name,
+          code: term.code,
+          associations: term.associations,
+        })) || []
+    );
 };
 
 // Function to calculate the total size of RNFS Document Directory

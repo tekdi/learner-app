@@ -19,33 +19,37 @@ import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from '../../../../context/LanguageContext';
-import { formatDateTimeRange, getStoredUsername } from '../../../../utils/JsHelper/Helper';
+import { formatDateTimeRange, getDataFromStorage } from '../../../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
 import menu_book from '../../../../assets/images/png/menu_book.png';
 import ZoomWebView from '../../../../components/ZoomWebView/ZoomWebView';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import ZoomMeeting from '../../../../components/ZoomMeeting/ZoomMeeting';
+import { parseZoomLink } from '../../../../utils/Helper/ZoomHelper';
 
 const SubjectCard = ({ item }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [showZoomModal, setShowZoomModal] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [showZoomMeeting, setShowZoomMeeting] = useState(false);
+  const [storedUsername, setStoredUsername] = useState('');
+  const [meetingDetails, setMeetingDetails] = useState(null);
   const { t } = useTranslation();
   const navigation = useNavigation();
 
+  // Load stored username on component mount
   useEffect(() => {
-    const fetchUserName = async () => {
+    const loadUsername = async () => {
       try {
-        const storedUsername = await getStoredUsername();
-        if (storedUsername) {
-          setUserName(storedUsername);
+        const username = await getDataFromStorage('Username');
+        if (username) {
+          setStoredUsername(username);
         }
       } catch (error) {
-        console.log('Error fetching user name:', error);
+        console.error('Error loading username:', error);
       }
     };
-    fetchUserName();
+    loadUsername();
   }, []);
 
   const handleCopyLink = (zoomLink) => {
@@ -53,9 +57,22 @@ const SubjectCard = ({ item }) => {
     setShowToast(true); // Show toast message
   };
 
-  const handleOpenZoom = () => {
-    if (item?.onlineDetails?.url) {
-      setShowZoomModal(true);
+  const handleJoinZoomMeeting = (zoomLink) => {
+    try {
+      const parsed = parseZoomLink(zoomLink);
+      if (parsed.isValid) {
+        setMeetingDetails(parsed);
+        setShowZoomMeeting(true);
+        console.log('✅ Joining Zoom meeting:', parsed.meetingNumber);
+      } else {
+        console.error('❌ Invalid Zoom link:', parsed.error);
+        // Fallback to opening in browser/external app
+        Linking.openURL(zoomLink);
+      }
+    } catch (error) {
+      console.error('Error parsing Zoom link:', error);
+      // Fallback to opening in browser/external app
+      Linking.openURL(zoomLink);
     }
   };
 
@@ -94,7 +111,7 @@ const SubjectCard = ({ item }) => {
           {item?.onlineDetails && (
             <>
               <TouchableOpacity
-                onPress={handleOpenZoom}
+                onPress={() => handleJoinZoomMeeting(item?.onlineDetails?.url)}
               >
                 <GlobalText style={styles.zoomLink}>
                   {item?.onlineDetails?.url}
@@ -205,31 +222,30 @@ const SubjectCard = ({ item }) => {
         )}
       </View>
 
-      {/* Zoom WebView Modal */}
-      <Modal
-        visible={showZoomModal}
-        animationType="slide"
-        onRequestClose={() => setShowZoomModal(false)}
-      >
-        <SafeAreaView style={styles.modalContainer}>
-          <StatusBar barStyle="light-content" backgroundColor="#1f1f1f" />
-          <View style={styles.modalHeader}>
-            <GlobalText style={styles.modalHeaderText}>Zoom Meeting</GlobalText>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowZoomModal(false)}
-            >
-              <Ionicons name="close" size={24} color="#fff" />
-            </TouchableOpacity>
-          </View>
-          {item?.onlineDetails?.url && (
-            <ZoomWebView
-              uri={item.onlineDetails.url}
-              userName={userName}
-            />
-          )}
-        </SafeAreaView>
-      </Modal>
+      {/* Zoom Meeting Component - Opens in-app when user clicks on Zoom link */}
+      {showZoomMeeting && meetingDetails && (
+        <ZoomMeeting
+          meetingNumber={meetingDetails.meetingNumber}
+          password={meetingDetails.password}
+          displayName={storedUsername || 'Student'}
+          autoJoin={true} // Automatically join the meeting
+          onMeetingJoined={() => {
+            console.log('Zoom meeting joined successfully from SubjectCard');
+            // Hide the component after a short delay for smooth transition
+            setTimeout(() => {
+              setShowZoomMeeting(false);
+            }, 2000);
+          }}
+          onMeetingEnd={() => {
+            console.log('User left Zoom meeting from SubjectCard');
+            setShowZoomMeeting(false);
+          }}
+          onMeetingError={(error) => {
+            console.error('Zoom meeting error from SubjectCard:', error);
+            // Keep showing the component so user can retry
+          }}
+        />
+      )}
     </Layout>
   );
 };

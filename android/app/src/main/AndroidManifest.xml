@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 <!--error with below line for android greater than 8 
 package="com.pratham.learning"
 -->
@@ -13,6 +14,14 @@ package="com.pratham.learning"
     
     <!-- Add this to request precise location -->
     <uses-feature android:name="android.hardware.location.gps" />
+
+    <!-- Zoom SDK Required Permissions -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
     <!-- Camera and Storage permissions for image upload functionality -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -64,7 +73,8 @@ package="com.pratham.learning"
         android:grantUriPermissions="true">
         <meta-data
           android:name="android.support.FILE_PROVIDER_PATHS"
-          android:resource="@xml/provider_paths" />
+          android:resource="@xml/provider_paths"
+          tools:replace="android:resource" />
       </provider>
       
       <activity
