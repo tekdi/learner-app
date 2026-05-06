@@ -49,15 +49,14 @@ const AppUpdatePopup = () => {
     <Modal transparent={true} visible={isUpdateAvailable} animationType="slide">
       <View style={styles.modalBackground}>
         <View style={styles.modalContainer}>
-          <GlobalText style={styles.title}>Update Available</GlobalText>
+          <GlobalText style={styles.title}>{t('update_available')}</GlobalText>
           <GlobalText
             style={[
               globalStyles.text,
               { textAlign: 'center', marginVertical: 5 },
             ]}
           >
-            A new version of the app ({latestVersion}) is available. Please
-            update to enjoy the latest features.
+            {t('update_available_message').replace('{latestVersion}', latestVersion)}
           </GlobalText>
 
           <PrimaryButton onPress={handleUpdate} text={t('update_now')} />

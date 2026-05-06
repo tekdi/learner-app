@@ -521,7 +521,7 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
                         setSearchText={setSearchText}
                         searchText={searchText}
                         // handleSearch={handleSearch}
-                        placeholder={t('Search...')}
+                        placeholder={t('search_placeholder')}
                       />
                     </View>
                   </CopilotView>
@@ -707,7 +707,7 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
                 return hasFilters ? (
                   <View style={styles.filterTagsContainer}>
                     <GlobalText style={styles.appliedFiltersText}>
-                      Applied Filters:
+                      {t('applied_filters')}
                     </GlobalText>
                     <View style={styles.tagsWrapper}>
                       {Object.entries({

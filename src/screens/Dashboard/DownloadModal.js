@@ -177,14 +177,13 @@ const DownloadModal = ({
                   console.error(`Error extracting zip file: ${error}`);
                 }
               } else {
-                Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+                Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
                 setDownloadStatus('download');
-                setDownload('download');
                 setDownload('download');
               }
             } catch (error) {
-              Alert.alert('Error Catch', `Failed to create file: ${error}`, [
-                { text: 'OK' },
+              Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${error}`, [
+                { text: t('OK') },
               ]);
               console.error('Error creating file:', error);
               setDownloadStatus('download');
@@ -192,15 +191,15 @@ const DownloadModal = ({
             }
           }
         } catch (err) {
-          Alert.alert('Error Catch', `Failed to download file: ${err}`, [
-            { text: 'OK' },
+          Alert.alert(t('error_catch'), `${t('failed_to_download_file')}: ${err}`, [
+            { text: t('OK') },
           ]);
           console.log('display error', err);
           setDownloadStatus('download');
           setDownload('download');
         }
       } else {
-        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+        Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
         setDownloadStatus('download');
         setDownload('download');
       }
@@ -338,26 +337,26 @@ const DownloadModal = ({
               await storeData(content_do_id, contentObj, 'json');
               setDownloadStatus('completed');
             } else {
-              Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+              Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
               setDownloadStatus('download');
             }
             //end download
           } catch (error) {
-            Alert.alert('Error Catch', `Failed to create file: ${error}`, [
-              { text: 'OK' },
+            Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${error}`, [
+              { text: t('OK') },
             ]);
             console.error('Error creating file:', error);
             setDownloadStatus('download');
           }
         } catch (err) {
-          Alert.alert('Error Catch', `Failed to create file: ${err}`, [
-            { text: 'OK' },
+          Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${err}`, [
+            { text: t('OK') },
           ]);
           console.log('display error', err);
           setDownloadStatus('download');
         }
       } else {
-        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+        Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
         setDownloadStatus('download');
       }
     }
@@ -439,7 +438,7 @@ const DownloadModal = ({
                     setDownload('completed');
                   } catch (error) {
                     console.log('error', error);
-                    Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+                    Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
                     setDownloadStatus('download');
                     setDownload('download');
                   }
@@ -470,23 +469,23 @@ const DownloadModal = ({
               console.log('Failed to download file:', result.statusCode);
             }*/
           } catch (error) {
-            Alert.alert('Error Catch', `Failed to create file: ${error}`, [
-              { text: 'OK' },
+            Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${error}`, [
+              { text: t('OK') },
             ]);
             console.error('Error creating file:', error);
             setDownloadStatus('download');
             setDownload('download');
           }
         } catch (err) {
-          Alert.alert('Error Catch', `Failed to create file: ${err}`, [
-            { text: 'OK' },
+          Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${err}`, [
+            { text: t('OK') },
           ]);
           console.log('display error', err);
           setDownloadStatus('download');
           setDownload('download');
         }
       } else {
-        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+        Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
         setDownloadStatus('download');
         setDownload('download');
       }

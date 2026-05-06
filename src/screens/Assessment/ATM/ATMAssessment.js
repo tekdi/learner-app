@@ -724,7 +724,7 @@ const ATMAssessment = ({ route }) => {
                         ? `${aiQuestionSetStatus.fileUrls.length} ${t(
                             'Images Uploaded'
                           )}`
-                        : '1 image uploaded'}
+                        : t('one_image_uploaded')}
                     </GlobalText>
                     <GlobalText style={styles.uploadedDateText}>
                       {aiQuestionSetStatus?.createdAt
@@ -823,7 +823,7 @@ const ATMAssessment = ({ route }) => {
                         ? `${aiQuestionSetStatus.fileUrls.length} ${t(
                             'Images Uploaded'
                           )}`
-                        : '1 image uploaded'}
+                        : t('one_image_uploaded')}
                     </GlobalText>
                     <GlobalText style={styles.uploadedDateText}>
                       {aiQuestionSetStatus?.createdAt

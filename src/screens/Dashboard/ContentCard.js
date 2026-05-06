@@ -68,6 +68,8 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
       eventName: 'content_played',
       method: 'button_click',
       screenName: 'Content-Player',
+      content_do_id: item?.identifier || item?.id,
+      course_id: course_id,
     };
 
     await logEventFunction(obj);
