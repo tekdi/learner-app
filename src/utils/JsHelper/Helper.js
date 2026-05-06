@@ -5,6 +5,7 @@ import analytics from '@react-native-firebase/analytics';
 import RNFS from 'react-native-fs';
 import messaging from '@react-native-firebase/messaging';
 import { getCurrentRouteParams } from '../NavigationService';
+import { readContent } from '../API/ApiCalls';
 
 // Get Saved Data from AsyncStorage
 
@@ -212,29 +213,66 @@ export const capitalizeNameWithSpace = (name) => {
   }
 };
 
-export const logEventFunction = async ({ eventName, method, screenName }) => {
-  const timestamp = new Date().toLocaleString(); // Get the current timestamp
+export const logEventFunction = async ({ eventName, method, screenName, content_do_id: passedContentId, course_id: passedCourseId }) => {
+  const timestamp = new Date().toLocaleString();
 
-  // Get route parameters directly from navigation
   const routeParams = getCurrentRouteParams();
-  const { content_do_id, content_list_node, unit_id,course_id } = routeParams;
-console.log('eventName=====>', eventName);
+  const { content_do_id: routeContentId, content_list_node, unit_id, course_id: routeCourseId } = routeParams;
+
+  const content_do_id = passedContentId || routeContentId;
+  const course_id = passedCourseId || routeCourseId;
+
+  console.log('eventName=====>', eventName);
+
   let userId = await getDataFromStorage('userId');
-  
   const tenantData = JSON.parse(await getDataFromStorage('tenantData')) || {};
   const storedProgram = tenantData?.[0]?.tenantName;
 
-  analytics().logEvent(eventName, {
+  console.log('######## [Analytics] IDs → content_do_id:', content_do_id, '| course_id:', course_id);
+
+  const [contentResponse, courseResponse] = await Promise.all([
+    content_do_id ? readContent(content_do_id) : Promise.resolve(null),
+    course_id ? readContent(course_id) : Promise.resolve(null),
+  ]);
+
+  console.log('######## [Analytics] raw contentResponse:', JSON.stringify(contentResponse));
+  console.log('######## [Analytics] raw courseResponse:', JSON.stringify(courseResponse));
+
+  const contentData = contentResponse?.result?.content || null;
+  const courseData = courseResponse?.result?.content || null;
+
+  const content_name = contentData?.name || null;
+  const course_name = courseData?.name || null;
+  const content_language = contentData?.language?.[0] || courseData?.language?.[0] || null;
+  const content_mimetype = contentData?.mimeType || courseData?.mimeType || null;
+  const origin = 'Learner Android App';
+
+  const eventParams = {
     method: method,
     screen_name: screenName,
     userId: userId || '-',
     program: storedProgram || '-',
-    timestamp: timestamp, // Adding the timestamp as a parameter
+    timestamp: timestamp,
     ...(content_list_node && { content_list_node: content_list_node }),
     ...(content_do_id && { content_do_id: content_do_id }),
     ...(course_id && { course_id: course_id }),
     ...(unit_id && { unit_id: unit_id }),
-  });
+    ...(content_name && { content_name: content_name }),
+    ...(course_name && { course_name: course_name }),
+    ...(content_language && { content_language: content_language }),
+    ...(content_mimetype && { content_type: content_mimetype }),
+    origin: origin,
+  };
+
+  console.log('######## [Analytics] firing event:', eventName);
+  console.log('######## [Analytics] params:', JSON.stringify(eventParams, null, 2));
+
+  try {
+    await analytics().logEvent(eventName, eventParams);
+    console.log('######## [Analytics] event fired successfully:', eventName);
+  } catch (e) {
+    console.log('######## [Analytics] event failed:', eventName, e);
+  }
 };
 
 export const storeUsername = async (username) => {

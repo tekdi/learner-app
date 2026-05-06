@@ -35,6 +35,18 @@ const getSpoofedUserAgent = (): string | undefined => {
   return undefined;
 };
 
+const buildUri = (baseUri: string, userName?: string): string => {
+  if (!userName) return baseUri;
+  try {
+    const url = new URL(baseUri);
+    url.searchParams.set("uname", userName);
+    return url.toString();
+  } catch {
+    const sep = baseUri.includes("?") ? "&" : "?";
+    return `${baseUri}${sep}uname=${encodeURIComponent(userName)}`;
+  }
+};
+
 const ZoomWebView: React.FC<ZoomWebViewProps> = ({ uri, userName }) => {
   const webViewRef = useRef<WebView>(null);
 
@@ -44,6 +56,7 @@ const ZoomWebView: React.FC<ZoomWebViewProps> = ({ uri, userName }) => {
 
   // Resolved once; stable across renders
   const spoofedUserAgent = React.useMemo(() => getSpoofedUserAgent(), []);
+  const resolvedUri = useMemo(() => buildUri(uri, userName), [uri, userName]);
 
   // CRITICAL: Request microphone permission BEFORE WebView loads
   useEffect(() => {
@@ -823,7 +836,7 @@ const ZoomWebView: React.FC<ZoomWebViewProps> = ({ uri, userName }) => {
       ) : (
         <WebView
           ref={webViewRef}
-          source={{ uri }}
+          source={{ uri: resolvedUri }}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           // CRITICAL: These props enable media access

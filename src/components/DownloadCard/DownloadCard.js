@@ -289,13 +289,13 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
                   console.error(`Error extracting zip file: ${error}`);
                 }
               } else {
-                Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+                Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
                 setDownloadStatus('download');
                 setDownloadIcon(download);
               }
             } catch (error) {
-              Alert.alert('Error Catch', `Failed to create file: ${error}`, [
-                { text: 'OK' },
+              Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${error}`, [
+                { text: t('OK') },
               ]);
               console.error('Error creating file:', error);
               setDownloadStatus('download');
@@ -303,15 +303,15 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
             }
           }
         } catch (err) {
-          Alert.alert('Error Catch', `Failed to download file: ${err}`, [
-            { text: 'OK' },
+          Alert.alert(t('error_catch'), `${t('failed_to_download_file')}: ${err}`, [
+            { text: t('OK') },
           ]);
           console.log('display error', err);
           setDownloadStatus('download');
           setDownloadIcon(download);
         }
       } else {
-        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+        Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
         setDownloadStatus('download');
         setDownloadIcon(download);
       }
@@ -452,29 +452,29 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
               setDownloadStatus('completed');
               setDownloadIcon(download_complete);
             } else {
-              Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+              Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
               setDownloadStatus('download');
               setDownloadIcon(download);
             }
             //end download
           } catch (error) {
-            Alert.alert('Error Catch', `Failed to create file: ${error}`, [
-              { text: 'OK' },
+            Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${error}`, [
+              { text: t('OK') },
             ]);
             console.error('Error creating file:', error);
             setDownloadStatus('download');
             setDownloadIcon(download);
           }
         } catch (err) {
-          Alert.alert('Error Catch', `Failed to create file: ${err}`, [
-            { text: 'OK' },
+          Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${err}`, [
+            { text: t('OK') },
           ]);
           console.log('display error', err);
           setDownloadStatus('download');
           setDownloadIcon(download);
         }
       } else {
-        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+        Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
         setDownloadStatus('download');
         setDownloadIcon(download);
       }
@@ -557,7 +557,7 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
                     setDownloadIcon(download_complete);
                   } catch (error) {
                     console.log('error', error);
-                    Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+                    Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
                     setDownloadStatus('download');
                     setDownloadIcon(download);
                   }
@@ -588,23 +588,23 @@ const DownloadCard = ({ contentId, contentMimeType, name }) => {
               console.log('Failed to download file:', result.statusCode);
             }*/
           } catch (error) {
-            Alert.alert('Error Catch', `Failed to create file: ${error}`, [
-              { text: 'OK' },
+            Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${error}`, [
+              { text: t('OK') },
             ]);
             console.error('Error creating file:', error);
             setDownloadStatus('download');
             setDownloadIcon(download);
           }
         } catch (err) {
-          Alert.alert('Error Catch', `Failed to create file: ${err}`, [
-            { text: 'OK' },
+          Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${err}`, [
+            { text: t('OK') },
           ]);
           console.log('display error', err);
           setDownloadStatus('download');
           setDownloadIcon(download);
         }
       } else {
-        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+        Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
         setDownloadStatus('download');
         setDownloadIcon(download);
       }
