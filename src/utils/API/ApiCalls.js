@@ -87,6 +87,8 @@ export const readContent = async (content_do_id) => {
         ) {
           api_response.result.content.name =
             api_response.result.content.name.replace(/'/g, ' ');
+          api_response.result.content.name =
+            api_response.result.content.name.replace(/'"/g, ' ');
         }
         // Remove single quotes from description
         if (
@@ -95,6 +97,8 @@ export const readContent = async (content_do_id) => {
         ) {
           api_response.result.content.description =
             api_response.result.content.description.replace(/'/g, ' ');
+          api_response.result.content.description =
+            api_response.result.content.description.replace(/"/g, ' ');
         }
         // Remove single quotes from keywords array items
         if (
@@ -105,6 +109,13 @@ export const readContent = async (content_do_id) => {
             api_response.result.content.keywords.map((keyword) => {
               if (typeof keyword === 'string') {
                 return keyword.replace(/'/g, ' ');
+              }
+              return keyword;
+            });
+          api_response.result.content.keywords =
+            api_response.result.content.keywords.map((keyword) => {
+              if (typeof keyword === 'string') {
+                return keyword.replace(/"/g, ' ');
               }
               return keyword;
             });
