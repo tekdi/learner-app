@@ -95,8 +95,8 @@ android {
         applicationId "com.pratham.learning"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 120
-        versionName "0.0.120"
+        versionCode 122
+        versionName "0.0.122"
     }
     signingConfigs {
         debug {
