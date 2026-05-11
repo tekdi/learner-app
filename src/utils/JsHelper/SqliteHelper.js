@@ -94,6 +94,42 @@ const getData = ({ tableName, where }) => {
   });
 };
 
+const getDataOrderById = ({ tableName, where, orderBy }) => {
+  return new Promise((resolve, reject) => {
+    const db = openDatabase();
+
+    // Generate the WHERE clause from the where object if provided
+    let whereClause = '';
+    let whereValues = [];
+
+    if (where) {
+      whereClause =
+        'WHERE ' +
+        Object.keys(where)
+          .map((key) => `${key} = ?`)
+          .join(' AND ');
+      whereValues = Object.values(where);
+    }
+
+    db.transaction((tx) => {
+      const query = `SELECT * FROM ${tableName} ${whereClause} ${orderBy}`;
+      tx.executeSql(
+        query,
+        whereValues,
+        (tx, results) => {
+          // Extract data from results.rows
+          const rows = [];
+          for (let i = 0; i < results.rows.length; i++) {
+            rows.push(results.rows.item(i));
+          }
+          resolve(rows);
+        },
+        (error) => reject('Error fetching data: ' + error.message)
+      );
+    });
+  });
+};
+
 // Insert data into the table
 const insertData = ({ tableName, data }) => {
   return new Promise((resolve, reject) => {
@@ -174,6 +210,7 @@ export {
   openDatabase,
   createTable,
   getData,
+  getDataOrderById,
   insertData,
   updateData,
   deleteData,

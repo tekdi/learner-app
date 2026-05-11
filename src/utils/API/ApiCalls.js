@@ -209,7 +209,7 @@ export const courseDetails = async (content_do_id) => {
   -H "accept: */*" \\
   -H "Content-Type: application/json"`;
 
-  console.log('Generated cURL Command:', curlCommand);
+  // console.log('Generated cURL Command:', curlCommand);
 
   try {
     const response = await axios.request(config);
@@ -508,6 +508,81 @@ export const contentTracking = async (
     throw new Error(
       error.response?.data?.message || 'Content Submission Failed'
     );
+  }
+};
+
+export const contentTrackingSync = async (
+  userId,
+  courseId,
+  contentId,
+  contentType,
+  contentMime,
+  lastAccessOn,
+  detailsObject,
+  unitId
+) => {
+  try {
+    const url = EndUrls.ContentCreate;
+
+    let data = JSON.stringify({
+      userId: userId,
+      courseId: courseId,
+      contentId: contentId,
+      contentType: contentType,
+      contentMime: contentMime,
+      lastAccessOn: lastAccessOn,
+      detailsObject: detailsObject,
+      unitId: unitId,
+    });
+    console.log('############*****');
+    //console.log('############ data', data);
+    //console.log('############ url', url);
+
+    let api_response = null;
+
+    const headers = await getHeaders();
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url,
+      headers: headers || {},
+      data: data,
+    };
+    //console.log('############ config', config);
+
+    await axios
+      .request(config)
+      .then((response) => {
+        api_response = { response: response.data };
+      })
+      .catch((error) => {
+        console.log('error', error);
+      });
+    // Construct the curl command for logging
+    // const curlCommand = `curl -X POST "${url}" \\\n${Object.entries(
+    //   headers || {}
+    // )
+    //   .map(([key, value]) => `-H "${key}: ${value}"`)
+    //   .join(' \\\n')} \\\n-d '${data}'`;
+
+    return api_response;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Content Submission Failed'
+    );
+  }
+};
+
+export const courseHierarchy = async (courseId) => {
+  let response = null;
+  try {
+    const url = EndUrls.CourseHierarchy;
+    const headers = await getHeaders();
+    const data = JSON.stringify({ courseId: courseId });
+
+  } catch (error) {
+    // throw new Error(error.response?.data?.message || 'Course Hierarchy Failed');
   }
 };
 
