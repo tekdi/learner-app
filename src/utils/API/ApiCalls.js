@@ -1,5 +1,6 @@
 import EndUrls from './EndUrls';
 import axios from 'axios';
+import { sanitizeContentObject } from './sanitizeContent';
 import uuid from 'react-native-uuid';
 import {
   getApiResponse,
@@ -78,48 +79,8 @@ export const readContent = async (content_do_id) => {
 
       api_response = response.data;
 
-      // Remove single quotes from description and keywords if they exist
       if (api_response?.result?.content) {
-        //remove single quotes from name
-        if (
-          api_response.result.content.name &&
-          typeof api_response.result.content.name === 'string'
-        ) {
-          api_response.result.content.name =
-            api_response.result.content.name.replace(/'/g, ' ');
-          api_response.result.content.name =
-            api_response.result.content.name.replace(/'"/g, ' ');
-        }
-        // Remove single quotes from description
-        if (
-          api_response.result.content.description &&
-          typeof api_response.result.content.description === 'string'
-        ) {
-          api_response.result.content.description =
-            api_response.result.content.description.replace(/'/g, ' ');
-          api_response.result.content.description =
-            api_response.result.content.description.replace(/"/g, ' ');
-        }
-        // Remove single quotes from keywords array items
-        if (
-          api_response.result.content.keywords &&
-          Array.isArray(api_response.result.content.keywords)
-        ) {
-          api_response.result.content.keywords =
-            api_response.result.content.keywords.map((keyword) => {
-              if (typeof keyword === 'string') {
-                return keyword.replace(/'/g, ' ');
-              }
-              return keyword;
-            });
-          api_response.result.content.keywords =
-            api_response.result.content.keywords.map((keyword) => {
-              if (typeof keyword === 'string') {
-                return keyword.replace(/"/g, ' ');
-              }
-              return keyword;
-            });
-        }
+        sanitizeContentObject(api_response.result.content);
       }
     })
     .catch((error) => {
