@@ -34,6 +34,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import RNRestart from 'react-native-restart';
 
+//background sync service
+import { startGlobalSync, stopGlobalSync } from './services/syncService';
+
 const linking = {
   prefixes: ['pratham://'],
   config: {
@@ -536,6 +539,17 @@ const App = () => {
     });
 
     return unsubscribe; // Cleanup listener on unmount
+  }, []);
+
+  //background running useEffect
+  useEffect(() => {
+    // ✅ Start global sync when app loads
+    startGlobalSync();
+
+    return () => {
+      // 🧹 Cleanup on unmount
+      stopGlobalSync();
+    };
   }, []);
 
   return (

@@ -50,6 +50,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import SecondaryButton from '@components/SecondaryButton/SecondaryButton';
 import NetworkAlert from '../../../components/NetworkError/NetworkAlert';
 import { useInternet } from '../../../context/NetworkContext';
+import { courseListSyncFromCardList } from '../../../services/syncService';
 
 const CourseContentList = ({ route }) => {
   const { language, t } = useTranslation();
@@ -85,6 +86,22 @@ const CourseContentList = ({ route }) => {
     logEvent();
     fetchEnrollStatus();
   }, []);
+
+  useEffect(() => {
+    if (coursesContent) {
+      // console.log('###########qwerty coursesContent', coursesContent);
+      const fetchDataCourseListSync = async () => {
+        const userId = await getDataFromStorage('userId');
+        let isCertificateIssued = await courseListSyncFromCardList(coursesContent, userId);
+        // console.log('###########qwerty isCertificateIssued', isCertificateIssued);
+        if (isCertificateIssued) {
+          fetchEnrollStatus();
+          setCertificateModal(true);
+        }
+      };
+      fetchDataCourseListSync();
+    }
+  }, [coursesContent]);
 
   const fetchEnrollStatus = async () => {
     setLoading(true);
@@ -317,7 +334,7 @@ const CourseContentList = ({ route }) => {
 
     if (trackCompleted >= 100) {
       if (!certificateId) {
-        updateCourseStatusFun();
+        // updateCourseStatusFun();
       }
     }
     setLoading(false);
@@ -393,7 +410,8 @@ const CourseContentList = ({ route }) => {
               </View>
             ) : (
               certificateId &&
-              userType !== 'pragyanpath' && userType !== 'scp' && (
+              userType !== 'pragyanpath' &&
+              userType !== 'scp' && (
                 <View
                   style={{
                     width: '90%',
@@ -484,10 +502,10 @@ const CourseContentList = ({ route }) => {
                           trackCompleted >= 100
                             ? 'completed'
                             : trackCompleted > 0
-                            ? 'inprogress'
-                            : trackProgress > 0
-                            ? 'progress'
-                            : 'not_started'
+                              ? 'inprogress'
+                              : trackProgress > 0
+                                ? 'progress'
+                                : 'not_started'
                         }
                         trackCompleted={trackCompleted}
                         viewStyle={{
@@ -680,15 +698,17 @@ const CourseContentList = ({ route }) => {
                         </GlobalText>
                       </TouchableOpacity>
                     </View>
-                    {userType !== 'scp' && userType !== 'pragyanpath' &&  (<View style={{ width: 160 }}>
-                      <PrimaryButton
-                        text={t('view_certificate')}
-                        onPress={() => {
-                          setCertificateModal(false);
-                          handleViewCertificate();
-                        }}
-                      />
-                    </View>)}
+                    {userType !== 'scp' && userType !== 'pragyanpath' && (
+                      <View style={{ width: 160 }}>
+                        <PrimaryButton
+                          text={t('view_certificate')}
+                          onPress={() => {
+                            setCertificateModal(false);
+                            handleViewCertificate();
+                          }}
+                        />
+                      </View>
+                    )}
                   </View>
                 </View>
               </View>

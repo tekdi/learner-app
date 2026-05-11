@@ -59,6 +59,7 @@ const ExploreTab = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const [courseData, setCourseData] = useState([]);
+  const courseDataRef = useRef([]);
   const [trackData, setTrackData] = useState([]);
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
@@ -107,9 +108,13 @@ const ExploreTab = () => {
     }, [restoreScroll])
   );
 
+  useEffect(() => {
+    courseDataRef.current = courseData;
+  }, [courseData]);
+
   const onFopcusTrackCourse = async () => {
     try {
-      const contentList = courseData || [];
+      const contentList = courseDataRef.current || [];
       let courseList = contentList.map((item) => item?.identifier);
 
       let userId = await getDataFromStorage('userId');

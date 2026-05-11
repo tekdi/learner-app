@@ -229,7 +229,7 @@ const SyncCard = ({ doneSync }) => {
               //doneSync(); //call back function
             }
           }
-          if (result_sync_offline_tracking) {
+          /*if (result_sync_offline_tracking) {
             setIsSyncPending(true);
             setIsProgress(true);
             setSyncCall('tracking');
@@ -273,7 +273,7 @@ const SyncCard = ({ doneSync }) => {
             if (!isError && doneSync) {
               //doneSync(); //call back function
             }
-          }
+          }*/
         } else {
           setIsSyncPending(false);
           setIsProgress(false);

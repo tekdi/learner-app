@@ -1467,7 +1467,17 @@ const StandAlonePlayer = ({ route }) => {
       console.log('reached here', JSON.stringify(detailsObject));
 
       try {
-        let create_tracking = await contentTracking(
+        await storeTrackingOffline(
+          userId,
+          courseId,
+          contentId,
+          contentType,
+          contentMime,
+          lastAccessOn,
+          detailsObject,
+          unitId
+        );
+        /*let create_tracking = await contentTracking(
           userId,
           courseId,
           contentId,
@@ -1493,7 +1503,7 @@ const StandAlonePlayer = ({ route }) => {
             detailsObject,
             unitId
           );
-        }
+        }*/
         logEvent();
       } catch (e) {
         console.log(e);
