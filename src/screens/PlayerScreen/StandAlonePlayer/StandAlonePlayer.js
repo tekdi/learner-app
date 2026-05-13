@@ -339,7 +339,7 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
-        ? 'sunbird-pdf-player'
+        ? 'sunbird-pdf-player-v2'
         : content_mime_type == 'application/vnd.sunbird.questionset'
           ? 'sunbird-quml-player'
           : content_mime_type == 'video/mp4' ||
@@ -1262,7 +1262,7 @@ const StandAlonePlayer = ({ route }) => {
   meta.name = 'viewport';
   meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
   document.head.appendChild(meta);
-  `;
+`;
 
   //call content url
   let injectedJS =
