@@ -124,23 +124,150 @@ const PlpWebViewScreen = () => {
     true;
   `;
   
-  const handleProgramLogin = async (tenantId, userId, token, refreshToken, pertiularTenantId) => {
+  const handleProgramLogin = async(tenantId, userId, token, refreshToken) => {
+    await saveAccessToken(token || '');
+    await saveRefreshToken(refreshToken || '')
+    const userDetails = await getuserDetails();
+    const roleName = "Learner";
+
+    const user_id = userId;
+  const tenantData = [
+    userDetails?.tenantData?.find((tenant) => tenant.tenantId === tenantId),
+  ];
+  const uiConfig = tenantData?.[0]?.params?.uiConfig;
+  await setDataInStorage('uiConfig', JSON.stringify(uiConfig));
+  console.log('#### loginmultirole uiConfig', JSON.stringify(uiConfig));
+  console.log('#### loginmultirole tenantData', tenantData);
+
+  const enrollmentId = userDetails?.enrollmentId;
+  await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
+  await setDataInStorage('userId', user_id || '');
+  await setDataInStorage('enrollmentId', enrollmentId || '');
+
+  //store dynamic templateId
+  const templateId = tenantData?.[0]?.templateId;
+  await setDataInStorage('templateId', templateId || '');
+
+    const academicyear = await setAcademicYear({ tenantid: tenantId });
+    const academicYearId = academicyear?.[0]?.id;
+    await setDataInStorage('academicYearId', academicYearId || '');
+    await setDataInStorage('userTenantid', tenantId || '');
+    const cohort = await getCohort({
+      user_id,
+      tenantid: tenantId,
+      academicYearId,
+    });
+  console.log('#### loginmultirole cohort', cohort);
+  let cohort_id;
+  if (cohort.params?.status !== 'failed') {
+    const getActiveCohort = await getActiveCohortData(cohort);
+    const getActiveCohortId = await getActiveCohortIds(cohort);
+    await setDataInStorage(
+      'cohortData',
+      JSON.stringify(getActiveCohort?.[0]) || ''
+    );
+    cohort_id = getActiveCohortId?.[0];
+  }
+
+  const profileData = await getProfileDetails({
+    userId: user_id,
+  });
+  console.log('#### loginmultirole profileData', profileData);
+
+  await setDataInStorage('profileData', JSON.stringify(profileData));
+  await setDataInStorage(
+    'Username',
+    profileData?.getUserDetails?.[0]?.username || ''
+  );
+  await storeUsername(profileData?.getUserDetails?.[0]?.username);
+
+  await setDataInStorage(
+    'cohortId',
+    cohort_id || '00000000-0000-0000-0000-000000000000'
+  );
+  const tenantDetails = (await getProgramDetails()) || [];
+
+  const MatchedTenant = tenantDetails.filter(
+    (item) => item?.tenantId === tenantId
+  );
+
+  // console.log('tenantDetails===>', JSON.stringify(tenantDetails));
+  // console.log(
+  //   'MatchedTenant===>',
+  //   JSON.stringify(MatchedTenant?.[0]?.contentFilter)
+  // );
+
+  await setDataInStorage(
+    'contentFilter',
+    JSON.stringify(MatchedTenant?.[0]?.contentFilter || {})
+  );
+
+  const youthnetTenantIds = tenantDetails
+    ?.filter((item) => item?.name === TENANT_DATA.YOUTHNET)
+    ?.map((item) => item?.tenantId);
+
+  const scp = tenantDetails
+    ?.filter((item) => item.name === 'Second Chance Program')
+    ?.map((item) => item.tenantId);
+
+ // const role = roleName;
+
+  {
+    // console.log('#### loginmultirole role', role);
+
+    if (tenantId === scp?.[0]) {
+      console.log('####loginintoscp', scp);
+      await setDataInStorage('userType', 'scp');
+      navigation.navigate('SCPUserTabScreen');
+
+      // if (cohort_id) {
+      //   navigation.navigate('SCPUserTabScreen');
+      // } else {
+      //   navigation.navigate('Dashboard');
+      // }
+    } else {
+      if (tenantId === youthnetTenantIds?.[0]) {
+        await setDataInStorage('userType', 'youthnet');
+        // navigation.navigate('YouthNetTabScreen');
+        navigation.navigate('Dashboard');
+      } else {
+        // await setDataInStorage('userType', 'pragyanpath');
+        await setDataInStorage('userType', tenantData?.[0]?.tenantName);
+        navigation.navigate('Dashboard');
+      }
+    }
+    const deviceId = await getDeviceId();
+    const action = 'add';
+
+    await notificationSubscribe({ deviceId, user_id, action });
+  }
+  
+  const now = moment();
+
+  const telemetryPayloadData = {
+    event: 'login',
+    type: 'click',
+    ets: now.unix(),
+  };
+  await telemetryTrackingData({
+    telemetryPayloadData,
+  });
+
+  };
+
+  const handleSelectedProgramLogin = async (selectedtenantId, userId, token, refreshToken) => {
     await saveAccessToken(token || '');
     await saveRefreshToken(refreshToken || '');
     const userDetails = await getuserDetails();
 
-    // When pertiularTenantId is provided (selected program), use it; otherwise fall back to tenantId
-    const effectiveTenantId = pertiularTenantId || tenantId;
     const user_id = userId;
-
     const tenantData = [
-      userDetails?.tenantData?.find((tenant) => tenant.tenantId === effectiveTenantId)
-      || { tenantId: effectiveTenantId },
+      userDetails?.tenantData?.find((tenant) => tenant.tenantId === selectedtenantId),
     ];
     const uiConfig = tenantData?.[0]?.params?.uiConfig;
-    await setDataInStorage('uiConfig', JSON.stringify(uiConfig || null));
-    console.log('#### loginmultirole uiConfig', JSON.stringify(uiConfig));
-    console.log('#### loginmultirole tenantData', tenantData);
+    await setDataInStorage('uiConfig', JSON.stringify(uiConfig));
+    console.log('#### selectedProgramLogin uiConfig', JSON.stringify(uiConfig));
+    console.log('#### selectedProgramLogin tenantData', tenantData);
 
     const enrollmentId = userDetails?.enrollmentId;
     await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
@@ -150,53 +277,70 @@ const PlpWebViewScreen = () => {
     const templateId = tenantData?.[0]?.templateId;
     await setDataInStorage('templateId', templateId || '');
 
-    const academicyear = await setAcademicYear({ tenantid: effectiveTenantId });
+    const academicyear = await setAcademicYear({ tenantid: selectedtenantId });
     const academicYearId = academicyear?.[0]?.id;
     await setDataInStorage('academicYearId', academicYearId || '');
-    await setDataInStorage('userTenantid', effectiveTenantId || '');
+    await setDataInStorage('userTenantid', selectedtenantId || '');
 
-    const cohort = await getCohort({ user_id, tenantid: effectiveTenantId, academicYearId });
-    console.log('#### loginmultirole cohort', cohort);
+    const cohort = await getCohort({
+      user_id,
+      tenantid: selectedtenantId,
+      academicYearId,
+    });
+    console.log('#### selectedProgramLogin cohort', cohort);
     let cohort_id;
-    if (Array.isArray(cohort) && cohort.params?.status !== 'failed') {
+    if (cohort.params?.status !== 'failed') {
       const getActiveCohort = await getActiveCohortData(cohort);
       const getActiveCohortId = await getActiveCohortIds(cohort);
-      await setDataInStorage('cohortData', JSON.stringify(getActiveCohort?.[0]) || '');
+      await setDataInStorage(
+        'cohortData',
+        JSON.stringify(getActiveCohort?.[0]) || ''
+      );
       cohort_id = getActiveCohortId?.[0];
     }
 
     const profileData = await getProfileDetails({ userId: user_id });
-    console.log('#### loginmultirole profileData', profileData);
-    await setDataInStorage('profileData', JSON.stringify(profileData || null));
-    const username = profileData?.getUserDetails?.[0]?.username || '';
-    await setDataInStorage('Username', username);
-    if (username) await storeUsername(username);
+    console.log('#### selectedProgramLogin profileData', profileData);
 
-    await setDataInStorage('cohortId', cohort_id || '00000000-0000-0000-0000-000000000000');
+    await setDataInStorage('profileData', JSON.stringify(profileData));
+    await setDataInStorage(
+      'Username',
+      profileData?.getUserDetails?.[0]?.username || ''
+    );
+    await storeUsername(profileData?.getUserDetails?.[0]?.username);
 
-    const tenantDetailsRaw = await getProgramDetails();
-    const tenantDetails = Array.isArray(tenantDetailsRaw) ? tenantDetailsRaw : [];
-    const MatchedTenant = tenantDetails.find((item) => item?.tenantId === effectiveTenantId);
+    await setDataInStorage(
+      'cohortId',
+      cohort_id || '00000000-0000-0000-0000-000000000000'
+    );
 
-    await setDataInStorage('contentFilter', JSON.stringify(MatchedTenant?.contentFilter || {}));
+    const tenantDetails = (await getProgramDetails()) || [];
+
+    const MatchedTenant = tenantDetails.filter(
+      (item) => item?.tenantId === selectedtenantId
+    );
+    await setDataInStorage(
+      'contentFilter',
+      JSON.stringify(MatchedTenant?.[0]?.contentFilter || {})
+    );
 
     const youthnetTenantIds = tenantDetails
       ?.filter((item) => item?.name === TENANT_DATA.YOUTHNET)
       ?.map((item) => item?.tenantId);
+
     const scp = tenantDetails
       ?.filter((item) => item.name === 'Second Chance Program')
       ?.map((item) => item.tenantId);
 
-    // Navigate based on the selected tenant (effectiveTenantId)
-    if (effectiveTenantId === scp?.[0]) {
-      console.log('####loginintoscp', scp);
+    if (selectedtenantId === scp?.[0]) {
+      console.log('#### selectedProgramLogin into scp', scp);
       await setDataInStorage('userType', 'scp');
       navigation.navigate('SCPUserTabScreen');
-    } else if (effectiveTenantId === youthnetTenantIds?.[0]) {
+    } else if (selectedtenantId === youthnetTenantIds?.[0]) {
       await setDataInStorage('userType', 'youthnet');
       navigation.navigate('Dashboard');
     } else {
-      await setDataInStorage('userType', MatchedTenant?.name || tenantData?.[0]?.tenantName || '');
+      await setDataInStorage('userType', tenantData?.[0]?.tenantName);
       navigation.navigate('Dashboard');
     }
 
@@ -212,7 +356,7 @@ const PlpWebViewScreen = () => {
   const handleWebViewMessage = async (event) => {
     try {
       const message = JSON.parse(event.nativeEvent.data);
-      console.log('Received from web:$$$$$$44', message);
+      console.log('Received from web:', message);
       
       // Log when Android flag is confirmed set
       if (message.type === 'ANDROID_APP_FLAG_SET') {
@@ -271,6 +415,12 @@ const PlpWebViewScreen = () => {
         console.log('Access Program data:', message.data);
       }
       
+      if (message.type === 'LOGIN_INTO_SELECTED_PROGRAM_EVENT') {
+        const { selectedtenantId, userId, token, refreshToken } = message.data;
+        console.log('Login into selected program data:', message.data);
+        await handleSelectedProgramLogin(selectedtenantId, userId, token, refreshToken);
+      }
+
       if (message.type === 'LOGIN_INTO_ONLY_ONE_PROGRAM_EVENT') {
         const tenantId = message.data.tenantId;
         const userId = message.data.userId;
@@ -279,18 +429,9 @@ const PlpWebViewScreen = () => {
         console.log('Login into Only One Program data:', message.data);
 
 
-
+        
         await handleProgramLogin(tenantId, userId, token, refreshToken);
         //  const refreshToken = ""
-      }
-
-      if (message.type === 'LOGIN_INTO_ SELECTECTED_PROGRAM_EVENT') {
-        const tenantId = message.data.tenantId;
-        const userId = message.data.userId;
-        const token = message.data.token;
-        const refreshToken = message.data.refreshToken;
-        console.log('Login into Selected Program data:&&&&&&&&&&&&&&&&', message.data);
-        await handleProgramLogin(tenantId, userId, token, refreshToken, tenantId);
       }
     } catch (error) {
       console.error('Error handling WebView message:', error);
@@ -391,4 +532,3 @@ const styles = StyleSheet.create({
 });
 
 export default PlpWebViewScreen;
-
