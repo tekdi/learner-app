@@ -451,7 +451,7 @@ const StandAlonePlayer = ({ route }) => {
             },
           },
         ];
-        await storeData('contentEidEND', contentEidEND, 'json');
+        await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
         //check if exit button pressed
         fetchExitData();
         navigation.goBack();
@@ -480,6 +480,7 @@ const StandAlonePlayer = ({ route }) => {
               edata: data_obj.edata,
             },
           ];
+          await storeData(content_do_id+'contentEidSTART', contentEidSTART, 'json');
         }
         if (data_obj?.eid == 'INTERACT') {
           contentEidINTERACT = [
@@ -488,6 +489,7 @@ const StandAlonePlayer = ({ route }) => {
               edata: data_obj.edata,
             },
           ];
+          await storeData(content_do_id+'contentEidINTERACT', contentEidINTERACT, 'json');
         }
         if (
           data_obj?.eid == 'END' ||
@@ -500,10 +502,8 @@ const StandAlonePlayer = ({ route }) => {
               edata: data_obj.edata,
             },
           ];
+          await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
         }
-        await storeData('contentEidSTART', contentEidSTART, 'json');
-        await storeData('contentEidINTERACT', contentEidINTERACT, 'json');
-        await storeData('contentEidEND', contentEidEND, 'json');
       }
       //check playerevent
       if (data_obj && data_event == 'playerevent') {
@@ -550,6 +550,22 @@ const StandAlonePlayer = ({ route }) => {
             courseId,
             unitId
           );
+
+          //add manual end event
+          let storedContentEidEND = await getData(content_do_id+'contentEidEND', 'json');
+          console.log("storedContentEidEND firstfetch",JSON.stringify(storedContentEidEND));
+          if(!storedContentEidEND || storedContentEidEND?.length==0)
+          {
+            contentEidEND = [
+              {
+                eid: 'END',
+                edata: {"type":"content","mode":"play","starttime":0,"endtime":0,"timespent":0.88,"pageviews":0,"interactions":0,"extra":[{"id":"progress","value":"100"},{"id":"endpageseen","value":"true"},{"id":"score","value":seconds},{"id":"correct","value":"0"},{"id":"incorrect","value":"0"},{"id":"partial","value":"0"},{"id":"skipped","value":"0"}]},
+              },
+            ];
+            await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
+            console.log("stored contentEidEND for assessments",contentEidEND);
+          }
+
           // console.log('############# create_assessment', create_assessment);
           if (
             create_assessment &&
@@ -1369,11 +1385,11 @@ const StandAlonePlayer = ({ route }) => {
     }
     //console.log('storedTelemetryObject', JSON.stringify(storedTelemetryObject));
     //store content tracking
-    let storedContentEidSTART = await getData('contentEidSTART', 'json');
-    let storedContentEidINTERACT = await getData('contentEidINTERACT', 'json');
-    let storedContentEidEND = await getData('contentEidEND', 'json');
-    console.log('storedContentEidSTART', storedContentEidSTART);
-    console.log('storedContentEidEND', storedContentEidEND);
+    let storedContentEidSTART = await getData(content_do_id+'contentEidSTART', 'json');
+    let storedContentEidINTERACT = await getData(content_do_id+'contentEidINTERACT', 'json');
+    let storedContentEidEND = await getData(content_do_id+'contentEidEND', 'json');
+    console.log('storedContentEidSTART', JSON.stringify(storedContentEidSTART));
+    console.log('storedContentEidEND', JSON.stringify(storedContentEidEND));
 
     let detailsObject = [];
     try {
@@ -1510,9 +1526,9 @@ const StandAlonePlayer = ({ route }) => {
       }
     }
 
-    await removeData('contentEidSTART');
-    await removeData('contentEidINTERACT');
-    await removeData('contentEidEND');
+    await removeData(content_do_id+'contentEidSTART');
+    await removeData(content_do_id+'contentEidINTERACT');
+    await removeData(content_do_id+'contentEidEND');
   };
   //event when player closed
 
@@ -1677,7 +1693,7 @@ const StandAlonePlayer = ({ route }) => {
                       },
                     },
                   ];
-                  await storeData('contentEidSTART', contentEidSTART, 'json');
+                  await storeData(content_do_id+'contentEidSTART', contentEidSTART, 'json');
                 }
 
                 // Track END event when video ends
@@ -1714,7 +1730,7 @@ const StandAlonePlayer = ({ route }) => {
                       },
                     },
                   ];
-                  await storeData('contentEidEND', contentEidEND, 'json');
+                  await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
                   // Optionally navigate back or handle video end
 
                   // Exit fullscreen when video ends
