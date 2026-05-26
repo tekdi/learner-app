@@ -8,6 +8,7 @@ import {
   getCohort,
   getProfileDetails,
   getProgramDetails,
+  getUserDetails,
   setAcademicYear,
   notificationSubscribe,
   telemetryTrackingData,
@@ -256,22 +257,41 @@ const PlpWebViewScreen = () => {
   };
 
   const handleSelectedProgramLogin = async (selectedtenantId, userId, token, refreshToken) => {
+    console.log('#### selectedProgramLogin', selectedtenantId, userId);
     await saveAccessToken(token || '');
     await saveRefreshToken(refreshToken || '');
-    const userDetails = await getuserDetails();
 
     const user_id = userId;
-    const tenantData = [
-      userDetails?.tenantData?.find((tenant) => tenant.tenantId === selectedtenantId),
-    ];
-    const uiConfig = tenantData?.[0]?.params?.uiConfig;
-    await setDataInStorage('uiConfig', JSON.stringify(uiConfig));
-    console.log('#### selectedProgramLogin uiConfig', JSON.stringify(uiConfig));
-    console.log('#### selectedProgramLogin tenantData', tenantData);
 
-    const enrollmentId = userDetails?.enrollmentId;
-    await setDataInStorage('tenantData', JSON.stringify(tenantData || {}));
+    // Store userId and minimal tenantData first so getHeaders() has a tenantId for subsequent API calls
     await setDataInStorage('userId', user_id || '');
+    await setDataInStorage('tenantData', JSON.stringify([{ tenantId: selectedtenantId }]));
+
+    // Use getUserDetails API (same reliable source as ProgramSwitch) to get the full tenant name
+    // getuserDetails() can return stale/wrong data depending on token state,
+    // but getUserDetails({ user_id }) always returns the live enrolled tenant list
+    const userResponse = await getUserDetails({ user_id });
+    const allTenantData = userResponse?.userData?.tenantData || [];
+
+    // Fallback to getuserDetails if the API didn't return tenant data
+    let fallbackUserDetails = null;
+    if (!allTenantData.length) {
+      fallbackUserDetails = await getuserDetails();
+    }
+    const resolvedAllTenants = allTenantData.length
+      ? allTenantData
+      : (fallbackUserDetails?.tenantData || []);
+
+    const tenantData = [
+      resolvedAllTenants.find((tenant) => tenant.tenantId === selectedtenantId),
+    ];
+    const selectedTenantName = tenantData?.[0]?.tenantName;
+    console.log('#### selectedProgramLogin tenantName', selectedTenantName);
+
+    const enrollmentId = fallbackUserDetails?.enrollmentId || userResponse?.userData?.enrollmentId;
+    const uiConfig = tenantData?.[0]?.params?.uiConfig;
+    await setDataInStorage('uiConfig', JSON.stringify(uiConfig || {}));
+    await setDataInStorage('tenantData', JSON.stringify(tenantData));
     await setDataInStorage('enrollmentId', enrollmentId || '');
 
     const templateId = tenantData?.[0]?.templateId;
@@ -292,56 +312,45 @@ const PlpWebViewScreen = () => {
     if (cohort.params?.status !== 'failed') {
       const getActiveCohort = await getActiveCohortData(cohort);
       const getActiveCohortId = await getActiveCohortIds(cohort);
-      await setDataInStorage(
-        'cohortData',
-        JSON.stringify(getActiveCohort?.[0]) || ''
-      );
+      await setDataInStorage('cohortData', JSON.stringify(getActiveCohort?.[0]) || '');
       cohort_id = getActiveCohortId?.[0];
     }
 
     const profileData = await getProfileDetails({ userId: user_id });
     console.log('#### selectedProgramLogin profileData', profileData);
-
     await setDataInStorage('profileData', JSON.stringify(profileData));
-    await setDataInStorage(
-      'Username',
-      profileData?.getUserDetails?.[0]?.username || ''
-    );
+    await setDataInStorage('Username', profileData?.getUserDetails?.[0]?.username || '');
     await storeUsername(profileData?.getUserDetails?.[0]?.username);
 
-    await setDataInStorage(
-      'cohortId',
-      cohort_id || '00000000-0000-0000-0000-000000000000'
-    );
+    await setDataInStorage('cohortId', cohort_id || '00000000-0000-0000-0000-000000000000');
 
     const tenantDetails = (await getProgramDetails()) || [];
+    const MatchedTenant = tenantDetails.filter((item) => item?.tenantId === selectedtenantId);
+    await setDataInStorage('contentFilter', JSON.stringify(MatchedTenant?.[0]?.contentFilter || {}));
 
-    const MatchedTenant = tenantDetails.filter(
-      (item) => item?.tenantId === selectedtenantId
-    );
-    await setDataInStorage(
-      'contentFilter',
-      JSON.stringify(MatchedTenant?.[0]?.contentFilter || {})
-    );
+    // Determine program type using tenant name (reliable) as primary,
+    // tenant ID match from getProgramDetails as secondary.
+    // selectedTenantName comes directly from the user's enrolled tenant data via getUserDetails API.
+    const scpTenantIds = tenantDetails?.filter((item) => item?.name === TENANT_DATA.SECOND_CHANCE_PROGRAM)?.map((item) => item?.tenantId);
+    const youthnetTenantIds = tenantDetails?.filter((item) => item?.name === TENANT_DATA.YOUTHNET)?.map((item) => item?.tenantId);
+    const campToClubTenantIds = tenantDetails?.filter((item) => item?.name === TENANT_DATA.CAMP_TO_CLUB)?.map((item) => item?.tenantId);
 
-    const youthnetTenantIds = tenantDetails
-      ?.filter((item) => item?.name === TENANT_DATA.YOUTHNET)
-      ?.map((item) => item?.tenantId);
-
-    const scp = tenantDetails
-      ?.filter((item) => item.name === 'Second Chance Program')
-      ?.map((item) => item.tenantId);
-
-    if (selectedtenantId === scp?.[0]) {
-      console.log('#### selectedProgramLogin into scp', scp);
+    if (selectedTenantName === TENANT_DATA.SECOND_CHANCE_PROGRAM || scpTenantIds?.includes(selectedtenantId)) {
+      console.log('#### selectedProgramLogin → SCPUserTabScreen');
       await setDataInStorage('userType', 'scp');
-      navigation.navigate('SCPUserTabScreen');
-    } else if (selectedtenantId === youthnetTenantIds?.[0]) {
+      navigation.reset({ index: 0, routes: [{ name: 'SCPUserTabScreen' }] });
+    } else if (selectedTenantName === TENANT_DATA.YOUTHNET || youthnetTenantIds?.includes(selectedtenantId)) {
+      console.log('#### selectedProgramLogin → Dashboard (youthnet)');
       await setDataInStorage('userType', 'youthnet');
-      navigation.navigate('Dashboard');
+      navigation.reset({ index: 0, routes: [{ name: 'Dashboard' }] });
+    } else if (selectedTenantName === TENANT_DATA.CAMP_TO_CLUB || campToClubTenantIds?.includes(selectedtenantId)) {
+      console.log('#### selectedProgramLogin → Dashboard (campToClub)');
+      await setDataInStorage('userType', TENANT_DATA.CAMP_TO_CLUB);
+      navigation.reset({ index: 0, routes: [{ name: 'Dashboard' }] });
     } else {
-      await setDataInStorage('userType', tenantData?.[0]?.tenantName);
-      navigation.navigate('Dashboard');
+      console.log('#### selectedProgramLogin → Dashboard, userType:', selectedTenantName);
+      await setDataInStorage('userType', selectedTenantName || selectedtenantId);
+      navigation.reset({ index: 0, routes: [{ name: 'Dashboard' }] });
     }
 
     const deviceId = await getDeviceId();
@@ -418,7 +427,7 @@ const PlpWebViewScreen = () => {
       if (message.type === 'LOGIN_INTO_SELECTED_PROGRAM_EVENT') {
         const { selectedtenantId, userId, token, refreshToken } = message.data;
         console.log('Login into selected program data:', message.data);
-        await handleSelectedProgramLogin(selectedtenantId, userId, token, refreshToken);
+        await handleProgramLogin(selectedtenantId, userId, token, refreshToken);
       }
 
       if (message.type === 'LOGIN_INTO_ONLY_ONE_PROGRAM_EVENT') {
