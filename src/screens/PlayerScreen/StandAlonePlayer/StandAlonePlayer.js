@@ -768,6 +768,14 @@ const StandAlonePlayer = ({ route }) => {
             firstName: userName,
             lastName: '',
           };
+
+          //h5p player path change
+          if(contentObj?.mimeType == 'application/vnd.ekstep.h5p-archive')
+          {
+            contentPlayerConfig.metadata.streamingUrl=`file://${content_file}/assets/public/content/h5p/${content_do_id}-latest/content`;
+            // contentPlayerConfig.metadata.streamingUrl=contentPlayerConfig.metadata.streamingUrl+'/content';
+          }
+
           console.log(
             'contentPlayerConfig set json',
             JSON.stringify(contentPlayerConfig)
