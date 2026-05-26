@@ -333,10 +333,11 @@ const StandAlonePlayer = ({ route }) => {
 
   //common compoennt variables
   const [lib_folder] = useState(
-    content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+    content_mime_type == 'application/vnd.ekstep.h5p-archive'
+    ? 'content-player-v2'
+    : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
       content_mime_type == 'video/x-youtube' ||
-      content_mime_type == 'application/vnd.ekstep.html-archive' ||
-      content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      content_mime_type == 'application/vnd.ekstep.html-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
         ? 'sunbird-pdf-player'
@@ -1282,7 +1283,11 @@ const StandAlonePlayer = ({ route }) => {
 
   //call content url
   let injectedJS =
-    content_mime_type == 'application/vnd.sunbird.questionset'
+    content_mime_type == 'application/vnd.ekstep.h5p-archive'
+          ? `(function() {
+        window.setData('${JSON.stringify(contentPlayerConfig)}');
+        })(); true;`
+    : content_mime_type == 'application/vnd.sunbird.questionset'
       ? `(function() {
             localStorage.setItem('qumlPlayerObject', JSON.stringify(${JSON.stringify(
               {
@@ -1302,7 +1307,6 @@ const StandAlonePlayer = ({ route }) => {
         })(); ${disableZoomJS} true;`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
           content_mime_type == 'application/vnd.ekstep.html-archive' ||
-          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
           content_mime_type == 'video/x-youtube'
         ? `(function() {
         localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(

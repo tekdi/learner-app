@@ -84,3 +84,7 @@ android/app/libs/*.jar
 android/mobilertc/*.aar
 android/mobilertc/*.jar
 android/mobilertc/build/
+
+# but allow H5P dist
+!android/app/src/main/assets/libs/content-player-v2/h5p-libs/**/dist/
+!android/app/src/main/assets/libs/content-player-v2/h5p-libs/**/dist/**
