@@ -408,7 +408,7 @@ const StandAlonePlayer = ({ route }) => {
     try {
       //get telemetry save
       const data = event.nativeEvent.data;
-      // console.log('data_obj data', JSON.stringify(event.nativeEvent));
+      console.log('data_obj data', JSON.stringify(event.nativeEvent));
       let jsonObj = JSON.parse(data);
       let data_obj = jsonObj.data;
       let data_event = jsonObj?.event;
@@ -772,8 +772,7 @@ const StandAlonePlayer = ({ route }) => {
           //h5p player path change
           if(contentObj?.mimeType == 'application/vnd.ekstep.h5p-archive')
           {
-            contentPlayerConfig.metadata.streamingUrl=`file://${content_file}/assets/public/content/h5p/${content_do_id}-latest/content`;
-            // contentPlayerConfig.metadata.streamingUrl=contentPlayerConfig.metadata.streamingUrl+'/content';
+            contentPlayerConfig.metadata.streamingUrl=`file://${content_file}/assets/public/content/h5p/${content_do_id}-latest/content/`;
           }
 
           console.log(
@@ -1291,11 +1290,7 @@ const StandAlonePlayer = ({ route }) => {
 
   //call content url
   let injectedJS =
-    content_mime_type == 'application/vnd.ekstep.h5p-archive'
-          ? `(function() {
-        window.setData('${JSON.stringify(contentPlayerConfig)}');
-        })(); true;`
-    : content_mime_type == 'application/vnd.sunbird.questionset'
+    content_mime_type == 'application/vnd.sunbird.questionset'
       ? `(function() {
             localStorage.setItem('qumlPlayerObject', JSON.stringify(${JSON.stringify(
               {
@@ -1315,6 +1310,7 @@ const StandAlonePlayer = ({ route }) => {
         })(); ${disableZoomJS} true;`
       : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
           content_mime_type == 'application/vnd.ekstep.html-archive' ||
+          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
           content_mime_type == 'video/x-youtube'
         ? `(function() {
         localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
@@ -1857,6 +1853,7 @@ const StandAlonePlayer = ({ route }) => {
             ]}
             contentStyle={{ direction: isRTL ? 'rtl' : 'ltr' }} // Sets text direction inside WebView
             */
+            allowFileAccessFromFileURLs={true}
           />
         )}
         <TestResultModal modal={modal} title={title} />
