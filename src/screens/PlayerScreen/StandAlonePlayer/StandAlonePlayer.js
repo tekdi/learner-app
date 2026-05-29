@@ -71,6 +71,9 @@ import GlobalText from '@components/GlobalText/GlobalText';
 //youtube player changes
 import YoutubePlayer from 'react-native-youtube-iframe';
 
+//static server
+import StaticServer from 'react-native-static-server';
+
 const StandAlonePlayer = ({ route }) => {
   //multi language setup
   const { t, language } = useTranslation();
@@ -334,7 +337,7 @@ const StandAlonePlayer = ({ route }) => {
   //common compoennt variables
   const [lib_folder] = useState(
     content_mime_type == 'application/vnd.ekstep.h5p-archive'
-    ? 'content-player-v2'
+    ? `content-player-${Config.CONTENT_PLAYER_VERSION}`
     : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
       content_mime_type == 'video/x-youtube' ||
       content_mime_type == 'application/vnd.ekstep.html-archive'
@@ -397,6 +400,38 @@ const StandAlonePlayer = ({ route }) => {
     ios: `./assets/assets/libs/${lib_folder}/${lib_file}`,
     android: `file:///android_asset/libs/${lib_folder}/${lib_file}`,
   });
+
+  //server start
+  let publicLocal=RNFS.DocumentDirectoryPath;
+  let urlLocal='http://localhost:8080';
+  let serverInstance = null;
+  useEffect(() => {
+    const initialSetup=async()=>{
+      setLoading(true);
+      serverInstance = new StaticServer(
+        8080,
+        `${publicLocal}`,
+        {
+          localOnly: true,
+        }
+      );
+      serverInstance.start().then((url) => {
+        console.log('####Server started at', url);
+        // urlLocal=url;
+        // http://localhost:8080
+      });
+      setLoading(false);
+    }
+    initialSetup();
+    return () => {
+      if(serverInstance)
+      {
+        serverInstance.stop();
+        console.log('####Server stopped',urlLocal);
+      }
+    };
+  }, []);
+  //server end
 
   //set data from react native
   const webviewRef = useRef(null);
@@ -516,6 +551,12 @@ const StandAlonePlayer = ({ route }) => {
           fetchExitData();
           navigation.goBack();
         }
+      }
+      //check for content player event close player
+      console.log('data_obj playerevent', JSON.stringify(jsonObj));
+      if (jsonObj && jsonObj?.type == 'player:close') {
+          fetchExitData();
+          navigation.goBack();
       }
       //for assessment
       if (
@@ -772,7 +813,30 @@ const StandAlonePlayer = ({ route }) => {
           //h5p player path change
           if(contentObj?.mimeType == 'application/vnd.ekstep.h5p-archive')
           {
-            contentPlayerConfig.metadata.streamingUrl=`file://${content_file}/assets/public/content/h5p/${content_do_id}-latest/content/`;
+            // contentPlayerConfig.metadata.streamingUrl=`file://${content_file}/assets/public/content/h5p/${content_do_id}-latest/content`;
+            // ##################################
+            contentPlayerConfig.metadata.streamingUrl=`http://127.0.0.1:8080/${content_do_id}/assets/public/content/h5p/${content_do_id}-latest/content`;
+            delete contentPlayerConfig.context.host;
+            delete contentPlayerConfig.context.contentId;
+const path =
+  `${RNFS.DocumentDirectoryPath}/${content_do_id}/assets/public/content/h5p/${content_do_id}-latest/content/h5p.json`;
+
+const exists = await RNFS.exists(path);
+
+console.log('#### h5p.json exists', exists);
+fetch(
+  `http://127.0.0.1:8080/${content_do_id}/assets/public/content/h5p/${content_do_id}-latest/content/h5p.json`
+)
+.then(r => {
+  console.log('STATUS', r.status);
+  return r.text();
+})
+.then(t => {
+  console.log('DATA', t);
+})
+.catch(e => {
+  console.log('FETCH ERROR', e);
+});
           }
 
           console.log(
@@ -1812,7 +1876,53 @@ const StandAlonePlayer = ({ route }) => {
               );
             })()
           )
-        ) : (
+        ) :
+        content_mime_type == 'application/vnd.ekstep.h5p-archive'
+        ? (
+          <WebView
+            ref={webviewRef}
+            originWhitelist={['*']}
+            source={
+              {uri: `${urlLocal}/content-player-${Config.CONTENT_PLAYER_VERSION}/index.html`}
+            }
+            style={styles.webview}
+            userAgent={
+              content_mime_type == 'video/x-youtube'
+                ? undefined
+                : lib_folder == 'sunbird-content-player'
+                  ? desktopUserAgent
+                  : undefined
+            }
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            scalesPageToFit={true}
+            startInLoadingState={true}
+            allowFileAccess={true}
+            allowUniversalAccessFromFileURLs={true}
+            allowingReadAccessToURL={true}
+            mixedContentMode={'always'}
+            allowsFullscreenVideo={true}
+            mediaPlaybackRequiresUserAction={false}
+            injectedJavaScript={injectedJS}
+            onMessage={handleMessage}
+            onError={(syntheticEvent) => {
+              const { nativeEvent } = syntheticEvent;
+              console.warn('WebView error: ', nativeEvent);
+            }}
+            onNavigationStateChange={handleNavigationStateChange}
+            allowsInlineMediaPlayback={true}
+            /*
+            //for rtl
+            style={[
+              styles.webview,
+              isRTL && { transform: [{ scaleX: -1 }] }, // Apply transform for RTL only
+            ]}
+            contentStyle={{ direction: isRTL ? 'rtl' : 'ltr' }} // Sets text direction inside WebView
+            */
+            allowFileAccessFromFileURLs={true}
+          />
+        )
+        : (
           <WebView
             ref={webviewRef}
             originWhitelist={['*']}
