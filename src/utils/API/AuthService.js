@@ -18,6 +18,7 @@ import Config from 'react-native-config';
 import RNFS from 'react-native-fs';
 import { Alert } from 'react-native';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import Share from 'react-native-share';
 import { TENANT_DATA } from '../Constants/app-constants';
 
 const getHeaders = async () => {
@@ -2466,18 +2467,28 @@ export const downloadCertificate = async ({
     <meta name="viewport" content="width=1120, initial-scale=1.0">
     <style>
       @page { margin: 0; size: landscape; }
-      html, body {
+      html {
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
+      body {
         margin: 0 !important;
         padding: 0 !important;
         width: 1120px !important;
         height: 790px !important;
         overflow: hidden !important;
         background: white !important;
+        display: block !important;
         page-break-after: avoid !important;
         page-break-inside: avoid !important;
       }
       .page {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
         margin: 0 !important;
+        padding: 0 !important;
         width: 1120px !important;
         height: 790px !important;
         page-break-after: avoid !important;
@@ -2511,24 +2522,94 @@ export const downloadCertificate = async ({
     return false;
   }
 };
-export const shareCertificate = async ({ certificateId }) => {
-  const url = `${EndUrls.downloadCertificate}`; // Define the URL
-  const headers = await getHeaders();
+export const shareCertificate = async ({
+  certificateId,
+  certificateName,
+  certificateHtml,
+}) => {
+  const user_id = await getDataFromStorage('userId');
   const template_id = await getDataFromStorage('templateId');
-  const payload = {
-    credentialId: certificateId,
-    templateId: template_id,
-  };
+
+  let htmlContent = certificateHtml;
+
+  if (!htmlContent) {
+    const url = `${EndUrls.viewCertificate}`;
+    const headers = await getHeaders();
+    const payload = { credentialId: certificateId, templateId: template_id };
+    try {
+      const result = await post(url, payload, { headers: headers || {} });
+      htmlContent = result?.data?.result;
+    } catch (e) {
+      console.error('Error fetching certificate HTML:', e);
+      Alert.alert('Error', 'Failed to fetch certificate content');
+      return false;
+    }
+  }
+
+  if (!htmlContent) {
+    Alert.alert('Error', 'No certificate content available');
+    return false;
+  }
+
+  const certCss = `
+    <meta name="viewport" content="width=1120, initial-scale=1.0">
+    <style>
+      @page { margin: 0; size: landscape; }
+      html {
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 1120px !important;
+        height: 790px !important;
+        overflow: hidden !important;
+        background: white !important;
+        display: block !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+      .page {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 1120px !important;
+        height: 790px !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+    </style>`;
+  const processedHtml = htmlContent.includes('</head>')
+    ? htmlContent.replace('</head>', `${certCss}</head>`)
+    : certCss + htmlContent;
 
   try {
-    const response = await axios.post(url, payload, {
-      headers: headers || {},
-      responseType: 'arraybuffer', // Ensures we get binary data
+    const fileName = `${certificateName}_${user_id}_share`;
+    // base64:true avoids file:// URI + FileProvider requirement on Android 7+
+    const file = await RNHTMLtoPDF.convert({
+      html: processedHtml,
+      fileName,
+      base64: true,
+      width: 841,
+      height: 595,
     });
-    const data = response?.request?._response;
-    return data;
-  } catch (error) {
-    console.error('Error downloading PDF:', error);
+
+    await Share.open({
+      title: 'Share Certificate',
+      url: `data:application/pdf;base64,${file.base64}`,
+      type: 'application/pdf',
+      failOnCancel: false,
+    });
     return true;
+  } catch (error) {
+    if (error?.message !== 'User did not share') {
+      console.error('Error sharing certificate:', error);
+      Alert.alert('Error', 'Failed to share certificate');
+    }
+    return false;
   }
 };

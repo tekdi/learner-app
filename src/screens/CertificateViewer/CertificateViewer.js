@@ -10,7 +10,6 @@ import {
   shareCertificate,
 } from '@src/utils/API/AuthService';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
-import Share from 'react-native-share';
 
 const CertificateViewer = ({
   visible,
@@ -32,26 +31,9 @@ const CertificateViewer = ({
   };
 
   const handleShare = async () => {
-    const shareCerti = await shareCertificate({
-      certificateId,
-      certificateName,
-    });
-    sharePDF(shareCerti);
-  };
-
-  const sharePDF = async (base64Data) => {
-    const options = {
-      title: 'Share PDF',
-      url: `data:application/pdf;base64,${base64Data}`,
-      type: 'application/pdf',
-      failOnCancel: false, // Optional
-    };
-
-    try {
-      await Share.open(options);
-    } catch (error) {
-      console.log('Share error:', error);
-    }
+    setLoading(true);
+    await shareCertificate({ certificateId, certificateName, certificateHtml });
+    setLoading(false);
   };
 
   return (

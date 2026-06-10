@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 <!--error with below line for android greater than 8 
 package="com.pratham.learning"
 -->
@@ -68,6 +69,18 @@ package="com.pratham.learning"
         <meta-data
           android:name="android.support.FILE_PROVIDER_PATHS"
           android:resource="@xml/provider_paths" />
+      </provider>
+
+      <!-- File Provider for react-native-share -->
+      <provider
+        android:name="cl.json.RNShareFileProvider"
+        android:authorities="${applicationId}.rnshare.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+          android:name="android.support.FILE_PROVIDER_PATHS"
+          android:resource="@xml/rn_share_provider_paths"
+          tools:replace="android:resource" />
       </provider>
       
       <activity
