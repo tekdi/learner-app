@@ -25,8 +25,7 @@ const CertificateViewer = ({
 
   const handleDownload = async () => {
     setLoading(true);
-    const data = await downloadCertificate({ certificateId, certificateName });
-
+    const data = await downloadCertificate({ certificateId, certificateName, certificateHtml });
     if (data) {
       setLoading(false);
     }
@@ -80,7 +79,7 @@ const CertificateViewer = ({
                 justifyContent: 'space-between',
               }}
             >
-              {/* <TouchableOpacity
+              <TouchableOpacity
                 style={{ marginRight: 20 }}
                 onPress={handleDownload}
               >
@@ -99,7 +98,7 @@ const CertificateViewer = ({
                 >
                   <Icon name={'share-social-outline'} color="#000" size={30} />
                 </TouchableOpacity>
-              </TouchableOpacity> */}
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
                   setVisible(false);
