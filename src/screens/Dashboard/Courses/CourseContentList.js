@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {
   ActivityIndicator,
   BackHandler,
+  DeviceEventEmitter,
   Image,
   Modal,
   ScrollView,
@@ -119,6 +120,19 @@ const CourseContentList = ({ route }) => {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener(
+      'CERTIFICATE_ISSUED',
+      ({ courseId }) => {
+        if (courseId === course_id) {
+          fetchEnrollStatus();
+          setCertificateModal(true);
+        }
+      }
+    );
+    return () => subscription.remove();
+  }, [course_id]);
 
   useEffect(() => {
     const backAction = () => {
