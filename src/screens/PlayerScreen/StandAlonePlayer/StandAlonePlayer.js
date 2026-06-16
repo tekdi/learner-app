@@ -71,6 +71,9 @@ import GlobalText from '@components/GlobalText/GlobalText';
 //youtube player changes
 import YoutubePlayer from 'react-native-youtube-iframe';
 
+//static server
+import StaticServer from 'react-native-static-server';
+
 const StandAlonePlayer = ({ route }) => {
   //multi language setup
   const { t, language } = useTranslation();
@@ -333,10 +336,11 @@ const StandAlonePlayer = ({ route }) => {
 
   //common compoennt variables
   const [lib_folder] = useState(
-    content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+    content_mime_type == 'application/vnd.ekstep.h5p-archive'
+    ? `content-player-${Config.CONTENT_PLAYER_VERSION}`
+    : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
       content_mime_type == 'video/x-youtube' ||
-      content_mime_type == 'application/vnd.ekstep.html-archive' ||
-      content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      content_mime_type == 'application/vnd.ekstep.html-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
         ? 'sunbird-pdf-player'
@@ -397,6 +401,38 @@ const StandAlonePlayer = ({ route }) => {
     android: `file:///android_asset/libs/${lib_folder}/${lib_file}`,
   });
 
+  //server start
+  let publicLocal=RNFS.DocumentDirectoryPath;
+  let urlLocal='http://localhost:8080';
+  let serverInstance = null;
+  useEffect(() => {
+    const initialSetup=async()=>{
+      setLoading(true);
+      serverInstance = new StaticServer(
+        8080,
+        `${publicLocal}`,
+        {
+          localOnly: true,
+        }
+      );
+      serverInstance.start().then((url) => {
+        console.log('####Server started at', url);
+        // urlLocal=url;
+        // http://localhost:8080
+      });
+      setLoading(false);
+    }
+    initialSetup();
+    return () => {
+      if(serverInstance)
+      {
+        serverInstance.stop();
+        console.log('####Server stopped',urlLocal);
+      }
+    };
+  }, []);
+  //server end
+
   //set data from react native
   const webviewRef = useRef(null);
   // webview event
@@ -407,7 +443,7 @@ const StandAlonePlayer = ({ route }) => {
     try {
       //get telemetry save
       const data = event.nativeEvent.data;
-      // console.log('data_obj data', JSON.stringify(event.nativeEvent));
+      console.log('data_obj data', JSON.stringify(event.nativeEvent));
       let jsonObj = JSON.parse(data);
       let data_obj = jsonObj.data;
       let data_event = jsonObj?.event;
@@ -451,7 +487,7 @@ const StandAlonePlayer = ({ route }) => {
             },
           },
         ];
-        await storeData('contentEidEND', contentEidEND, 'json');
+        await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
         //check if exit button pressed
         fetchExitData();
         navigation.goBack();
@@ -480,6 +516,7 @@ const StandAlonePlayer = ({ route }) => {
               edata: data_obj.edata,
             },
           ];
+          await storeData(content_do_id+'contentEidSTART', contentEidSTART, 'json');
         }
         if (data_obj?.eid == 'INTERACT') {
           contentEidINTERACT = [
@@ -488,6 +525,7 @@ const StandAlonePlayer = ({ route }) => {
               edata: data_obj.edata,
             },
           ];
+          await storeData(content_do_id+'contentEidINTERACT', contentEidINTERACT, 'json');
         }
         if (
           data_obj?.eid == 'END' ||
@@ -500,10 +538,8 @@ const StandAlonePlayer = ({ route }) => {
               edata: data_obj.edata,
             },
           ];
+          await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
         }
-        await storeData('contentEidSTART', contentEidSTART, 'json');
-        await storeData('contentEidINTERACT', contentEidINTERACT, 'json');
-        await storeData('contentEidEND', contentEidEND, 'json');
       }
       //check playerevent
       if (data_obj && data_event == 'playerevent') {
@@ -515,6 +551,12 @@ const StandAlonePlayer = ({ route }) => {
           fetchExitData();
           navigation.goBack();
         }
+      }
+      //check for content player event close player
+      console.log('data_obj playerevent', JSON.stringify(jsonObj));
+      if (jsonObj && jsonObj?.type == 'player:close') {
+          fetchExitData();
+          navigation.goBack();
       }
       //for assessment
       if (
@@ -550,6 +592,22 @@ const StandAlonePlayer = ({ route }) => {
             courseId,
             unitId
           );
+
+          //add manual end event
+          let storedContentEidEND = await getData(content_do_id+'contentEidEND', 'json');
+          console.log("storedContentEidEND firstfetch",JSON.stringify(storedContentEidEND));
+          if(!storedContentEidEND || storedContentEidEND?.length==0)
+          {
+            contentEidEND = [
+              {
+                eid: 'END',
+                edata: {"type":"content","mode":"play","starttime":0,"endtime":0,"timespent":0.88,"pageviews":0,"interactions":0,"extra":[{"id":"progress","value":"100"},{"id":"endpageseen","value":"true"},{"id":"score","value":seconds},{"id":"correct","value":"0"},{"id":"incorrect","value":"0"},{"id":"partial","value":"0"},{"id":"skipped","value":"0"}]},
+              },
+            ];
+            await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
+            console.log("stored contentEidEND for assessments",contentEidEND);
+          }
+
           // console.log('############# create_assessment', create_assessment);
           if (
             create_assessment &&
@@ -751,6 +809,36 @@ const StandAlonePlayer = ({ route }) => {
             firstName: userName,
             lastName: '',
           };
+
+          //h5p player path change
+          if(contentObj?.mimeType == 'application/vnd.ekstep.h5p-archive')
+          {
+            // contentPlayerConfig.metadata.streamingUrl=`file://${content_file}/assets/public/content/h5p/${content_do_id}-latest/content`;
+            // ##################################
+            contentPlayerConfig.metadata.streamingUrl=`http://127.0.0.1:8080/${content_do_id}/assets/public/content/h5p/${content_do_id}-latest/content`;
+            delete contentPlayerConfig.context.host;
+            delete contentPlayerConfig.context.contentId;
+const path =
+  `${RNFS.DocumentDirectoryPath}/${content_do_id}/assets/public/content/h5p/${content_do_id}-latest/content/h5p.json`;
+
+const exists = await RNFS.exists(path);
+
+console.log('#### h5p.json exists', exists);
+fetch(
+  `http://127.0.0.1:8080/${content_do_id}/assets/public/content/h5p/${content_do_id}-latest/content/h5p.json`
+)
+.then(r => {
+  console.log('STATUS', r.status);
+  return r.text();
+})
+.then(t => {
+  console.log('DATA', t);
+})
+.catch(e => {
+  console.log('FETCH ERROR', e);
+});
+          }
+
           console.log(
             'contentPlayerConfig set json',
             JSON.stringify(contentPlayerConfig)
@@ -1369,11 +1457,11 @@ const StandAlonePlayer = ({ route }) => {
     }
     //console.log('storedTelemetryObject', JSON.stringify(storedTelemetryObject));
     //store content tracking
-    let storedContentEidSTART = await getData('contentEidSTART', 'json');
-    let storedContentEidINTERACT = await getData('contentEidINTERACT', 'json');
-    let storedContentEidEND = await getData('contentEidEND', 'json');
-    console.log('storedContentEidSTART', storedContentEidSTART);
-    console.log('storedContentEidEND', storedContentEidEND);
+    let storedContentEidSTART = await getData(content_do_id+'contentEidSTART', 'json');
+    let storedContentEidINTERACT = await getData(content_do_id+'contentEidINTERACT', 'json');
+    let storedContentEidEND = await getData(content_do_id+'contentEidEND', 'json');
+    console.log('storedContentEidSTART', JSON.stringify(storedContentEidSTART));
+    console.log('storedContentEidEND', JSON.stringify(storedContentEidEND));
 
     let detailsObject = [];
     try {
@@ -1510,9 +1598,9 @@ const StandAlonePlayer = ({ route }) => {
       }
     }
 
-    await removeData('contentEidSTART');
-    await removeData('contentEidINTERACT');
-    await removeData('contentEidEND');
+    await removeData(content_do_id+'contentEidSTART');
+    await removeData(content_do_id+'contentEidINTERACT');
+    await removeData(content_do_id+'contentEidEND');
   };
   //event when player closed
 
@@ -1677,7 +1765,7 @@ const StandAlonePlayer = ({ route }) => {
                       },
                     },
                   ];
-                  await storeData('contentEidSTART', contentEidSTART, 'json');
+                  await storeData(content_do_id+'contentEidSTART', contentEidSTART, 'json');
                 }
 
                 // Track END event when video ends
@@ -1714,7 +1802,7 @@ const StandAlonePlayer = ({ route }) => {
                       },
                     },
                   ];
-                  await storeData('contentEidEND', contentEidEND, 'json');
+                  await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
                   // Optionally navigate back or handle video end
 
                   // Exit fullscreen when video ends
@@ -1788,7 +1876,53 @@ const StandAlonePlayer = ({ route }) => {
               );
             })()
           )
-        ) : (
+        ) :
+        content_mime_type == 'application/vnd.ekstep.h5p-archive'
+        ? (
+          <WebView
+            ref={webviewRef}
+            originWhitelist={['*']}
+            source={
+              {uri: `${urlLocal}/content-player-${Config.CONTENT_PLAYER_VERSION}/index.html`}
+            }
+            style={styles.webview}
+            userAgent={
+              content_mime_type == 'video/x-youtube'
+                ? undefined
+                : lib_folder == 'sunbird-content-player'
+                  ? desktopUserAgent
+                  : undefined
+            }
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            scalesPageToFit={true}
+            startInLoadingState={true}
+            allowFileAccess={true}
+            allowUniversalAccessFromFileURLs={true}
+            allowingReadAccessToURL={true}
+            mixedContentMode={'always'}
+            allowsFullscreenVideo={true}
+            mediaPlaybackRequiresUserAction={false}
+            injectedJavaScript={injectedJS}
+            onMessage={handleMessage}
+            onError={(syntheticEvent) => {
+              const { nativeEvent } = syntheticEvent;
+              console.warn('WebView error: ', nativeEvent);
+            }}
+            onNavigationStateChange={handleNavigationStateChange}
+            allowsInlineMediaPlayback={true}
+            /*
+            //for rtl
+            style={[
+              styles.webview,
+              isRTL && { transform: [{ scaleX: -1 }] }, // Apply transform for RTL only
+            ]}
+            contentStyle={{ direction: isRTL ? 'rtl' : 'ltr' }} // Sets text direction inside WebView
+            */
+            allowFileAccessFromFileURLs={true}
+          />
+        )
+        : (
           <WebView
             ref={webviewRef}
             originWhitelist={['*']}
@@ -1829,6 +1963,7 @@ const StandAlonePlayer = ({ route }) => {
             ]}
             contentStyle={{ direction: isRTL ? 'rtl' : 'ltr' }} // Sets text direction inside WebView
             */
+            allowFileAccessFromFileURLs={true}
           />
         )}
         <TestResultModal modal={modal} title={title} />

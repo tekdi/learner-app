@@ -827,3 +827,114 @@ export const calculateAge = (dobString) => {
 
   return age;
 };
+
+const PREFERRED_LANGUAGE_LABELS = new Set([
+  'PREFERRED_LANGUAGE_OF_LEARNING',
+  'PREFERRED LANGUAGE OF LEARNING',
+  'PREFERRED LANGUAGE',
+  'MEDIUM',
+]);
+
+const LANGUAGE_ALIASES = {
+  english: 'English',
+  en: 'English',
+  hindi: 'Hindi',
+  hi: 'Hindi',
+  'हिंदी': 'Hindi',
+  marathi: 'Marathi',
+  ma: 'Marathi',
+  mr: 'Marathi',
+  'मराठी': 'Marathi',
+  bengali: 'Bengali',
+  ba: 'Bengali',
+  bangla: 'Bengali',
+  'বাংলা': 'Bengali',
+  telugu: 'Telugu',
+  te: 'Telugu',
+  kannada: 'Kannada',
+  ka: 'Kannada',
+  tamil: 'Tamil',
+  ta: 'Tamil',
+  gujarati: 'Gujarati',
+  gu: 'Gujarati',
+  urdu: 'Urdu',
+  ur: 'Urdu',
+  odia: 'Odia',
+  or: 'Odia',
+  assamese: 'Assamese',
+  malayalam: 'Malayalam',
+  manipuri: 'Manipuri',
+  kashmiri: 'Kashmiri',
+  khasi: 'Khasi',
+  sanskrit: 'Sanskrit',
+  punjabi: 'Punjabi',
+};
+
+const isPreferredLanguageField = (field) => {
+  const label = field?.label?.toUpperCase() || '';
+  if (PREFERRED_LANGUAGE_LABELS.has(label)) return true;
+  return (
+    (label.includes('PREFERRED') && label.includes('LANGUAGE')) ||
+    (label.includes('LANGUAGE') && label.includes('LEARNING'))
+  );
+};
+
+const getCustomFieldValue = (field) => {
+  let raw = field?.value ?? field?.selectedValues?.[0];
+  if (raw && typeof raw === 'object') {
+    raw = raw.value || raw.label || null;
+  }
+  return typeof raw === 'string' ? raw.trim() : null;
+};
+
+const toFilterLanguageName = (value) => {
+  if (!value) return null;
+  return LANGUAGE_ALIASES[value.toLowerCase()] || LANGUAGE_ALIASES[value] || value;
+};
+
+const readPreferredLanguage = async () => {
+  try {
+    const profileDataRaw = await getDataFromStorage('profileData');
+    const cohortDataRaw = await getDataFromStorage('cohortData');
+    const fieldGroups = [
+      profileDataRaw
+        ? JSON.parse(profileDataRaw)?.getUserDetails?.[0]?.customFields
+        : null,
+      cohortDataRaw ? JSON.parse(cohortDataRaw)?.customField : null,
+    ];
+
+    for (const customFields of fieldGroups) {
+      if (!customFields?.length) continue;
+
+      for (const field of customFields) {
+        if (!isPreferredLanguageField(field)) continue;
+        const language = toFilterLanguageName(getCustomFieldValue(field));
+        if (language) return language;
+      }
+    }
+  } catch (error) {
+    console.error('Error reading preferred learning language:', error);
+  }
+
+  return null;
+};
+
+export const getPreferredContentLanguageSelection = async (staticFormFields) => {
+  if (!staticFormFields?.length) return null;
+
+  const languageField = staticFormFields.find(
+    (field) =>
+      field?.name === 'Content Language' || field?.name === 'Language'
+  );
+  if (!languageField?.range?.length) return null;
+
+  const preferredLang = await readPreferredLanguage();
+  if (!preferredLang) return null;
+
+  const matchedOption = languageField.range.find(
+    (option) => option?.toLowerCase() === preferredLang.toLowerCase()
+  );
+  if (!matchedOption) return null;
+
+  return { code: languageField.code, values: [matchedOption] };
+};
