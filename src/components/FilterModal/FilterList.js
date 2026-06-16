@@ -11,7 +11,10 @@ import { filterContent, staticFilterContent } from '@src/utils/API/AuthService';
 import ActiveLoading from '@src/screens/LoadingScreen/ActiveLoading';
 import { useInternet } from '../../context/NetworkContext';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  getPreferredContentLanguageSelection,
+} from '../../utils/JsHelper/Helper';
 
 const FilterList = ({
   setParentFormData,
@@ -303,7 +306,7 @@ const FilterList = ({
     );
 
     setrenderForm(transformRenderFormOutput);
-    fetchStaticForm(transformRenderFormOutput);
+    await fetchStaticForm(transformRenderFormOutput);
     setFilterData(result);
 
     if (contentFilter) {
@@ -392,6 +395,23 @@ const FilterList = ({
       }));
     }
 
+    const preferredLanguage = await getPreferredContentLanguageSelection(
+      filteredForm?.[0]?.fields || []
+    );
+
+    if (preferredLanguage) {
+      setStaticFormData((prev) => {
+        const normalizedPrev = Array.isArray(prev) ? {} : prev || {};
+        if (normalizedPrev[preferredLanguage.code]?.length > 0) {
+          return normalizedPrev;
+        }
+        return {
+          ...normalizedPrev,
+          [preferredLanguage.code]: preferredLanguage.values,
+        };
+      });
+    }
+
     // setFilterData(result);
     setLoading(false);
   };
@@ -399,7 +419,6 @@ const FilterList = ({
   useEffect(() => {
     if (isConnected) {
       fetchData();
-
       setFormData(orginalFormData);
       setStaticFormData(parentStaticFormData);
     } else {
