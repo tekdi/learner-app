@@ -1,6 +1,6 @@
 // syncService.js
 
-import { AppState } from 'react-native';
+import { AppState, DeviceEventEmitter } from 'react-native';
 import {
   CourseEnrollStatus,
   deleteTrackingOffline,
@@ -165,6 +165,7 @@ async function updateCOurseAndIssueCertificate({
               },
             });
             isCertificateIssued = true;
+            DeviceEventEmitter.emit('CERTIFICATE_ISSUED', { courseId: course?.identifier });
             console.log('qwerty issueCertificate response', response);
           } catch (error) {
             await updateCourseStatus({
