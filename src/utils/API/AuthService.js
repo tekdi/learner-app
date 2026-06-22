@@ -788,7 +788,44 @@ export const setAcademicYear = async ({ tenantid }) => {
     return handleResponseException(e);
   }
 };
+export const getAcademicYearList = async ({ tenantid }) => {
+  try {
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      tenantid: tenantid,
+    };
+    const url = `${EndUrls.academicyears}`;
+    // const payload = {
+    //   isActive: true,
+    // };
 
+    // Log the curl command
+
+    // console.log(
+    //   `curl -X POST '${url}' \\\n` +
+    //     `-H 'Content-Type: application/json' \\\n` +
+    //     `-H 'Accept: application/json' \\\n` +
+    //     `-H 'Authorization: ${headers.Authorization}' \\\n` +
+    //     `-H 'tenantid: ${headers.tenantid}' \\\n` +
+    //     `-d '${JSON.stringify(payload)}'`
+    // );
+
+    const result = await post(url, {}, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
 // Assessment List API
 
 export const assessmentListApi = async (params = {}) => {
@@ -1701,7 +1738,7 @@ export const eventList = async ({ startDate, endDate }) => {
     return result_offline;
   }
 };
-export const targetedSolutions = async ({ subjectName, type }) => {
+export const targetedSolutions = async ({ subjectName, type,academicYear="" }) => {
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
   const url = `${EndUrls.targetedSolutions}`; // Define the URL
   const method = 'POST'; // Define the HTTP method
@@ -1728,6 +1765,7 @@ export const targetedSolutions = async ({ subjectName, type }) => {
     class: data?.GRADE?.value,
     board: data?.BOARD?.value,
     courseType: type,
+    ...(academicYear ? { academicYear } : {}),
   };
   try {
     console.log(
@@ -2649,57 +2687,57 @@ export const ContentSearch = async ({
   }
 };
 
-export const getRegistrationAssessmentStatus = async ({
-  userId,
-  courseId,
-  unitId,
-  contentId,
-}) => {
-  try {
-    const url = `${EndUrls.AssessmentSearch}`;
-    const headers = await getHeaders();
-    const payload = { userId, courseId, unitId, contentId };
-    const result = await post(url, payload, { headers: headers || {} });
-    return result?.data?.data;
-  } catch (e) {
-    return handleResponseException(e);
-  }
-};
+// export const getRegistrationAssessmentStatus = async ({
+//   userId,
+//   courseId,
+//   unitId,
+//   contentId,
+// }) => {
+//   try {
+//     const url = `${EndUrls.AssessmentSearch}`;
+//     const headers = await getHeaders();
+//     const payload = { userId, courseId, unitId, contentId };
+//     const result = await post(url, payload, { headers: headers || {} });
+//     return result?.data?.data;
+//   } catch (e) {
+//     return handleResponseException(e);
+//   }
+// };
 
-export const ContentSearch = async ({
-  query = '',
-  filters,
-  fields,
-  sort_by,
-  limit = 5,
-  offset = 0,
-} = {}) => {
-  try {
-    const url = `${EndUrls.contentSearch}`;
-    const payload = {
-      request: {
-        filters: filters || {},
-        fields: fields || [
-          'name',
-          'appIcon',
-          'description',
-          'mimeType',
-          'identifier',
-          'primaryCategory',
-        ],
-        sort_by,
-        query,
-        limit,
-        offset,
-      },
-    };
-    const result = await post(url, payload);
-    return result?.data;
-  } catch (e) {
-    console.error('Error in ContentSearch:', e);
-    throw e;
-  }
-};
+// export const ContentSearch = async ({
+//   query = '',
+//   filters,
+//   fields,
+//   sort_by,
+//   limit = 5,
+//   offset = 0,
+// } = {}) => {
+//   try {
+//     const url = `${EndUrls.contentSearch}`;
+//     const payload = {
+//       request: {
+//         filters: filters || {},
+//         fields: fields || [
+//           'name',
+//           'appIcon',
+//           'description',
+//           'mimeType',
+//           'identifier',
+//           'primaryCategory',
+//         ],
+//         sort_by,
+//         query,
+//         limit,
+//         offset,
+//       },
+//     };
+//     const result = await post(url, payload);
+//     return result?.data;
+//   } catch (e) {
+//     console.error('Error in ContentSearch:', e);
+//     throw e;
+//   }
+// };
 
 export const getRegistrationAssessmentStatus = async ({
   userId,

@@ -452,6 +452,7 @@ import {
   setAcademicYear,
   notificationSubscribe,
   telemetryTrackingData,
+  getAcademicYearList,
 } from '../../utils/API/AuthService';
 import {
   getActiveCohortData,
@@ -577,25 +578,36 @@ const LoginScreen = () => {
   await setDataInStorage('templateId', templateId || '');
 
     const academicyear = await setAcademicYear({ tenantid: tenantId });
-    const academicYearId = academicyear?.[0]?.id;
-    await setDataInStorage('academicYearId', academicYearId || '');
+    const academicyearIdList = await getAcademicYearList({ tenantid: tenantId });
+    console.log('#### loginmultirole academicyearIdList', academicyearIdList);
+    const activeAcademicYearId = academicyear?.[0]?.id;
     await setDataInStorage('userTenantid', tenantId || '');
-    const cohort = await getCohort({
-      user_id,
-      tenantid: tenantId,
-      academicYearId,
-    });
-  console.log('#### loginmultirole cohort', cohort);
-  let cohort_id;
-  if (cohort.params?.status !== 'failed') {
-    const getActiveCohort = await getActiveCohortData(cohort);
-    const getActiveCohortId = await getActiveCohortIds(cohort);
-    await setDataInStorage(
-      'cohortData',
-      JSON.stringify(getActiveCohort?.[0]) || ''
-    );
-    cohort_id = getActiveCohortId?.[0];
-  }
+
+    let cohort_id;
+    let resolvedAcademicYearId = activeAcademicYearId;
+
+    for (const ayItem of (academicyearIdList || [])) {
+      const ayId = ayItem?.id;
+      if (!ayId) continue;
+      const cohortResult = await getCohort({
+        user_id,
+        tenantid: tenantId,
+        academicYearId: ayId,
+      });
+      console.log('#### loginmultirole cohort for ayId', ayId, cohortResult);
+      if (cohortResult.params?.status !== 'failed') {
+        const getActiveCohortId = await getActiveCohortIds(cohortResult);
+        if (getActiveCohortId?.[0]) {
+          const getActiveCohort = await getActiveCohortData(cohortResult);
+          await setDataInStorage('cohortData', JSON.stringify(getActiveCohort?.[0]) || '');
+          cohort_id = getActiveCohortId?.[0];
+          resolvedAcademicYearId = ayId;
+          break;
+        }
+      }
+    }
+
+    await setDataInStorage('academicYearId', resolvedAcademicYearId || '');
 
   const profileData = await getProfileDetails({
     userId: user_id,
@@ -724,23 +736,35 @@ const LoginScreen = () => {
     await setDataInStorage('templateId', templateId || '');
 
     const academicyear = await setAcademicYear({ tenantid: selectedtenantId });
-    const academicYearId = academicyear?.[0]?.id;
-    await setDataInStorage('academicYearId', academicYearId || '');
+    const academicyearIdList = await getAcademicYearList({ tenantid: selectedtenantId });
+    const activeAcademicYearId = academicyear?.[0]?.id;
     await setDataInStorage('userTenantid', selectedtenantId || '');
 
-    const cohort = await getCohort({
-      user_id,
-      tenantid: selectedtenantId,
-      academicYearId,
-    });
-    console.log('#### selectedProgramLogin cohort', cohort);
     let cohort_id;
-    if (cohort.params?.status !== 'failed') {
-      const getActiveCohort = await getActiveCohortData(cohort);
-      const getActiveCohortId = await getActiveCohortIds(cohort);
-      await setDataInStorage('cohortData', JSON.stringify(getActiveCohort?.[0]) || '');
-      cohort_id = getActiveCohortId?.[0];
+    let resolvedAcademicYearId = activeAcademicYearId;
+
+    for (const ayItem of (academicyearIdList || [])) {
+      const ayId = ayItem?.id;
+      if (!ayId) continue;
+      const cohortResult = await getCohort({
+        user_id,
+        tenantid: selectedtenantId,
+        academicYearId: ayId,
+      });
+      console.log('#### selectedProgramLogin cohort for ayId', ayId, cohortResult);
+      if (cohortResult.params?.status !== 'failed') {
+        const getActiveCohortId = await getActiveCohortIds(cohortResult);
+        if (getActiveCohortId?.[0]) {
+          const getActiveCohort = await getActiveCohortData(cohortResult);
+          await setDataInStorage('cohortData', JSON.stringify(getActiveCohort?.[0]) || '');
+          cohort_id = getActiveCohortId?.[0];
+          resolvedAcademicYearId = ayId;
+          break;
+        }
+      }
     }
+
+    await setDataInStorage('academicYearId', resolvedAcademicYearId || '');
 
     const profileData = await getProfileDetails({ userId: user_id });
     console.log('#### selectedProgramLogin profileData', profileData);

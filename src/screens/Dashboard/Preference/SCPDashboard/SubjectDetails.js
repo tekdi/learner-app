@@ -22,6 +22,7 @@ import {
 import { courseTrackingStatus } from '../../../../utils/API/ApiCalls';
 import {
   EventDetails,
+  getAcademicYearList,
   getDoits,
   SolutionEvent,
   SolutionEventDetails,
@@ -30,6 +31,7 @@ import {
 import ContentAccordion from './MyClass/ContentAccordion';
 
 function getFilteredData(data, subTopic) {
+  console .log('data====>', JSON.stringify(data));
   console.log('data====>', JSON.stringify(data));
   console.log('subTopic====>', JSON.stringify(subTopic));
   return data
@@ -124,6 +126,21 @@ const SubjectDetails = ({ route }) => {
     let result;
     const subjectName = item?.metadata?.subject || '';
     const type = item?.metadata?.courseType || '';
+    const tenantid = await getDataFromStorage('userTenantid');
+    const academicYearId = await getDataFromStorage('academicYearId');
+    console.log('#### SubjectDetails academicYearId', academicYearId);
+    const academicYearList = await getAcademicYearList({ tenantid });
+    console.log('#### SubjectDetails academicYearList', academicYearList);
+    const storedAcademicYear = academicYearList?.find((ay) => ay?.id === academicYearId);
+    const isStoredYearActive = storedAcademicYear?.isActive === true;
+    console.log('#### SubjectDetails isStoredYearActive', isStoredYearActive);
+    let startDate, endDate, academicYearRange;
+    if (isStoredYearActive) {
+      startDate = storedAcademicYear?.startDate;
+      endDate = storedAcademicYear?.endDate;
+      academicYearRange = `${startDate?.split('-')[0]}-${endDate?.split('-')[0]}`;
+      console.log('#### SubjectDetails academicYearRange', academicYearRange);
+    }
     const data = await targetedSolutions({ subjectName, type });
 
     const id = data?.data?.[0]?._id;
