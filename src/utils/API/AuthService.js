@@ -2613,3 +2613,107 @@ export const shareCertificate = async ({
     return false;
   }
 };
+
+export const ContentSearch = async ({
+  query = '',
+  filters,
+  fields,
+  sort_by,
+  limit = 5,
+  offset = 0,
+} = {}) => {
+  try {
+    const url = `${EndUrls.contentSearch}`;
+    const payload = {
+      request: {
+        filters: filters || {},
+        fields: fields || [
+          'name',
+          'appIcon',
+          'description',
+          'mimeType',
+          'identifier',
+          'primaryCategory',
+        ],
+        sort_by,
+        query,
+        limit,
+        offset,
+      },
+    };
+    const result = await post(url, payload);
+    return result?.data;
+  } catch (e) {
+    console.error('Error in ContentSearch:', e);
+    throw e;
+  }
+};
+
+export const getRegistrationAssessmentStatus = async ({
+  userId,
+  courseId,
+  unitId,
+  contentId,
+}) => {
+  try {
+    const url = `${EndUrls.AssessmentSearch}`;
+    const headers = await getHeaders();
+    const payload = { userId, courseId, unitId, contentId };
+    const result = await post(url, payload, { headers: headers || {} });
+    return result?.data?.data;
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+
+export const ContentSearch = async ({
+  query = '',
+  filters,
+  fields,
+  sort_by,
+  limit = 5,
+  offset = 0,
+} = {}) => {
+  try {
+    const url = `${EndUrls.contentSearch}`;
+    const payload = {
+      request: {
+        filters: filters || {},
+        fields: fields || [
+          'name',
+          'appIcon',
+          'description',
+          'mimeType',
+          'identifier',
+          'primaryCategory',
+        ],
+        sort_by,
+        query,
+        limit,
+        offset,
+      },
+    };
+    const result = await post(url, payload);
+    return result?.data;
+  } catch (e) {
+    console.error('Error in ContentSearch:', e);
+    throw e;
+  }
+};
+
+export const getRegistrationAssessmentStatus = async ({
+  userId,
+  courseId,
+  unitId,
+  contentId,
+}) => {
+  try {
+    const url = `${EndUrls.AssessmentSearch}`;
+    const headers = await getHeaders();
+    const payload = { userId, courseId, unitId, contentId };
+    const result = await post(url, payload, { headers: headers || {} });
+    return result?.data?.data;
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};

@@ -110,13 +110,33 @@ const PlpWebViewScreen = () => {
       try {
         window.localStorage.setItem('isAndroidApp', 'yes');
         console.log('[AfterLoad] isAndroidApp set to yes in localStorage');
-        
-        // Send confirmation back to React Native
+
         if (window.ReactNativeWebView) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             type: 'ANDROID_APP_FLAG_SET',
             value: window.localStorage.getItem('isAndroidApp')
           }));
+          var cohortAssignedId = window.localStorage.getItem('cohortAssignedToAnyAcademicYearId');
+          if (cohortAssignedId) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'COHORT_ASSIGNED_ACADEMIC_YEAR_ID',
+              value: cohortAssignedId
+            }));
+          }
+          var preferredLang = window.localStorage.getItem('preferred_language');
+          if (preferredLang) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'PREFERRED_LANGUAGE',
+              value: preferredLang
+            }));
+          }
+          var uiConfig = window.localStorage.getItem('uiConfig');
+          if (uiConfig) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({
+              type: 'UI_CONFIG',
+              value: uiConfig
+            }));
+          }
         }
       } catch (error) {
         console.error('[AfterLoad] Error setting isAndroidApp:', error);
@@ -367,11 +387,26 @@ const PlpWebViewScreen = () => {
       const message = JSON.parse(event.nativeEvent.data);
       console.log('Received from web:', message);
       
-      // Log when Android flag is confirmed set
       if (message.type === 'ANDROID_APP_FLAG_SET') {
         console.log('✓ isAndroidApp confirmed in localStorage:', message.value);
         return;
       }
+
+      if (message.type === 'COHORT_ASSIGNED_ACADEMIC_YEAR_ID') {
+        await setDataInStorage('cohortAssignedToAnyAcademicYearId', message.value || '');
+        return;
+      }
+
+      if (message.type === 'PREFERRED_LANGUAGE') {
+        await setDataInStorage('preferred_language', message.value || '');
+        return;
+      }
+
+      if (message.type === 'UI_CONFIG') {
+        await setDataInStorage('uiConfig', message.value || '{}');
+        return;
+      }
+
       if (message.type === 'LANGUAGE_CHANGE_EVENT') {
        console.log("Language changed to:", message.data);
        if(message.data.language === 'mr')

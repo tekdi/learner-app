@@ -47,6 +47,7 @@ import globalStyles from '../../../utils/Helper/Style';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../components/AppUpdate/AppUpdatePopup';
+import AttemptAssessmentButton from '../../../components/AttemptAssessmentButton/AttemptAssessmentButton';
 import PrimaryButton from '../../../components/PrimaryButton/PrimaryButton';
 import InterestModal from './InterestModal';
 import InterestModalError from './InterestModalError';
@@ -451,6 +452,7 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
                     )}
                 </GlobalText>
               </View>
+              <AttemptAssessmentButton />
               {/* {!youthnet && (
                 <GlobalText style={globalStyles.text}>
                   {t('courses')}
@@ -528,6 +530,7 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
                         // handleSearch={handleSearch}
                         placeholder={t('search_placeholder')}
                       />
+                      
                     </View>
                   </CopilotView>
                 </CopilotStep>
