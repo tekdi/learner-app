@@ -66,6 +66,8 @@ export const loadFileAsBlob = async (filePath, mimetype) => {
       return `data:audio/mp3;base64,${fileBase64}`;
     } else if (mimetype == 'audio/wav') {
       return `data:audio/wav;base64,${fileBase64}`;
+    } else if (mimetype == 'audio/mpeg') {
+      return `data:audio/mp3;base64,${fileBase64}`;
     }
     //epub
     else if (mimetype == 'application/epub') {

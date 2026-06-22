@@ -255,6 +255,7 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'video/webm' ||
       content_mime_type == 'audio/mp3' ||
       content_mime_type == 'audio/wav' ||
+      content_mime_type == 'audio/mpeg' ||
       content_mime_type == 'application/vnd.ekstep.html-archive'
     ) {
       Orientation.lockToLandscape();
@@ -316,7 +317,9 @@ const StandAlonePlayer = ({ route }) => {
                           ? (contentType = 'mp3')
                           : content_mime_type == 'audio/wav'
                             ? (contentType = 'wav')
-                            : '';
+                            : content_mime_type == 'audio/mpeg'
+                              ? (contentType = 'mp3')
+                              : '';
       await storeData('contentId', content_do_id, '');
       await storeData('contentType', contentType, '');
       await storeData('contentMimeType', content_mime_type, '');
@@ -349,7 +352,8 @@ const StandAlonePlayer = ({ route }) => {
           : content_mime_type == 'video/mp4' ||
               content_mime_type == 'video/webm' ||
               content_mime_type == 'audio/mp3' ||
-              content_mime_type == 'audio/wav'
+              content_mime_type == 'audio/wav' ||
+              content_mime_type == 'audio/mpeg'
             ? 'sunbird-video-player'
             : content_mime_type == 'application/epub'
               ? 'sunbird-epub-player'
@@ -364,6 +368,7 @@ const StandAlonePlayer = ({ route }) => {
           content_mime_type == 'video/webm' ||
           content_mime_type == 'audio/mp3' ||
           content_mime_type == 'audio/wav' ||
+          content_mime_type == 'audio/mpeg' ||
           content_mime_type == 'video/x-youtube' ||
           content_mime_type == 'application/vnd.ekstep.html-archive' ||
           content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
@@ -828,11 +833,11 @@ fetch(
   `http://127.0.0.1:8080/${content_do_id}/assets/public/content/h5p/${content_do_id}-latest/content/h5p.json`
 )
 .then(r => {
-  console.log('STATUS', r.status);
+  console.log('######server STATUS', r.status);
   return r.text();
 })
 .then(t => {
-  console.log('DATA', t);
+  console.log('######server DATA', t);
 })
 .catch(e => {
   console.log('FETCH ERROR', e);
@@ -879,6 +884,7 @@ fetch(
             contentObj?.mimeType == 'video/webm' ||
             contentObj?.mimeType == 'audio/mp3' ||
             contentObj?.mimeType == 'audio/wav' ||
+            contentObj?.mimeType == 'audio/mpeg' ||
             contentObj?.mimeType == 'application/epub'
           ) {
             if (contentObj?.mimeType == 'application/pdf') {
@@ -895,7 +901,8 @@ fetch(
               contentObj?.mimeType == 'video/mp4' ||
               contentObj?.mimeType == 'video/webm' ||
               contentObj?.mimeType == 'audio/mp3' ||
-              contentObj?.mimeType == 'audio/wav'
+              contentObj?.mimeType == 'audio/wav' ||
+              contentObj?.mimeType == 'audio/mpeg'
             ) {
               videoPlayerConfig.metadata = contentObj;
               //set user id and full name
@@ -928,6 +935,7 @@ fetch(
         contentObj?.mimeType == 'video/webm' ||
         contentObj?.mimeType == 'audio/mp3' ||
         contentObj?.mimeType == 'audio/wav' ||
+        contentObj?.mimeType == 'audio/mpeg' ||
         contentObj?.mimeType == 'application/epub'
       ) {
         //play offline content
@@ -962,7 +970,8 @@ fetch(
           contentObj?.mimeType == 'video/mp4' ||
           contentObj?.mimeType == 'video/webm' ||
           contentObj?.mimeType == 'audio/mp3' ||
-          contentObj?.mimeType == 'audio/wav'
+          contentObj?.mimeType == 'audio/wav' ||
+          contentObj?.mimeType == 'audio/mpeg'
         ) {
           videoPlayerConfig.metadata = contentObj;
           //set user id and full name
@@ -1013,6 +1022,7 @@ fetch(
               content_mime_type == 'video/webm' ||
               content_mime_type == 'audio/mp3' ||
               content_mime_type == 'audio/wav' ||
+              content_mime_type == 'audio/mpeg' ||
               content_mime_type == 'application/epub'
             ? fetchDataPdfVideoEpub()
             : content_mime_type == 'application/vnd.sunbird.questionset'
@@ -1032,6 +1042,7 @@ fetch(
         content_mime_type == 'video/webm' ||
         content_mime_type == 'audio/mp3' ||
         content_mime_type == 'audio/wav' ||
+        content_mime_type == 'audio/mpeg' ||
         content_mime_type == 'application/epub' ||
         content_mime_type == 'application/vnd.sunbird.questionset'
       ) {
@@ -1372,7 +1383,8 @@ fetch(
             )}));
             window.setData();
         })(); ${disableZoomJS} true;`
-      : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+      : 
+          content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
           content_mime_type == 'application/vnd.ekstep.html-archive' ||
           content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
           content_mime_type == 'video/x-youtube'
@@ -1384,6 +1396,40 @@ fetch(
         )}));
         window.setData();
         })(); true;`
+        : 
+          content_mime_type == 'application/pdf'
+        ? `(function() {
+        localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
+          {
+            contentPlayerConfig: pdfPlayerConfig,
+          }
+        )}));
+        window.setData();
+        })(); true;`
+        : 
+          content_mime_type == 'video/mp4' ||
+          content_mime_type == 'video/webm' ||
+          content_mime_type == 'audio/mp3' ||
+          content_mime_type == 'audio/wav' ||
+          content_mime_type == 'audio/mpeg'
+        ? `(function() {
+        localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
+          {
+            contentPlayerConfig: videoPlayerConfig,
+          }
+        )}));
+        window.setData();
+        })(); true;`
+        : 
+          content_mime_type == 'application/epub'
+        ? `(function() {
+        localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
+          {
+            contentPlayerConfig: epubPlayerConfig,
+          }
+        )}));
+        window.setData();
+        })(); true;`
         : content_mime_type == 'application/pdf'
           ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
@@ -1391,7 +1437,8 @@ fetch(
           : content_mime_type == 'video/mp4' ||
               content_mime_type == 'video/webm' ||
               content_mime_type == 'audio/mp3' ||
-              content_mime_type == 'audio/wav'
+              content_mime_type == 'audio/wav' ||
+              content_mime_type == 'audio/mpeg'
             ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
         })(); true;`
@@ -1667,7 +1714,7 @@ fetch(
               }}
             />
           </View>
-        ) : content_mime_type == 'video/x-youtube' ? (
+        ) : content_mime_type == 'video/x-youtube' && false ? (
           youtubePlayerEndScreen === true ? (
             <View style={styles.middle_screen}>
               <GlobalText style={styles.completionText}>
@@ -1877,13 +1924,22 @@ fetch(
             })()
           )
         ) :
-        content_mime_type == 'application/vnd.ekstep.h5p-archive'
+          content_mime_type == 'application/vnd.ekstep.html-archive' ||
+          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+          content_mime_type == 'video/x-youtube' ||
+          content_mime_type == 'application/pdf' ||
+          content_mime_type == 'video/mp4' ||
+          content_mime_type == 'video/webm' ||
+          content_mime_type == 'audio/mp3' ||
+          content_mime_type == 'audio/wav' ||
+          content_mime_type == 'audio/mpeg' ||
+          content_mime_type == 'application/epub'
         ? (
           <WebView
             ref={webviewRef}
             originWhitelist={['*']}
             source={
-              {uri: `${urlLocal}/content-player-${Config.CONTENT_PLAYER_VERSION}/index.html`}
+              {uri: `${urlLocal}/content-player-${Config.CONTENT_PLAYER_VERSION}/index_android.html`}
             }
             style={styles.webview}
             userAgent={
