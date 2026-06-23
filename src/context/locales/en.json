@@ -620,5 +620,10 @@
   "september": "September",
   "october": "October",
   "november": "November",
-  "december": "December"
+  "december": "December",
+  "Select_Language_For_Learning": "Select the language in which you want to learn",
+  "Learning_Language_Info": "Content, courses, and assessments will be shown in your selected language. You can change this language anytime from the Profile section",
+  "attempt_assessment": "Attempt Assessment",
+  "come_back_later": "Come Back Later",
+  "assessment_unavailable_message": "No pending assessment available at this time."
 }
