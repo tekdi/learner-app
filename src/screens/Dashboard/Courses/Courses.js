@@ -452,7 +452,9 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
                     )}
                 </GlobalText>
               </View>
-              <AttemptAssessmentButton />
+              <View style={{ marginTop: 5 }}>
+                <AttemptAssessmentButton />
+              </View>
               {/* {!youthnet && (
                 <GlobalText style={globalStyles.text}>
                   {t('courses')}

@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { Button, useTheme } from '@ui-kitten/components';
 import { useTranslation } from '../../context/LanguageContext';
 import {
   getDataFromStorage,
@@ -12,9 +13,11 @@ import {
   getRegistrationAssessmentStatus,
 } from '../../utils/API/AuthService';
 import GlobalText from '../GlobalText/GlobalText';
+import globalStyles from '../../utils/Helper/Style';
 
 const AttemptAssessmentButton = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
   const navigation = useNavigation();
   const [showButton, setShowButton] = useState(false);
   const [questionSetIdentifier, setQuestionSetIdentifier] = useState(null);
@@ -141,11 +144,17 @@ const AttemptAssessmentButton = () => {
 
   return (
     <>
-      <TouchableOpacity style={styles.button} onPress={handlePress}>
-        <GlobalText style={styles.buttonText}>
-          {t('attempt_assessment')}
-        </GlobalText>
-      </TouchableOpacity>
+      <Button
+        status="primary"
+        onPress={handlePress}
+        style={styles.button}
+      >
+        {(props) => (
+          <GlobalText {...props} style={[globalStyles.h6, styles.buttonText]}>
+            {t('attempt_assessment')}
+          </GlobalText>
+        )}
+      </Button>
 
       <Modal
         visible={showUnavailableModal}
@@ -162,10 +171,10 @@ const AttemptAssessmentButton = () => {
               {t('assessment_unavailable_message')}
             </GlobalText>
             <TouchableOpacity
-              style={styles.modalButton}
+              style={[styles.modalButton, { backgroundColor: theme['color-primary-500'] }]}
               onPress={() => setShowUnavailableModal(false)}
             >
-              <GlobalText style={styles.modalButtonText}>
+              <GlobalText style={[globalStyles.h6, styles.modalButtonText]}>
                 {t('ok')}
               </GlobalText>
             </TouchableOpacity>
@@ -178,21 +187,21 @@ const AttemptAssessmentButton = () => {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#0D599E',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    borderRadius: 20,
+    height: 36,
     alignSelf: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 14,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '500',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontWeight: '700',
+    fontFamily: 'Roboto-Black',
+    fontSize: 13,
+    lineHeight: 13,
+    includeFontPadding: false,
   },
   overlay: {
     flex: 1,
@@ -210,24 +219,23 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1a1a1a',
+    color: '#1F1B13',
     marginBottom: 12,
   },
   modalBody: {
     fontSize: 14,
-    color: '#444',
+    color: '#3B383E',
     marginBottom: 20,
   },
   modalButton: {
-    backgroundColor: '#0D599E',
-    borderRadius: 8,
+    borderRadius: 30,
     paddingVertical: 10,
     alignItems: 'center',
   },
   modalButtonText: {
-    color: '#fff',
-    fontWeight: '500',
-    fontSize: 14,
+    color: '#1F1B13',
+    fontWeight: '700',
+    fontFamily: 'Roboto-Black',
   },
 });
 
