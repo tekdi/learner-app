@@ -137,16 +137,18 @@ const PlpWebViewScreen = () => {
   const templateId = tenantData?.[0]?.templateId;
   await setDataInStorage('templateId', templateId || '');
 
-    const academicyear = await setAcademicYear({ tenantid: tenantId });
-    const academicyearIdList = await getAcademicYearList({ tenantid: tenantId });
-    console.log('#### loginmultirole academicyearIdList', academicyearIdList);
-    const activeAcademicYearId = academicyear?.[0]?.id;
     await setDataInStorage('userTenantid', tenantId || '');
+        let cohort_id;
 
-    let cohort_id;
+    try{
+const academicyear = await setAcademicYear({ tenantid: tenantId });
+    const activeAcademicYearId = academicyear?.[0]?.id;
+
+    const academicyearIdList = await getAcademicYearList({ tenantid: tenantId });
+    
     let resolvedAcademicYearId = activeAcademicYearId;
 
-    for (const ayItem of (academicyearIdList || [])) {
+    for (const ayItem of (Array.isArray(academicyearIdList) && academicyearIdList.length > 0 ? academicyearIdList : [])) {
       const ayId = ayItem?.id;
       if (!ayId) continue;
       const cohortResult = await getCohort({
@@ -166,8 +168,12 @@ const PlpWebViewScreen = () => {
         }
       }
     }
-
+ console.log('lallaaaaa resolvedAcademicYearId', resolvedAcademicYearId);
     await setDataInStorage('academicYearId', resolvedAcademicYearId || '');
+  }
+  catch (error) {
+    console.error('Error in setting academic year or cohort:', error);
+  }
 
   const profileData = await getProfileDetails({
     userId: user_id,
@@ -295,7 +301,7 @@ const PlpWebViewScreen = () => {
       }
       
       if (message.type === 'ACCESS_PROGRAM_EVENT') {
-        console.log("Hellooooo")
+        console.log("Hellooooo access program event");
         const tenantId = message.data.tenantId;
         const userId = message.data.userId;
         const token = message.data.token;
