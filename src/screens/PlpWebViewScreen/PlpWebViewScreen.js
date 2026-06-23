@@ -170,37 +170,42 @@ const PlpWebViewScreen = () => {
   const templateId = tenantData?.[0]?.templateId;
   await setDataInStorage('templateId', templateId || '');
 
-    const academicyear = await setAcademicYear({ tenantid: tenantId });
-    const academicyearIdList = await getAcademicYearList({ tenantid: tenantId });
-    console.log('#### loginmultirole academicyearIdList', academicyearIdList);
-    const activeAcademicYearId = academicyear?.[0]?.id;
     await setDataInStorage('userTenantid', tenantId || '');
 
     let cohort_id;
-    let resolvedAcademicYearId = activeAcademicYearId;
 
-    for (const ayItem of (academicyearIdList || [])) {
-      const ayId = ayItem?.id;
-      if (!ayId) continue;
-      const cohortResult = await getCohort({
-        user_id,
-        tenantid: tenantId,
-        academicYearId: ayId,
-      });
-      console.log('#### loginmultirole cohort for ayId', ayId, cohortResult);
-      if (cohortResult.params?.status !== 'failed') {
-        const getActiveCohortId = await getActiveCohortIds(cohortResult);
-        if (getActiveCohortId?.[0]) {
-          const getActiveCohort = await getActiveCohortData(cohortResult);
-          await setDataInStorage('cohortData', JSON.stringify(getActiveCohort?.[0]) || '');
-          cohort_id = getActiveCohortId?.[0];
-          resolvedAcademicYearId = ayId;
-          break;
+    try {
+      const academicyear = await setAcademicYear({ tenantid: tenantId });
+      const activeAcademicYearId = academicyear?.[0]?.id;
+      const academicyearIdList = await getAcademicYearList({ tenantid: tenantId });
+
+      let resolvedAcademicYearId = activeAcademicYearId;
+
+      for (const ayItem of (Array.isArray(academicyearIdList) && academicyearIdList.length > 0 ? academicyearIdList : [])) {
+        const ayId = ayItem?.id;
+        if (!ayId) continue;
+        const cohortResult = await getCohort({
+          user_id,
+          tenantid: tenantId,
+          academicYearId: ayId,
+        });
+        console.log('#### loginmultirole cohort for ayId', ayId, cohortResult);
+        if (cohortResult.params?.status !== 'failed') {
+          const getActiveCohortId = await getActiveCohortIds(cohortResult);
+          if (getActiveCohortId?.[0]) {
+            const getActiveCohort = await getActiveCohortData(cohortResult);
+            await setDataInStorage('cohortData', JSON.stringify(getActiveCohort?.[0]) || '');
+            cohort_id = getActiveCohortId?.[0];
+            resolvedAcademicYearId = ayId;
+            break;
+          }
         }
       }
-    }
 
-    await setDataInStorage('academicYearId', resolvedAcademicYearId || '');
+      await setDataInStorage('academicYearId', resolvedAcademicYearId || '');
+    } catch (error) {
+      console.error('Error in setting academic year or cohort:', error);
+    }
 
   const profileData = await getProfileDetails({
     userId: user_id,
