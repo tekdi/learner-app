@@ -506,6 +506,12 @@ const ProfileUpdateForm = ({ fields }) => {
       return null;
     }
     
+    // Hide "Does this phone belong to you?" when "No Phone" is selected.
+    const phoneTypeValue = formData?.phone_type_accessible?.value || formData?.phone_type_accessible;
+    if (field.name === 'own_phone_check' && phoneTypeValue === 'nophone') {
+      return null;
+    }
+
     // if (field.name && !field?.isEditable) {
     //   return null;
     // }
