@@ -346,7 +346,7 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.html-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
-        ? 'sunbird-pdf-player-v2'
+        ? 'sunbird-pdf-player'
         : content_mime_type == 'application/vnd.sunbird.questionset'
           ? 'sunbird-quml-player'
           : content_mime_type == 'video/mp4' ||
