@@ -342,7 +342,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
           )}
 
           <GlobalText
-            style={[globalStyles.text, { marginLeft: 10 }]}
+            style={[globalStyles.text, { marginLeft: 0 }]}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
@@ -355,7 +355,8 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
               : mimeType == 'vnd.ekstep.h5p-archive'
               ? `ECML`
               : mimeType == 'vnd.sunbird.questionset'
-              ? `QUML`
+              ? 'Assessment'
+              // ? `QUML`
               : capitalizeFirstLetter(mimeType)}
           </GlobalText>
         </View>
