@@ -84,7 +84,7 @@ const DownloadModal = ({
 
   const downloadContentECMLH5pHTMLYoutube = async (content_do_id) => {
     const content_file = `${RNFS.DocumentDirectoryPath}/${content_do_id}`;
-    const streamingPath = `${content_file}/${content_do_id}.json`;
+    // const streamingPath = `${content_file}/${content_do_id}.json`;
     //content read
     setDownloadStatus('progress');
     setDownload('progress');
@@ -106,6 +106,14 @@ const DownloadModal = ({
         filePath = `${content_file}.zip`;
       }
       if (filePath != '') {
+        const streamingPath =
+            contentObj?.mimeType == 'application/vnd.ekstep.ecml-archive'
+              ? `${content_file}`
+              : contentObj?.mimeType == 'application/vnd.ekstep.html-archive'
+                ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
+                : contentObj?.mimeType == 'application/vnd.ekstep.h5p-archive'
+                  ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
+                  : `${content_file}/${content_do_id}.json`;
         //download file and store object in local
         //download file
         // URL of the file to download

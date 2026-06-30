@@ -557,6 +557,56 @@ const StandAlonePlayer = ({ route }) => {
           navigation.goBack();
         }
       }
+      //check telemetry in new player
+      if (jsonObj && jsonObj?.type == 'telemetry') {
+        let details=jsonObj?.detail;
+        //add user id in actor
+        try {
+          details.actor.id = userId;
+        } catch (e) {
+          console.log('error', e);
+        }
+        // console.log('####################');
+        // console.log('details telemetry', JSON.stringify(details));
+        // console.log('####################');
+        //setTelemetryObject((telemetryObject) => [...telemetryObject, details]);
+        telemetryObject.push(details);
+        //console.log('telemetryObject', telemetryObject);
+        await storeData('telemetryObject', telemetryObject, 'json');
+
+        //content tracking
+        if (details?.eid == 'START') {
+          contentEidSTART = [
+            {
+              eid: details.eid,
+              edata: details.edata,
+            },
+          ];
+          await storeData(content_do_id+'contentEidSTART', contentEidSTART, 'json');
+        }
+        if (details?.eid == 'INTERACT') {
+          contentEidINTERACT = [
+            {
+              eid: details.eid,
+              edata: details.edata,
+            },
+          ];
+          await storeData(content_do_id+'contentEidINTERACT', contentEidINTERACT, 'json');
+        }
+        if (
+          details?.eid == 'END' ||
+          details?.edata?.type == 'END' ||
+          details?.eid == 'SUMMARY'
+        ) {
+          contentEidEND = [
+            {
+              eid: 'END',
+              edata: details.edata,
+            },
+          ];
+          await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
+        }
+      }
       //check for content player event close player
       console.log('data_obj playerevent', JSON.stringify(jsonObj));
       if (jsonObj && jsonObj?.type == 'player:close') {
@@ -948,7 +998,7 @@ fetch(
               ? dividedArray.length - 1
               : dividedArray.length
           ];
-        filePath = `file://${content_file}/${content_do_id}${file_name}`;
+        filePath = `http://127.0.0.1:8080/${content_do_id}/${content_do_id}${file_name}`;
         //console.log('filePath', filePath);
         //console.log('create blob url');
         contentObj.artifactUrl = filePath;
@@ -1147,7 +1197,7 @@ fetch(
                     );
                     console.log(`Unzipped to ${path}`);
                     //store content obj
-                    //console.log(contentObj);
+                    console.log(contentObj);
                     await storeData(content_do_id, contentObj, 'json');
                     contentObj?.mimeType ==
                     'application/vnd.ekstep.ecml-archive'
