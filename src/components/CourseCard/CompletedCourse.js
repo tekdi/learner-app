@@ -46,7 +46,7 @@ const CompletedCourse = ({ data }) => {
           resizeMode={FastImage.resizeMode.cover}
           priority={FastImage.priority.high}
         />
-        <View style={{ marginLeft: 10 }}>
+        <View style={{ marginLeft: 10, flex: 1 }}>
           <View style={[globalStyles.flexrow]}>
             <Icon name={'checkmark-circle'} size={20} color="#06A816" />
             <GlobalText
@@ -55,7 +55,9 @@ const CompletedCourse = ({ data }) => {
               {t('completed_on')}: {moment(data?.issuedOn).format('DD/MM/YYYY')}
             </GlobalText>
           </View>
-          <GlobalText style={[globalStyles.text, { marginLeft: 5 }]}>
+          <GlobalText
+            style={[globalStyles.text, { marginLeft: 5, flexShrink: 1 }]}
+          >
             {data?.name}
           </GlobalText>
           <TouchableOpacity
