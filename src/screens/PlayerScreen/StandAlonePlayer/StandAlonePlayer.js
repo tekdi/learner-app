@@ -186,6 +186,7 @@ const StandAlonePlayer = ({ route }) => {
     isOffline,
     course_id,
     unit_id,
+    isRegistrationTest,
   } = route.params;
   // console.log('######### content_do_id', content_do_id);
   // console.log('######### content_mime_type', content_mime_type);
@@ -1883,7 +1884,7 @@ fetch(
             ref={webviewRef}
             originWhitelist={['*']}
             source={
-              {uri: `${urlLocal}/content-player-${Config.CONTENT_PLAYER_VERSION}/index.html`}
+              {uri: `${urlLocal}/content-player-${Config.CONTENT_PLAYER_VERSION}/index_android.html`}
             }
             style={styles.webview}
             userAgent={
@@ -1966,7 +1967,7 @@ fetch(
             allowFileAccessFromFileURLs={true}
           />
         )}
-        <TestResultModal modal={modal} title={title} />
+        <TestResultModal modal={modal} title={title} isRegistrationTest={isRegistrationTest} />
         {alertModal && <MimeAlertModal textTitle={errorDetail} />}
       </View>
     </>

@@ -15,33 +15,25 @@ import { useNavigation } from '@react-navigation/native';
 import GlobalText from '@components/GlobalText/GlobalText';
 import { removeData } from '../../utils/Helper/JSHelper';
 
-const TestResultModal = ({ modal, title }) => {
+const TestResultModal = ({ modal, title, isRegistrationTest }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
   const closeModal = async () => {
-    //navigation.replace('Dashboard');
+    if (isRegistrationTest) {
+      navigation.goBack();
+      return;
+    }
     let isSCP = false;
     let userType = await getDataFromStorage('userType');
     if (userType == 'scp') {
       isSCP = true;
     }
-    // console.log('############# isSCP', isSCP);
     if (isSCP == true) {
-      // console.log('############# isSCP', isSCP);
-      // const stackRoutes = navigation.getState()?.routes || [];
-      // // Extract screen names from the routes array
-      // const screenNames = stackRoutes.map((route) => route.name);
-      // console.log('############# Screens in navigation stack:', screenNames);
       await setDataInStorage('isFromPlayer', 'yes');
       navigation.navigate('SCPUserTabScreen');
       navigation.navigate('MyClass');
       navigation.navigate('TestView', { title: title || '-' });
-      // After navigating to the 'Profile' tab, reset the stack inside the tab
-      // navigation.reset({
-      //   index: 0, // Reset to the first index screen of the tab for assessment
-      //   routes: [{ name: 'MyClass' }], // Ensure this is the initial screen of the stack
-      // });
     } else {
       navigation.goBack();
     }
@@ -160,6 +152,7 @@ const styles = StyleSheet.create({
 TestResultModal.propTypes = {
   modal: PropTypes.any,
   title: PropTypes.any,
+  isRegistrationTest: PropTypes.bool,
 };
 
 export default TestResultModal;
