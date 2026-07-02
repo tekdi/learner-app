@@ -1884,7 +1884,7 @@ fetch(
             ref={webviewRef}
             originWhitelist={['*']}
             source={
-              {uri: `${urlLocal}/content-player-${Config.CONTENT_PLAYER_VERSION}/index.html`}
+              {uri: `${urlLocal}/content-player-${Config.CONTENT_PLAYER_VERSION}/index_android.html`}
             }
             style={styles.webview}
             userAgent={
