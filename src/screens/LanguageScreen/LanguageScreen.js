@@ -134,6 +134,10 @@ const LanguageScreen = () => {
       await deleteSavedItem('profileData');
       await deleteSavedItem('tenantData');
       await deleteSavedItem('academicYearId');
+      await deleteSavedItem('uiConfig');
+      await deleteSavedItem('cohortAssignedToAnyAcademicYearId');
+      await deleteSavedItem('preferred_language');
+      await deleteSavedItem('registerationTestQuestionSetIdentifier');
       logoutEvent();
       // Reset the navigation stack and navigate to LoginSignUpScreen
       navigation.dispatch(

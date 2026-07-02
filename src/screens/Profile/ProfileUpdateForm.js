@@ -235,7 +235,8 @@ const ProfileUpdateForm = ({ fields }) => {
 
     // Filter and set empty values for unwanted family member name fields based on family_member_details
     const filteredData = { ...data };
-    const familyType = data?.family_member_details?.value || data?.family_member_details;
+    const rawFamilyType0 = data?.family_member_details;
+    const familyType = (rawFamilyType0 && typeof rawFamilyType0 === 'object') ? rawFamilyType0.value : rawFamilyType0;
     
     // Set empty values for unwanted family member fields based on selection
     if (!familyType) {
@@ -361,6 +362,7 @@ const ProfileUpdateForm = ({ fields }) => {
             'program',
             'username',
             'is_volunteer',
+            'family_member_details',
           ].includes(field.name)
         ) {
           return; // Skip validation for these fields
@@ -376,7 +378,8 @@ const ProfileUpdateForm = ({ fields }) => {
         }
 
         // Skip validation for family member fields that are hidden
-        const familyType = formData?.family_member_details?.value || formData?.family_member_details;
+        const rawFamilyType1 = formData?.family_member_details;
+        const familyType = (rawFamilyType1 && typeof rawFamilyType1 === 'object') ? rawFamilyType1.value : rawFamilyType1;
         if (familyType === 'mother' && field.name === 'father_name') {
           return; // Skip validation for hidden fields
         }
@@ -405,6 +408,12 @@ const ProfileUpdateForm = ({ fields }) => {
           return; // Skip validation for hidden mobile field
         }
 
+        // Skip own_phone_check when phone_type_accessible is nophone (field is hidden)
+        const phoneTypeValue = formData?.phone_type_accessible?.value || formData?.phone_type_accessible;
+        if (field.name === 'own_phone_check' && phoneTypeValue === 'nophone') {
+          return;
+        }
+
         if (field.isRequired && !value) {
           newErrors[field.name] = `${t(field.name)} ${t('is_required')}`;
         } else if (field.minLength && value.length < field.minLength && value) {
@@ -426,7 +435,7 @@ const ProfileUpdateForm = ({ fields }) => {
     });
 
     setErrors(newErrors);
-
+    console.log('ProfileUpdateForm validation errors:', JSON.stringify(newErrors));
     return Object.keys(newErrors).length === 0;
   };
 
@@ -476,7 +485,8 @@ const ProfileUpdateForm = ({ fields }) => {
     }
     
     // Family member details conditional logic
-    const familyType = formData?.family_member_details?.value || formData?.family_member_details;
+    const rawFamilyType2 = formData?.family_member_details;
+    const familyType = (rawFamilyType2 && typeof rawFamilyType2 === 'object') ? rawFamilyType2.value : rawFamilyType2;
     console.log('familyType:', familyType, 'field.name:', field.name, 'formData.family_member_details:', formData?.family_member_details);
     
     // If no family_member_details is selected, hide all family name fields
@@ -506,6 +516,12 @@ const ProfileUpdateForm = ({ fields }) => {
       return null;
     }
     
+    // Hide "Does this phone belong to you?" when "No Phone" is selected.
+    const phoneTypeValue = formData?.phone_type_accessible?.value || formData?.phone_type_accessible;
+    if (field.name === 'own_phone_check' && phoneTypeValue === 'nophone') {
+      return null;
+    }
+
     // if (field.name && !field?.isEditable) {
     //   return null;
     // }
@@ -637,8 +653,26 @@ const ProfileUpdateForm = ({ fields }) => {
 
   const renderPage = () => {
     const pageFields = pages[currentPage];
+    const familyNameFields = ['father_name', 'mother_name', 'spouse_name'];
 
-    return schema
+    // Move family name fields to appear immediately after family_member_details
+    const familyDetailsIndex = schema.findIndex(
+      (f) => f.name === 'family_member_details'
+    );
+    let orderedSchema = [...schema];
+    if (familyDetailsIndex !== -1) {
+      const nameFields = orderedSchema.filter((f) =>
+        familyNameFields.includes(f.name)
+      );
+      orderedSchema = orderedSchema.filter(
+        (f) => !familyNameFields.includes(f.name)
+      );
+      const insertAt =
+        orderedSchema.findIndex((f) => f.name === 'family_member_details') + 1;
+      orderedSchema.splice(insertAt, 0, ...nameFields);
+    }
+
+    return orderedSchema
       .filter((field) => pageFields?.includes(field.name))
       .map((field) => renderField(field));
   };
