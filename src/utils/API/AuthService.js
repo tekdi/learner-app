@@ -531,7 +531,9 @@ export const profileCourseListApi = async () => {
   };
   const payload = {
     filters: {
-      status: ['completed', 'viewCertificate'],
+      // status: ['completed', 'viewCertificate'],
+      // bug fix for invalid date and without certificate issue
+      status: ['viewCertificate'],
       userId: user_id,
     },
     limit: 100,
