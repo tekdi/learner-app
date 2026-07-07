@@ -57,6 +57,7 @@ const DownloadModal = ({
         contentMimeType == 'video/webm' ||
         contentMimeType == 'audio/mp3' ||
         contentMimeType == 'audio/wav' ||
+        contentMimeType == 'audio/mpeg' ||
         contentMimeType == 'application/epub' ||
         contentMimeType == 'application/vnd.sunbird.questionset'
       ) {
@@ -399,6 +400,8 @@ const DownloadModal = ({
         filePath = `${content_file}.mp3`;
       } else if (contentObj?.mimeType == 'audio/wav') {
         filePath = `${content_file}.wav`;
+      } else if (contentObj?.mimeType == 'audio/mpeg') {
+        filePath = `${content_file}.mp3`;
       }
       if (filePath != '') {
         //download file and store object in local
@@ -517,6 +520,7 @@ const DownloadModal = ({
       contentMimeType == 'video/webm' ||
       contentMimeType == 'audio/mp3' ||
       contentMimeType == 'audio/wav' ||
+      contentMimeType == 'audio/mpeg' ||
       contentMimeType == 'application/epub'
     ) {
       await downloadContentPDFEpubVideo(contentId);
