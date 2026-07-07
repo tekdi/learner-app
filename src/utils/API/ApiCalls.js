@@ -605,6 +605,71 @@ export const contentTrackingStatus = async (
   }
 };
 
+//resume content data
+export const resumeTrackingStatus = async (
+  userId,
+  contentId,
+  courseId,
+  unitId
+) => {
+  try {
+    console.log("#resumedatatest userId",userId);
+    console.log("#resumedatatest contentId",contentId);
+    console.log("#resumedatatest courseId",courseId);
+    console.log("#resumedatatest unitId",unitId);
+    const url = EndUrls.ResumeTrackingStatus;
+
+    const headers = await getHeaders();
+
+    let data = JSON.stringify({
+      userId: userId,
+      contentId: contentId,
+      courseId: courseId,
+      unitId: unitId,
+    });
+
+    let api_response = null;
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url,
+      headers: headers || {},
+      data: data,
+    };
+    // Construct the curl command for logging
+    const curlCommand = `curl -X POST "${url}" \\\n${Object.entries(
+      headers || {}
+    )
+      .map(([key, value]) => `-H "${key}: ${value}"`)
+      .join(' \\\n')} \\\n-d '${data}'`;
+
+      // console.log("#resumedatatest curlCommand",curlCommand);
+      
+    try {
+      const response = await axios.request(config);
+      api_response = response.data;
+      console.log("#resumedatatest api_response",api_response);
+      if (api_response) {
+        // await storeApiResponse(userId, url, 'post', data, api_response);
+        return api_response;
+      } else {
+        // const result_offline = await getApiResponse(userId, url, 'post', data);
+        // return result_offline;
+      }
+    } catch (error) {
+      console.log('No internet available, retrieving offline data...');
+      console.log("#resumedatatest error",error);
+      // const result_offline = await getApiResponse(userId, url, 'post', data);
+      // return result_offline;
+    }
+  } catch (error) {
+    console.log("#resumedatatest error 2",error);
+    // throw new Error(error.response?.data?.message || 'Content Status Failed');
+  }
+  return null;
+};
+
 //status of course
 export const courseTrackingStatus = async (userId, courseId) => {
   try {

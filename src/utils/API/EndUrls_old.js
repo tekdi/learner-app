@@ -29,6 +29,7 @@ const EndUrls = {
   telemetryTracking: TELEMETRY_URL,
   ContentCreate: `${API_URL}/v1/tracking/content/create`,
   ContentTrackingStatus: `${API_URL}/v1/tracking/content/search/status`,
+  ResumeTrackingStatus: `${API_URL}/v1/tracking/content/search`,
   CourseTrackingStatus: `${API_URL}/v1/tracking/content/course/status`,
   CourseInProgress: `${API_URL}/v1/tracking/content/course/inprogress`,
   geolocation: `${API_URL}/user/v1/fields/options/read`,

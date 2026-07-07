@@ -32,6 +32,7 @@ const EndUrls = {
   AssessmentSearch: `${API_URL}/interface/v1/tracking/assessment/search`,
   ContentCreate: `${API_URL}/interface/v1/tracking/content/create`,
   ContentTrackingStatus: `${API_URL}/interface/v1/tracking/content/search/status`,
+  ResumeTrackingStatus: `${API_URL}/interface/v1/tracking/content/search`,
   CourseTrackingStatus: `${API_URL}/interface/v1/tracking/content/course/status`,
   CourseInProgress: `${API_URL}/interface/v1/tracking/user_certificate/status/search`,
   eventList: `${API_URL}/interface/v1/event/list`,

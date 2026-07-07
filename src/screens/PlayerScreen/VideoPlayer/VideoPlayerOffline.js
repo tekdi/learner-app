@@ -76,6 +76,8 @@ const VideoPlayerOffline = () => {
         filePath = `${content_file}.mp3`;
       } else if (contentObj?.mimeType == 'audio/wav') {
         filePath = `${content_file}.wav`;
+      } else if (contentObj?.mimeType == 'audio/mpeg') {
+        filePath = `${content_file}.mp3`;
       }
       if (filePath != '') {
         try {
@@ -143,6 +145,8 @@ const VideoPlayerOffline = () => {
         filePath = `${content_file}.mp3`;
       } else if (contentObj?.mimeType == 'audio/wav') {
         filePath = `${content_file}.wav`;
+      } else if (contentObj?.mimeType == 'audio/mpeg') {
+        filePath = `${content_file}.mp3`;
       }
       if (filePath != '') {
         //download file and store object in local
