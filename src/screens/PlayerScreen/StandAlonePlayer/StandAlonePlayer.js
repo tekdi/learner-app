@@ -29,6 +29,7 @@ import {
   telemetryTracking,
   contentTracking,
   questionsetRead,
+  resumeTrackingStatus,
 } from '../../../utils/API/ApiCalls';
 import {
   qumlPlayerConfig,
@@ -52,6 +53,7 @@ import {
   setDataInStorage,
 } from '../../../utils/JsHelper/Helper';
 import {
+  getSyncTrackingOfflineCourse,
   storeAsessmentOffline,
   storeTelemetryOffline,
   storeTrackingOffline,
@@ -237,11 +239,80 @@ const StandAlonePlayer = ({ route }) => {
     course_id ? course_id : content_do_id
   );
   const [unitId, setUnitId] = useState(unit_id ? unit_id : content_do_id);
+
+  const contentResumeData = useRef(null);
+
+  // let contentResumeData = null;
+
+  //resume data fetch from api
+  useEffect(() => {
+    if(userId){
+      const resumeLoad = async()=>{
+        let responseResume = await resumeTrackingStatus(userId,content_do_id,courseId,unitId);
+        if(responseResume)
+        {
+          console.log("#resumedatatest",JSON.stringify(responseResume));
+          if(responseResume && responseResume?.data?.length>0)
+          {
+            if(responseResume.data[0]?.resumeData && responseResume.data[0]?.resumeData!='' && responseResume.data[0].resumeData!=null)
+            {
+              // console.log("###########responseResume",responseResume.data[0].resumeData);
+              contentResumeData.current = responseResume.data[0].resumeData.toString();
+            }
+          }
+        }
+        else
+        {
+          //check offline
+          let offlineTrack = await getSyncTrackingOfflineCourse(
+            userId,
+            courseId
+          );
+          console.log(
+            '#resumedatatest',
+            JSON.stringify(offlineTrack)
+          );
+          if (offlineTrack) {
+            for (let jj = 0; jj < offlineTrack.length; jj++) {
+              let offlineTrackItem = offlineTrack[jj];
+              let content_id = offlineTrackItem?.content_id;
+              if(content_id==content_do_id) {
+                try {
+                  let detailsObject = JSON.parse(
+                    offlineTrackItem?.detailsObject
+                  );
+                  for (let k = 0; k < detailsObject.length; k++) {
+                    let eid = detailsObject[k]?.eid;
+                    let edata = detailsObject[k]?.edata;
+                    if (eid == 'PROGRESS') {
+                      contentResumeData.current = edata?.resumeData;
+                    }
+                    // console.log(
+                    //   '##### detailsObject length',
+                    //   detailsObject[k]?.eid
+                    // );
+                  }
+                } catch (e) {
+                  console.log('e', e);
+                }
+              }
+            }
+          }
+        }
+        console.log("#resumedatatest contentResumeData",JSON.stringify(contentResumeData.current));
+        setIsLoadContent(true);
+      }
+      resumeLoad();
+    }
+    console.log("#resumedatatest",JSON.stringify(userId));
+  }, [userId]);
+
   //const [telemetryObject, setTelemetryObject] = useState([]);
   let telemetryObject = [];
   let contentEidSTART = [];
   let contentEidINTERACT = [];
   let contentEidEND = [];
+  let contentEidPROGRESS = [];
 
   //youtube player end screen tracking
   const [youtubePlayerEndScreen, setYoutubePlayerEndScreen] = useState(false);
@@ -254,9 +325,9 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
       content_mime_type == 'video/mp4' ||
       content_mime_type == 'video/webm' ||
-      content_mime_type == 'audio/mp3' ||
-      content_mime_type == 'audio/wav' ||
-      content_mime_type == 'audio/mpeg' ||
+      // content_mime_type == 'audio/mp3' ||
+      // content_mime_type == 'audio/wav' ||
+      // content_mime_type == 'audio/mpeg' ||
       content_mime_type == 'application/vnd.ekstep.html-archive'
     ) {
       Orientation.lockToLandscape();
@@ -327,7 +398,7 @@ const StandAlonePlayer = ({ route }) => {
       await storeData('courseId', courseId, '');
       await storeData('unitId', unitId, '');
 
-      setIsLoadContent(true);
+      // setIsLoadContent(true);
     };
     fetchData();
 
@@ -550,7 +621,7 @@ const StandAlonePlayer = ({ route }) => {
       //check playerevent
       if (data_obj && data_event == 'playerevent') {
         // console.log('####################');
-        // console.log('data_obj playerevent', JSON.stringify(data_obj));
+        console.log('data_obj playerevent', JSON.stringify(data_obj));
         // console.log('####################');
         //check if exit button pressed
         if (data_obj?.eid == 'HEARTBEAT' && data_obj?.edata?.type == 'EXIT') {
@@ -594,6 +665,15 @@ const StandAlonePlayer = ({ route }) => {
           ];
           await storeData(content_do_id+'contentEidINTERACT', contentEidINTERACT, 'json');
         }
+        if (details?.eid == 'PROGRESS' && details?.edata?.resumeData!='' && content_mime_type != 'application/epub') {
+          contentEidPROGRESS = [
+            {
+              eid: details.eid,
+              edata: details.edata,
+            },
+          ];
+          await storeData(content_do_id+'contentEidPROGRESS', contentEidPROGRESS, 'json');
+        }
         if (
           details?.eid == 'END' ||
           details?.edata?.type == 'END' ||
@@ -611,6 +691,34 @@ const StandAlonePlayer = ({ route }) => {
       //check for content player event close player
       console.log('data_obj playerevent', JSON.stringify(jsonObj));
       if (jsonObj && jsonObj?.type == 'player:close') {
+          //full screen back button portrait
+          console.log('fullscreen close', JSON.stringify(jsonObj));
+          //release any native fullscreen/orientation lock held by the webview's
+          //own video/screen-orientation API before forcing portrait natively,
+          //otherwise the webview re-asserts landscape and the lock is ignored
+          webviewRef.current?.injectJavaScript(`
+            (function() {
+              try {
+                if (document.fullscreenElement && document.exitFullscreen) {
+                  document.exitFullscreen();
+                } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
+                  document.webkitExitFullscreen();
+                }
+              } catch (e) {}
+              try {
+                if (window.screen && window.screen.orientation && window.screen.orientation.unlock) {
+                  window.screen.orientation.unlock();
+                }
+              } catch (e) {}
+            })();
+            true;
+          `);
+          Orientation.lockToPortrait();
+          //re-assert shortly after: the webview can reapply its own landscape
+          //lock asynchronously right after exiting fullscreen, overriding the call above
+          setTimeout(() => {
+            Orientation.lockToPortrait();
+          }, 300);
           fetchExitData();
           navigation.goBack();
       }
@@ -819,6 +927,11 @@ const StandAlonePlayer = ({ route }) => {
             firstName: userName,
             lastName: '',
           };
+          contentPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+          "primary": "#DDA613", //FDBE16
+          "toolbar": "rgba(30,5,20,0.97)",
+          "background": "#1a0512"
+          }};
           //console.log('contentPlayerConfig set', contentPlayerConfig);
           set_is_valid_file(true);
         } catch (e) {
@@ -865,6 +978,11 @@ const StandAlonePlayer = ({ route }) => {
             firstName: userName,
             lastName: '',
           };
+          contentPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+          "primary": "#DDA613", //FDBE16
+          "toolbar": "rgba(30,5,20,0.97)",
+          "background": "#1a0512"
+          }};
 
           //h5p player path change
           if(contentObj?.mimeType == 'application/vnd.ekstep.h5p-archive')
@@ -946,6 +1064,12 @@ fetch(
                 firstName: userName,
                 lastName: '',
               };
+              pdfPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+              "primary": "#DDA613", //FDBE16
+              "toolbar": "rgba(30,5,20,0.97)",
+              "background": "#1a0512"
+              }};
+              console.log('pdfPlayerConfig set contentResumeData', contentResumeData.current);
               console.log('pdfPlayerConfig set', pdfPlayerConfig);
             }
             if (
@@ -962,6 +1086,11 @@ fetch(
                 firstName: userName,
                 lastName: '',
               };
+              videoPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+              "primary": "#DDA613", //FDBE16
+              "toolbar": "rgba(30,5,20,0.97)",
+              "background": "#1a0512"
+              }};
               //console.log('videoPlayerConfig set', videoPlayerConfig);
             }
             if (contentObj?.mimeType == 'application/epub') {
@@ -972,6 +1101,11 @@ fetch(
                 firstName: userName,
                 lastName: '',
               };
+              epubPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+              "primary": "#DDA613", //FDBE16
+              "toolbar": "rgba(30,5,20,0.97)",
+              "background": "#1a0512"
+              }};
               //console.log('epubPlayerConfig set', epubPlayerConfig);
             }
             set_is_valid_file(true);
@@ -1015,7 +1149,13 @@ fetch(
             firstName: userName,
             lastName: '',
           };
-          //console.log('pdfPlayerConfig set', pdfPlayerConfig);
+          pdfPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+          "primary": "#DDA613", //FDBE16
+          "toolbar": "rgba(30,5,20,0.97)",
+          "background": "#1a0512"
+          }};
+          console.log('pdfPlayerConfig set contentResumeData', contentResumeData.current);
+          console.log('pdfPlayerConfig set', pdfPlayerConfig);
         }
         if (
           contentObj?.mimeType == 'video/mp4' ||
@@ -1031,6 +1171,11 @@ fetch(
             firstName: userName,
             lastName: '',
           };
+          videoPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+          "primary": "#DDA613", //FDBE16
+          "toolbar": "rgba(30,5,20,0.97)",
+          "background": "#1a0512"
+          }};
           //console.log('videoPlayerConfig set', videoPlayerConfig);
         }
         if (contentObj?.mimeType == 'application/epub') {
@@ -1041,6 +1186,11 @@ fetch(
             firstName: userName,
             lastName: '',
           };
+          epubPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+          "primary": "#DDA613", //FDBE16
+          "toolbar": "rgba(30,5,20,0.97)",
+          "background": "#1a0512"
+          }};
           //console.log('epubPlayerConfig set', epubPlayerConfig);
         }
         set_is_valid_file(true);
@@ -1558,8 +1708,10 @@ fetch(
     let storedContentEidSTART = await getData(content_do_id+'contentEidSTART', 'json');
     let storedContentEidINTERACT = await getData(content_do_id+'contentEidINTERACT', 'json');
     let storedContentEidEND = await getData(content_do_id+'contentEidEND', 'json');
+    let storedContentEidPROGRESS = await getData(content_do_id+'contentEidPROGRESS', 'json');
     console.log('storedContentEidSTART', JSON.stringify(storedContentEidSTART));
     console.log('storedContentEidEND', JSON.stringify(storedContentEidEND));
+    console.log('storedContentEidPROGRESS', JSON.stringify(storedContentEidPROGRESS));
 
     let detailsObject = [];
     try {
@@ -1591,6 +1743,13 @@ fetch(
     try {
       if (storedContentEidINTERACT && storedContentEidINTERACT.length > 0) {
         detailsObject.push(storedContentEidINTERACT[0]);
+      }
+    } catch (error) {
+      console.log('error2', error);
+    }
+    try {
+      if (storedContentEidPROGRESS && storedContentEidPROGRESS.length > 0) {
+        detailsObject.push(storedContentEidPROGRESS[0]);
       }
     } catch (error) {
       console.log('error2', error);
@@ -1699,6 +1858,7 @@ fetch(
     await removeData(content_do_id+'contentEidSTART');
     await removeData(content_do_id+'contentEidINTERACT');
     await removeData(content_do_id+'contentEidEND');
+    await removeData(content_do_id+'contentEidPROGRESS');
   };
   //event when player closed
 
