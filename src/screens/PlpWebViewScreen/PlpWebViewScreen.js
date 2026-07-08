@@ -511,6 +511,7 @@ const PlpWebViewScreen = () => {
           <WebView
             ref={webViewRef}
             source={{ uri: url }}
+            originWhitelist={['*']}
             injectedJavaScriptBeforeContentLoaded={injectedJavaScriptBeforeContentLoaded}
             injectedJavaScript={injectedJavaScript}
             onLoad={() => {

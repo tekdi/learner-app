@@ -350,7 +350,7 @@ const Profile = () => {
             </GlobalText>
           </View>
 
-          {(userType == 'youthnet' || userType == 'Camp to Club') && (
+          {(userType == 'youthnet' || userType == 'Camp to Club' || userType == 'scp') && (
             <>
               <View style={{ marginLeft: 10 }}>
                 <GlobalText
