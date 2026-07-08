@@ -5,6 +5,7 @@ import analytics from '@react-native-firebase/analytics';
 import RNFS from 'react-native-fs';
 import messaging from '@react-native-firebase/messaging';
 import { getCurrentRouteParams } from '../NavigationService';
+import { readContent } from '../API/ApiCalls';
 
 // Get Saved Data from AsyncStorage
 
@@ -212,29 +213,66 @@ export const capitalizeNameWithSpace = (name) => {
   }
 };
 
-export const logEventFunction = async ({ eventName, method, screenName }) => {
-  const timestamp = new Date().toLocaleString(); // Get the current timestamp
+export const logEventFunction = async ({ eventName, method, screenName, content_do_id: passedContentId, course_id: passedCourseId }) => {
+  const timestamp = new Date().toLocaleString();
 
-  // Get route parameters directly from navigation
   const routeParams = getCurrentRouteParams();
-  const { content_do_id, content_list_node, unit_id,course_id } = routeParams;
-console.log('eventName=====>', eventName);
+  const { content_do_id: routeContentId, content_list_node, unit_id, course_id: routeCourseId } = routeParams;
+
+  const content_do_id = passedContentId || routeContentId;
+  const course_id = passedCourseId || routeCourseId;
+
+  console.log('eventName=====>', eventName);
+
   let userId = await getDataFromStorage('userId');
-  
   const tenantData = JSON.parse(await getDataFromStorage('tenantData')) || {};
   const storedProgram = tenantData?.[0]?.tenantName;
 
-  analytics().logEvent(eventName, {
+  console.log('######## [Analytics] IDs → content_do_id:', content_do_id, '| course_id:', course_id);
+
+  const [contentResponse, courseResponse] = await Promise.all([
+    content_do_id ? readContent(content_do_id) : Promise.resolve(null),
+    course_id ? readContent(course_id) : Promise.resolve(null),
+  ]);
+
+  console.log('######## [Analytics] raw contentResponse:', JSON.stringify(contentResponse));
+  console.log('######## [Analytics] raw courseResponse:', JSON.stringify(courseResponse));
+
+  const contentData = contentResponse?.result?.content || null;
+  const courseData = courseResponse?.result?.content || null;
+
+  const content_name = contentData?.name || null;
+  const course_name = courseData?.name || null;
+  const content_language = contentData?.language?.[0] || courseData?.language?.[0] || null;
+  const content_mimetype = contentData?.mimeType || courseData?.mimeType || null;
+  const origin = 'Learner Android App';
+
+  const eventParams = {
     method: method,
     screen_name: screenName,
     userId: userId || '-',
     program: storedProgram || '-',
-    timestamp: timestamp, // Adding the timestamp as a parameter
+    timestamp: timestamp,
     ...(content_list_node && { content_list_node: content_list_node }),
     ...(content_do_id && { content_do_id: content_do_id }),
     ...(course_id && { course_id: course_id }),
     ...(unit_id && { unit_id: unit_id }),
-  });
+    ...(content_name && { content_name: content_name }),
+    ...(course_name && { course_name: course_name }),
+    ...(content_language && { content_language: content_language }),
+    ...(content_mimetype && { content_type: content_mimetype }),
+    origin: origin,
+  };
+
+  console.log('######## [Analytics] firing event:', eventName);
+  console.log('######## [Analytics] params:', JSON.stringify(eventParams, null, 2));
+
+  try {
+    await analytics().logEvent(eventName, eventParams);
+    console.log('######## [Analytics] event fired successfully:', eventName);
+  } catch (e) {
+    console.log('######## [Analytics] event failed:', eventName, e);
+  }
 };
 
 export const storeUsername = async (username) => {
@@ -788,4 +826,115 @@ export const calculateAge = (dobString) => {
   }
 
   return age;
+};
+
+const PREFERRED_LANGUAGE_LABELS = new Set([
+  'PREFERRED_LANGUAGE_OF_LEARNING',
+  'PREFERRED LANGUAGE OF LEARNING',
+  'PREFERRED LANGUAGE',
+  'MEDIUM',
+]);
+
+const LANGUAGE_ALIASES = {
+  english: 'English',
+  en: 'English',
+  hindi: 'Hindi',
+  hi: 'Hindi',
+  'हिंदी': 'Hindi',
+  marathi: 'Marathi',
+  ma: 'Marathi',
+  mr: 'Marathi',
+  'मराठी': 'Marathi',
+  bengali: 'Bengali',
+  ba: 'Bengali',
+  bangla: 'Bengali',
+  'বাংলা': 'Bengali',
+  telugu: 'Telugu',
+  te: 'Telugu',
+  kannada: 'Kannada',
+  ka: 'Kannada',
+  tamil: 'Tamil',
+  ta: 'Tamil',
+  gujarati: 'Gujarati',
+  gu: 'Gujarati',
+  urdu: 'Urdu',
+  ur: 'Urdu',
+  odia: 'Odia',
+  or: 'Odia',
+  assamese: 'Assamese',
+  malayalam: 'Malayalam',
+  manipuri: 'Manipuri',
+  kashmiri: 'Kashmiri',
+  khasi: 'Khasi',
+  sanskrit: 'Sanskrit',
+  punjabi: 'Punjabi',
+};
+
+const isPreferredLanguageField = (field) => {
+  const label = field?.label?.toUpperCase() || '';
+  if (PREFERRED_LANGUAGE_LABELS.has(label)) return true;
+  return (
+    (label.includes('PREFERRED') && label.includes('LANGUAGE')) ||
+    (label.includes('LANGUAGE') && label.includes('LEARNING'))
+  );
+};
+
+const getCustomFieldValue = (field) => {
+  let raw = field?.value ?? field?.selectedValues?.[0];
+  if (raw && typeof raw === 'object') {
+    raw = raw.value || raw.label || null;
+  }
+  return typeof raw === 'string' ? raw.trim() : null;
+};
+
+const toFilterLanguageName = (value) => {
+  if (!value) return null;
+  return LANGUAGE_ALIASES[value.toLowerCase()] || LANGUAGE_ALIASES[value] || value;
+};
+
+const readPreferredLanguage = async () => {
+  try {
+    const profileDataRaw = await getDataFromStorage('profileData');
+    const cohortDataRaw = await getDataFromStorage('cohortData');
+    const fieldGroups = [
+      profileDataRaw
+        ? JSON.parse(profileDataRaw)?.getUserDetails?.[0]?.customFields
+        : null,
+      cohortDataRaw ? JSON.parse(cohortDataRaw)?.customField : null,
+    ];
+
+    for (const customFields of fieldGroups) {
+      if (!customFields?.length) continue;
+
+      for (const field of customFields) {
+        if (!isPreferredLanguageField(field)) continue;
+        const language = toFilterLanguageName(getCustomFieldValue(field));
+        if (language) return language;
+      }
+    }
+  } catch (error) {
+    console.error('Error reading preferred learning language:', error);
+  }
+
+  return null;
+};
+
+export const getPreferredContentLanguageSelection = async (staticFormFields) => {
+  if (!staticFormFields?.length) return null;
+
+  const languageField = staticFormFields.find(
+    (field) =>
+      field?.name === 'Content Language' || field?.name === 'Language'
+  );
+  if (!languageField?.range?.length) return null;
+
+  const preferredLang = await readPreferredLanguage();
+  if (!preferredLang) return null;
+
+  const matchedOption = languageField.range.find(
+    (option) => option?.toLowerCase() === preferredLang.toLowerCase()
+  );
+  if (!matchedOption) return null;
+
+  return { code: languageField.code, values: [matchedOption] };
 };

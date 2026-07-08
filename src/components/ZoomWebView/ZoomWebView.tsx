@@ -17,12 +17,46 @@ interface ZoomWebViewProps {
   userName?: string;
 }
 
+/**
+ * On Android 9 (API 28) Zoom's web-client blocks the session because it
+ * detects an old Android / Chrome version from the User-Agent.
+ * Spoofing to Android 10 + Chrome 114 passes that version gate so the
+ * meeting loads exactly as it does on higher versions.
+ */
+const getSpoofedUserAgent = (): string | undefined => {
+  if (Platform.OS === "android" && (Platform.Version as number) <= 28) {
+    // Pretend to be Chrome 114 on Android 10 — well above Zoom's requirement
+    return (
+      "Mozilla/5.0 (Linux; Android 10; K) " +
+      "AppleWebKit/537.36 (KHTML, like Gecko) " +
+      "Chrome/114.0.0.0 Mobile Safari/537.36"
+    );
+  }
+  return undefined;
+};
+
+const buildUri = (baseUri: string, userName?: string): string => {
+  if (!userName) return baseUri;
+  try {
+    const url = new URL(baseUri);
+    url.searchParams.set("uname", userName);
+    return url.toString();
+  } catch {
+    const sep = baseUri.includes("?") ? "&" : "?";
+    return `${baseUri}${sep}uname=${encodeURIComponent(userName)}`;
+  }
+};
+
 const ZoomWebView: React.FC<ZoomWebViewProps> = ({ uri, userName }) => {
   const webViewRef = useRef<WebView>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [micPermissionGranted, setMicPermissionGranted] = useState(false);
+
+  // Resolved once; stable across renders
+  const spoofedUserAgent = React.useMemo(() => getSpoofedUserAgent(), []);
+  const resolvedUri = useMemo(() => buildUri(uri, userName), [uri, userName]);
 
   // CRITICAL: Request microphone permission BEFORE WebView loads
   useEffect(() => {
@@ -177,12 +211,43 @@ const ZoomWebView: React.FC<ZoomWebViewProps> = ({ uri, userName }) => {
 
   const injectedJS = useMemo(() => {
     const name = JSON.stringify(userName || "");
+    // Pass the spoofed UA into the JS so navigator.userAgent matches the
+    // HTTP header we already sent via the WebView userAgent prop.
+    const spoofedUA = getSpoofedUserAgent();
+    const spoofedUAJson = JSON.stringify(spoofedUA ?? null);
 
     return `
       (function(){
 
         const userName = ${name};
-        
+
+        // ============================================
+        // ANDROID 9 FIX: Spoof navigator.userAgent so Zoom's JS-side
+        // version check also sees Android 10 + Chrome 114.
+        // ============================================
+        (function spoofUserAgent() {
+          const newUA = ${spoofedUAJson};
+          if (!newUA) return; // not Android 9, nothing to do
+
+          try {
+            Object.defineProperty(navigator, 'userAgent', {
+              get: function() { return newUA; },
+              configurable: true,
+            });
+            console.log('✅ navigator.userAgent spoofed to:', newUA);
+          } catch(e) {
+            console.warn('⚠️ Could not spoof navigator.userAgent:', e);
+          }
+
+          // Also spoof appVersion which some older checks use
+          try {
+            Object.defineProperty(navigator, 'appVersion', {
+              get: function() { return newUA.replace('Mozilla/', ''); },
+              configurable: true,
+            });
+          } catch(e) {}
+        })();
+
         // ============================================
         // CRITICAL FIX: Pre-request microphone BEFORE Zoom checks
         // ============================================
@@ -771,7 +836,7 @@ const ZoomWebView: React.FC<ZoomWebViewProps> = ({ uri, userName }) => {
       ) : (
         <WebView
           ref={webViewRef}
-          source={{ uri }}
+          source={{ uri: resolvedUri }}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           // CRITICAL: These props enable media access
@@ -786,6 +851,8 @@ const ZoomWebView: React.FC<ZoomWebViewProps> = ({ uri, userName }) => {
           onLoadStart={onLoadStart}
           onLoadEnd={onLoadEnd}
           onError={onError}
+          // Spoof User-Agent on Android 9 so Zoom's version gate is bypassed
+          {...(spoofedUserAgent ? { userAgent: spoofedUserAgent } : {})}
           // CRITICAL: This handler grants microphone permission - THIS IS THE KEY!
           {...(Platform.OS === 'android' ? {
             onPermissionRequest: (request: any) => {

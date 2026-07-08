@@ -10,7 +10,6 @@ import {
   shareCertificate,
 } from '@src/utils/API/AuthService';
 import ActiveLoading from '../../screens/LoadingScreen/ActiveLoading';
-import Share from 'react-native-share';
 
 const CertificateViewer = ({
   visible,
@@ -25,34 +24,16 @@ const CertificateViewer = ({
 
   const handleDownload = async () => {
     setLoading(true);
-    const data = await downloadCertificate({ certificateId, certificateName });
-
+    const data = await downloadCertificate({ certificateId, certificateName, certificateHtml });
     if (data) {
       setLoading(false);
     }
   };
 
   const handleShare = async () => {
-    const shareCerti = await shareCertificate({
-      certificateId,
-      certificateName,
-    });
-    sharePDF(shareCerti);
-  };
-
-  const sharePDF = async (base64Data) => {
-    const options = {
-      title: 'Share PDF',
-      url: `data:application/pdf;base64,${base64Data}`,
-      type: 'application/pdf',
-      failOnCancel: false, // Optional
-    };
-
-    try {
-      await Share.open(options);
-    } catch (error) {
-      console.log('Share error:', error);
-    }
+    setLoading(true);
+    await shareCertificate({ certificateId, certificateName, certificateHtml });
+    setLoading(false);
   };
 
   return (
@@ -80,7 +61,7 @@ const CertificateViewer = ({
                 justifyContent: 'space-between',
               }}
             >
-              {/* <TouchableOpacity
+              <TouchableOpacity
                 style={{ marginRight: 20 }}
                 onPress={handleDownload}
               >
@@ -99,7 +80,7 @@ const CertificateViewer = ({
                 >
                   <Icon name={'share-social-outline'} color="#000" size={30} />
                 </TouchableOpacity>
-              </TouchableOpacity> */}
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
                   setVisible(false);

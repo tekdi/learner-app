@@ -29,6 +29,7 @@ import {
   telemetryTracking,
   contentTracking,
   questionsetRead,
+  resumeTrackingStatus,
 } from '../../../utils/API/ApiCalls';
 import {
   qumlPlayerConfig,
@@ -52,6 +53,7 @@ import {
   setDataInStorage,
 } from '../../../utils/JsHelper/Helper';
 import {
+  getSyncTrackingOfflineCourse,
   storeAsessmentOffline,
   storeTelemetryOffline,
   storeTrackingOffline,
@@ -70,6 +72,9 @@ import GlobalText from '@components/GlobalText/GlobalText';
 
 //youtube player changes
 import YoutubePlayer from 'react-native-youtube-iframe';
+
+//static server
+import StaticServer from 'react-native-static-server';
 
 const StandAlonePlayer = ({ route }) => {
   //multi language setup
@@ -183,6 +188,7 @@ const StandAlonePlayer = ({ route }) => {
     isOffline,
     course_id,
     unit_id,
+    isRegistrationTest,
   } = route.params;
   // console.log('######### content_do_id', content_do_id);
   // console.log('######### content_mime_type', content_mime_type);
@@ -233,11 +239,80 @@ const StandAlonePlayer = ({ route }) => {
     course_id ? course_id : content_do_id
   );
   const [unitId, setUnitId] = useState(unit_id ? unit_id : content_do_id);
+
+  const contentResumeData = useRef(null);
+
+  // let contentResumeData = null;
+
+  //resume data fetch from api
+  useEffect(() => {
+    if(userId){
+      const resumeLoad = async()=>{
+        let responseResume = await resumeTrackingStatus(userId,content_do_id,courseId,unitId);
+        if(responseResume)
+        {
+          console.log("#resumedatatest",JSON.stringify(responseResume));
+          if(responseResume && responseResume?.data?.length>0)
+          {
+            if(responseResume.data[0]?.resumeData && responseResume.data[0]?.resumeData!='' && responseResume.data[0].resumeData!=null)
+            {
+              // console.log("###########responseResume",responseResume.data[0].resumeData);
+              contentResumeData.current = responseResume.data[0].resumeData.toString();
+            }
+          }
+        }
+        else
+        {
+          //check offline
+          let offlineTrack = await getSyncTrackingOfflineCourse(
+            userId,
+            courseId
+          );
+          console.log(
+            '#resumedatatest',
+            JSON.stringify(offlineTrack)
+          );
+          if (offlineTrack) {
+            for (let jj = 0; jj < offlineTrack.length; jj++) {
+              let offlineTrackItem = offlineTrack[jj];
+              let content_id = offlineTrackItem?.content_id;
+              if(content_id==content_do_id) {
+                try {
+                  let detailsObject = JSON.parse(
+                    offlineTrackItem?.detailsObject
+                  );
+                  for (let k = 0; k < detailsObject.length; k++) {
+                    let eid = detailsObject[k]?.eid;
+                    let edata = detailsObject[k]?.edata;
+                    if (eid == 'PROGRESS') {
+                      contentResumeData.current = edata?.resumeData;
+                    }
+                    // console.log(
+                    //   '##### detailsObject length',
+                    //   detailsObject[k]?.eid
+                    // );
+                  }
+                } catch (e) {
+                  console.log('e', e);
+                }
+              }
+            }
+          }
+        }
+        console.log("#resumedatatest contentResumeData",JSON.stringify(contentResumeData.current));
+        setIsLoadContent(true);
+      }
+      resumeLoad();
+    }
+    console.log("#resumedatatest",JSON.stringify(userId));
+  }, [userId]);
+
   //const [telemetryObject, setTelemetryObject] = useState([]);
   let telemetryObject = [];
   let contentEidSTART = [];
   let contentEidINTERACT = [];
   let contentEidEND = [];
+  let contentEidPROGRESS = [];
 
   //youtube player end screen tracking
   const [youtubePlayerEndScreen, setYoutubePlayerEndScreen] = useState(false);
@@ -250,8 +325,9 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
       content_mime_type == 'video/mp4' ||
       content_mime_type == 'video/webm' ||
-      content_mime_type == 'audio/mp3' ||
-      content_mime_type == 'audio/wav' ||
+      // content_mime_type == 'audio/mp3' ||
+      // content_mime_type == 'audio/wav' ||
+      // content_mime_type == 'audio/mpeg' ||
       content_mime_type == 'application/vnd.ekstep.html-archive'
     ) {
       Orientation.lockToLandscape();
@@ -266,10 +342,26 @@ const StandAlonePlayer = ({ route }) => {
         setOrientation(newOrientation);
       }
     );
-
+                    
+    const capitalizeName = (name) => {
+      return name
+        ?.split(' ') // Split the name by spaces into an array of words
+        ?.map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
+        ?.join(' '); // Join the words back into a single string
+    };
+    
     const fetchData = async () => {
       let tempUserId = await getDataFromStorage('userId');
-      let tempUserName = await getDataFromStorage('Username');
+      //get username
+      // let tempUserName = await getDataFromStorage('Username');
+      //get profile data firstname and lastname
+      const resultProfileData = JSON.parse(await getDataFromStorage('profileData'));
+      const tempUserName = resultProfileData?.getUserDetails?.[0]?.firstName &&
+      resultProfileData?.getUserDetails?.[0]?.lastName &&
+      capitalizeName(
+        `${resultProfileData?.getUserDetails?.[0]?.firstName} ${resultProfileData?.getUserDetails?.[0]?.lastName}!`
+      );
+                    
       console.log('tempUserId', tempUserId);
       console.log('tempUserName', tempUserName);
       setUserId(tempUserId);
@@ -297,14 +389,16 @@ const StandAlonePlayer = ({ route }) => {
                           ? (contentType = 'mp3')
                           : content_mime_type == 'audio/wav'
                             ? (contentType = 'wav')
-                            : '';
+                            : content_mime_type == 'audio/mpeg'
+                              ? (contentType = 'mp3')
+                              : '';
       await storeData('contentId', content_do_id, '');
       await storeData('contentType', contentType, '');
       await storeData('contentMimeType', content_mime_type, '');
       await storeData('courseId', courseId, '');
       await storeData('unitId', unitId, '');
 
-      setIsLoadContent(true);
+      // setIsLoadContent(true);
     };
     fetchData();
 
@@ -317,10 +411,11 @@ const StandAlonePlayer = ({ route }) => {
 
   //common compoennt variables
   const [lib_folder] = useState(
-    content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+    content_mime_type == 'application/vnd.ekstep.h5p-archive'
+    ? `content-player-${Config.CONTENT_PLAYER_VERSION}`
+    : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
       content_mime_type == 'video/x-youtube' ||
-      content_mime_type == 'application/vnd.ekstep.html-archive' ||
-      content_mime_type == 'application/vnd.ekstep.h5p-archive'
+      content_mime_type == 'application/vnd.ekstep.html-archive'
       ? 'sunbird-content-player'
       : content_mime_type == 'application/pdf'
         ? 'sunbird-pdf-player'
@@ -329,7 +424,8 @@ const StandAlonePlayer = ({ route }) => {
           : content_mime_type == 'video/mp4' ||
               content_mime_type == 'video/webm' ||
               content_mime_type == 'audio/mp3' ||
-              content_mime_type == 'audio/wav'
+              content_mime_type == 'audio/wav' ||
+              content_mime_type == 'audio/mpeg'
             ? 'sunbird-video-player'
             : content_mime_type == 'application/epub'
               ? 'sunbird-epub-player'
@@ -344,6 +440,7 @@ const StandAlonePlayer = ({ route }) => {
           content_mime_type == 'video/webm' ||
           content_mime_type == 'audio/mp3' ||
           content_mime_type == 'audio/wav' ||
+          content_mime_type == 'audio/mpeg' ||
           content_mime_type == 'video/x-youtube' ||
           content_mime_type == 'application/vnd.ekstep.html-archive' ||
           content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
@@ -381,6 +478,38 @@ const StandAlonePlayer = ({ route }) => {
     android: `file:///android_asset/libs/${lib_folder}/${lib_file}`,
   });
 
+  //server start
+  let publicLocal=RNFS.DocumentDirectoryPath;
+  let urlLocal='http://localhost:8080';
+  let serverInstance = null;
+  useEffect(() => {
+    const initialSetup=async()=>{
+      setLoading(true);
+      serverInstance = new StaticServer(
+        8080,
+        `${publicLocal}`,
+        {
+          localOnly: true,
+        }
+      );
+      serverInstance.start().then((url) => {
+        console.log('####Server started at', url);
+        // urlLocal=url;
+        // http://localhost:8080
+      });
+      setLoading(false);
+    }
+    initialSetup();
+    return () => {
+      if(serverInstance)
+      {
+        serverInstance.stop();
+        console.log('####Server stopped',urlLocal);
+      }
+    };
+  }, []);
+  //server end
+
   //set data from react native
   const webviewRef = useRef(null);
   // webview event
@@ -391,7 +520,7 @@ const StandAlonePlayer = ({ route }) => {
     try {
       //get telemetry save
       const data = event.nativeEvent.data;
-      // console.log('data_obj data', JSON.stringify(event.nativeEvent));
+      console.log('data_obj data', JSON.stringify(event.nativeEvent));
       let jsonObj = JSON.parse(data);
       let data_obj = jsonObj.data;
       let data_event = jsonObj?.event;
@@ -435,7 +564,7 @@ const StandAlonePlayer = ({ route }) => {
             },
           },
         ];
-        await storeData('contentEidEND', contentEidEND, 'json');
+        await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
         //check if exit button pressed
         fetchExitData();
         navigation.goBack();
@@ -464,6 +593,7 @@ const StandAlonePlayer = ({ route }) => {
               edata: data_obj.edata,
             },
           ];
+          await storeData(content_do_id+'contentEidSTART', contentEidSTART, 'json');
         }
         if (data_obj?.eid == 'INTERACT') {
           contentEidINTERACT = [
@@ -472,6 +602,7 @@ const StandAlonePlayer = ({ route }) => {
               edata: data_obj.edata,
             },
           ];
+          await storeData(content_do_id+'contentEidINTERACT', contentEidINTERACT, 'json');
         }
         if (
           data_obj?.eid == 'END' ||
@@ -484,21 +615,112 @@ const StandAlonePlayer = ({ route }) => {
               edata: data_obj.edata,
             },
           ];
+          await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
         }
-        await storeData('contentEidSTART', contentEidSTART, 'json');
-        await storeData('contentEidINTERACT', contentEidINTERACT, 'json');
-        await storeData('contentEidEND', contentEidEND, 'json');
       }
       //check playerevent
       if (data_obj && data_event == 'playerevent') {
         // console.log('####################');
-        // console.log('data_obj playerevent', JSON.stringify(data_obj));
+        console.log('data_obj playerevent', JSON.stringify(data_obj));
         // console.log('####################');
         //check if exit button pressed
         if (data_obj?.eid == 'HEARTBEAT' && data_obj?.edata?.type == 'EXIT') {
           fetchExitData();
           navigation.goBack();
         }
+      }
+      //check telemetry in new player
+      if (jsonObj && jsonObj?.type == 'telemetry') {
+        let details=jsonObj?.detail;
+        //add user id in actor
+        try {
+          details.actor.id = userId;
+        } catch (e) {
+          console.log('error', e);
+        }
+        // console.log('####################');
+        // console.log('details telemetry', JSON.stringify(details));
+        // console.log('####################');
+        //setTelemetryObject((telemetryObject) => [...telemetryObject, details]);
+        telemetryObject.push(details);
+        //console.log('telemetryObject', telemetryObject);
+        await storeData('telemetryObject', telemetryObject, 'json');
+
+        //content tracking
+        if (details?.eid == 'START') {
+          contentEidSTART = [
+            {
+              eid: details.eid,
+              edata: details.edata,
+            },
+          ];
+          await storeData(content_do_id+'contentEidSTART', contentEidSTART, 'json');
+        }
+        if (details?.eid == 'INTERACT') {
+          contentEidINTERACT = [
+            {
+              eid: details.eid,
+              edata: details.edata,
+            },
+          ];
+          await storeData(content_do_id+'contentEidINTERACT', contentEidINTERACT, 'json');
+        }
+        if (details?.eid == 'PROGRESS' && details?.edata?.resumeData!='' && content_mime_type != 'application/epub') {
+          contentEidPROGRESS = [
+            {
+              eid: details.eid,
+              edata: details.edata,
+            },
+          ];
+          await storeData(content_do_id+'contentEidPROGRESS', contentEidPROGRESS, 'json');
+        }
+        if (
+          details?.eid == 'END' ||
+          details?.edata?.type == 'END' ||
+          details?.eid == 'SUMMARY'
+        ) {
+          contentEidEND = [
+            {
+              eid: 'END',
+              edata: details.edata,
+            },
+          ];
+          await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
+        }
+      }
+      //check for content player event close player
+      console.log('data_obj playerevent', JSON.stringify(jsonObj));
+      if (jsonObj && jsonObj?.type == 'player:close') {
+          //full screen back button portrait
+          console.log('fullscreen close', JSON.stringify(jsonObj));
+          //release any native fullscreen/orientation lock held by the webview's
+          //own video/screen-orientation API before forcing portrait natively,
+          //otherwise the webview re-asserts landscape and the lock is ignored
+          webviewRef.current?.injectJavaScript(`
+            (function() {
+              try {
+                if (document.fullscreenElement && document.exitFullscreen) {
+                  document.exitFullscreen();
+                } else if (document.webkitFullscreenElement && document.webkitExitFullscreen) {
+                  document.webkitExitFullscreen();
+                }
+              } catch (e) {}
+              try {
+                if (window.screen && window.screen.orientation && window.screen.orientation.unlock) {
+                  window.screen.orientation.unlock();
+                }
+              } catch (e) {}
+            })();
+            true;
+          `);
+          Orientation.lockToPortrait();
+          //re-assert shortly after: the webview can reapply its own landscape
+          //lock asynchronously right after exiting fullscreen, overriding the call above
+          setTimeout(() => {
+            Orientation.lockToPortrait();
+          }, 300);
+          fetchExitData();
+          navigation.goBack();
       }
       //for assessment
       if (
@@ -534,6 +756,22 @@ const StandAlonePlayer = ({ route }) => {
             courseId,
             unitId
           );
+
+          //add manual end event
+          let storedContentEidEND = await getData(content_do_id+'contentEidEND', 'json');
+          console.log("storedContentEidEND firstfetch",JSON.stringify(storedContentEidEND));
+          if(!storedContentEidEND || storedContentEidEND?.length==0)
+          {
+            contentEidEND = [
+              {
+                eid: 'END',
+                edata: {"type":"content","mode":"play","starttime":0,"endtime":0,"timespent":0.88,"pageviews":0,"interactions":0,"extra":[{"id":"progress","value":"100"},{"id":"endpageseen","value":"true"},{"id":"score","value":seconds},{"id":"correct","value":"0"},{"id":"incorrect","value":"0"},{"id":"partial","value":"0"},{"id":"skipped","value":"0"}]},
+              },
+            ];
+            await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
+            console.log("stored contentEidEND for assessments",contentEidEND);
+          }
+
           // console.log('############# create_assessment', create_assessment);
           if (
             create_assessment &&
@@ -689,6 +927,11 @@ const StandAlonePlayer = ({ route }) => {
             firstName: userName,
             lastName: '',
           };
+          contentPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+          "primary": "#DDA613", //FDBE16
+          "toolbar": "rgba(30,5,20,0.97)",
+          "background": "#1a0512"
+          }};
           //console.log('contentPlayerConfig set', contentPlayerConfig);
           set_is_valid_file(true);
         } catch (e) {
@@ -735,6 +978,41 @@ const StandAlonePlayer = ({ route }) => {
             firstName: userName,
             lastName: '',
           };
+          contentPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+          "primary": "#DDA613", //FDBE16
+          "toolbar": "rgba(30,5,20,0.97)",
+          "background": "#1a0512"
+          }};
+
+          //h5p player path change
+          if(contentObj?.mimeType == 'application/vnd.ekstep.h5p-archive')
+          {
+            // contentPlayerConfig.metadata.streamingUrl=`file://${content_file}/assets/public/content/h5p/${content_do_id}-latest/content`;
+            // ##################################
+            contentPlayerConfig.metadata.streamingUrl=`http://127.0.0.1:8080/${content_do_id}/assets/public/content/h5p/${content_do_id}-latest/content`;
+            delete contentPlayerConfig.context.host;
+            delete contentPlayerConfig.context.contentId;
+const path =
+  `${RNFS.DocumentDirectoryPath}/${content_do_id}/assets/public/content/h5p/${content_do_id}-latest/content/h5p.json`;
+
+const exists = await RNFS.exists(path);
+
+console.log('#### h5p.json exists', exists);
+fetch(
+  `http://127.0.0.1:8080/${content_do_id}/assets/public/content/h5p/${content_do_id}-latest/content/h5p.json`
+)
+.then(r => {
+  console.log('######server STATUS', r.status);
+  return r.text();
+})
+.then(t => {
+  console.log('######server DATA', t);
+})
+.catch(e => {
+  console.log('FETCH ERROR', e);
+});
+          }
+
           console.log(
             'contentPlayerConfig set json',
             JSON.stringify(contentPlayerConfig)
@@ -775,6 +1053,7 @@ const StandAlonePlayer = ({ route }) => {
             contentObj?.mimeType == 'video/webm' ||
             contentObj?.mimeType == 'audio/mp3' ||
             contentObj?.mimeType == 'audio/wav' ||
+            contentObj?.mimeType == 'audio/mpeg' ||
             contentObj?.mimeType == 'application/epub'
           ) {
             if (contentObj?.mimeType == 'application/pdf') {
@@ -785,13 +1064,20 @@ const StandAlonePlayer = ({ route }) => {
                 firstName: userName,
                 lastName: '',
               };
+              pdfPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+              "primary": "#DDA613", //FDBE16
+              "toolbar": "rgba(30,5,20,0.97)",
+              "background": "#1a0512"
+              }};
+              console.log('pdfPlayerConfig set contentResumeData', contentResumeData.current);
               console.log('pdfPlayerConfig set', pdfPlayerConfig);
             }
             if (
               contentObj?.mimeType == 'video/mp4' ||
               contentObj?.mimeType == 'video/webm' ||
               contentObj?.mimeType == 'audio/mp3' ||
-              contentObj?.mimeType == 'audio/wav'
+              contentObj?.mimeType == 'audio/wav' ||
+              contentObj?.mimeType == 'audio/mpeg'
             ) {
               videoPlayerConfig.metadata = contentObj;
               //set user id and full name
@@ -800,6 +1086,11 @@ const StandAlonePlayer = ({ route }) => {
                 firstName: userName,
                 lastName: '',
               };
+              videoPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+              "primary": "#DDA613", //FDBE16
+              "toolbar": "rgba(30,5,20,0.97)",
+              "background": "#1a0512"
+              }};
               //console.log('videoPlayerConfig set', videoPlayerConfig);
             }
             if (contentObj?.mimeType == 'application/epub') {
@@ -810,6 +1101,11 @@ const StandAlonePlayer = ({ route }) => {
                 firstName: userName,
                 lastName: '',
               };
+              epubPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+              "primary": "#DDA613", //FDBE16
+              "toolbar": "rgba(30,5,20,0.97)",
+              "background": "#1a0512"
+              }};
               //console.log('epubPlayerConfig set', epubPlayerConfig);
             }
             set_is_valid_file(true);
@@ -824,6 +1120,7 @@ const StandAlonePlayer = ({ route }) => {
         contentObj?.mimeType == 'video/webm' ||
         contentObj?.mimeType == 'audio/mp3' ||
         contentObj?.mimeType == 'audio/wav' ||
+        contentObj?.mimeType == 'audio/mpeg' ||
         contentObj?.mimeType == 'application/epub'
       ) {
         //play offline content
@@ -836,7 +1133,7 @@ const StandAlonePlayer = ({ route }) => {
               ? dividedArray.length - 1
               : dividedArray.length
           ];
-        filePath = `file://${content_file}/${content_do_id}${file_name}`;
+        filePath = `http://127.0.0.1:8080/${content_do_id}/${content_do_id}${file_name}`;
         //console.log('filePath', filePath);
         //console.log('create blob url');
         contentObj.artifactUrl = filePath;
@@ -852,13 +1149,20 @@ const StandAlonePlayer = ({ route }) => {
             firstName: userName,
             lastName: '',
           };
-          //console.log('pdfPlayerConfig set', pdfPlayerConfig);
+          pdfPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+          "primary": "#DDA613", //FDBE16
+          "toolbar": "rgba(30,5,20,0.97)",
+          "background": "#1a0512"
+          }};
+          console.log('pdfPlayerConfig set contentResumeData', contentResumeData.current);
+          console.log('pdfPlayerConfig set', pdfPlayerConfig);
         }
         if (
           contentObj?.mimeType == 'video/mp4' ||
           contentObj?.mimeType == 'video/webm' ||
           contentObj?.mimeType == 'audio/mp3' ||
-          contentObj?.mimeType == 'audio/wav'
+          contentObj?.mimeType == 'audio/wav' ||
+          contentObj?.mimeType == 'audio/mpeg'
         ) {
           videoPlayerConfig.metadata = contentObj;
           //set user id and full name
@@ -867,6 +1171,11 @@ const StandAlonePlayer = ({ route }) => {
             firstName: userName,
             lastName: '',
           };
+          videoPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+          "primary": "#DDA613", //FDBE16
+          "toolbar": "rgba(30,5,20,0.97)",
+          "background": "#1a0512"
+          }};
           //console.log('videoPlayerConfig set', videoPlayerConfig);
         }
         if (contentObj?.mimeType == 'application/epub') {
@@ -877,6 +1186,11 @@ const StandAlonePlayer = ({ route }) => {
             firstName: userName,
             lastName: '',
           };
+          epubPlayerConfig.extra={...(contentResumeData.current? {resumeData:contentResumeData.current} : {}),"theme": {
+          "primary": "#DDA613", //FDBE16
+          "toolbar": "rgba(30,5,20,0.97)",
+          "background": "#1a0512"
+          }};
           //console.log('epubPlayerConfig set', epubPlayerConfig);
         }
         set_is_valid_file(true);
@@ -909,6 +1223,7 @@ const StandAlonePlayer = ({ route }) => {
               content_mime_type == 'video/webm' ||
               content_mime_type == 'audio/mp3' ||
               content_mime_type == 'audio/wav' ||
+              content_mime_type == 'audio/mpeg' ||
               content_mime_type == 'application/epub'
             ? fetchDataPdfVideoEpub()
             : content_mime_type == 'application/vnd.sunbird.questionset'
@@ -928,6 +1243,7 @@ const StandAlonePlayer = ({ route }) => {
         content_mime_type == 'video/webm' ||
         content_mime_type == 'audio/mp3' ||
         content_mime_type == 'audio/wav' ||
+        content_mime_type == 'audio/mpeg' ||
         content_mime_type == 'application/epub' ||
         content_mime_type == 'application/vnd.sunbird.questionset'
       ) {
@@ -1032,7 +1348,7 @@ const StandAlonePlayer = ({ route }) => {
                     );
                     console.log(`Unzipped to ${path}`);
                     //store content obj
-                    //console.log(contentObj);
+                    console.log(contentObj);
                     await storeData(content_do_id, contentObj, 'json');
                     contentObj?.mimeType ==
                     'application/vnd.ekstep.ecml-archive'
@@ -1246,7 +1562,7 @@ const StandAlonePlayer = ({ route }) => {
   meta.name = 'viewport';
   meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
   document.head.appendChild(meta);
-  `;
+`;
 
   //call content url
   let injectedJS =
@@ -1268,7 +1584,8 @@ const StandAlonePlayer = ({ route }) => {
             )}));
             window.setData();
         })(); ${disableZoomJS} true;`
-      : content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
+      : 
+          content_mime_type == 'application/vnd.ekstep.ecml-archive' ||
           content_mime_type == 'application/vnd.ekstep.html-archive' ||
           content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
           content_mime_type == 'video/x-youtube'
@@ -1280,6 +1597,40 @@ const StandAlonePlayer = ({ route }) => {
         )}));
         window.setData();
         })(); true;`
+        : 
+          content_mime_type == 'application/pdf'
+        ? `(function() {
+        localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
+          {
+            contentPlayerConfig: pdfPlayerConfig,
+          }
+        )}));
+        window.setData();
+        })(); true;`
+        : 
+          content_mime_type == 'video/mp4' ||
+          content_mime_type == 'video/webm' ||
+          content_mime_type == 'audio/mp3' ||
+          content_mime_type == 'audio/wav' ||
+          content_mime_type == 'audio/mpeg'
+        ? `(function() {
+        localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
+          {
+            contentPlayerConfig: videoPlayerConfig,
+          }
+        )}));
+        window.setData();
+        })(); true;`
+        : 
+          content_mime_type == 'application/epub'
+        ? `(function() {
+        localStorage.setItem('contentPlayerObject', JSON.stringify(${JSON.stringify(
+          {
+            contentPlayerConfig: epubPlayerConfig,
+          }
+        )}));
+        window.setData();
+        })(); true;`
         : content_mime_type == 'application/pdf'
           ? `(function() {
         window.setData('${JSON.stringify(pdfPlayerConfig)}');
@@ -1287,7 +1638,8 @@ const StandAlonePlayer = ({ route }) => {
           : content_mime_type == 'video/mp4' ||
               content_mime_type == 'video/webm' ||
               content_mime_type == 'audio/mp3' ||
-              content_mime_type == 'audio/wav'
+              content_mime_type == 'audio/wav' ||
+              content_mime_type == 'audio/mpeg'
             ? `(function() {
         window.setData('${JSON.stringify(videoPlayerConfig)}');
         })(); true;`
@@ -1353,11 +1705,13 @@ const StandAlonePlayer = ({ route }) => {
     }
     //console.log('storedTelemetryObject', JSON.stringify(storedTelemetryObject));
     //store content tracking
-    let storedContentEidSTART = await getData('contentEidSTART', 'json');
-    let storedContentEidINTERACT = await getData('contentEidINTERACT', 'json');
-    let storedContentEidEND = await getData('contentEidEND', 'json');
-    console.log('storedContentEidSTART', storedContentEidSTART);
-    console.log('storedContentEidEND', storedContentEidEND);
+    let storedContentEidSTART = await getData(content_do_id+'contentEidSTART', 'json');
+    let storedContentEidINTERACT = await getData(content_do_id+'contentEidINTERACT', 'json');
+    let storedContentEidEND = await getData(content_do_id+'contentEidEND', 'json');
+    let storedContentEidPROGRESS = await getData(content_do_id+'contentEidPROGRESS', 'json');
+    console.log('storedContentEidSTART', JSON.stringify(storedContentEidSTART));
+    console.log('storedContentEidEND', JSON.stringify(storedContentEidEND));
+    console.log('storedContentEidPROGRESS', JSON.stringify(storedContentEidPROGRESS));
 
     let detailsObject = [];
     try {
@@ -1389,6 +1743,13 @@ const StandAlonePlayer = ({ route }) => {
     try {
       if (storedContentEidINTERACT && storedContentEidINTERACT.length > 0) {
         detailsObject.push(storedContentEidINTERACT[0]);
+      }
+    } catch (error) {
+      console.log('error2', error);
+    }
+    try {
+      if (storedContentEidPROGRESS && storedContentEidPROGRESS.length > 0) {
+        detailsObject.push(storedContentEidPROGRESS[0]);
       }
     } catch (error) {
       console.log('error2', error);
@@ -1451,7 +1812,17 @@ const StandAlonePlayer = ({ route }) => {
       console.log('reached here', JSON.stringify(detailsObject));
 
       try {
-        let create_tracking = await contentTracking(
+        await storeTrackingOffline(
+          userId,
+          courseId,
+          contentId,
+          contentType,
+          contentMime,
+          lastAccessOn,
+          detailsObject,
+          unitId
+        );
+        /*let create_tracking = await contentTracking(
           userId,
           courseId,
           contentId,
@@ -1477,16 +1848,17 @@ const StandAlonePlayer = ({ route }) => {
             detailsObject,
             unitId
           );
-        }
+        }*/
         logEvent();
       } catch (e) {
         console.log(e);
       }
     }
 
-    await removeData('contentEidSTART');
-    await removeData('contentEidINTERACT');
-    await removeData('contentEidEND');
+    await removeData(content_do_id+'contentEidSTART');
+    await removeData(content_do_id+'contentEidINTERACT');
+    await removeData(content_do_id+'contentEidEND');
+    await removeData(content_do_id+'contentEidPROGRESS');
   };
   //event when player closed
 
@@ -1553,7 +1925,7 @@ const StandAlonePlayer = ({ route }) => {
               }}
             />
           </View>
-        ) : content_mime_type == 'video/x-youtube' ? (
+        ) : content_mime_type == 'video/x-youtube' && false ? (
           youtubePlayerEndScreen === true ? (
             <View style={styles.middle_screen}>
               <GlobalText style={styles.completionText}>
@@ -1651,7 +2023,7 @@ const StandAlonePlayer = ({ route }) => {
                       },
                     },
                   ];
-                  await storeData('contentEidSTART', contentEidSTART, 'json');
+                  await storeData(content_do_id+'contentEidSTART', contentEidSTART, 'json');
                 }
 
                 // Track END event when video ends
@@ -1688,7 +2060,7 @@ const StandAlonePlayer = ({ route }) => {
                       },
                     },
                   ];
-                  await storeData('contentEidEND', contentEidEND, 'json');
+                  await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
                   // Optionally navigate back or handle video end
 
                   // Exit fullscreen when video ends
@@ -1762,7 +2134,62 @@ const StandAlonePlayer = ({ route }) => {
               );
             })()
           )
-        ) : (
+        ) :
+          content_mime_type == 'application/vnd.ekstep.html-archive' ||
+          content_mime_type == 'application/vnd.ekstep.h5p-archive' ||
+          content_mime_type == 'video/x-youtube' ||
+          content_mime_type == 'application/pdf' ||
+          content_mime_type == 'video/mp4' ||
+          content_mime_type == 'video/webm' ||
+          content_mime_type == 'audio/mp3' ||
+          content_mime_type == 'audio/wav' ||
+          content_mime_type == 'audio/mpeg' ||
+          content_mime_type == 'application/epub'
+        ? (
+          <WebView
+            ref={webviewRef}
+            originWhitelist={['*']}
+            source={
+              {uri: `${urlLocal}/content-player-${Config.CONTENT_PLAYER_VERSION}/index_android.html`}
+            }
+            style={styles.webview}
+            userAgent={
+              content_mime_type == 'video/x-youtube'
+                ? undefined
+                : lib_folder == 'sunbird-content-player'
+                  ? desktopUserAgent
+                  : undefined
+            }
+            javaScriptEnabled={true}
+            domStorageEnabled={true}
+            scalesPageToFit={true}
+            startInLoadingState={true}
+            allowFileAccess={true}
+            allowUniversalAccessFromFileURLs={true}
+            allowingReadAccessToURL={true}
+            mixedContentMode={'always'}
+            allowsFullscreenVideo={true}
+            mediaPlaybackRequiresUserAction={false}
+            injectedJavaScript={injectedJS}
+            onMessage={handleMessage}
+            onError={(syntheticEvent) => {
+              const { nativeEvent } = syntheticEvent;
+              console.warn('WebView error: ', nativeEvent);
+            }}
+            onNavigationStateChange={handleNavigationStateChange}
+            allowsInlineMediaPlayback={true}
+            /*
+            //for rtl
+            style={[
+              styles.webview,
+              isRTL && { transform: [{ scaleX: -1 }] }, // Apply transform for RTL only
+            ]}
+            contentStyle={{ direction: isRTL ? 'rtl' : 'ltr' }} // Sets text direction inside WebView
+            */
+            allowFileAccessFromFileURLs={true}
+          />
+        )
+        : (
           <WebView
             ref={webviewRef}
             originWhitelist={['*']}
@@ -1803,9 +2230,10 @@ const StandAlonePlayer = ({ route }) => {
             ]}
             contentStyle={{ direction: isRTL ? 'rtl' : 'ltr' }} // Sets text direction inside WebView
             */
+            allowFileAccessFromFileURLs={true}
           />
         )}
-        <TestResultModal modal={modal} title={title} />
+        <TestResultModal modal={modal} title={title} isRegistrationTest={isRegistrationTest} />
         {alertModal && <MimeAlertModal textTitle={errorDetail} />}
       </View>
     </>

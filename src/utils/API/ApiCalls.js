@@ -1,5 +1,6 @@
 import EndUrls from './EndUrls';
 import axios from 'axios';
+import { sanitizeContentObject } from './sanitizeContent';
 import uuid from 'react-native-uuid';
 import {
   getApiResponse,
@@ -60,15 +61,13 @@ export const readContent = async (content_do_id) => {
     `?fields=transcripts,ageGroup,appIcon,artifactUrl,downloadUrl,attributions,attributions,audience,author,badgeAssertions,board,body,channel,code,concepts,contentCredits,contentType,contributors,copyright,copyrightYear,createdBy,createdOn,creator,creators,description,displayScore,domain,editorState,flagReasons,flaggedBy,flags,framework,gradeLevel,identifier,itemSetPreviewUrl,keywords,language,languageCode,lastUpdatedOn,license,mediaType,medium,mimeType,name,originData,osId,owner,pkgVersion,publisher,questions,resourceType,scoreDisplayConfig,status,streamingUrl,subject,template,templateId,totalQuestions,totalScore,versionKey,visibility,year,primaryCategory,additionalCategories,interceptionPoints,interceptionType&orgdetails=orgName,email&licenseDetails=name,description,url`;
 
   let api_response = null;
+  const headers = await getHeaders();
 
   let config = {
     method: 'get',
     maxBodyLength: Infinity,
     url: url,
-    headers: {
-      accept: '*/*',
-      'Content-Type': 'application/json',
-    },
+    headers: headers,
   };
 
   await axios
@@ -80,37 +79,8 @@ export const readContent = async (content_do_id) => {
 
       api_response = response.data;
 
-      // Remove single quotes from description and keywords if they exist
       if (api_response?.result?.content) {
-        //remove single quotes from name
-        if (
-          api_response.result.content.name &&
-          typeof api_response.result.content.name === 'string'
-        ) {
-          api_response.result.content.name =
-            api_response.result.content.name.replace(/'/g, ' ');
-        }
-        // Remove single quotes from description
-        if (
-          api_response.result.content.description &&
-          typeof api_response.result.content.description === 'string'
-        ) {
-          api_response.result.content.description =
-            api_response.result.content.description.replace(/'/g, ' ');
-        }
-        // Remove single quotes from keywords array items
-        if (
-          api_response.result.content.keywords &&
-          Array.isArray(api_response.result.content.keywords)
-        ) {
-          api_response.result.content.keywords =
-            api_response.result.content.keywords.map((keyword) => {
-              if (typeof keyword === 'string') {
-                return keyword.replace(/'/g, ' ');
-              }
-              return keyword;
-            });
-        }
+        sanitizeContentObject(api_response.result.content);
       }
     })
     .catch((error) => {
@@ -209,7 +179,7 @@ export const courseDetails = async (content_do_id) => {
   -H "accept: */*" \\
   -H "Content-Type: application/json"`;
 
-  console.log('Generated cURL Command:', curlCommand);
+  // console.log('Generated cURL Command:', curlCommand);
 
   try {
     const response = await axios.request(config);
@@ -511,6 +481,81 @@ export const contentTracking = async (
   }
 };
 
+export const contentTrackingSync = async (
+  userId,
+  courseId,
+  contentId,
+  contentType,
+  contentMime,
+  lastAccessOn,
+  detailsObject,
+  unitId
+) => {
+  try {
+    const url = EndUrls.ContentCreate;
+
+    let data = JSON.stringify({
+      userId: userId,
+      courseId: courseId,
+      contentId: contentId,
+      contentType: contentType,
+      contentMime: contentMime,
+      lastAccessOn: lastAccessOn,
+      detailsObject: detailsObject,
+      unitId: unitId,
+    });
+    console.log('############*****');
+    //console.log('############ data', data);
+    //console.log('############ url', url);
+
+    let api_response = null;
+
+    const headers = await getHeaders();
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url,
+      headers: headers || {},
+      data: data,
+    };
+    //console.log('############ config', config);
+
+    await axios
+      .request(config)
+      .then((response) => {
+        api_response = { response: response.data };
+      })
+      .catch((error) => {
+        console.log('error', error);
+      });
+    // Construct the curl command for logging
+    // const curlCommand = `curl -X POST "${url}" \\\n${Object.entries(
+    //   headers || {}
+    // )
+    //   .map(([key, value]) => `-H "${key}: ${value}"`)
+    //   .join(' \\\n')} \\\n-d '${data}'`;
+
+    return api_response;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Content Submission Failed'
+    );
+  }
+};
+
+export const courseHierarchy = async (courseId) => {
+  let response = null;
+  try {
+    const url = EndUrls.CourseHierarchy;
+    const headers = await getHeaders();
+    const data = JSON.stringify({ courseId: courseId });
+
+  } catch (error) {
+    // throw new Error(error.response?.data?.message || 'Course Hierarchy Failed');
+  }
+};
+
 //status of content
 export const contentTrackingStatus = async (
   userId,
@@ -558,6 +603,71 @@ export const contentTrackingStatus = async (
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Content Status Failed');
   }
+};
+
+//resume content data
+export const resumeTrackingStatus = async (
+  userId,
+  contentId,
+  courseId,
+  unitId
+) => {
+  try {
+    console.log("#resumedatatest userId",userId);
+    console.log("#resumedatatest contentId",contentId);
+    console.log("#resumedatatest courseId",courseId);
+    console.log("#resumedatatest unitId",unitId);
+    const url = EndUrls.ResumeTrackingStatus;
+
+    const headers = await getHeaders();
+
+    let data = JSON.stringify({
+      userId: userId,
+      contentId: contentId,
+      courseId: courseId,
+      unitId: unitId,
+    });
+
+    let api_response = null;
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: url,
+      headers: headers || {},
+      data: data,
+    };
+    // Construct the curl command for logging
+    const curlCommand = `curl -X POST "${url}" \\\n${Object.entries(
+      headers || {}
+    )
+      .map(([key, value]) => `-H "${key}: ${value}"`)
+      .join(' \\\n')} \\\n-d '${data}'`;
+
+      // console.log("#resumedatatest curlCommand",curlCommand);
+      
+    try {
+      const response = await axios.request(config);
+      api_response = response.data;
+      console.log("#resumedatatest api_response",api_response);
+      if (api_response) {
+        // await storeApiResponse(userId, url, 'post', data, api_response);
+        return api_response;
+      } else {
+        // const result_offline = await getApiResponse(userId, url, 'post', data);
+        // return result_offline;
+      }
+    } catch (error) {
+      console.log('No internet available, retrieving offline data...');
+      console.log("#resumedatatest error",error);
+      // const result_offline = await getApiResponse(userId, url, 'post', data);
+      // return result_offline;
+    }
+  } catch (error) {
+    console.log("#resumedatatest error 2",error);
+    // throw new Error(error.response?.data?.message || 'Content Status Failed');
+  }
+  return null;
 };
 
 //status of course

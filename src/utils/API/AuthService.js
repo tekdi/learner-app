@@ -5,13 +5,20 @@ import {
   getDataFromStorage,
   getTentantId,
 } from '../JsHelper/Helper';
-import { deleteData, getData, insertData } from '../JsHelper/SqliteHelper';
+import {
+  deleteData,
+  getData,
+  insertData,
+  getDataOrderById,
+} from '../JsHelper/SqliteHelper';
 import EndUrls from './EndUrls';
 import { get, handleResponseException, patch, post } from './RestClient';
 //for react native config env : dev uat prod
 import Config from 'react-native-config';
 import RNFS from 'react-native-fs';
 import { Alert } from 'react-native';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import Share from 'react-native-share';
 import { TENANT_DATA } from '../Constants/app-constants';
 
 const getHeaders = async () => {
@@ -418,7 +425,7 @@ export const courseListApi_New = async ({
   offset,
   inprogress_do_ids,
   contentFilter,
-  customProp='',
+  customProp = '',
 }) => {
   const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
   const channelId = tenantData?.[0]?.channelId;
@@ -444,7 +451,8 @@ export const courseListApi_New = async ({
         program: contentFilter?.program,
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
         status: ['Live'],
-        primaryCategory: customProp === 'forchildren' ? ["Activity", "Story"] : ['Course'],
+        primaryCategory:
+          customProp === 'forchildren' ? ['Activity', 'Story'] : ['Course'],
         ...(mergedFilter && mergedFilter),
       },
       limit: 10,
@@ -523,7 +531,9 @@ export const profileCourseListApi = async () => {
   };
   const payload = {
     filters: {
-      status: ['completed', 'viewCertificate'],
+      // status: ['completed', 'viewCertificate'],
+      // bug fix for invalid date and without certificate issue
+      status: ['viewCertificate'],
       userId: user_id,
     },
     limit: 100,
@@ -780,7 +790,44 @@ export const setAcademicYear = async ({ tenantid }) => {
     return handleResponseException(e);
   }
 };
+export const getAcademicYearList = async ({ tenantid }) => {
+  try {
+    const token = await getDataFromStorage('Accesstoken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`,
+      tenantid: tenantid,
+    };
+    const url = `${EndUrls.academicyears}`;
+    // const payload = {
+    //   isActive: true,
+    // };
 
+    // Log the curl command
+
+    // console.log(
+    //   `curl -X POST '${url}' \\\n` +
+    //     `-H 'Content-Type: application/json' \\\n` +
+    //     `-H 'Accept: application/json' \\\n` +
+    //     `-H 'Authorization: ${headers.Authorization}' \\\n` +
+    //     `-H 'tenantid: ${headers.tenantid}' \\\n` +
+    //     `-d '${JSON.stringify(payload)}'`
+    // );
+
+    const result = await post(url, {}, {
+      headers: headers || {},
+    });
+
+    if (result) {
+      return result?.data?.result;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
 // Assessment List API
 
 export const assessmentListApi = async (params = {}) => {
@@ -794,9 +841,9 @@ export const assessmentListApi = async (params = {}) => {
   const payload = {
     request: {
       filters: {
-       program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
+        program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
         board: `${params?.boardName}`,
-       // "se_boards": [`${params?.boardName}`],
+        // "se_boards": [`${params?.boardName}`],
 
         // board: `Maharashtra Education Board`,
         // state: `${params?.stateName}`,
@@ -894,6 +941,64 @@ export const getDoits = async ({ payload }) => {
   } catch (e) {
     let result_offline = await getApiResponse(user_id, url, 'post', payload);
     return result_offline;
+  }
+};
+
+//sync course details get
+export const syncCourseDetails = async (courseId) => {
+  const url = `${EndUrls.contentSearch}`; // Define the URL
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  const payload = {
+    request: {
+      filters: {
+        identifier: courseId,
+      },
+      fields: [
+        'name',
+        'englishName',
+        'appIcon',
+        'description',
+        'posterImage',
+        'mimeType',
+        'identifier',
+        'resourceType',
+        'primaryCategory',
+        'contentType',
+        'trackable',
+        'children',
+        'leafNodes',
+      ],
+      limit: 1,
+      offset: 0,
+    },
+  };
+  try {
+    const curlCommand = `
+curl -X POST '${url}' \\
+-H 'Content-Type: application/json' \\
+-H 'Accept: application/json' \\
+-d '${JSON.stringify(payload)}'
+    `;
+    // console.log('CURL Command:\n', curlCommand); // Log the generated curl command
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      params: {
+        orgdetails: 'orgName,email',
+        licenseDetails: 'name,description,url',
+      },
+      headers: headers || {},
+    });
+    if (result && result?.data?.result?.content?.length > 0) {
+      return result?.data?.result?.content[0] || null;
+    } else {
+      return null;
+    }
+  } catch (e) {
+    return null;
   }
 };
 
@@ -997,12 +1102,10 @@ export const getUserDetails = async (params = {}) => {
     } else {
       return {};
     }
-  }
-  catch (e) {
-    console.log(e)
+  } catch (e) {
+    console.log(e);
   }
 };
-
 
 export const getAssessmentStatus = async (params = {}) => {
   try {
@@ -1032,6 +1135,35 @@ export const getAssessmentStatus = async (params = {}) => {
 
     if (result?.data) {
       return result?.data?.data;
+    } else {
+      return {};
+    }
+  } catch (e) {
+    return handleResponseException(e);
+  }
+};
+
+export const getAssessmentStatusSync = async (payload) => {
+  try {
+    const url = `${EndUrls.AssessmentStatus}`; // Define the URL
+
+    const headers = await getHeaders();
+
+    const curlCommand = `curl -X POST '${url}' \\ 
+    ${Object.entries(headers || {})
+      .map(([key, value]) => `  -H '${key}: ${value}' \\`)
+      .join('\n')} 
+      -d '${JSON.stringify(payload)}'`;
+
+    console.log('#########atm do_ids cURL Command:', curlCommand);
+
+    // Make the actual request
+    const result = await post(url, payload, {
+      headers: headers || {},
+    });
+
+    if (result?.data) {
+      return result?.data;
     } else {
       return {};
     }
@@ -1375,6 +1507,35 @@ export const getSyncTrackingOffline = async (user_id) => {
     return null;
   }
 };
+export const getSyncTrackingOfflineOrderById = async (user_id) => {
+  try {
+    //get result
+    const data_get = {
+      user_id: user_id,
+    };
+    let result_data = null;
+    await getDataOrderById({
+      tableName: 'Tracking_Offline_2',
+      where: data_get,
+      orderBy: 'order by id ASC',
+    })
+      .then((rows) => {
+        //console.log('rows', rows);
+        if (rows.length > 0) {
+          try {
+            result_data = rows;
+          } catch (e) {}
+        }
+      })
+      .catch((err) => {
+        console.error('err', err);
+      });
+    return result_data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
 export const deleteTrackingOffline = async (id) => {
   try {
     //delete if exist to overwrite
@@ -1579,7 +1740,7 @@ export const eventList = async ({ startDate, endDate }) => {
     return result_offline;
   }
 };
-export const targetedSolutions = async ({ subjectName, type }) => {
+export const targetedSolutions = async ({ subjectName, type,academicYear="" }) => {
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
   const url = `${EndUrls.targetedSolutions}`; // Define the URL
   const method = 'POST'; // Define the HTTP method
@@ -1606,6 +1767,7 @@ export const targetedSolutions = async ({ subjectName, type }) => {
     class: data?.GRADE?.value,
     board: data?.BOARD?.value,
     courseType: type,
+    ...(academicYear ? { academicYear } : {}),
   };
   try {
     console.log(
@@ -2062,7 +2224,7 @@ export const issueCertificate = async ({ payload }) => {
       payload
     )}' ${url}`;
 
-    console.log('cURL Command:', curlCommand);
+    console.log('issueCertificate cURL Command:', curlCommand);
 
     // Make the actual request
     const result = await post(url, payload, {
@@ -2306,59 +2468,292 @@ export const cohortSearch = async ({ customFields }) => {
 export const downloadCertificate = async ({
   certificateId,
   certificateName,
+  certificateHtml,
 }) => {
-  const url = `${EndUrls.downloadCertificate}`; // Define the URL
-  const headers = await getHeaders();
-  console.log('### certificate certificateId', certificateId);
-  const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+  const user_id = await getDataFromStorage('userId');
   const template_id = await getDataFromStorage('templateId');
 
-  const payload = {
-    credentialId: certificateId,
-    templateId: template_id,
-  };
+  let htmlContent = certificateHtml;
+
+  // Fetch HTML from API if not provided by caller
+  if (!htmlContent) {
+    const url = `${EndUrls.viewCertificate}`;
+    const headers = await getHeaders();
+    const payload = { credentialId: certificateId, templateId: template_id };
+    try {
+      const result = await post(url, payload, { headers: headers || {} });
+      htmlContent = result?.data?.result;
+    } catch (e) {
+      console.error('Error fetching certificate HTML:', e);
+      Alert.alert('Error', 'Failed to fetch certificate content');
+      return false;
+    }
+  }
+
+  if (!htmlContent) {
+    Alert.alert('Error', 'No certificate content available');
+    return false;
+  }
+
+  const fileName = `${certificateName}_${user_id}`;
+
+  // The web version captures only the .page element (1120×790 px) from a hidden
+  // iframe, then stretches it to fill A4 landscape. Here we mirror that by:
+  //   1. Setting the viewport to 1120px so the WebView renders at the same width
+  //   2. Clamping html/body to exactly 1120×790px and hiding overflow — this
+  //      removes all blank space that exists outside the .page element
+  //   3. Suppressing page-breaks so PrintDocumentAdapter produces exactly 1 page
+  const certCss = `
+    <meta name="viewport" content="width=1120, initial-scale=1.0">
+    <style>
+      @page { margin: 0; size: landscape; }
+      html {
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 1120px !important;
+        height: 790px !important;
+        overflow: hidden !important;
+        background: white !important;
+        display: block !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+      .page {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 1120px !important;
+        height: 790px !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+    </style>`;
+  const processedHtml = htmlContent.includes('</head>')
+    ? htmlContent.replace('</head>', `${certCss}</head>`)
+    : certCss + htmlContent;
 
   try {
-    const response = await axios.post(url, payload, {
-      headers: headers || {},
-      responseType: 'arraybuffer', // Ensures we get binary data
+    // Convert HTML to PDF using Android WebView print pipeline (same quality as browser)
+    // A4 landscape dimensions in points (1 pt = 1/72 inch): 841 x 595
+    const file = await RNHTMLtoPDF.convert({
+      html: processedHtml,
+      fileName,
+      directory: 'Documents',
+      width: 841,
+      height: 595,
     });
-    console.log('### certificate response', response);
-    const data = response?.request?._response;
-    console.log('data', data);
 
-    const base64Data = data; // Base64 string from API
-    const fileName = `${certificateName}_${user_id}.pdf`;
-    const path = `${RNFS.DownloadDirectoryPath}/${fileName}`;
+    const destPath = `${RNFS.DownloadDirectoryPath}/${fileName}.pdf`;
+    await RNFS.copyFile(file.filePath, destPath);
 
-    await RNFS.writeFile(path, base64Data, 'base64');
-    Alert.alert('Success', `PDF saved at ${path}`);
-    console.log('PDF downloaded to:', path);
+    Alert.alert('Success', `Certificate saved to Downloads`);
+    console.log('Certificate PDF saved to:', destPath);
     return true;
   } catch (error) {
-    console.error('Error downloading PDF:', error);
-    Alert.alert('Error', 'Failed to download PDF');
-    return true;
+    console.error('Error generating certificate PDF:', error);
+    Alert.alert('Error', 'Failed to download certificate');
+    return false;
   }
 };
-export const shareCertificate = async ({ certificateId }) => {
-  const url = `${EndUrls.downloadCertificate}`; // Define the URL
-  const headers = await getHeaders();
+export const shareCertificate = async ({
+  certificateId,
+  certificateName,
+  certificateHtml,
+}) => {
+  const user_id = await getDataFromStorage('userId');
   const template_id = await getDataFromStorage('templateId');
-  const payload = {
-    credentialId: certificateId,
-    templateId: template_id,
-  };
+
+  let htmlContent = certificateHtml;
+
+  if (!htmlContent) {
+    const url = `${EndUrls.viewCertificate}`;
+    const headers = await getHeaders();
+    const payload = { credentialId: certificateId, templateId: template_id };
+    try {
+      const result = await post(url, payload, { headers: headers || {} });
+      htmlContent = result?.data?.result;
+    } catch (e) {
+      console.error('Error fetching certificate HTML:', e);
+      Alert.alert('Error', 'Failed to fetch certificate content');
+      return false;
+    }
+  }
+
+  if (!htmlContent) {
+    Alert.alert('Error', 'No certificate content available');
+    return false;
+  }
+
+  const certCss = `
+    <meta name="viewport" content="width=1120, initial-scale=1.0">
+    <style>
+      @page { margin: 0; size: landscape; }
+      html {
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 1120px !important;
+        height: 790px !important;
+        overflow: hidden !important;
+        background: white !important;
+        display: block !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+      .page {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 1120px !important;
+        height: 790px !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+    </style>`;
+  const processedHtml = htmlContent.includes('</head>')
+    ? htmlContent.replace('</head>', `${certCss}</head>`)
+    : certCss + htmlContent;
 
   try {
-    const response = await axios.post(url, payload, {
-      headers: headers || {},
-      responseType: 'arraybuffer', // Ensures we get binary data
+    const fileName = `${certificateName}_${user_id}_share`;
+    // base64:true avoids file:// URI + FileProvider requirement on Android 7+
+    const file = await RNHTMLtoPDF.convert({
+      html: processedHtml,
+      fileName,
+      base64: true,
+      width: 841,
+      height: 595,
     });
-    const data = response?.request?._response;
-    return data;
-  } catch (error) {
-    console.error('Error downloading PDF:', error);
+
+    await Share.open({
+      title: 'Share Certificate',
+      url: `data:application/pdf;base64,${file.base64}`,
+      type: 'application/pdf',
+      failOnCancel: false,
+    });
     return true;
+  } catch (error) {
+    if (error?.message !== 'User did not share') {
+      console.error('Error sharing certificate:', error);
+      Alert.alert('Error', 'Failed to share certificate');
+    }
+    return false;
+  }
+};
+
+export const ContentSearch = async ({
+  query = '',
+  filters,
+  fields,
+  sort_by,
+  limit = 5,
+  offset = 0,
+} = {}) => {
+  try {
+    const url = `${EndUrls.contentSearch}`;
+    const payload = {
+      request: {
+        filters: filters || {},
+        fields: fields || [
+          'name',
+          'appIcon',
+          'description',
+          'mimeType',
+          'identifier',
+          'primaryCategory',
+        ],
+        sort_by,
+        query,
+        limit,
+        offset,
+      },
+    };
+    const result = await post(url, payload);
+    return result?.data;
+  } catch (e) {
+    console.error('Error in ContentSearch:', e);
+    throw e;
+  }
+};
+
+// export const getRegistrationAssessmentStatus = async ({
+//   userId,
+//   courseId,
+//   unitId,
+//   contentId,
+// }) => {
+//   try {
+//     const url = `${EndUrls.AssessmentSearch}`;
+//     const headers = await getHeaders();
+//     const payload = { userId, courseId, unitId, contentId };
+//     const result = await post(url, payload, { headers: headers || {} });
+//     return result?.data?.data;
+//   } catch (e) {
+//     return handleResponseException(e);
+//   }
+// };
+
+// export const ContentSearch = async ({
+//   query = '',
+//   filters,
+//   fields,
+//   sort_by,
+//   limit = 5,
+//   offset = 0,
+// } = {}) => {
+//   try {
+//     const url = `${EndUrls.contentSearch}`;
+//     const payload = {
+//       request: {
+//         filters: filters || {},
+//         fields: fields || [
+//           'name',
+//           'appIcon',
+//           'description',
+//           'mimeType',
+//           'identifier',
+//           'primaryCategory',
+//         ],
+//         sort_by,
+//         query,
+//         limit,
+//         offset,
+//       },
+//     };
+//     const result = await post(url, payload);
+//     return result?.data;
+//   } catch (e) {
+//     console.error('Error in ContentSearch:', e);
+//     throw e;
+//   }
+// };
+
+export const getRegistrationAssessmentStatus = async ({
+  userId,
+  courseId,
+  unitId,
+  contentId,
+}) => {
+  try {
+    const url = `${EndUrls.AssessmentSearch}`;
+    const headers = await getHeaders();
+    const payload = { userId, courseId, unitId, contentId };
+    const result = await post(url, payload, { headers: headers || {} });
+    return result?.data?.data;
+  } catch (e) {
+    return handleResponseException(e);
   }
 };

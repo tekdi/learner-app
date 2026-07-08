@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useTranslation } from '../../../../context/LanguageContext';
 
 // Utility function to parse response values
-const parseResValue = (resValue)=> {
+const parseResValue = (resValue, t)=> {
   try {
     const parsed = JSON.parse(resValue);
 
@@ -47,16 +47,16 @@ const parseResValue = (resValue)=> {
             ? selectedItem.value.join(', ')
             : String(selectedItem.value).trim();
         } else {
-          response = 'No response available';
+          response = t('no_response_available');
         }
 
         return {
-          response: response || 'No response available',
+          response: response || t('no_response_available'),
           aiSuggestion:
             selectedItem.AI_suggestion ||
             selectedItem.aiSuggestion ||
             selectedItem.explanation ||
-            'No suggestion available',
+            t('no_suggestion_available'),
         };
       }
     }
@@ -84,19 +84,19 @@ const parseResValue = (resValue)=> {
             ? parsed.value.join(', ')
             : String(parsed.value);
         }
-        return 'No response available';
+        return t('no_response_available');
       })(),
       aiSuggestion:
         parsed.AI_suggestion ||
         parsed.aiSuggestion ||
         parsed.explanation ||
-        'No suggestion available',
+        t('no_suggestion_available'),
     };
   } catch (error) {
     // If JSON parsing fails, treat as plain text
     return {
-      response: resValue || 'No response available',
-      aiSuggestion: 'No suggestion available',
+      response: resValue || t('no_response_available'),
+      aiSuggestion: t('no_suggestion_available'),
     };
   }
 };
@@ -133,7 +133,7 @@ const AISuggestion = React.memo(({ aiSuggestion }) => {
 
   if (
     !aiSuggestion ||
-    aiSuggestion === 'No suggestion available' ||
+    aiSuggestion === t('no_suggestion_available') ||
     aiSuggestion.trim() === ''
   ) {
     return null;
@@ -191,8 +191,9 @@ const QuestionItem = React.memo(
     isApproved,
     questionNumberingMap = {},
   }) => {
+    const { t } = useTranslation();
     const parsedResponse = useMemo(() => {
-      const result = parseResValue(question.resValue);
+      const result = parseResValue(question.resValue, t);
       console.log('Parsed response for question:', question.questionId, result);
       return result;
     }, [question.resValue, question.questionId]);

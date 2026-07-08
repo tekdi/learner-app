@@ -20,7 +20,7 @@ const ImageListView = ({
       t('Remove Image'),
       t('Are you sure you want to remove this image?'),
       [
-        { text: t('Cancel'), style: 'cancel' },
+        { text: t('cancel'), style: 'cancel' },
         {
           text: t('Remove'),
           style: 'destructive',

@@ -54,7 +54,8 @@ const VideoPlayer = () => {
       content_response?.result?.content?.mimeType == 'video/mp4' ||
       content_response?.result?.content?.mimeType == 'video/webm' ||
       content_response?.result?.content?.mimeType == 'audio/mp3' ||
-      content_response?.result?.content?.mimeType == 'audio/wav'
+      content_response?.result?.content?.mimeType == 'audio/wav' ||
+      content_response?.result?.content?.mimeType == 'audio/mpeg'
     ) {
       videoPlayerConfig.metadata = content_response.result.content;
       set_is_valid_file(true);

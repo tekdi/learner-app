@@ -57,6 +57,7 @@ const DownloadModal = ({
         contentMimeType == 'video/webm' ||
         contentMimeType == 'audio/mp3' ||
         contentMimeType == 'audio/wav' ||
+        contentMimeType == 'audio/mpeg' ||
         contentMimeType == 'application/epub' ||
         contentMimeType == 'application/vnd.sunbird.questionset'
       ) {
@@ -83,7 +84,7 @@ const DownloadModal = ({
 
   const downloadContentECMLH5pHTMLYoutube = async (content_do_id) => {
     const content_file = `${RNFS.DocumentDirectoryPath}/${content_do_id}`;
-    const streamingPath = `${content_file}/${content_do_id}.json`;
+    // const streamingPath = `${content_file}/${content_do_id}.json`;
     //content read
     setDownloadStatus('progress');
     setDownload('progress');
@@ -105,6 +106,14 @@ const DownloadModal = ({
         filePath = `${content_file}.zip`;
       }
       if (filePath != '') {
+        const streamingPath =
+            contentObj?.mimeType == 'application/vnd.ekstep.ecml-archive'
+              ? `${content_file}`
+              : contentObj?.mimeType == 'application/vnd.ekstep.html-archive'
+                ? `${content_file}/assets/public/content/html/${content_do_id}-latest`
+                : contentObj?.mimeType == 'application/vnd.ekstep.h5p-archive'
+                  ? `${content_file}/assets/public/content/h5p/${content_do_id}-latest`
+                  : `${content_file}/${content_do_id}.json`;
         //download file and store object in local
         //download file
         // URL of the file to download
@@ -177,14 +186,13 @@ const DownloadModal = ({
                   console.error(`Error extracting zip file: ${error}`);
                 }
               } else {
-                Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+                Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
                 setDownloadStatus('download');
-                setDownload('download');
                 setDownload('download');
               }
             } catch (error) {
-              Alert.alert('Error Catch', `Failed to create file: ${error}`, [
-                { text: 'OK' },
+              Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${error}`, [
+                { text: t('OK') },
               ]);
               console.error('Error creating file:', error);
               setDownloadStatus('download');
@@ -192,15 +200,15 @@ const DownloadModal = ({
             }
           }
         } catch (err) {
-          Alert.alert('Error Catch', `Failed to download file: ${err}`, [
-            { text: 'OK' },
+          Alert.alert(t('error_catch'), `${t('failed_to_download_file')}: ${err}`, [
+            { text: t('OK') },
           ]);
           console.log('display error', err);
           setDownloadStatus('download');
           setDownload('download');
         }
       } else {
-        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+        Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
         setDownloadStatus('download');
         setDownload('download');
       }
@@ -338,26 +346,26 @@ const DownloadModal = ({
               await storeData(content_do_id, contentObj, 'json');
               setDownloadStatus('completed');
             } else {
-              Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+              Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
               setDownloadStatus('download');
             }
             //end download
           } catch (error) {
-            Alert.alert('Error Catch', `Failed to create file: ${error}`, [
-              { text: 'OK' },
+            Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${error}`, [
+              { text: t('OK') },
             ]);
             console.error('Error creating file:', error);
             setDownloadStatus('download');
           }
         } catch (err) {
-          Alert.alert('Error Catch', `Failed to create file: ${err}`, [
-            { text: 'OK' },
+          Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${err}`, [
+            { text: t('OK') },
           ]);
           console.log('display error', err);
           setDownloadStatus('download');
         }
       } else {
-        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+        Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
         setDownloadStatus('download');
       }
     }
@@ -392,6 +400,8 @@ const DownloadModal = ({
         filePath = `${content_file}.mp3`;
       } else if (contentObj?.mimeType == 'audio/wav') {
         filePath = `${content_file}.wav`;
+      } else if (contentObj?.mimeType == 'audio/mpeg') {
+        filePath = `${content_file}.mp3`;
       }
       if (filePath != '') {
         //download file and store object in local
@@ -439,7 +449,7 @@ const DownloadModal = ({
                     setDownload('completed');
                   } catch (error) {
                     console.log('error', error);
-                    Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+                    Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
                     setDownloadStatus('download');
                     setDownload('download');
                   }
@@ -470,23 +480,23 @@ const DownloadModal = ({
               console.log('Failed to download file:', result.statusCode);
             }*/
           } catch (error) {
-            Alert.alert('Error Catch', `Failed to create file: ${error}`, [
-              { text: 'OK' },
+            Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${error}`, [
+              { text: t('OK') },
             ]);
             console.error('Error creating file:', error);
             setDownloadStatus('download');
             setDownload('download');
           }
         } catch (err) {
-          Alert.alert('Error Catch', `Failed to create file: ${err}`, [
-            { text: 'OK' },
+          Alert.alert(t('error_catch'), `${t('failed_to_create_file')}: ${err}`, [
+            { text: t('OK') },
           ]);
           console.log('display error', err);
           setDownloadStatus('download');
           setDownload('download');
         }
       } else {
-        Alert.alert('Error', 'Invalid File', [{ text: 'OK' }]);
+        Alert.alert(t('Error'), t('invalid_file_title'), [{ text: t('OK') }]);
         setDownloadStatus('download');
         setDownload('download');
       }
@@ -510,6 +520,7 @@ const DownloadModal = ({
       contentMimeType == 'video/webm' ||
       contentMimeType == 'audio/mp3' ||
       contentMimeType == 'audio/wav' ||
+      contentMimeType == 'audio/mpeg' ||
       contentMimeType == 'application/epub'
     ) {
       await downloadContentPDFEpubVideo(contentId);

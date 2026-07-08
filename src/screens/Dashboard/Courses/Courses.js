@@ -47,6 +47,7 @@ import globalStyles from '../../../utils/Helper/Style';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../components/AppUpdate/AppUpdatePopup';
+import AttemptAssessmentButton from '../../../components/AttemptAssessmentButton/AttemptAssessmentButton';
 import PrimaryButton from '../../../components/PrimaryButton/PrimaryButton';
 import InterestModal from './InterestModal';
 import InterestModalError from './InterestModalError';
@@ -66,6 +67,7 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
   const { isConnected } = useInternet();
 
   const [courseData, setCourseData] = useState([]);
+  const courseDataRef = useRef([]);
   const [trackData, setTrackData] = useState([]);
   const [userInfo, setUserInfo] = useState('');
   const [loading, setLoading] = useState(true);
@@ -122,9 +124,13 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
     }, [restoreScroll])
   );
 
+  useEffect(() => {
+    courseDataRef.current = courseData;
+  }, [courseData]);
+
   const onFopcusTrackCourse = async () => {
     try {
-      const contentList = courseData || [];
+      const contentList = courseDataRef.current || [];
       let courseList = contentList.map((item) => item?.identifier);
 
       let userId = await getDataFromStorage('userId');
@@ -446,6 +452,9 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
                     )}
                 </GlobalText>
               </View>
+              <View style={{ marginTop: 5 }}>
+                <AttemptAssessmentButton />
+              </View>
               {/* {!youthnet && (
                 <GlobalText style={globalStyles.text}>
                   {t('courses')}
@@ -521,8 +530,9 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
                         setSearchText={setSearchText}
                         searchText={searchText}
                         // handleSearch={handleSearch}
-                        placeholder={t('Search...')}
+                        placeholder={t('search_placeholder')}
                       />
+                      
                     </View>
                   </CopilotView>
                 </CopilotStep>
@@ -707,7 +717,7 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
                 return hasFilters ? (
                   <View style={styles.filterTagsContainer}>
                     <GlobalText style={styles.appliedFiltersText}>
-                      Applied Filters:
+                      {t('applied_filters')}
                     </GlobalText>
                     <View style={styles.tagsWrapper}>
                       {Object.entries({

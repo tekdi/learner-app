@@ -68,6 +68,8 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
       eventName: 'content_played',
       method: 'button_click',
       screenName: 'Content-Player',
+      content_do_id: item?.identifier || item?.id,
+      course_id: course_id,
     };
 
     await logEventFunction(obj);
@@ -207,6 +209,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
         contentMimeType == 'video/webm' ||
         contentMimeType == 'audio/mp3' ||
         contentMimeType == 'audio/wav' ||
+        contentMimeType == 'audio/mpeg' ||
         contentMimeType == 'application/epub' ||
         contentMimeType == 'application/vnd.sunbird.questionset'
       ) {
@@ -340,7 +343,7 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
           )}
 
           <GlobalText
-            style={[globalStyles.text, { marginLeft: 10 }]}
+            style={[globalStyles.text, { marginLeft: 0 }]}
             numberOfLines={1}
             ellipsizeMode="tail"
           >
@@ -353,7 +356,8 @@ const ContentCard = ({ item, index, course_id, unit_id, TrackData }) => {
               : mimeType == 'vnd.ekstep.h5p-archive'
               ? `ECML`
               : mimeType == 'vnd.sunbird.questionset'
-              ? `QUML`
+              ? 'Assessment'
+              // ? `QUML`
               : capitalizeFirstLetter(mimeType)}
           </GlobalText>
         </View>

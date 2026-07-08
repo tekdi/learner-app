@@ -192,7 +192,7 @@ const SyncCard = ({ doneSync }) => {
             //telemetry offline data sync
             setIsSyncPending(true);
             setIsProgress(true);
-            setSyncCall('Telemetry');
+            setSyncCall('telemetry');
             let isError = false;
             // console.log(
             //   'result_sync_offline_telemetry',
@@ -229,10 +229,10 @@ const SyncCard = ({ doneSync }) => {
               //doneSync(); //call back function
             }
           }
-          if (result_sync_offline_tracking) {
+          /*if (result_sync_offline_tracking) {
             setIsSyncPending(true);
             setIsProgress(true);
-            setSyncCall('Tracking');
+            setSyncCall('tracking');
             //sync data to online
             let isError = false;
             // console.log(
@@ -273,7 +273,7 @@ const SyncCard = ({ doneSync }) => {
             if (!isError && doneSync) {
               //doneSync(); //call back function
             }
-          }
+          }*/
         } else {
           setIsSyncPending(false);
           setIsProgress(false);
@@ -330,7 +330,7 @@ const SyncCard = ({ doneSync }) => {
               <GlobalText style={[globalStyles.text, { marginLeft: 10 }]}>
                 {t('back_online_syncing')}
                 {'\n'}
-                {syncCall}
+                {t(syncCall)}
               </GlobalText>
               {isProgress && <ActivityIndicator size="small" />}
             </>

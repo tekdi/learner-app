@@ -34,6 +34,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import RNRestart from 'react-native-restart';
 
+//background sync service
+import { startGlobalSync, stopGlobalSync } from './services/syncService';
+import RNFS from 'react-native-fs';
+import { unzip } from 'react-native-zip-archive';
+import Config from 'react-native-config';
+
 const linking = {
   prefixes: ['pratham://'],
   config: {
@@ -537,6 +543,79 @@ const App = () => {
 
     return unsubscribe; // Cleanup listener on unmount
   }, []);
+
+  //background running useEffect
+  useEffect(() => {
+    // ✅ Start global sync when app loads
+    startGlobalSync();
+
+    return () => {
+      // 🧹 Cleanup on unmount
+      stopGlobalSync();
+    };
+  }, []);
+
+  //content player setup
+  const ZIP_ASSET_PATH = `libs/content-player-${Config.CONTENT_PLAYER_VERSION}.zip`;
+
+  const ZIP_LOCAL_PATH = `${RNFS.DocumentDirectoryPath}/content-player-${Config.CONTENT_PLAYER_VERSION}.zip`;
+  const EXTRACT_PATH = `${RNFS.DocumentDirectoryPath}/content-player-${Config.CONTENT_PLAYER_VERSION}`;
+
+  let serverInstance = null;
+
+  useEffect(() => {
+    const initialSetup=async()=>{
+      await initH5PPlayer();
+    }
+    initialSetup();
+  }, []);
+    async function initH5PPlayer() {
+    try {
+      console.log('🚀 Starting H5P setup...');
+  
+      // STEP 1: Copy ZIP from Android assets → RNFS
+      const zipExists = await RNFS.exists(ZIP_LOCAL_PATH);
+  
+      if (!zipExists) {
+        console.log('📦 Copying ZIP from assets...');
+  
+        await RNFS.copyFileAssets(
+          ZIP_ASSET_PATH,
+          ZIP_LOCAL_PATH
+        );
+  
+        console.log('✅ ZIP copied');
+      } else {
+        console.log('ℹ️ ZIP already exists');
+      }
+  
+      // STEP 2: Unzip if not already extracted
+      const extractedExists = await RNFS.exists(
+        `${EXTRACT_PATH}/index.html`
+      );
+  
+      if (!extractedExists) {
+        console.log('📂 Extracting ZIP...');
+  
+        await RNFS.mkdir(EXTRACT_PATH);
+  
+        const result = await unzip(
+          ZIP_LOCAL_PATH,
+          EXTRACT_PATH
+        );
+  
+        console.log('✅ Unzipped at:', result);
+      } else {
+        console.log('ℹ️ Already extracted');
+      }
+  
+      return {
+      };
+    } catch (error) {
+      console.error('❌ H5P Init Failed:', error);
+      throw error;
+    }
+  }
 
   return (
     <SafeAreaProvider>
