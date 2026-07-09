@@ -55,7 +55,8 @@ const SubjectCard = ({ item }) => {
 
   const handleOpenZoom = () => {
     if (item?.onlineDetails?.url) {
-      setShowZoomModal(true);
+      // setShowZoomModal(true);
+      Linking.openURL(item.onlineDetails.url);
     }
   };
 
