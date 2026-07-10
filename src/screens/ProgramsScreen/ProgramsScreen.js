@@ -340,6 +340,7 @@ const academicyear = await setAcademicYear({ tenantid: tenantId });
           <WebView
             ref={webViewRef}
             source={{ uri: url }}
+            originWhitelist={['*']}
             injectedJavaScriptBeforeContentLoaded={injectedJavaScriptBeforeContentLoaded}
             injectedJavaScript={injectedJavaScript}
             onLoad={() => {
