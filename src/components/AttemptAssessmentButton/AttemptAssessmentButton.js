@@ -97,7 +97,20 @@ const AttemptAssessmentButton = () => {
         contentId: identifier,
       });
 
-      if (Array.isArray(result) && result.length === 0) {
+      const registrationTestReattempt = Number(
+        uiConfig?.registrationTestReattempt ?? 0
+      );
+      console.log(
+        'AttemptAssessmentButton: registrationTestReattempt from uiConfig:',
+        registrationTestReattempt
+      );
+      const attemptsUsed = Array.isArray(result) ? result.length : 0;
+      console.log(
+        'AttemptAssessmentButton: remaining attempts:',
+        registrationTestReattempt - attemptsUsed
+      );
+
+      if (Array.isArray(result) && result.length < registrationTestReattempt) {
         await setDataInStorage('registerationTestQuestionSetIdentifier', identifier);
         setQuestionSetIdentifier(identifier);
         setQuestionSetMimeType(
