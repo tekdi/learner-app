@@ -50,7 +50,6 @@ const TARGETS = [
       { column: 'English',  code: 'en' },
       { column: 'Hindi',    code: 'hi' },
       { column: 'Marathi',  code: 'ma' },
-      { column: 'Bengali',  code: 'ba' },
       { column: 'Odiya',    code: 'odia' },
       { column: 'Telugu',   code: 'te' },
       { column: 'Kannada',  code: 'ka' },

@@ -30,7 +30,6 @@ const path = require('path');
 // least one character in the target language's Unicode range.
 const SCRIPT_RANGES = {
   devanagari: new RegExp('[\\u0900-\\u097F]'), // Hindi, Marathi
-  bengali:    new RegExp('[\\u0980-\\u09FF]'),
   gujarati:   new RegExp('[\\u0A80-\\u0AFF]'),
   odia:       new RegExp('[\\u0B00-\\u0B7F]'),
   tamil:      new RegExp('[\\u0B80-\\u0BFF]'),
@@ -61,7 +60,6 @@ const TARGETS = [
       { column: 'English',  code: 'en',   script: null },
       { column: 'Hindi',    code: 'hi',   script: 'devanagari' },
       { column: 'Marathi',  code: 'ma',   script: 'devanagari' },
-      { column: 'Bengali',  code: 'ba',   script: 'bengali' },
       { column: 'Odiya',    code: 'odia', script: 'odia' },
       { column: 'Telugu',   code: 'te',   script: 'telugu' },
       { column: 'Kannada',  code: 'ka',   script: 'kannada' },
