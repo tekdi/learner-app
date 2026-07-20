@@ -16,9 +16,8 @@ block at the top.
 > **This copy is configured for the `learner-app` repo.** Its locale files live in
 > [src/context/locales/](../src/context/locales/), are **flat** (no `Module`/`Submodule`
 > nesting — just a single `Key` column), and use this repo's own filename codes
-> (`ma`, `odia`, `te`, `ka`, `ta`, `gu`, plus `ba` for Bengali). `REPO_ROOT` is derived
-> from the script's own location, so no absolute paths need editing. See §9 for the full
-> code table.
+> (`ma`, `odia`, `te`, `ka`, `ta`, `gu`). `REPO_ROOT` is derived from the script's own
+> location, so no absolute paths need editing. See §9 for the full code table.
 
 ---
 
@@ -402,7 +401,6 @@ Codes differ per repo — always match what the target repo actually uses. This 
 | English | `en` | — (master) |
 | Hindi | `hi` | Devanagari `U+0900–097F` |
 | Marathi | `ma` | Devanagari `U+0900–097F` |
-| Bengali | `ba` | Bengali `U+0980–09FF` |
 | Odiya | `odia` | Odia `U+0B00–0B7F` |
 | Telugu | `te` | Telugu `U+0C00–0C7F` |
 | Kannada | `ka` | Kannada `U+0C80–0CFF` |

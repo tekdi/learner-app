@@ -37,7 +37,7 @@ const TARGETS = [
   {
     appName: 'learner_app',
     // The client's RETURNED sheet. Drop the filled CSV here (or point at it).
-    csvPath: path.join(REPO_ROOT, 'translation', 'learner_app.csv'),
+    csvPath: path.join(REPO_ROOT, 'translation', 'Pratham_ Translations - Learner Android (1).csv'),
     localesDir: path.join(REPO_ROOT, 'src/context/locales'),
     layout: 'file',                         // 'file' => <localesDir>/<code>.json
     // Locale files in this repo are FLAT (no nesting), so there is only a `Key`
@@ -50,7 +50,6 @@ const TARGETS = [
       { column: 'English',  code: 'en' },
       { column: 'Hindi',    code: 'hi' },
       { column: 'Marathi',  code: 'ma' },
-      { column: 'Bengali',  code: 'ba' },
       { column: 'Odiya',    code: 'odia' },
       { column: 'Telugu',   code: 'te' },
       { column: 'Kannada',  code: 'ka' },
