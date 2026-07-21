@@ -349,7 +349,7 @@
   "name_of_guardian": "ଅଭିଭାବକଙ୍କ ନାମ",
   "relation_with_guardian": "ଅଭିଭାବକଙ୍କ ସହ ସମ୍ପର୍କ",
   "what_is_your_preferred_mode_of_learning": "ଆପଣଙ୍କ ପସନ୍ଦଯୋଗ୍ୟ ଶିକ୍ଷଣ ମୋଡ୍ କ’ଣ?",
-  "what_is_your_preferred_language": "What is your preferred language?",
+  "what_is_your_preferred_language": "ଆପଣଙ୍କ ପସନ୍ଦର ଭାଷା କ’ଣ?",
   "reason_for_drop_out_from_school": "ବିଦ୍ୟାଳୟରୁ ଛାଡ଼ିବାର କାରଣ",
   "are_you_currently_working_if_yes_choose_the_domain": "ଆପଣ ବର୍ତ୍ତମାନ କାମ କରୁଛନ୍ତି କି, ଯଦି ହଁ, ଡୋମେନ ଚୟନ କରନ୍ତୁ",
   "what_do_you_want_to_become": "ଆପଣ କ’ଣ ହେବାକୁ ଚାହୁଁଛନ୍ତି?",
@@ -429,7 +429,7 @@
   "Unemployed_housewife_domestic_work": "ବେକାର, ଗୃହିଣୀ କିମ୍ବା ଘରୋଇ କାମ",
   "DROP_OUT_REASON": "ସ୍କୁଲ ଛାଡିବାର କାରଣ",
   "self_employment_own_business_shop": "ଆତ୍ମନିଯୁକ୍ତି, ନିଜସ୍ୱ ବ୍ୟବସାୟ କିମ୍ବା ଦୋକାନ",
-  "student": "bidyarthi",
+  "student": "ଛାତ୍ର",
   "grade_1": "ଗ୍ରେଡ୍ 1",
   "grade_2": "ଗ୍ରେଡ୍ 2",
   "grade_3": "ଗ୍ରେଡ୍ 3",
@@ -622,7 +622,7 @@
   "december": "ଡିସେମ୍ବର",
   "Select_Language_For_Learning": "ଆପଣ ଯେଉଁ ଭାଷାରେ ଶିଖିବାକୁ ଚାହୁଁଛନ୍ତି, ସେହି ଭାଷାକୁ ଚୟନ କରନ୍ତୁ।",
   "Learning_Language_Info": "ବିଷୟବସ୍ତୁ, କୋର୍ସ ଏବଂ ମୂଲ୍ୟାୟନଗୁଡ଼ିକ ଆପଣ ଚୟନ କରିଥିବା ଭାଷାରେ ଦେଖାଯିବ। ଆପଣ ଏହି ଭାଷାକୁ ଯେକୌଣସି ସମୟରେ ପ୍ରୋଫାଇଲ ବିଭାଗରୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ",
-  "attempt_assessment": "Attempt Assessment",
-  "come_back_later": "Come Back Later",
-  "assessment_unavailable_message": "No pending assessment available at this time."
+  "attempt_assessment": "ମୂଲ୍ୟାଙ୍କନ ଆରମ୍ଭ କରନ୍ତୁ",
+  "come_back_later": "ପରେ ଫେରନ୍ତୁ",
+  "assessment_unavailable_message": "ଏହି ସମୟରେ କୌଣସି ବିଚାରାଧୀନ ମୂଲ୍ୟାଙ୍କନ ଉପଲବ୍ଧ ନାହିଁ।"
 }
