@@ -26,6 +26,20 @@ import ZoomWebView from '../../../../components/ZoomWebView/ZoomWebView';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 
+// Appends the learner's name as the Zoom `uname` query param so the
+// external browser / native Zoom app can prefill the display name on join.
+// const buildZoomUriWithUsername = (baseUri, userName) => {
+//   if (!userName) return baseUri;
+//   try {
+//     const url = new URL(baseUri);
+//     url.searchParams.set('uname', userName);
+//     return url.toString();
+//   } catch {
+//     const sep = baseUri.includes('?') ? '&' : '?';
+//     return `${baseUri}${sep}uname=${encodeURIComponent(userName)}`;
+//   }
+// };
+
 const SubjectCard = ({ item }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -55,7 +69,9 @@ const SubjectCard = ({ item }) => {
 
   const handleOpenZoom = () => {
     if (item?.onlineDetails?.url) {
-      setShowZoomModal(true);
+      // setShowZoomModal(true);
+      // Linking.openURL(buildZoomUriWithUsername(item.onlineDetails.url, userName));
+      Linking.openURL(item.onlineDetails.url);
     }
   };
 
