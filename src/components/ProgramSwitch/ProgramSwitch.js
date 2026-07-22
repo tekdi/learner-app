@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import GlobalText from '@components/GlobalText/GlobalText';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useFocusEffect, CommonActions } from '@react-navigation/native';
+import { useTranslation } from '../../context/LanguageContext';
 
 import {
   getCohort,
@@ -43,6 +44,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
   const [enrolledPrograms, setEnrolledPrograms] = useState([]);
   const [tenantData, setTenantData] = useState([]);
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (userId) {
@@ -118,7 +120,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       }
     } catch (error) {
       console.error('Error fetching user details:', error);
-      Alert.alert('Error', 'Failed to fetch user details. Please try again.');
+      Alert.alert(t('error'), t('failed_to_fetch_user_details_please_try_again'));
 
       // Call error callback if provided
       if (onError) {
@@ -140,16 +142,16 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       const user_id = await getDataFromStorage('userId');
       
       if (!user_id) {
-        Alert.alert('Error', 'User ID not found. Please login again.');
+        Alert.alert(t('error'), t('user_id_not_found_please_login_again'));
         setLoading(false);
         return;
       }
 
       // Get user details from storage
       const userDetails = await getuserDetails();
-      
+
       if (!userDetails || !userDetails.tenantData) {
-        Alert.alert('Error', 'User details not found. Please login again.');
+        Alert.alert(t('error'), t('user_details_not_found_please_login_again'));
         setLoading(false);
         return;
       }
@@ -163,7 +165,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       console.log('#### loginmultirole selectedTenantData', selectedTenantData);
 
       if (!selectedTenantData[0]) {
-        Alert.alert('Error', 'Program data not found. Please try again.');
+        Alert.alert(t('error'), t('program_data_not_found_please_try_again'));
         setLoading(false);
         return;
       }
@@ -349,11 +351,11 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       }
       
       Alert.alert(
-        'Error', 
-        `Failed to switch program: ${error.message || 'Please try again.'}`,
+        t('error'),
+        `${t('failed_to_switch_program')} ${error.message || t('try_again')}`,
         [
           {
-            text: 'OK',
+            text: t('OK'),
             onPress: () => {
               if (onError && typeof onError === 'function') {
                 onError(error);
@@ -524,9 +526,9 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       await setDataInStorage('userType', tenant.tenantName);
       
       console.log('Switched to program:', tenant.tenantName);
-      Alert.alert('Success', `Switched to ${tenant.tenantName}`, [
+      Alert.alert(t('success'), `${t('switched_to')} ${tenant.tenantName}`, [
         {
-          text: 'OK',
+          text: t('OK'),
           onPress: () => {
             if (onSuccess) {
               onSuccess(tenant);
@@ -536,7 +538,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       ]);
     } catch (error) {
       console.error('Error switching program:', error);
-      Alert.alert('Error', 'Failed to switch program. Please try again.');
+      Alert.alert(t('error'), t('failed_to_switch_program_please_try_again'));
     }
   };
 
@@ -554,10 +556,10 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
     await logEventFunction(obj);
   };
   const handleLogout = () => {
-    Alert.alert('Logout', 'Are you sure you want to logout?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('logout'), t('are_you_sure_you_want_to_logout_the_app'), [
+      { text: t('cancel'), style: 'cancel' },
       {
-        text: 'Logout',
+        text: t('logout'),
         style: 'destructive',
         onPress: async() => {
           const fetchData = async () => {
@@ -611,7 +613,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#F6931E" />
-          <GlobalText style={styles.loadingText}>Loading programs...</GlobalText>
+          <GlobalText style={styles.loadingText}>{t('loading_programs')}</GlobalText>
         </View>
       ) : (
         <ScrollView 
@@ -621,14 +623,14 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           {/* Current Program Header */}
           <View style={styles.headerContainer}>
             <GlobalText style={styles.currentProgramTitle}>
-              {currentUserType ==="scp" ? "Second Chance Program" : currentUserType ==="youthnet" ? "Vocational Traning" : currentUserType }
+              {currentUserType === 'scp' ? t('second_chance_program') : currentUserType === 'youthnet' ? t('vocational_training') : currentUserType}
             </GlobalText>
           </View>
 
           {/* Other Programs Section */}
           <View style={styles.sectionContainer}>
             <GlobalText style={styles.sectionTitle}>
-              Other programs you are enrolled in
+              {t('other_programs_you_are_enrolled_in')}
             </GlobalText>
 
             {enrolledPrograms.length > 0 ? (
@@ -650,7 +652,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
               ))
             ) : (
               <GlobalText style={styles.emptyText}>
-                No other programs available
+                {t('no_other_programs_available')}
               </GlobalText>
             )}
           </View>
@@ -659,7 +661,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={onClose}>
               <Ionicons name="home-outline" size={20} color="#000" />
-              <GlobalText style={styles.buttonText}>Home</GlobalText>
+              <GlobalText style={styles.buttonText}>{t('home')}</GlobalText>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -667,7 +669,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
               onPress={handleShowAllPrograms}
             >
               <GlobalText style={styles.buttonText}>
-                Show All Programs
+                {t('show_all_programs')}
               </GlobalText>
             </TouchableOpacity>
 
@@ -676,7 +678,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
               onPress={handleLogout}
             >
               <GlobalText style={[styles.buttonText, styles.logoutText]}>
-                Logout
+                {t('logout')}
               </GlobalText>
               <Ionicons name="log-out-outline" size={20} color="#F6931E" />
             </TouchableOpacity>
