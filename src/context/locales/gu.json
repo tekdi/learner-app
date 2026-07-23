@@ -624,5 +624,17 @@
   "Learning_Language_Info": "સામગ્રી, કોર્સ અને મૂલ્યાંકન તમારી પસંદ કરેલી ભાષામાં બતાવવામાં આવશે. તમે આ ભાષાને કોઈપણ સમયે પ્રોફાઇલ વિભાગમાંથી બદલી શકો છો.",
   "attempt_assessment": "મૂલ્યાંકન શરૂ કરો",
   "come_back_later": "પછીથી પાછા આવો",
-  "assessment_unavailable_message": "આ સમયે કોઈ બાકી મૂલ્યાંકન ઉપલબ્ધ નથી."
+  "assessment_unavailable_message": "આ સમયે કોઈ બાકી મૂલ્યાંકન ઉપલબ્ધ નથી.",
+  "vocational_training": "વોકેશનલ ટ્રેનિંગ",
+  "loading_programs": "કાર્યક્રમો લોડ થઈ રહ્યા છે...",
+  "other_programs_you_are_enrolled_in": "તમે નોંધાયેલા અન્ય કાર્યક્રમો",
+  "no_other_programs_available": "અન્ય કોઈ કાર્યક્રમ ઉપલબ્ધ નથી",
+  "failed_to_fetch_user_details_please_try_again": "વપરાશકર્તાની વિગતો મેળવવામાં નિષ્ફળ. કૃપા કરીને ફરી પ્રયાસ કરો.",
+  "user_id_not_found_please_login_again": "વપરાશકર્તા ID મળ્યું નથી. કૃપા કરીને ફરી લૉગિન કરો.",
+  "user_details_not_found_please_login_again": "વપરાશકર્તાની વિગતો મળી નથી. કૃપા કરીને ફરી લૉગિન કરો.",
+  "program_data_not_found_please_try_again": "કાર્યક્રમનો ડેટા મળ્યો નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+  "failed_to_switch_program": "કાર્યક્રમ બદલવામાં નિષ્ફળ:",
+  "switched_to": "પર બદલાયું",
+  "failed_to_switch_program_please_try_again": "કાર્યક્રમ બદલવામાં નિષ્ફળ. કૃપા કરીને ફરી પ્રયાસ કરો.",
+  "show_all_programs": "બધા કાર્યક્રમો બતાવો"
 }

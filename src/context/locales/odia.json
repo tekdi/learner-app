@@ -530,7 +530,7 @@
   "success": "ସଫଳତା",
   "error": "ତ୍ରୁଟି",
   "warning": "ଚେତାବନୀ",
-  "###DOWNLOAD###": "###ଡାଉନଲୋଡ୍###",
+  "###DOWNLOAD###": "###DOWNLOAD###",
   "download": "ଡାଉନଲୋଡ୍ କରନ୍ତୁ",
   "downloading": "ଡାଉନଲୋଡ୍ ହେଉଛି",
   "download_complete": "ଡାଉନଲୋଡ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି",
@@ -624,5 +624,17 @@
   "Learning_Language_Info": "ବିଷୟବସ୍ତୁ, କୋର୍ସ ଏବଂ ମୂଲ୍ୟାୟନଗୁଡ଼ିକ ଆପଣ ଚୟନ କରିଥିବା ଭାଷାରେ ଦେଖାଯିବ। ଆପଣ ଏହି ଭାଷାକୁ ଯେକୌଣସି ସମୟରେ ପ୍ରୋଫାଇଲ ବିଭାଗରୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ",
   "attempt_assessment": "ମୂଲ୍ୟାଙ୍କନ ଆରମ୍ଭ କରନ୍ତୁ",
   "come_back_later": "ପରେ ଫେରନ୍ତୁ",
-  "assessment_unavailable_message": "ଏହି ସମୟରେ କୌଣସି ବିଚାରାଧୀନ ମୂଲ୍ୟାଙ୍କନ ଉପଲବ୍ଧ ନାହିଁ।"
+  "assessment_unavailable_message": "ଏହି ସମୟରେ କୌଣସି ବିଚାରାଧୀନ ମୂଲ୍ୟାଙ୍କନ ଉପଲବ୍ଧ ନାହିଁ।",
+  "vocational_training": "ଭୋକେସନାଲ ଟ୍ରେନିଂ",
+  "loading_programs": "କାର୍ଯ୍ୟକ୍ରମ ଲୋଡ୍ ହେଉଛି...",
+  "other_programs_you_are_enrolled_in": "ଅନ୍ୟ କାର୍ଯ୍ୟକ୍ରମ ଯେଉଁଥିରେ ଆପଣ ନାମ ଲେଖାଇଛନ୍ତି",
+  "no_other_programs_available": "ଅନ୍ୟ କୌଣସି କାର୍ଯ୍ୟକ୍ରମ ଉପଲବ୍ଧ ନାହିଁ",
+  "failed_to_fetch_user_details_please_try_again": "ଉପଯୋଗକର୍ତ୍ତା ବିବରଣୀ ଆଣିବାରେ ବିଫଳ। ଦୟାକରି ପୁନଃ ଚେଷ୍ଟା କରନ୍ତୁ।",
+  "user_id_not_found_please_login_again": "ଉପଯୋଗକର୍ତ୍ତା ଆଇଡି ମିଳିଲା ନାହିଁ। ଦୟାକରି ପୁନଃ ଲଗ୍ଇନ୍ କରନ୍ତୁ।",
+  "user_details_not_found_please_login_again": "ଉପଯୋଗକର୍ତ୍ତା ବିବରଣୀ ମିଳିଲା ନାହିଁ। ଦୟାକରି ପୁନଃ ଲଗ୍ଇନ୍ କରନ୍ତୁ।",
+  "program_data_not_found_please_try_again": "କାର୍ଯ୍ୟକ୍ରମ ତଥ୍ୟ ମିଳିଲା ନାହିଁ। ଦୟାକରି ପୁନଃ ଚେଷ୍ଟା କରନ୍ତୁ।",
+  "failed_to_switch_program": "କାର୍ଯ୍ୟକ୍ରମ ବଦଳାଇବାରେ ବିଫଳ:",
+  "switched_to": "ବଦଳାଇ ଦିଆଗଲା",
+  "failed_to_switch_program_please_try_again": "କାର୍ଯ୍ୟକ୍ରମ ବଦଳାଇବାରେ ବିଫଳ। ଦୟାକରି ପୁନଃ ଚେଷ୍ଟା କରନ୍ତୁ।",
+  "show_all_programs": "ସମସ୍ତ କାର୍ଯ୍ୟକ୍ରମ ଦେଖାନ୍ତୁ"
 }

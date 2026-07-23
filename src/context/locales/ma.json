@@ -624,5 +624,17 @@
   "Learning_Language_Info": "सामग्री, अभ्यासक्रम आणि मूल्यांकन तुम्ही निवडलेल्या भाषेत दाखवले जातील. तुम्ही ही भाषा कधीही प्रोफाइल विभागातून बदलू शकता.",
   "attempt_assessment": "मूल्यांकन सुरू करा",
   "come_back_later": "नंतर परत या",
-  "assessment_unavailable_message": "या वेळी कोणतेही प्रलंबित मूल्यांकन उपलब्ध नाही."
+  "assessment_unavailable_message": "या वेळी कोणतेही प्रलंबित मूल्यांकन उपलब्ध नाही.",
+  "vocational_training": "व्होकेशनल ट्रेनिंग",
+  "loading_programs": "कार्यक्रम लोड होत आहेत...",
+  "other_programs_you_are_enrolled_in": "तुम्ही नोंदणी केलेले इतर कार्यक्रम",
+  "no_other_programs_available": "इतर कोणतेही कार्यक्रम उपलब्ध नाहीत",
+  "failed_to_fetch_user_details_please_try_again": "वापरकर्ता तपशील मिळवण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+  "user_id_not_found_please_login_again": "वापरकर्ता आयडी सापडला नाही. कृपया पुन्हा लॉगिन करा.",
+  "user_details_not_found_please_login_again": "वापरकर्ता तपशील सापडला नाही. कृपया पुन्हा लॉगिन करा.",
+  "program_data_not_found_please_try_again": "कार्यक्रम डेटा सापडला नाही. कृपया पुन्हा प्रयत्न करा.",
+  "failed_to_switch_program": "कार्यक्रम बदलण्यात अयशस्वी:",
+  "switched_to": "यावर बदलले",
+  "failed_to_switch_program_please_try_again": "कार्यक्रम बदलण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+  "show_all_programs": "सर्व कार्यक्रम दाखवा"
 }

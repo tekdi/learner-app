@@ -530,7 +530,7 @@
   "success": "வெற்றி",
   "error": "பிழை",
   "warning": "எச்சரிக்கை",
-  "###DOWNLOAD###": "###பதிவிறக்கு###",
+  "###DOWNLOAD###": "###DOWNLOAD###",
   "download": "பதிவிறக்கு",
   "downloading": "பதிவிறக்கப்படுகிறது",
   "download_complete": "பதிவிறக்கம் முடிந்தது",
@@ -624,5 +624,17 @@
   "Learning_Language_Info": "உள்ளடக்கம், பாடநெறிகள் மற்றும் மதிப்பீடுகள் நீங்கள் தேர்ந்தெடுத்த மொழியில் காட்டப்படும். இந்த மொழியை எப்போது வேண்டுமானாலும் சுயவிவரப் பகுதியில் மாற்றலாம்.",
   "attempt_assessment": "மதிப்பீட்டைத் தொடங்கு",
   "come_back_later": "பிறகு வாருங்கள்",
-  "assessment_unavailable_message": "இந்த நேரத்தில் நிலுவையில் உள்ள மதிப்பீடு எதுவும் இல்லை."
+  "assessment_unavailable_message": "இந்த நேரத்தில் நிலுவையில் உள்ள மதிப்பீடு எதுவும் இல்லை.",
+  "vocational_training": "வொகேஷனல் டிரெய்னிங்",
+  "loading_programs": "திட்டங்கள் ஏற்றப்படுகின்றன...",
+  "other_programs_you_are_enrolled_in": "நீங்கள் சேர்ந்துள்ள மற்ற திட்டங்கள்",
+  "no_other_programs_available": "வேறு திட்டங்கள் எதுவும் இல்லை",
+  "failed_to_fetch_user_details_please_try_again": "பயனர் விவரங்களைப் பெற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+  "user_id_not_found_please_login_again": "பயனர் ID கண்டறியப்படவில்லை. மீண்டும் லாகின் செய்யவும்.",
+  "user_details_not_found_please_login_again": "பயனர் விவரங்கள் கிடைக்கவில்லை. மீண்டும் லாகின் செய்யவும்.",
+  "program_data_not_found_please_try_again": "திட்டத் தரவு கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.",
+  "failed_to_switch_program": "திட்டத்தை மாற்ற முடியவில்லை:",
+  "switched_to": "மாற்றப்பட்டது",
+  "failed_to_switch_program_please_try_again": "திட்டத்தை மாற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+  "show_all_programs": "அனைத்து திட்டங்களையும் காட்டு"
 }

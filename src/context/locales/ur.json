@@ -530,7 +530,7 @@
   "success": "کامیابی",
   "error": "خرابی",
   "warning": "وارننگ",
-  "###DOWNLOAD###": "###ڈاؤن لوڈ###",
+  "###DOWNLOAD###": "###DOWNLOAD###",
   "download": "ڈاؤن لوڈ کریں۔",
   "downloading": "ڈاؤن لوڈ ہو رہا ہے۔",
   "download_complete": "ڈاؤن لوڈ مکمل ہوچکا ہے",
@@ -624,5 +624,17 @@
   "Learning_Language_Info": "مواد، کورسز، اور اسیسمنٹس آپ کی منتخب کردہ زبان میں دکھائے جائیں گے۔ آپ اس زبان کو کسی بھی وقت پروفائل سیکشن سے تبدیل کر سکتے ہیں۔",
   "attempt_assessment": "تشخیص شروع کریں",
   "come_back_later": "بعد میں واپس آئیں",
-  "assessment_unavailable_message": "اس وقت کوئی زیر التوا تشخیص دستیاب نہیں ہے۔"
+  "assessment_unavailable_message": "اس وقت کوئی زیر التوا تشخیص دستیاب نہیں ہے۔",
+  "vocational_training": "ووکیشنل ٹریننگ",
+  "loading_programs": "پروگرام لوڈ ہو رہے ہیں...",
+  "other_programs_you_are_enrolled_in": "دیگر پروگرام جن میں آپ نے اندراج کیا ہے",
+  "no_other_programs_available": "کوئی دوسرا پروگرام دستیاب نہیں ہے",
+  "failed_to_fetch_user_details_please_try_again": "صارف کی تفصیلات حاصل کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+  "user_id_not_found_please_login_again": "صارف ID نہیں ملا۔ براہ کرم دوبارہ لاگ ان کریں۔",
+  "user_details_not_found_please_login_again": "صارف کی تفصیلات نہیں ملیں۔ براہ کرم دوبارہ لاگ ان کریں۔",
+  "program_data_not_found_please_try_again": "پروگرام کا ڈیٹا نہیں ملا۔ براہ کرم دوبارہ کوشش کریں۔",
+  "failed_to_switch_program": "پروگرام تبدیل کرنے میں ناکامی:",
+  "switched_to": "میں تبدیل کر دیا گیا",
+  "failed_to_switch_program_please_try_again": "پروگرام تبدیل کرنے میں ناکامی۔ براہ کرم دوبارہ کوشش کریں۔",
+  "show_all_programs": "تمام پروگرام دکھائیں"
 }
