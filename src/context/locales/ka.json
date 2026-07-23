@@ -530,7 +530,7 @@
   "success": "ಯಶಸ್ಸು",
   "error": "ದೋಷ",
   "warning": "ಎಚ್ಚರಿಕೆ",
-  "###DOWNLOAD###": "###ಡೌನ್‌ಲೋಡ್###",
+  "###DOWNLOAD###": "###DOWNLOAD###",
   "download": "ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ",
   "downloading": "ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ",
   "download_complete": "ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ",
@@ -624,5 +624,17 @@
   "Learning_Language_Info": "ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಭಾಷೆಯಲ್ಲಿ ವಿಷಯಗಳು, ಕೋರ್ಸ್‌ಗಳು ಮತ್ತು ಮೌಲ್ಯಮಾಪನಗಳು  ತೋರಿಸಲಾಗುತ್ತದೆ.ಈ ಭಾಷೆಯನ್ನು ನೀವು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಪ್ರೊಫೈಲ್  ವಿಭಾಗದಿಂದ ಬದಲಾಯಿಸಬಹುದು.",
   "attempt_assessment": "ಮೌಲ್ಯಮಾಪನ ಪ್ರಾರಂಭಿಸಿ",
   "come_back_later": "ನಂತರ ಹಿಂತಿರುಗಿ",
-  "assessment_unavailable_message": "ಈ ಸಮಯದಲ್ಲಿ ಯಾವುದೇ ಬಾಕಿ ಮೌಲ್ಯಮಾಪನ ಲಭ್ಯವಿಲ್ಲ."
+  "assessment_unavailable_message": "ಈ ಸಮಯದಲ್ಲಿ ಯಾವುದೇ ಬಾಕಿ ಮೌಲ್ಯಮಾಪನ ಲಭ್ಯವಿಲ್ಲ.",
+  "vocational_training": "ವೊಕೇಶನಲ್ ಟ್ರೈನಿಂಗ್",
+  "loading_programs": "ಕಾರ್ಯಕ್ರಮಗಳು ಲೋಡ್ ಆಗುತ್ತಿವೆ...",
+  "other_programs_you_are_enrolled_in": "ನೀವು ದಾಖಲಾಗಿರುವ ಇತರ ಕಾರ್ಯಕ್ರಮಗಳು",
+  "no_other_programs_available": "ಬೇರೆ ಯಾವುದೇ ಕಾರ್ಯಕ್ರಮಗಳು ಲಭ್ಯವಿಲ್ಲ",
+  "failed_to_fetch_user_details_please_try_again": "ಯೂಸರ್ ವಿವರಗಳನ್ನು ಪಡೆಯಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+  "user_id_not_found_please_login_again": "ಯೂಸರ್ ID ಕಂಡುಬಂದಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಲಾಗಿನ್ ಮಾಡಿ.",
+  "user_details_not_found_please_login_again": "ಯೂಸರ್ ವಿವರಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಲಾಗಿನ್ ಮಾಡಿ.",
+  "program_data_not_found_please_try_again": "ಕಾರ್ಯಕ್ರಮದ ಡೇಟಾ ಕಂಡುಬಂದಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+  "failed_to_switch_program": "ಕಾರ್ಯಕ್ರಮ ಬದಲಾಯಿಸಲು ವಿಫಲವಾಗಿದೆ:",
+  "switched_to": "ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ",
+  "failed_to_switch_program_please_try_again": "ಕಾರ್ಯಕ್ರಮ ಬದಲಾಯಿಸಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+  "show_all_programs": "ಎಲ್ಲಾ ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ತೋರಿಸಿ"
 }

@@ -624,5 +624,17 @@
   "Learning_Language_Info": "आपकी चुनी गई भाषा में कंटेंट, कोर्स और टेस्ट दिखाए जाएंगे। आप इस भाषा को कभी भी प्रोफ़ाइल सेक्शन से बदल सकते हैं",
   "attempt_assessment": "मूल्यांकन शुरू करें",
   "come_back_later": "बाद में वापस आएं",
-  "assessment_unavailable_message": "इस समय कोई लंबित मूल्यांकन उपलब्ध नहीं है।"
+  "assessment_unavailable_message": "इस समय कोई लंबित मूल्यांकन उपलब्ध नहीं है।",
+  "vocational_training": "वोकेशनल ट्रेनिंग",
+  "loading_programs": "कार्यक्रम लोड हो रहे हैं...",
+  "other_programs_you_are_enrolled_in": "अन्य कार्यक्रम जिनमें आपने नामांकन किया है",
+  "no_other_programs_available": "कोई अन्य कार्यक्रम उपलब्ध नहीं है",
+  "failed_to_fetch_user_details_please_try_again": "उपयोगकर्ता विवरण प्राप्त करने में विफल। कृपया पुनः प्रयास करें।",
+  "user_id_not_found_please_login_again": "उपयोगकर्ता आईडी नहीं मिली। कृपया पुनः लॉगिन करें।",
+  "user_details_not_found_please_login_again": "उपयोगकर्ता विवरण नहीं मिला। कृपया पुनः लॉगिन करें।",
+  "program_data_not_found_please_try_again": "कार्यक्रम डेटा नहीं मिला। कृपया पुनः प्रयास करें।",
+  "failed_to_switch_program": "कार्यक्रम बदलने में विफल:",
+  "switched_to": "बदलकर किया गया",
+  "failed_to_switch_program_please_try_again": "कार्यक्रम बदलने में विफल। कृपया पुनः प्रयास करें।",
+  "show_all_programs": "सभी कार्यक्रम दिखाएँ"
 }
