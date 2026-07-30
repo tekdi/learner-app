@@ -213,7 +213,12 @@ const academicyear = await setAcademicYear({ tenantid: tenantId });
     ?.map((item) => item?.tenantId);
 
   const scp = tenantDetails
-    ?.filter((item) => item.name === 'Second Chance Program')
+    ?.filter((item) =>
+      [
+        TENANT_DATA.SECOND_CHANCE_PROGRAM,
+        TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS,
+      ].includes(item.name)
+    )
     ?.map((item) => item.tenantId);
 
  // const role = roleName;
@@ -221,7 +226,7 @@ const academicyear = await setAcademicYear({ tenantid: tenantId });
   {
     // console.log('#### loginmultirole role', role);
 
-    if (tenantId === scp?.[0]) {
+    if (scp?.includes(tenantId)) {
       console.log('####loginintoscp', scp);
       await setDataInStorage('userType', 'scp');
       navigation.navigate('SCPUserTabScreen');
