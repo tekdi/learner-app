@@ -225,7 +225,12 @@ const RegistrationForm = ({ fields }) => {
       ?.map((item) => item?.tenantId);
 
     const scp = programData
-      ?.filter((item) => item.name === 'Second Chance Program')
+      ?.filter((item) =>
+        [
+          TENANT_DATA.SECOND_CHANCE_PROGRAM,
+          TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS,
+        ].includes(item.name)
+      )
       ?.map((item) => item.tenantId);
 
     const role = roleName;
@@ -233,7 +238,7 @@ const RegistrationForm = ({ fields }) => {
     console.log('#### loginmultirole tenantid', tenantid);
 
     if (role == 'Learner' || role == 'Student') {
-      if (tenantid === scp?.[0]) {
+      if (scp?.includes(tenantid)) {
         await setDataInStorage('userType', 'scp');
         if (cohort_id) {
           navigation.navigate('SCPUserTabScreen');

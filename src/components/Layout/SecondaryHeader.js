@@ -19,6 +19,7 @@ import Logo from '../../assets/images/png/logo.png';
 import PropTypes from 'prop-types';
 import GlobalText from '@components/GlobalText/GlobalText';
 import ProgramSwitch from '../ProgramSwitch/ProgramSwitch';
+import { TENANT_DATA } from '../../utils/Constants/app-constants';
 
 const SecondaryHeader = ({ logo }) => {
   const navigation = useNavigation();
@@ -26,6 +27,7 @@ const SecondaryHeader = ({ logo }) => {
   const [selectedIndex, setSelectedIndex] = useState();
   const [value, setValue] = useState();
   const [userType, setUserType] = useState('');
+  const [programName, setProgramName] = useState('');
   const [userId, setUserId] = useState('');
   const [showProgramSwitch, setShowProgramSwitch] = useState(false);
 
@@ -57,12 +59,36 @@ const SecondaryHeader = ({ logo }) => {
     try {
       const storedUserType = await getDataFromStorage('userType');
       const storedUserId = await getDataFromStorage('userId');
+      const storedTenantData = JSON.parse(
+        (await getDataFromStorage('tenantData')) || '[]'
+      );
       setUserType(storedUserType || '');
       setUserId(storedUserId || '');
+      setProgramName(storedTenantData?.[0]?.tenantName || '');
     } catch (error) {
       console.error('Error fetching userType or userId:', error);
     }
   };
+
+  const normalizeName = (name) => (name || '').trim().toLowerCase();
+  const normalizedProgramName = normalizeName(programName);
+
+  let displayProgramLabel;
+  if (normalizedProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM)) {
+    displayProgramLabel = t('second_chance_program');
+  } else if (normalizedProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS)) {
+    displayProgramLabel = t('second_chance_program_pathways');
+  } else if (normalizedProgramName === normalizeName(TENANT_DATA.YOUTHNET)) {
+    displayProgramLabel = t('vocational_training');
+  } else if (programName) {
+    displayProgramLabel = programName;
+  } else if (userType === 'scp') {
+    displayProgramLabel = t('second_chance_program');
+  } else if (userType === 'youthnet') {
+    displayProgramLabel = t('vocational_training');
+  } else {
+    displayProgramLabel = userType;
+  }
 
   const onSelect = (index) => {
     //setSelectedIndex(index);
@@ -112,7 +138,7 @@ const SecondaryHeader = ({ logo }) => {
                 onPress={handleProgramSwitchToggle}
               >
                 <GlobalText style={styles.userTypeText} numberOfLines={1}>
-                  {userType === "scp" ? "Second Chance Program" : userType === "youthnet" ? "Vocational Training" : userType}
+                  {displayProgramLabel}
                 </GlobalText>
                 <Ionicons
                   name="chevron-down"
