@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BackHandler, PermissionsAndroid } from 'react-native';
-import { getAccessToken } from '../API/AuthService';
+import { getAccessToken, getStudentForm } from '../API/AuthService';
 import analytics from '@react-native-firebase/analytics';
 import RNFS from 'react-native-fs';
 import messaging from '@react-native-firebase/messaging';
@@ -601,6 +601,144 @@ export const createNewObjectTarget = (customFields, labels, profileView) => {
   });
 
   return result;
+};
+
+// Merges the base ("common") student form with the current program's form,
+// mirroring what ProfileUpdateScreen has always done, so Edit Profile and the
+// Complete Profile banner always agree on what "all fields for this program" means.
+export const getMergedProfileSchema = async (tenantId) => {
+  const base = await getStudentForm();
+  const program = await getStudentForm(tenantId);
+  const baseFields = base?.fields || [];
+  const programFields = program?.fields || [];
+
+  await setDataInStorage('studentForm', JSON.stringify(baseFields));
+  await setDataInStorage('studentProgramForm', JSON.stringify(programFields));
+
+  return [...baseFields, ...programFields].filter(
+    (field) => field.name !== 'center' && field.name !== 'batch'
+  );
+};
+
+// Builds the same flattened { fieldName: value } object ProfileUpdateForm builds
+// from cached profileData + the merged schema's labels, for reuse by anything that
+// needs to inspect the user's saved values (e.g. the profile-completeness check).
+export const buildUserDetailsObject = (profileData, schema) => {
+  const finalResult = profileData?.getUserDetails?.[0];
+  if (!finalResult) {
+    return {};
+  }
+
+  const keysToRemove = [
+    'customFields',
+    'total_count',
+    'status',
+    'updatedAt',
+    'createdAt',
+    'updatedBy',
+    'createdBy',
+    'username',
+  ];
+  const filteredResult = Object.keys(finalResult)
+    .filter((key) => !keysToRemove.includes(key))
+    .reduce((obj, key) => {
+      obj[key] = finalResult[key];
+      return obj;
+    }, {});
+
+  const requiredLabels = schema?.map((item) => ({
+    label: item?.label,
+    name: item?.name,
+  }));
+  const userDetails = createNewObject(finalResult?.customFields, requiredLabels);
+
+  return { ...userDetails, ...filteredResult };
+};
+
+const extractProfileFieldValue = (fieldValue) => {
+  if (fieldValue === null || fieldValue === undefined) {
+    return '';
+  }
+  if (Array.isArray(fieldValue)) {
+    return fieldValue.length > 0
+      ? String(fieldValue[0]?.value ?? fieldValue[0] ?? '').trim()
+      : '';
+  }
+  if (typeof fieldValue === 'object') {
+    return fieldValue.value !== undefined ? String(fieldValue.value).trim() : '';
+  }
+  return String(fieldValue).trim();
+};
+
+const ALWAYS_EXCLUDED_PROFILE_FIELDS = [
+  'username',
+  'password',
+  'confirm_password',
+  'is_volunteer',
+  'center',
+  'batch',
+  'program',
+  'first_name',
+  'firstName',
+  'last_name',
+  'lastName',
+];
+
+// Given the merged schema (§getMergedProfileSchema) and the user's saved profile
+// data (§buildUserDetailsObject), returns which schema fields have no value yet.
+// Mirrors ProfileUpdateForm's conditional visibility rules (age, family member
+// selection, phone ownership) so a field the user could never be shown is never
+// flagged as "missing".
+export const getMissingProfileFields = (schema, userDetails) => {
+  const age = userDetails?.dob ? parseInt(calculateAge(userDetails.dob), 10) : null;
+
+  const rawFamilyType = userDetails?.family_member_details;
+  const familyType =
+    rawFamilyType && typeof rawFamilyType === 'object'
+      ? rawFamilyType.value
+      : rawFamilyType;
+  const familyNameFieldForType = {
+    mother: 'mother_name',
+    father: 'father_name',
+    spouse: 'spouse_name',
+  }[familyType];
+
+  const rawPhoneType = userDetails?.phone_type_accessible;
+  const phoneType =
+    rawPhoneType && typeof rawPhoneType === 'object'
+      ? rawPhoneType.value
+      : rawPhoneType;
+
+  const missingFields = (schema || [])
+    .filter((field) => field?.name)
+    .filter((field) => !ALWAYS_EXCLUDED_PROFILE_FIELDS.includes(field.name))
+    .filter((field) => {
+      if (
+        ['guardian_relation', 'guardian_name', 'parent_phone'].includes(field.name) &&
+        age !== null &&
+        age >= 18
+      ) {
+        return false;
+      }
+      if (
+        ['mobile', 'phone_num', 'phone_number'].includes(field.name) &&
+        age !== null &&
+        age < 18
+      ) {
+        return false;
+      }
+      if (field.name === 'own_phone_check' && phoneType === 'nophone') {
+        return false;
+      }
+      if (['father_name', 'mother_name', 'spouse_name'].includes(field.name)) {
+        return field.name === familyNameFieldForType;
+      }
+      return true;
+    })
+    .filter((field) => !extractProfileFieldValue(userDetails?.[field.name]))
+    .map((field) => field.name);
+
+  return { missingFields, isComplete: missingFields.length === 0 };
 };
 
 export const categorizeEvents = async (events) => {
