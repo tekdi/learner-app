@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   TouchableOpacity,
   Image,
   Dimensions,
@@ -39,7 +38,7 @@ const RadioButton = ({ field, formData, handleValue, errors }) => {
       </GlobalText>
 
       <RadioGroup selectedIndex={selectedIndex} onChange={handlePress}>
-        <ScrollView>
+        <View>
           <View
             style={{
               flexWrap: 'wrap',
@@ -80,7 +79,7 @@ const RadioButton = ({ field, formData, handleValue, errors }) => {
           {errors[field.name] && (
             <GlobalText style={styles.error}>{errors[field.name]}</GlobalText>
           )}
-        </ScrollView>
+        </View>
       </RadioGroup>
     </>
   );
@@ -88,13 +87,13 @@ const RadioButton = ({ field, formData, handleValue, errors }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    padding: 20,
-    marginVertical: 10,
-    marginHorizontal: 10,
+    backgroundColor: '#b51212',
+    padding:10,
+    marginVertical: 8,
+    marginHorizontal: 8,
     borderRadius: 8,
     elevation: 3,
-    width: '44%',
+   //width: '44%',
   },
   radioContainer: {
     flexDirection: 'row',

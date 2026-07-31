@@ -4,6 +4,7 @@ import Courses from '../../screens/Dashboard/Courses/Courses';
 import ViewAllContent from '../../screens/Dashboard/ViewAllContent';
 import CourseContentList from '../../screens/Dashboard/Courses/CourseContentList';
 import UnitList from '../../screens/Dashboard/Courses/UnitList';
+import CompleteProfileFormScreen from '../../screens/Profile/CompleteProfileFormScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,11 @@ const DashboardStack = ({ CopilotStopped, customProp = null }) => {
       <Stack.Screen
         name="ViewAll"
         component={ViewAllContent}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="CompleteProfileForm"
+        component={CompleteProfileFormScreen}
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
     </Stack.Navigator>

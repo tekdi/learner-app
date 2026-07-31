@@ -8,8 +8,6 @@ import {
   Modal,
   Image,
 } from 'react-native';
-import CustomTextField from '../../components/CustomTextField/CustomTextField';
-import CustomCards from '@components/CustomCard/CustomCard';
 import { logEventFunction } from '@src/utils/JsHelper/Helper';
 import { useTranslation } from '@context/LanguageContext';
 import { useInternet } from '@context/NetworkContext';
@@ -23,7 +21,6 @@ import globalStyles from '../../utils/Helper/Style';
 import GlobalText from '@components/GlobalText/GlobalText';
 import lightning from '../../assets/images/png/lightning.png';
 import {
-  calculateAge,
   createNewObject,
   getDataFromStorage,
   setDataInStorage,
@@ -34,10 +31,11 @@ import {
   updateUser,
 } from '../../utils/API/AuthService';
 import { useNavigation } from '@react-navigation/native';
-import RadioButton from '@components/CustomRadioCard/RadioButton';
-import DropdownSelect from '@components/DropdownSelect/DropdownSelect';
-import CustomPasswordTextField from '@components/CustomPasswordComponent/CustomPasswordComponent';
-import DateTimePicker from '@components/DateTimePicker/DateTimePicker';
+import {
+  renderProfileField,
+  reorderFamilyFieldsAfterSelector,
+  validateProfileFields,
+} from './ProfileFormShared';
 
 const ProfileUpdateForm = ({ fields }) => {
   const { t } = useTranslation();
@@ -331,108 +329,7 @@ const ProfileUpdateForm = ({ fields }) => {
 
   const validateFields = () => {
     const pageFields = pages[currentPage];
-    const newErrors = {};
-
-    pageFields.forEach((fieldName) => {
-      const field = schema?.find((f) => f.name === fieldName);
-      const age = calculateAge(formData?.dob || '');
-
-      if (field) {
-        // Extract value - handle both object and string formats
-        const fieldValue = formData[field.name];
-        let value = '';
-        
-        if (fieldValue !== null && fieldValue !== undefined) {
-          if (typeof fieldValue === 'object' && !Array.isArray(fieldValue)) {
-            // If it's an object, extract the value property
-            value = fieldValue.value !== undefined ? String(fieldValue.value) : '';
-          } else if (Array.isArray(fieldValue)) {
-            // If it's an array, join the values or use first value
-            value = fieldValue.length > 0 ? String(fieldValue[0]?.value || fieldValue[0] || '') : '';
-          } else {
-            // If it's a string or number, convert to string
-            value = String(fieldValue);
-          }
-        }
-
-        if (
-          [
-            'confirm_password',
-            'password',
-            'program',
-            'username',
-            'is_volunteer',
-            'family_member_details',
-          ].includes(field.name)
-        ) {
-          return; // Skip validation for these fields
-        }
-        if (
-          ['guardian_name', 'guardian_relation', 'parent_phone'].includes(
-            field.name
-          ) &&
-          age &&
-          parseInt(age, 10) >= 18
-        ) {
-          return; // Skip validation for these fields
-        }
-
-        // Skip validation for family member fields that are hidden
-        const rawFamilyType1 = formData?.family_member_details;
-        const familyType = (rawFamilyType1 && typeof rawFamilyType1 === 'object') ? rawFamilyType1.value : rawFamilyType1;
-        if (familyType === 'mother' && field.name === 'father_name') {
-          return; // Skip validation for hidden fields
-        }
-        if (familyType === 'mother' && field.name === 'spouse_name') {
-          return; // Skip validation for hidden fields
-        }
-        if (familyType === 'father' && field.name === 'mother_name') {
-          return; // Skip validation for hidden fields
-        }
-        if (familyType === 'father' && field.name === 'spouse_name') {
-          return; // Skip validation for hidden fields
-        }
-        if (familyType === 'spouse' && field.name === 'father_name') {
-          return; // Skip validation for hidden fields
-        }
-        if (familyType === 'spouse' && field.name === 'mother_name') {
-          return; // Skip validation for hidden fields
-        }
-        if (!familyType && ['father_name', 'mother_name', 'spouse_name'].includes(field.name)) {
-          return; // Skip validation for hidden fields
-        }
-
-        // Skip validation for mobile field when age is below 18
-        const ageValue = age ? parseInt(age, 10) : null;
-        if (field.name === 'mobile' && ageValue !== null && ageValue < 18) {
-          return; // Skip validation for hidden mobile field
-        }
-
-        // Skip own_phone_check when phone_type_accessible is nophone (field is hidden)
-        const phoneTypeValue = formData?.phone_type_accessible?.value || formData?.phone_type_accessible;
-        if (field.name === 'own_phone_check' && phoneTypeValue === 'nophone') {
-          return;
-        }
-
-        if (field.isRequired && !value) {
-          newErrors[field.name] = `${t(field.name)} ${t('is_required')}`;
-        } else if (field.minLength && value.length < field.minLength && value) {
-          newErrors[field.name] = `${t('min_validation')
-            .replace('{field}', t(field.name))
-            .replace('{length}', field.minLength)}`;
-        } else if (field.maxLength && value.length > field.maxLength && value) {
-          newErrors[field.name] = `${t('max_validation')
-            .replace('{field}', t(field.name))
-            .replace('{length}', field.maxLength)}`;
-        } else if (
-          field.pattern &&
-          value &&
-          !new RegExp(field.pattern.replace(/^\/|\/$/g, '')).test(value)
-        ) {
-          newErrors[field.name] = `${t(field.name)} ${t('is_invalid')}.`;
-        }
-      }
-    });
+    const newErrors = validateProfileFields(schema, formData, t, pageFields);
 
     setErrors(newErrors);
     console.log('ProfileUpdateForm validation errors:', JSON.stringify(newErrors));
@@ -440,237 +337,28 @@ const ProfileUpdateForm = ({ fields }) => {
   };
 
   const renderField = (field) => {
-    const dob = formData?.dob || '';
-    let age = null;
-    let ageValue = null;
-    
-    // Calculate age if DOB exists
-    if (dob) {
-      try {
-        age = calculateAge(dob);
-        ageValue = age !== null && age !== undefined && !isNaN(age) ? parseInt(age, 10) : null;
-      } catch (error) {
-        console.log('Error calculating age:', error);
-        ageValue = null;
-      }
-    }
-    
-    const isAge18OrAbove = ageValue !== null && ageValue >= 18;
-    const isAgeBelow18 = ageValue !== null && ageValue < 18;
-    
-    // Debug logging for mobile field visibility
-    if (field.name === 'mobile' || field.name === 'phone_num' || field.name === 'phone_number') {
-      console.log(`Field: ${field.name}, DOB: ${dob}, Age: ${ageValue}, isAgeBelow18: ${isAgeBelow18}`);
-    }
-    
-    // Hide guardian fields for users 18 or above
-    if (
-      (field.name === 'guardian_relation' ||
-        field.name === 'guardian_name' ||
-        field.name === 'parent_phone') &&
-      isAge18OrAbove
-    ) {
-      return null;
-    }
-    
-    // Hide phone/mobile number field when age is below 18
-    // Show mobile for users 18 or above, hide it when age is below 18
-    if (
-      (field.name === 'phone_num' || 
-       field.name === 'phone_number' || 
-       field.name === 'mobile') &&
-      isAgeBelow18
-    ) {
-      return null;
-    }
-    
-    // Family member details conditional logic
-    const rawFamilyType2 = formData?.family_member_details;
-    const familyType = (rawFamilyType2 && typeof rawFamilyType2 === 'object') ? rawFamilyType2.value : rawFamilyType2;
-    console.log('familyType:', familyType, 'field.name:', field.name, 'formData.family_member_details:', formData?.family_member_details);
-    
-    // If no family_member_details is selected, hide all family name fields
-    if (
-      !familyType &&
-      ['father_name', 'mother_name', 'spouse_name'].includes(field.name)
-    ) {
-      console.log('Hiding field (no familyType):', field.name);
-      return null;
-    }
-    
-    // If spouse is selected, hide father_name and mother_name
-    if (familyType === 'spouse' && (field.name === 'father_name' || field.name === 'mother_name')) {
-      console.log('Hiding field (spouse selected):', field.name);
-      return null;
-    }
-    
-    // If father is selected, hide spouse_name and mother_name
-    if (familyType === 'father' && (field.name === 'spouse_name' || field.name === 'mother_name')) {
-      console.log('Hiding field (father selected):', field.name);
-      return null;
-    }
-    
-    // If mother is selected, hide father_name and spouse_name
-    if (familyType === 'mother' && (field.name === 'father_name' || field.name === 'spouse_name')) {
-      console.log('Hiding field (mother selected):', field.name);
-      return null;
-    }
-    
-    // Hide "Does this phone belong to you?" when "No Phone" is selected.
-    const phoneTypeValue = formData?.phone_type_accessible?.value || formData?.phone_type_accessible;
-    if (field.name === 'own_phone_check' && phoneTypeValue === 'nophone') {
+    const geoOptions = { stateData, districtData, blockData, villageData };
+    const content = renderProfileField(field, {
+      formData,
+      errors,
+      handleInputChange,
+      geoOptions,
+    });
+
+    if (!content) {
       return null;
     }
 
-    // if (field.name && !field?.isEditable) {
-    //   return null;
-    // }
-    if (
-      [
-        'username',
-        'password',
-        'confirm_password',
-        'is_volunteer',
-        // 'state',
-        // 'district',
-        // 'block',
-        // 'village',
-      ].includes(field.name)
-    ) {
-      return null;
-    }
-
-    switch (field.type) {
-      case 'text':
-        return (
-          <View key={field.name} style={styles.inputContainer}>
-            <CustomTextField
-              field={field}
-              formData={formData}
-              handleValue={handleInputChange}
-              errors={errors}
-              editable={!['first_name', 'last_name', 'firstName', 'lastName'].includes(field.name)}
-            />
-          </View>
-        );
-      case 'email':
-        return (
-          <View key={field.name} style={styles.inputContainer}>
-            <CustomTextField
-              field={field}
-              formData={formData}
-              handleValue={handleInputChange}
-              errors={errors}
-              autoCapitalize={'none'}
-            />
-          </View>
-        );
-      case 'numeric':
-        return (
-          <View key={field.name} style={styles.inputContainer}>
-            <CustomTextField
-              field={field}
-              formData={formData}
-              handleValue={handleInputChange}
-              errors={errors}
-              keyboardType="numeric"
-            />
-          </View>
-        );
-
-      case 'radio':
-        return (
-          <View key={field.name} style={styles.inputContainer}>
-            <RadioButton
-              field={field}
-              // options={programData}
-              errors={errors}
-              formData={formData}
-              handleValue={handleInputChange}
-            />
-          </View>
-        );
-      case 'select':
-        return (
-          <View key={field.name} style={styles.inputContainer}>
-            <CustomCards
-              field={field}
-              errors={errors}
-              formData={formData}
-              handleValue={handleInputChange}
-            />
-          </View>
-        );
-      case 'drop_down':
-        return (
-          <View key={field.name} style={styles.inputContainer}>
-            <DropdownSelect
-              field={field}
-              options={
-                field.name === 'state'
-                  ? stateData
-                  : field.name === 'district'
-                  ? districtData
-                  : field.name === 'block'
-                  ? blockData
-                  : field.name === 'village'
-                  ? villageData
-                  : field?.options
-              }
-              errors={errors}
-              formData={formData}
-              handleValue={handleInputChange}
-            />
-          </View>
-        );
-      case 'password':
-      case 'confirm_password':
-        return (
-          <View key={field.name} style={styles.inputContainer}>
-            <CustomPasswordTextField
-              field={field}
-              errors={errors}
-              formData={formData}
-              handleValue={handleInputChange}
-            />
-          </View>
-        );
-      case 'date':
-        return (
-          <View key={field.name} style={styles.inputContainer}>
-            <DateTimePicker
-              field={field}
-              errors={errors}
-              formData={formData}
-              handleValue={handleInputChange}
-            />
-          </View>
-        );
-      default:
-        return null;
-    }
+    return (
+      <View key={field.name} style={styles.inputContainer}>
+        {content}
+      </View>
+    );
   };
 
   const renderPage = () => {
     const pageFields = pages[currentPage];
-    const familyNameFields = ['father_name', 'mother_name', 'spouse_name'];
-
-    // Move family name fields to appear immediately after family_member_details
-    const familyDetailsIndex = schema.findIndex(
-      (f) => f.name === 'family_member_details'
-    );
-    let orderedSchema = [...schema];
-    if (familyDetailsIndex !== -1) {
-      const nameFields = orderedSchema.filter((f) =>
-        familyNameFields.includes(f.name)
-      );
-      orderedSchema = orderedSchema.filter(
-        (f) => !familyNameFields.includes(f.name)
-      );
-      const insertAt =
-        orderedSchema.findIndex((f) => f.name === 'family_member_details') + 1;
-      orderedSchema.splice(insertAt, 0, ...nameFields);
-    }
+    const orderedSchema = reorderFamilyFieldsAfterSelector(schema);
 
     return orderedSchema
       .filter((field) => pageFields?.includes(field.name))
