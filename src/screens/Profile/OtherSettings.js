@@ -138,6 +138,7 @@ const OtherSettings = ({ route }) => {
       await deleteSavedItem('weightedProgress');
       await deleteSavedItem('courseTrackData');
       await deleteSavedItem('profileData');
+      await deleteSavedItem('Username');
       await deleteSavedItem('tenantData');
       await deleteSavedItem('academicYearId');
       await deleteSavedItem('userType');
