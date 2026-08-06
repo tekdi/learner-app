@@ -31,6 +31,7 @@ import SyncCard from '@src/components/SyncComponent/SyncCard';
 import BackButtonHandler from '@src/components/BackNavigation/BackButtonHandler';
 import {
   capitalizeName,
+  getContentPlatformIds,
   getDataFromStorage,
   getTentantId,
   logEventFunction,
@@ -80,12 +81,7 @@ const L1Courses = () => {
       const userId = await getDataFromStorage('userId');
       setUserId(userId);
 
-      const instant =
-        userType === 'youthnet'
-          ? { frameworkId: 'pos-framework', channelId: 'pos-channel' }
-          : userType === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+      const instant = await getContentPlatformIds();
       setInstant(instant);
     };
 

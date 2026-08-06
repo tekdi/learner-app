@@ -24,6 +24,7 @@ import CoursesBox from '../CoursesBox/CoursesBox';
 import CourseCard from '../CourseCard/CourseCard';
 import { useNavigation } from '@react-navigation/native';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import { CONTENT_PLATFORM_IDS } from '../../utils/Constants/app-constants';
 
 const ContinueLearning = ({ youthnet, t, userId }) => {
   const [data, setData] = useState([]);
@@ -80,8 +81,10 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
           
           const channelId = tenantData?.[0]?.channelId;
          let mergedFilter={}
-    if(channelId == 'scp-channel'){
-      mergedFilter.targetBoardIds = ["scp-framework_board_cocurricular"];
+    if (channelId == CONTENT_PLATFORM_IDS.SCP.channelId) {
+      mergedFilter.targetBoardIds = [CONTENT_PLATFORM_IDS.SCP.boardId];
+    } else if (channelId == CONTENT_PLATFORM_IDS.SCP_PATHWAYS.channelId) {
+      mergedFilter.targetBoardIds = [CONTENT_PLATFORM_IDS.SCP_PATHWAYS.boardId];
     }
           let data = await courseListApi_New({
             inprogress_do_ids,
