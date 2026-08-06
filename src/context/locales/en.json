@@ -625,6 +625,18 @@
   "Select_Language_For_Learning": "Select the language in which you want to learn",
   "Learning_Language_Info": "Content, courses, and assessments will be shown in your selected language. You can change this language anytime from the Profile section",
   "attempt_assessment": "Attempt Assessment",
-  "come_back_later": "Come Back Later",
-  "assessment_unavailable_message": "No pending assessment available at this time."
+  "come_back_later": "Please come back later",
+  "assessment_unavailable_message": "The Saral test is currently unavailable in your selected language. We are working on it. Please try again later.",
+  "vocational_training": "Vocational Training",
+  "loading_programs": "Loading programs...",
+  "other_programs_you_are_enrolled_in": "Other programs you are enrolled in",
+  "no_other_programs_available": "No other programs available",
+  "failed_to_fetch_user_details_please_try_again": "Failed to fetch user details. Please try again.",
+  "user_id_not_found_please_login_again": "User ID not found. Please login again.",
+  "user_details_not_found_please_login_again": "User details not found. Please login again.",
+  "program_data_not_found_please_try_again": "Program data not found. Please try again.",
+  "failed_to_switch_program": "Failed to switch program:",
+  "switched_to": "Switched to",
+  "failed_to_switch_program_please_try_again": "Failed to switch program. Please try again.",
+  "show_all_programs": "Show All Programs"
 }

@@ -276,16 +276,18 @@ export const logEventFunction = async ({ eventName, method, screenName, content_
 };
 
 export const storeUsername = async (username) => {
+  if (!username) return;
   try {
     // Fetch existing usernames
     const storedUsernames = await AsyncStorage.getItem('usernames');
     let usernamesArray = storedUsernames ? JSON.parse(storedUsernames) : [];
 
-    // Add new username if it's not already in the list
-    if (!usernamesArray.includes(username)) {
-      usernamesArray.push(username);
-      await AsyncStorage.setItem('usernames', JSON.stringify(usernamesArray));
-    }
+    // Keep the list most-recent-last: drop any earlier entry for this user
+    // before pushing, so a returning user moves to the end instead of
+    // leaving a previous user as the last item.
+    usernamesArray = usernamesArray.filter((item) => item !== username);
+    usernamesArray.push(username);
+    await AsyncStorage.setItem('usernames', JSON.stringify(usernamesArray));
   } catch (error) {
     console.error('Error storing username:', error);
   }
@@ -305,6 +307,27 @@ export const getStoredUsername = async () => {
     return null;
   } catch (error) {
     console.error('Error retrieving username:', error);
+    return null;
+  }
+};
+
+// Returns the username of the CURRENTLY logged-in user.
+// Reads the active session (profileData, then the Username key) instead of the
+// `usernames` login history, which holds every user who ever logged in on the
+// device and so cannot identify the current one.
+export const getCurrentUsername = async () => {
+  try {
+    const profileDataRaw = await getDataFromStorage('profileData');
+    if (profileDataRaw) {
+      const profileData = JSON.parse(profileDataRaw);
+      const username = profileData?.getUserDetails?.[0]?.username;
+      if (username) {
+        return username;
+      }
+    }
+    return (await getDataFromStorage('Username')) || null;
+  } catch (error) {
+    console.error('Error retrieving current username:', error);
     return null;
   }
 };

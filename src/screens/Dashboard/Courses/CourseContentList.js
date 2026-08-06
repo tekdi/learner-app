@@ -424,8 +424,7 @@ const CourseContentList = ({ route }) => {
               </View>
             ) : (
               certificateId &&
-              userType !== 'pragyanpath' &&
-              userType !== 'scp' && (
+              userType !== 'pragyanpath' && (
                 <View
                   style={{
                     width: '90%',
@@ -712,7 +711,7 @@ const CourseContentList = ({ route }) => {
                         </GlobalText>
                       </TouchableOpacity>
                     </View>
-                    {userType !== 'scp' && userType !== 'pragyanpath' && (
+                    {userType !== 'pragyanpath' && (
                       <View style={{ width: 160 }}>
                         <PrimaryButton
                           text={t('view_certificate')}
