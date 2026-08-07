@@ -9,6 +9,7 @@ import {
   getDataFromStorage,
   getMergedProfileSchema,
   getMissingProfileFields,
+  getProfileCompletionSchema,
 } from '../../utils/JsHelper/Helper';
 
 const CompleteProfileBanner = () => {
@@ -29,10 +30,17 @@ const CompleteProfileBanner = () => {
         return;
       }
 
-      const schema = await getMergedProfileSchema(tenantId);
+      // Completeness is judged only on the current program's required fields
+      // (see getProfileCompletionSchema). The user's saved values are still read
+      // against the full merged schema so common-form labels resolve correctly.
+      const mergedSchema = await getMergedProfileSchema(tenantId);
+      const completionSchema = await getProfileCompletionSchema(tenantId);
       const profileData = JSON.parse((await getDataFromStorage('profileData')) || 'null');
-      const userDetails = buildUserDetailsObject(profileData, schema);
-      const { missingFields, isComplete } = getMissingProfileFields(schema, userDetails);
+      const userDetails = buildUserDetailsObject(profileData, mergedSchema);
+      const { missingFields, isComplete } = getMissingProfileFields(
+        completionSchema,
+        userDetails
+      );
 
       setBanner({ visible: !isComplete, tenantId, missingFields });
     } catch {

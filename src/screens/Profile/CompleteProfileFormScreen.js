@@ -24,6 +24,7 @@ import {
   getDataFromStorage,
   getMergedProfileSchema,
   getMissingProfileFields,
+  getProfileCompletionSchema,
   logEventFunction,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
@@ -62,13 +63,21 @@ const CompleteProfileFormScreen = () => {
     const loadSchema = async () => {
       const tenantData = JSON.parse((await getDataFromStorage('tenantData')) || 'null');
       const tenantId = route.params?.tenantId || tenantData?.[0]?.tenantId;
+      // `schema` is the full merged set - needed so we can still render a field
+      // like father_name that is not itself part of the completion scope.
+      // `completionSchema` (program form, required only) is what decides which
+      // fields count as missing, matching the web client.
       const schema = await getMergedProfileSchema(tenantId);
       const profileData = JSON.parse((await getDataFromStorage('profileData')) || 'null');
       const userDetails = buildUserDetailsObject(profileData, schema);
 
       let missingFields = route.params?.missingFields;
       if (!missingFields) {
-        missingFields = getMissingProfileFields(schema, userDetails).missingFields;
+        const completionSchema = await getProfileCompletionSchema(tenantId);
+        missingFields = getMissingProfileFields(
+          completionSchema,
+          userDetails
+        ).missingFields;
       }
 
       const fieldsToShow = new Set(missingFields);

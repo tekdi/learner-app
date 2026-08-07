@@ -603,19 +603,51 @@ export const createNewObjectTarget = (customFields, labels, profileView) => {
   return result;
 };
 
-// Merges the base ("common") student form with the current program's form,
-// mirroring what ProfileUpdateScreen has always done, so Edit Profile and the
-// Complete Profile banner always agree on what "all fields for this program" means.
-export const getMergedProfileSchema = async (tenantId) => {
+// Fetches the two Form Read responses that make up a learner's profile:
+// the base ("common") form collected at registration, and the current program's
+// own form. Both are cached to storage because TransformPayload reads them back
+// when building the update payload.
+export const getProfileFormSchemas = async (tenantId) => {
   const base = await getStudentForm();
   const program = await getStudentForm(tenantId);
-  const baseFields = base?.fields || [];
+  const commonFields = base?.fields || [];
   const programFields = program?.fields || [];
 
-  await setDataInStorage('studentForm', JSON.stringify(baseFields));
+  await setDataInStorage('studentForm', JSON.stringify(commonFields));
   await setDataInStorage('studentProgramForm', JSON.stringify(programFields));
 
-  return [...baseFields, ...programFields].filter(
+  return { commonFields, programFields };
+};
+
+// Everything a learner can edit: common form + current program's form. Used by
+// the full Edit Profile screen, and by the Complete Profile mini-form when it
+// needs to render a field (e.g. a family member's name) that is not itself part
+// of the completion scope below.
+export const getMergedProfileSchema = async (tenantId) => {
+  const { commonFields, programFields } = await getProfileFormSchemas(tenantId);
+
+  return [...commonFields, ...programFields].filter(
+    (field) => field.name !== 'center' && field.name !== 'batch'
+  );
+};
+
+// The fields that determine whether a profile counts as "complete" for the
+// current program - deliberately narrower than getMergedProfileSchema.
+//
+// Scope is the PROGRAM form only, matching the web client: common-form fields
+// (name, dob, gender, state/district/block/village, preferred language) are
+// collected during registration, so they must never hold this banner open.
+// Both required and optional program fields count - Camp to Club's two fields
+// are optional and web still asks for them.
+//
+// `center`/`batch` are dropped here (admin-assigned, not user-supplied); the
+// remaining exclusions - unsupported types like `consent_file`, and the
+// name-based list in PROFILE_COMPLETENESS_OPTIONAL_FIELDS - are applied by
+// getMissingProfileFields.
+export const getProfileCompletionSchema = async (tenantId) => {
+  const { programFields } = await getProfileFormSchemas(tenantId);
+
+  return programFields.filter(
     (field) => field.name !== 'center' && field.name !== 'batch'
   );
 };
@@ -670,71 +702,136 @@ const extractProfileFieldValue = (fieldValue) => {
   return String(fieldValue).trim();
 };
 
-const ALWAYS_EXCLUDED_PROFILE_FIELDS = [
-  'username',
+// Field types the profile forms know how to render (see renderProfileField in
+// screens/Profile/ProfileFormShared.js). A field of any other type cannot be
+// filled in through the app, so it must never be counted as "missing" - doing so
+// would show a Complete Profile banner that opens a form with nothing in it.
+export const PROFILE_SUPPORTED_FIELD_TYPES = [
+  'text',
+  'email',
+  'numeric',
+  'radio',
+  'select',
+  'drop_down',
   'password',
   'confirm_password',
-  'is_volunteer',
-  'center',
-  'batch',
-  'program',
+  'date',
+];
+
+// Rendered, but read-only - set at registration or derived elsewhere. The user
+// cannot change these here, so they must never be counted as "missing" either.
+export const PROFILE_NON_EDITABLE_FIELDS = [
   'first_name',
   'firstName',
   'last_name',
   'lastName',
+  'state',
+  'district',
+  'block',
+  'village',
 ];
 
-// Given the merged schema (§getMergedProfileSchema) and the user's saved profile
-// data (§buildUserDetailsObject), returns which schema fields have no value yet.
-// Mirrors ProfileUpdateForm's conditional visibility rules (age, family member
-// selection, phone ownership) so a field the user could never be shown is never
-// flagged as "missing".
-export const getMissingProfileFields = (schema, userDetails) => {
-  const age = userDetails?.dob ? parseInt(calculateAge(userDetails.dob), 10) : null;
+// Never rendered at all - internal/system fields.
+export const PROFILE_ALWAYS_HIDDEN_FIELDS = [
+  'username',
+  'password',
+  'confirm_password',
+  'is_volunteer',
+];
 
-  const rawFamilyType = userDetails?.family_member_details;
+// Fully editable in the forms, but genuinely optional - a user may legitimately
+// have no value for these, so leaving them blank must not keep the Complete
+// Profile banner up forever.
+export const PROFILE_COMPLETENESS_OPTIONAL_FIELDS = [
+  'middle_name',
+  'middleName',
+];
+
+const ALWAYS_EXCLUDED_PROFILE_FIELDS = [
+  ...PROFILE_ALWAYS_HIDDEN_FIELDS,
+  ...PROFILE_NON_EDITABLE_FIELDS,
+  ...PROFILE_COMPLETENESS_OPTIONAL_FIELDS,
+  'center',
+  'batch',
+  'program',
+];
+
+// Whether `field` should be rendered at all given the rest of the form's current
+// values. Single source of truth shared by the Edit Profile form, the Complete
+// Profile mini-form, and the banner's completeness check, so the three can't
+// drift apart. Note "visible" != "editable": first_name/state/etc. are visible
+// but read-only (see PROFILE_NON_EDITABLE_FIELDS).
+export const isProfileFieldVisible = (field, formData) => {
+  if (PROFILE_ALWAYS_HIDDEN_FIELDS.includes(field?.name)) {
+    return false;
+  }
+
+  const dob = formData?.dob || '';
+  let age = null;
+  if (dob) {
+    try {
+      const parsed = calculateAge(dob);
+      age =
+        parsed !== null && parsed !== undefined && !isNaN(parsed)
+          ? parseInt(parsed, 10)
+          : null;
+    } catch {
+      age = null;
+    }
+  }
+
+  if (
+    ['guardian_relation', 'guardian_name', 'parent_phone'].includes(field?.name) &&
+    age !== null &&
+    age >= 18
+  ) {
+    return false;
+  }
+  if (
+    ['mobile', 'phone_num', 'phone_number'].includes(field?.name) &&
+    age !== null &&
+    age < 18
+  ) {
+    return false;
+  }
+
+  const rawFamilyType = formData?.family_member_details;
   const familyType =
     rawFamilyType && typeof rawFamilyType === 'object'
       ? rawFamilyType.value
       : rawFamilyType;
-  const familyNameFieldForType = {
-    mother: 'mother_name',
-    father: 'father_name',
-    spouse: 'spouse_name',
-  }[familyType];
+  if (['father_name', 'mother_name', 'spouse_name'].includes(field?.name)) {
+    if (!familyType) {
+      return false;
+    }
+    return field.name === `${familyType}_name`;
+  }
 
-  const rawPhoneType = userDetails?.phone_type_accessible;
+  const rawPhoneType = formData?.phone_type_accessible;
   const phoneType =
     rawPhoneType && typeof rawPhoneType === 'object'
       ? rawPhoneType.value
       : rawPhoneType;
+  if (field?.name === 'own_phone_check' && phoneType === 'nophone') {
+    return false;
+  }
 
+  return true;
+};
+
+// Given the merged schema (§getMergedProfileSchema) and the user's saved profile
+// data (§buildUserDetailsObject), returns which schema fields have no value yet.
+//
+// A field only counts as "missing" if the user can actually fill it in through
+// the Complete Profile form: it must render (supported type + currently visible)
+// and be editable. Anything else would produce a banner the user can never clear,
+// because the form it opens would have no usable input for that field.
+export const getMissingProfileFields = (schema, userDetails) => {
   const missingFields = (schema || [])
     .filter((field) => field?.name)
     .filter((field) => !ALWAYS_EXCLUDED_PROFILE_FIELDS.includes(field.name))
-    .filter((field) => {
-      if (
-        ['guardian_relation', 'guardian_name', 'parent_phone'].includes(field.name) &&
-        age !== null &&
-        age >= 18
-      ) {
-        return false;
-      }
-      if (
-        ['mobile', 'phone_num', 'phone_number'].includes(field.name) &&
-        age !== null &&
-        age < 18
-      ) {
-        return false;
-      }
-      if (field.name === 'own_phone_check' && phoneType === 'nophone') {
-        return false;
-      }
-      if (['father_name', 'mother_name', 'spouse_name'].includes(field.name)) {
-        return field.name === familyNameFieldForType;
-      }
-      return true;
-    })
+    .filter((field) => PROFILE_SUPPORTED_FIELD_TYPES.includes(field.type))
+    .filter((field) => isProfileFieldVisible(field, userDetails))
     .filter((field) => !extractProfileFieldValue(userDetails?.[field.name]))
     .map((field) => field.name);
 
