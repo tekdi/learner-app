@@ -299,7 +299,10 @@ const Profile = () => {
   } else if (userType == 'youthnet') {
     displayProgramLabel = t('vocational_training');
   } else if (userType == 'scp') {
-    displayProgramLabel = t('second_chance_program');
+    // Tenant name unavailable — SCP and Pathways both map to userType
+    // 'scp', so we can't tell which one this is. Show nothing rather
+    // than guessing and risking the wrong program name.
+    displayProgramLabel = '';
   } else {
     displayProgramLabel = userType;
   }

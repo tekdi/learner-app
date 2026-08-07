@@ -626,10 +626,13 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
     headerProgramLabel = t('vocational_training');
   } else if (currentProgramName) {
     headerProgramLabel = currentProgramName;
-  } else if (currentUserType === 'scp') {
-    headerProgramLabel = t('second_chance_program');
   } else if (currentUserType === 'youthnet') {
     headerProgramLabel = t('vocational_training');
+  } else if (currentUserType === 'scp') {
+    // Tenant name unavailable (e.g. fetch failed) — SCP and Pathways both
+    // map to userType 'scp', so we can't tell which one this is. Show
+    // nothing rather than guessing and risking the wrong program name.
+    headerProgramLabel = '';
   } else {
     headerProgramLabel = currentUserType;
   }
