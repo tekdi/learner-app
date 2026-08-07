@@ -5,24 +5,12 @@ import RadioButton from '@components/CustomRadioCard/RadioButton';
 import DropdownSelect from '@components/DropdownSelect/DropdownSelect';
 import CustomPasswordTextField from '@components/CustomPasswordComponent/CustomPasswordComponent';
 import DateTimePicker from '@components/DateTimePicker/DateTimePicker';
-import { calculateAge } from '../../utils/JsHelper/Helper';
+import {
+  calculateAge,
+  isProfileFieldVisible,
+  PROFILE_NON_EDITABLE_FIELDS,
+} from '../../utils/JsHelper/Helper';
 
-const NON_EDITABLE_NAME_FIELDS = [
-  'first_name',
-  'last_name',
-  'firstName',
-  'lastName',
-  'state',
-  'district',
-  'block',
-  'village',
-];
-const ALWAYS_HIDDEN_FIELDS = [
-  'username',
-  'password',
-  'confirm_password',
-  'is_volunteer',
-];
 const FAMILY_NAME_FIELDS = ['father_name', 'mother_name', 'spouse_name'];
 
 const getFamilyType = (formData) => {
@@ -35,65 +23,9 @@ const getPhoneType = (formData) => {
   return raw && typeof raw === 'object' ? raw.value : raw;
 };
 
-const getAgeFromFormData = (formData) => {
-  const dob = formData?.dob || '';
-  if (!dob) {
-    return null;
-  }
-  try {
-    const age = calculateAge(dob);
-    return age !== null && age !== undefined && !isNaN(age) ? parseInt(age, 10) : null;
-  } catch {
-    return null;
-  }
-};
-
-// Whether `field` should be shown/considered given the rest of the form's current
-// values - age-based guardian/mobile visibility, the selected family member
-// relation, and phone ownership. Shared so the full Edit Profile form and the
-// Complete Profile mini-form apply identical conditional logic.
-export const isFieldVisible = (field, formData) => {
-  const ageValue = getAgeFromFormData(formData);
-  const isAge18OrAbove = ageValue !== null && ageValue >= 18;
-  const isAgeBelow18 = ageValue !== null && ageValue < 18;
-
-  if (
-    ['guardian_relation', 'guardian_name', 'parent_phone'].includes(field.name) &&
-    isAge18OrAbove
-  ) {
-    return false;
-  }
-  if (
-    ['phone_num', 'phone_number', 'mobile'].includes(field.name) &&
-    isAgeBelow18
-  ) {
-    return false;
-  }
-
-  const familyType = getFamilyType(formData);
-  if (!familyType && FAMILY_NAME_FIELDS.includes(field.name)) {
-    return false;
-  }
-  if (familyType === 'spouse' && ['father_name', 'mother_name'].includes(field.name)) {
-    return false;
-  }
-  if (familyType === 'father' && ['spouse_name', 'mother_name'].includes(field.name)) {
-    return false;
-  }
-  if (familyType === 'mother' && ['father_name', 'spouse_name'].includes(field.name)) {
-    return false;
-  }
-
-  if (field.name === 'own_phone_check' && getPhoneType(formData) === 'nophone') {
-    return false;
-  }
-
-  if (ALWAYS_HIDDEN_FIELDS.includes(field.name)) {
-    return false;
-  }
-
-  return true;
-};
+// Re-exported from Helper so the forms, the banner's completeness check, and the
+// mini-form all decide field visibility from one implementation.
+export const isFieldVisible = isProfileFieldVisible;
 
 // Reorders `schema` so father_name/mother_name/spouse_name render immediately
 // after family_member_details, regardless of their original position.
@@ -135,7 +67,7 @@ export const renderProfileField = (
           formData={formData}
           handleValue={handleInputChange}
           errors={errors}
-          editable={!NON_EDITABLE_NAME_FIELDS.includes(field.name)}
+          editable={!PROFILE_NON_EDITABLE_FIELDS.includes(field.name)}
         />
       );
     case 'email':
@@ -199,7 +131,7 @@ export const renderProfileField = (
           errors={errors}
           formData={formData}
           handleValue={handleInputChange}
-          editable={!NON_EDITABLE_NAME_FIELDS.includes(field.name)}
+          editable={!PROFILE_NON_EDITABLE_FIELDS.includes(field.name)}
         />
       );
     case 'password':
