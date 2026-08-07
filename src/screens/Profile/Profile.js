@@ -39,6 +39,7 @@ import {
 import { useInternet } from '../../context/NetworkContext';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
 import { courseTrackingStatus } from '@src/utils/API/ApiCalls';
+import { TENANT_DATA } from '../../utils/Constants/app-constants';
 
 const Profile = () => {
   const { t, language } = useTranslation();
@@ -49,6 +50,7 @@ const Profile = () => {
   const { isConnected } = useInternet();
   const [networkstatus, setNetworkstatus] = useState(true);
   const [userType, setUserType] = useState();
+  const [programName, setProgramName] = useState('');
   const [cohortId, setCohortId] = useState();
   const [courseList, setCourseList] = useState([]);
 
@@ -134,6 +136,10 @@ const Profile = () => {
     const data = await getStudentForm();
     let userType = await getDataFromStorage('userType');
     setUserType(userType);
+    const storedTenantData = JSON.parse(
+      (await getDataFromStorage('tenantData')) || '[]'
+    );
+    setProgramName(storedTenantData?.[0]?.tenantName || '');
     setDataInStorage('studentForm', JSON.stringify(data?.fields));
     const tenantId = await getDataFromStorage('userTenantid');
 
@@ -278,6 +284,29 @@ const Profile = () => {
     }
   };
 
+  const normalizeName = (name) => (name || '').trim().toLowerCase();
+  const normalizedProgramName = normalizeName(programName);
+
+  let displayProgramLabel;
+  if (normalizedProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM)) {
+    displayProgramLabel = t('second_chance_program');
+  } else if (normalizedProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS)) {
+    displayProgramLabel = t('second_chance_program_pathways');
+  } else if (normalizedProgramName === normalizeName(TENANT_DATA.YOUTHNET)) {
+    displayProgramLabel = t('vocational_training');
+  } else if (programName) {
+    displayProgramLabel = programName;
+  } else if (userType == 'youthnet') {
+    displayProgramLabel = t('vocational_training');
+  } else if (userType == 'scp') {
+    // Tenant name unavailable — SCP and Pathways both map to userType
+    // 'scp', so we can't tell which one this is. Show nothing rather
+    // than guessing and risking the wrong program name.
+    displayProgramLabel = '';
+  } else {
+    displayProgramLabel = userType;
+  }
+
   return (
     <SafeAreaWrapper style={styles.safeArea}>
       <SecondaryHeader logo />
@@ -342,11 +371,7 @@ const Profile = () => {
           </LinearGradient>
           <View style={{ padding: 10 }}>
             <GlobalText style={[globalStyles.h6, { color: '#78590C' }]}>
-              {userType == 'youthnet'
-                ? 'Vocational Training'
-                : userType == 'scp'
-                ? t('Second Chance Program')
-                : userType}
+              {displayProgramLabel}
             </GlobalText>
           </View>
 

@@ -36,10 +36,12 @@ import FilterList from '@components/FilterModal/FilterList';
 import FilterDrawer from '@components/FilterModal/FilterDrawer';
 import {
   capitalizeName,
+  getContentPlatformIds,
   getDataFromStorage,
   logEventFunction,
   setDataInStorage,
 } from '../../../utils/JsHelper/Helper';
+import { CONTENT_PLATFORM_IDS } from '../../../utils/Constants/app-constants';
 import { courseTrackingStatus } from '../../../utils/API/ApiCalls';
 import ActiveLoading from '../../LoadingScreen/ActiveLoading';
 import CustomSearchBox from '../../../components/CustomSearchBox/CustomSearchBox';
@@ -182,12 +184,7 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
       setYouthnet(isYouthnet);
       let userId = await getDataFromStorage('userId');
       setUserId(userId);
-      const instant =
-        userType === 'youthnet'
-          ? { frameworkId: 'pos-framework', channelId: 'pos-channel' }
-          : userType === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+      const instant = await getContentPlatformIds();
       setInstant(instant);
     };
     fetch();
@@ -290,8 +287,10 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
     }
     const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
     const channelId = tenantData?.[0]?.channelId;
-    if(channelId == 'scp-channel'){
-      mergedFilter.targetBoardIds = ["scp-framework_board_cocurricular"];
+    if (channelId == CONTENT_PLATFORM_IDS.SCP.channelId && CONTENT_PLATFORM_IDS.SCP.boardId) {
+      mergedFilter.targetBoardIds = [CONTENT_PLATFORM_IDS.SCP.boardId];
+    } else if (channelId == CONTENT_PLATFORM_IDS.SCP_PATHWAYS.channelId && CONTENT_PLATFORM_IDS.SCP_PATHWAYS.boardId) {
+      mergedFilter.targetBoardIds = [CONTENT_PLATFORM_IDS.SCP_PATHWAYS.boardId];
     }
     let data = await courseListApi_New({
       searchText,

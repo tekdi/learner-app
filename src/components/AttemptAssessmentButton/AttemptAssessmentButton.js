@@ -72,7 +72,7 @@ const AttemptAssessmentButton = () => {
           status: ['Live'],
           primaryCategory: ['Practice Question Set'],
           assessmentType: 'Eligibility Test',
-          program: [TENANT_DATA.SECOND_CHANCE_PROGRAM, 'Second Chance'],
+          program: uiConfig?.program || [TENANT_DATA.SECOND_CHANCE_PROGRAM, 'Second Chance'],
           ...(preferredLanguage ? { contentLanguage: [preferredLanguage] } : {}),
         },
         sort_by: { lastUpdatedOn: 'desc' },

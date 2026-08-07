@@ -41,6 +41,7 @@ import { NotificationUnsubscribe } from '../../utils/Helper/JSHelper';
 const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [currentUserType, setCurrentUserType] = useState('');
+  const [currentProgramName, setCurrentProgramName] = useState('');
   const [enrolledPrograms, setEnrolledPrograms] = useState([]);
   const [tenantData, setTenantData] = useState([]);
   const navigation = useNavigation();
@@ -90,6 +91,11 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       if (response?.userData?.tenantData) {
         const allTenantData = response.userData.tenantData;
         setTenantData(allTenantData);
+
+        const currentTenant = allTenantData.find(
+          (tenant) => tenant.tenantId === currentTenantId
+        );
+        setCurrentProgramName(currentTenant?.tenantName || '');
 
         // Filter tenants where role is "Learner" and status is "active" or "pending"
         // AND exclude the current program
@@ -236,7 +242,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
         ?.map((item) => item?.tenantId);
 
       const scpTenantIds = tenantDetails
-        ?.filter((item) => item?.name === TENANT_DATA.SECOND_CHANCE_PROGRAM)
+        ?.filter((item) => [TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(item?.name))
         ?.map((item) => item?.tenantId);
 
       const campToClubTenantIds = tenantDetails
@@ -295,7 +301,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           index: 0,
           routes: [{ name: 'SCPUserTabScreen' }],
         });
-      } else if (selectedTenantName === TENANT_DATA.SECOND_CHANCE_PROGRAM) {
+      } else if ([TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(selectedTenantName)) {
         console.log('#### Navigating to SCP (matched by tenant name)');
         await setDataInStorage('userType', 'scp');
         navigation.reset({
@@ -608,6 +614,29 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
 
 
 
+  const normalizeName = (name) => (name || '').trim().toLowerCase();
+  const normalizedCurrentProgramName = normalizeName(currentProgramName);
+
+  let headerProgramLabel;
+  if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM)) {
+    headerProgramLabel = t('second_chance_program');
+  } else if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS)) {
+    headerProgramLabel = t('second_chance_program_pathways');
+  } else if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.YOUTHNET)) {
+    headerProgramLabel = t('vocational_training');
+  } else if (currentProgramName) {
+    headerProgramLabel = currentProgramName;
+  } else if (currentUserType === 'youthnet') {
+    headerProgramLabel = t('vocational_training');
+  } else if (currentUserType === 'scp') {
+    // Tenant name unavailable (e.g. fetch failed) — SCP and Pathways both
+    // map to userType 'scp', so we can't tell which one this is. Show
+    // nothing rather than guessing and risking the wrong program name.
+    headerProgramLabel = '';
+  } else {
+    headerProgramLabel = currentUserType;
+  }
+
   return (
     <View style={styles.container}>
       {loading ? (
@@ -616,14 +645,14 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           <GlobalText style={styles.loadingText}>{t('loading_programs')}</GlobalText>
         </View>
       ) : (
-        <ScrollView 
+        <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
           {/* Current Program Header */}
           <View style={styles.headerContainer}>
             <GlobalText style={styles.currentProgramTitle}>
-              {currentUserType === 'scp' ? t('second_chance_program') : currentUserType === 'youthnet' ? t('vocational_training') : currentUserType}
+              {headerProgramLabel}
             </GlobalText>
           </View>
 
