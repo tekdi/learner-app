@@ -30,8 +30,9 @@ export const getContentPlatformIds = async () => {
     return CONTENT_PLATFORM_IDS.DEFAULT;
   }
   const tenantData = JSON.parse((await getDataFromStorage('tenantData')) || '[]');
-  const tenantName = tenantData?.[0]?.tenantName;
-  return tenantName === TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS
+  const tenantName = (tenantData?.[0]?.tenantName || '').trim().toLowerCase();
+  const pathwaysName = TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS.trim().toLowerCase();
+  return tenantName === pathwaysName
     ? CONTENT_PLATFORM_IDS.SCP_PATHWAYS
     : CONTENT_PLATFORM_IDS.SCP;
 };
