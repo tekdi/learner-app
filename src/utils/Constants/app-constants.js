@@ -30,6 +30,9 @@ export const CONTENT_PLATFORM_IDS = {
     channelId: 'pathways-channel',
     collectionFramework: 'pathwayFramework',
     questionSetFramework: 'pathwayFramework',
-    boardId: 'scp-framework_board_cocurricular',
+    // No confirmed board ID for Pathways content yet — leave unset (null)
+    // rather than reusing SCP's board ID, which would silently filter out
+    // every Pathways course whose content isn't tagged with that board.
+    boardId: null,
   },
 };

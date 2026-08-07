@@ -81,9 +81,9 @@ const ContinueLearning = ({ youthnet, t, userId }) => {
           
           const channelId = tenantData?.[0]?.channelId;
          let mergedFilter={}
-    if (channelId == CONTENT_PLATFORM_IDS.SCP.channelId) {
+    if (channelId == CONTENT_PLATFORM_IDS.SCP.channelId && CONTENT_PLATFORM_IDS.SCP.boardId) {
       mergedFilter.targetBoardIds = [CONTENT_PLATFORM_IDS.SCP.boardId];
-    } else if (channelId == CONTENT_PLATFORM_IDS.SCP_PATHWAYS.channelId) {
+    } else if (channelId == CONTENT_PLATFORM_IDS.SCP_PATHWAYS.channelId && CONTENT_PLATFORM_IDS.SCP_PATHWAYS.boardId) {
       mergedFilter.targetBoardIds = [CONTENT_PLATFORM_IDS.SCP_PATHWAYS.boardId];
     }
           let data = await courseListApi_New({
