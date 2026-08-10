@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,7 @@ import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTranslation } from '../../../../context/LanguageContext';
-import { formatDateTimeRange, getStoredUsername } from '../../../../utils/JsHelper/Helper';
+import { formatDateTimeRange, getCurrentUsername } from '../../../../utils/JsHelper/Helper';
 import { useNavigation } from '@react-navigation/native';
 import menu_book from '../../../../assets/images/png/menu_book.png';
 import ZoomWebView from '../../../../components/ZoomWebView/ZoomWebView';
@@ -28,17 +28,17 @@ import GlobalText from '@components/GlobalText/GlobalText';
 
 // Appends the learner's name as the Zoom `uname` query param so the
 // external browser / native Zoom app can prefill the display name on join.
-// const buildZoomUriWithUsername = (baseUri, userName) => {
-//   if (!userName) return baseUri;
-//   try {
-//     const url = new URL(baseUri);
-//     url.searchParams.set('uname', userName);
-//     return url.toString();
-//   } catch {
-//     const sep = baseUri.includes('?') ? '&' : '?';
-//     return `${baseUri}${sep}uname=${encodeURIComponent(userName)}`;
-//   }
-// };
+const buildZoomUriWithUsername = (baseUri, userName) => {
+  if (!userName) return baseUri;
+  try {
+    const url = new URL(baseUri);
+    url.searchParams.set('uname', userName);
+    return url.toString();
+  } catch {
+    const sep = baseUri.includes('?') ? '&' : '?';
+    return `${baseUri}${sep}uname=${encodeURIComponent(userName)}`;
+  }
+};
 
 const SubjectCard = ({ item }) => {
   const [isAccordionOpen, setAccordionOpen] = useState(false);
@@ -48,30 +48,23 @@ const SubjectCard = ({ item }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchUserName = async () => {
-      try {
-        const storedUsername = await getStoredUsername();
-        if (storedUsername) {
-          setUserName(storedUsername);
-        }
-      } catch (error) {
-        console.log('Error fetching user name:', error);
-      }
-    };
-    fetchUserName();
-  }, []);
-
   const handleCopyLink = (zoomLink) => {
     Clipboard.setString(zoomLink); // Copy the Zoom link to the clipboard
     setShowToast(true); // Show toast message
   };
 
-  const handleOpenZoom = () => {
+  // Resolve the name on press rather than on mount, so a screen kept alive
+  // across a re-login can never carry the previous user's name into Zoom.
+  const handleOpenZoom = async () => {
     if (item?.onlineDetails?.url) {
+      const currentUserName = await getCurrentUsername();
+      // Keeps the in-app ZoomWebView path (currently disabled) on the same name.
+      setUserName(currentUserName || '');
       // setShowZoomModal(true);
-      // Linking.openURL(buildZoomUriWithUsername(item.onlineDetails.url, userName));
-      Linking.openURL(item.onlineDetails.url);
+      Linking.openURL(
+        buildZoomUriWithUsername(item?.onlineDetails?.url, currentUserName)
+      );
+      // Linking.openURL(item.onlineDetails.url);
     }
   };
 
