@@ -9,43 +9,35 @@ import {
   getDataFromStorage,
   getMergedProfileSchema,
   getMissingProfileFields,
-  getProfileCompletionSchema,
 } from '../../utils/JsHelper/Helper';
 
 const CompleteProfileBanner = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const [banner, setBanner] = useState({
-    visible: false,
-    tenantId: null,
-    missingFields: [],
-  });
+  const [banner, setBanner] = useState({ visible: false, tenantId: null });
 
   const checkProfileCompletion = useCallback(async () => {
     try {
       const tenantData = JSON.parse((await getDataFromStorage('tenantData')) || 'null');
       const tenantId = tenantData?.[0]?.tenantId;
       if (!tenantId) {
-        setBanner({ visible: false, tenantId: null, missingFields: [] });
+        setBanner({ visible: false, tenantId: null });
         return;
       }
 
-      // Completeness is judged only on the current program's required fields
-      // (see getProfileCompletionSchema). The user's saved values are still read
-      // against the full merged schema so common-form labels resolve correctly.
-      const mergedSchema = await getMergedProfileSchema(tenantId);
-      const completionSchema = await getProfileCompletionSchema(tenantId);
+      // Scope is common + program-specific, matching web. getMissingProfileFields
+      // applies the banner's own exclusion list (e.g. middleName never counts).
+      const schema = await getMergedProfileSchema(tenantId);
       const profileData = JSON.parse((await getDataFromStorage('profileData')) || 'null');
-      const userDetails = buildUserDetailsObject(profileData, mergedSchema);
-      const { missingFields, isComplete } = getMissingProfileFields(
-        completionSchema,
-        userDetails
-      );
+      const userDetails = buildUserDetailsObject(profileData, schema);
+      const { isComplete } = getMissingProfileFields(schema, userDetails);
 
-      setBanner({ visible: !isComplete, tenantId, missingFields });
+      // The form derives its own field list (it asks for a few things the banner
+      // ignores), so only the tenant is handed over.
+      setBanner({ visible: !isComplete, tenantId });
     } catch {
       // Fail closed - don't nag the user if we couldn't determine completeness.
-      setBanner({ visible: false, tenantId: null, missingFields: [] });
+      setBanner({ visible: false, tenantId: null });
     }
   }, []);
 
@@ -69,7 +61,6 @@ const CompleteProfileBanner = () => {
         onPress={() =>
           navigation.navigate('CompleteProfileForm', {
             tenantId: banner.tenantId,
-            missingFields: banner.missingFields,
           })
         }
       >
