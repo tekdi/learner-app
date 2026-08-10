@@ -23,8 +23,7 @@ import {
   buildUserDetailsObject,
   getDataFromStorage,
   getMergedProfileSchema,
-  getMissingProfileFields,
-  getProfileCompletionSchema,
+  getProfileFormFields,
   logEventFunction,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
@@ -63,24 +62,14 @@ const CompleteProfileFormScreen = () => {
     const loadSchema = async () => {
       const tenantData = JSON.parse((await getDataFromStorage('tenantData')) || 'null');
       const tenantId = route.params?.tenantId || tenantData?.[0]?.tenantId;
-      // `schema` is the full merged set - needed so we can still render a field
-      // like father_name that is not itself part of the completion scope.
-      // `completionSchema` (program form, required only) is what decides which
-      // fields count as missing, matching the web client.
+      // Scope is common + program-specific, matching web. The form asks for a
+      // slightly wider set than the banner counts (getProfileFormFields includes
+      // middleName, which must never by itself keep the banner up).
       const schema = await getMergedProfileSchema(tenantId);
       const profileData = JSON.parse((await getDataFromStorage('profileData')) || 'null');
       const userDetails = buildUserDetailsObject(profileData, schema);
 
-      let missingFields = route.params?.missingFields;
-      if (!missingFields) {
-        const completionSchema = await getProfileCompletionSchema(tenantId);
-        missingFields = getMissingProfileFields(
-          completionSchema,
-          userDetails
-        ).missingFields;
-      }
-
-      const fieldsToShow = new Set(missingFields);
+      const fieldsToShow = new Set(getProfileFormFields(schema, userDetails));
       if (fieldsToShow.has('family_member_details')) {
         // The relation is still unknown, so keep all three name fields in the
         // schema - once the user picks one, isFieldVisible() shows only that one.

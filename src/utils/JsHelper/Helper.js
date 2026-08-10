@@ -619,35 +619,13 @@ export const getProfileFormSchemas = async (tenantId) => {
   return { commonFields, programFields };
 };
 
-// Everything a learner can edit: common form + current program's form. Used by
-// the full Edit Profile screen, and by the Complete Profile mini-form when it
-// needs to render a field (e.g. a family member's name) that is not itself part
-// of the completion scope below.
+// Everything a learner can edit: common form + current program's form. This is
+// the scope the web client uses for both the Edit Profile screen and the
+// Complete Profile step (common union program-specific).
 export const getMergedProfileSchema = async (tenantId) => {
   const { commonFields, programFields } = await getProfileFormSchemas(tenantId);
 
   return [...commonFields, ...programFields].filter(
-    (field) => field.name !== 'center' && field.name !== 'batch'
-  );
-};
-
-// The fields that determine whether a profile counts as "complete" for the
-// current program - deliberately narrower than getMergedProfileSchema.
-//
-// Scope is the PROGRAM form only, matching the web client: common-form fields
-// (name, dob, gender, state/district/block/village, preferred language) are
-// collected during registration, so they must never hold this banner open.
-// Both required and optional program fields count - Camp to Club's two fields
-// are optional and web still asks for them.
-//
-// `center`/`batch` are dropped here (admin-assigned, not user-supplied); the
-// remaining exclusions - unsupported types like `consent_file`, and the
-// name-based list in PROFILE_COMPLETENESS_OPTIONAL_FIELDS - are applied by
-// getMissingProfileFields.
-export const getProfileCompletionSchema = async (tenantId) => {
-  const { programFields } = await getProfileFormSchemas(tenantId);
-
-  return programFields.filter(
     (field) => field.name !== 'center' && field.name !== 'batch'
   );
 };
@@ -739,21 +717,55 @@ export const PROFILE_ALWAYS_HIDDEN_FIELDS = [
   'is_volunteer',
 ];
 
-// Fully editable in the forms, but genuinely optional - a user may legitimately
-// have no value for these, so leaving them blank must not keep the Complete
-// Profile banner up forever.
-export const PROFILE_COMPLETENESS_OPTIONAL_FIELDS = [
-  'middle_name',
-  'middleName',
+// Collected on their own dedicated screens (registration / enrollment / admin),
+// so the Complete Profile step never asks for them and they never hold the
+// banner open. Mirrors the web client's shared delete-list
+// (EditProfile.tsx responseForm + helper.ts getMissingFields).
+const PROFILE_COLLECTED_ELSEWHERE_FIELDS = [
+  'username',
+  'password',
+  'confirm_password',
+  'program',
+  'batch',
+  'center',
+  'state',
+  'district',
+  'block',
+  'village',
+  'is_volunteer',
+  'consent_file',
+  'privacy_consent',
+  'parent_guardian_consent',
+  'nda_policy',
+  'child_pocso_fraud_policy',
+  'how_would_you_like_to_register',
+  'organisation_registered',
+  'volunteer_type',
+  'ptm_id',
+  'poc_id',
+  'org_id',
 ];
 
-const ALWAYS_EXCLUDED_PROFILE_FIELDS = [
-  ...PROFILE_ALWAYS_HIDDEN_FIELDS,
-  ...PROFILE_NON_EDITABLE_FIELDS,
-  ...PROFILE_COMPLETENESS_OPTIONAL_FIELDS,
-  'center',
-  'batch',
-  'program',
+// Fields the Complete Profile FORM never renders, on top of the list above.
+// Web deletes what_do_you_want_to_become from the form (EditProfile.tsx:196-217).
+export const PROFILE_FORM_EXCLUDED_FIELDS = [
+  ...PROFILE_COLLECTED_ELSEWHERE_FIELDS,
+  'what_do_you_want_to_become',
+];
+
+// Fields that never count toward completeness (i.e. never keep the banner up),
+// on top of the shared list. Distinct from the form list on purpose - web shows
+// middleName in the form but never lets it mark a profile incomplete
+// ("middle name is optional, filled or not it should never mark the profile
+// incomplete", helper.ts:179), and never reports the guardian trio as missing.
+export const PROFILE_BANNER_EXCLUDED_FIELDS = [
+  ...PROFILE_COLLECTED_ELSEWHERE_FIELDS,
+  'what_do_you_want_to_become',
+  'middle_name',
+  'middleName',
+  'guardian_name',
+  'guardian_relation',
+  'parent_phone',
 ];
 
 // Whether `field` should be rendered at all given the rest of the form's current
@@ -819,21 +831,35 @@ export const isProfileFieldVisible = (field, formData) => {
   return true;
 };
 
-// Given the merged schema (§getMergedProfileSchema) and the user's saved profile
-// data (§buildUserDetailsObject), returns which schema fields have no value yet.
-//
-// A field only counts as "missing" if the user can actually fill it in through
-// the Complete Profile form: it must render (supported type + currently visible)
-// and be editable. Anything else would produce a banner the user can never clear,
-// because the form it opens would have no usable input for that field.
-export const getMissingProfileFields = (schema, userDetails) => {
-  const missingFields = (schema || [])
+// Shared core: unanswered fields from `schema` that the app can actually render,
+// after applying `excluded` and the conditional-visibility rules.
+const getUnansweredProfileFields = (schema, userDetails, excluded) =>
+  (schema || [])
     .filter((field) => field?.name)
-    .filter((field) => !ALWAYS_EXCLUDED_PROFILE_FIELDS.includes(field.name))
+    .filter((field) => !excluded.includes(field.name))
     .filter((field) => PROFILE_SUPPORTED_FIELD_TYPES.includes(field.type))
     .filter((field) => isProfileFieldVisible(field, userDetails))
     .filter((field) => !extractProfileFieldValue(userDetails?.[field.name]))
     .map((field) => field.name);
+
+// Which fields the Complete Profile FORM should ask for. Includes middleName
+// (web shows it) but not what_do_you_want_to_become (web deletes it).
+export const getProfileFormFields = (schema, userDetails) =>
+  getUnansweredProfileFields(schema, userDetails, PROFILE_FORM_EXCLUDED_FIELDS);
+
+// Whether the profile counts as complete, i.e. whether to show the banner.
+// Deliberately a narrower list than the form's: leaving middleName or the
+// guardian trio blank must never keep the banner up.
+//
+// The banner list is a superset of the form list, which guarantees the form can
+// always offer an input for anything the banner reports as missing - otherwise
+// the user would face a banner they can never clear.
+export const getMissingProfileFields = (schema, userDetails) => {
+  const missingFields = getUnansweredProfileFields(
+    schema,
+    userDetails,
+    PROFILE_BANNER_EXCLUDED_FIELDS
+  );
 
   return { missingFields, isComplete: missingFields.length === 0 };
 };
