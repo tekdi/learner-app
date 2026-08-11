@@ -1,6 +1,10 @@
-import React, { useCallback, useState } from 'react';
-import { Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { AppState, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native';
 import { Button, useTheme } from '@ui-kitten/components';
 import { useTranslation } from '../../context/LanguageContext';
 import {
@@ -15,10 +19,38 @@ import {
 import GlobalText from '../GlobalText/GlobalText';
 import globalStyles from '../../utils/Helper/Style';
 
+// Mirrors the batch eligibility check used by SCPUserTabScreen to show the
+// Home/My Class tabs, so the button disappears as soon as those tabs appear.
+const hasActiveBatchAssigned = async () => {
+  const cohortAssignedId = await getDataFromStorage(
+    'cohortAssignedToAnyAcademicYearId'
+  );
+  if (cohortAssignedId) {
+    return true;
+  }
+
+  try {
+    const cohortparse = await getDataFromStorage('cohortData');
+    if (!cohortparse) {
+      return false;
+    }
+    const cohortData = JSON.parse(cohortparse);
+    return (
+      cohortData?.type === 'BATCH' &&
+      cohortData?.cohortMemberStatus === 'active' &&
+      cohortData?.cohortStatus === 'active'
+    );
+  } catch (error) {
+    console.error('AttemptAssessmentButton: cohortData parse failed', error);
+    return false;
+  }
+};
+
 const AttemptAssessmentButton = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const [showButton, setShowButton] = useState(false);
   const [questionSetIdentifier, setQuestionSetIdentifier] = useState(null);
   const [questionSetMimeType, setQuestionSetMimeType] = useState(null);
@@ -56,9 +88,9 @@ const AttemptAssessmentButton = () => {
       return;
     }
 
-    const cohortAssignedId = await getDataFromStorage('cohortAssignedToAnyAcademicYearId');
-    console.log('AttemptAssessmentButton: cohortAssignedId from storage:', cohortAssignedId);
-    if (cohortAssignedId) {
+    const batchAssigned = await hasActiveBatchAssigned();
+    console.log('AttemptAssessmentButton: batchAssigned:', batchAssigned);
+    if (batchAssigned) {
       setShowButton(false);
       return;
     }
@@ -136,6 +168,33 @@ const AttemptAssessmentButton = () => {
       checkPendingAssessment();
     }, [checkPendingAssessment])
   );
+
+  // SCPUserTabScreen keeps `cohortData` fresh while the tabs are mounted, so a
+  // cheap storage-only poll is enough to drop the button the moment a batch is
+  // assigned — no need to repeat the ContentSearch/assessment-status calls.
+  useEffect(() => {
+    if (!isFocused || !showButton) {
+      return;
+    }
+
+    let cancelled = false;
+    const checkBatch = async () => {
+      if (AppState.currentState !== 'active') {
+        return;
+      }
+      const batchAssigned = await hasActiveBatchAssigned();
+      if (!cancelled && batchAssigned) {
+        setShowButton(false);
+      }
+    };
+
+    const intervalId = setInterval(checkBatch, 3000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, [isFocused, showButton]);
 
   const handlePress = () => {
     if (isContentAvailable && questionSetIdentifier) {
