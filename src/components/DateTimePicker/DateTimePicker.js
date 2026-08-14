@@ -13,6 +13,7 @@ import GlobalText from '@components/GlobalText/GlobalText';
 import { default as MaterialIcons } from 'react-native-vector-icons/MaterialIcons';
 import globalStyles from '../../utils/Helper/Style';
 import moment from 'moment';
+import { isProfileFieldRequired } from '../../utils/JsHelper/Helper';
 
 const DateTimePicker = ({
   handleValue,
@@ -116,7 +117,7 @@ const DateTimePicker = ({
           ]}
         >
           {t(field.label.toLowerCase())}
-          {!field?.isRequired && `(${t('optional')})`}
+          {isProfileFieldRequired(field) && <Text style={styles.required}> *</Text>}
         </GlobalText>
       </View>
       {errors[field.name] && (
@@ -180,5 +181,8 @@ const styles = StyleSheet.create({
     paddingLeft: 2,
     fontFamily: 'Poppins-Regular',
     paddingRight: 2,
+  },
+  required: {
+    color: 'red',
   },
 });

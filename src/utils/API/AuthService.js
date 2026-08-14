@@ -135,6 +135,10 @@ export const getStudentForm = async (tenantId) => {
   // const url = `${EndUrls.get_form}`;
   const url = `${EndUrls.get_form}`;
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
+  // Common form and each tenant's program form share `url`, so the cache key
+  // must include tenantId - otherwise they collide on the same cached row and
+  // an offline fallback can return a different program's fields.
+  const cacheKey = { tenantId: tenantId || 'common' };
   try {
     // Generate the curl command
     const curlCommand = `curl -X GET '${url}' \\
@@ -150,14 +154,14 @@ ${Object.entries(headers || {})
     });
 
     if (result) {
-      await storeApiResponse(user_id, url, 'get', null, result?.data?.result);
+      await storeApiResponse(user_id, url, 'get', cacheKey, result?.data?.result);
       return result?.data?.result;
     } else {
-      const result_offline = await getApiResponse(user_id, url, 'get', null);
+      const result_offline = await getApiResponse(user_id, url, 'get', cacheKey);
       return result_offline;
     }
   } catch (e) {
-    const result_offline = await getApiResponse(user_id, url, 'get', null);
+    const result_offline = await getApiResponse(user_id, url, 'get', cacheKey);
     return result_offline;
   }
 };

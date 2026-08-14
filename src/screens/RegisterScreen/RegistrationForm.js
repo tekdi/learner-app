@@ -39,6 +39,7 @@ import {
   getDeviceId,
   getuserDetails,
   getUserId,
+  isProfileFieldRequired,
   logEventFunction,
   saveAccessToken,
   saveRefreshToken,
@@ -627,7 +628,7 @@ const RegistrationForm = ({ fields }) => {
           return; // Skip validation for these fields
         }
         if (
-          (field?.isRequired === true && !value) ||
+          (isProfileFieldRequired(field) === true && !value) ||
           // (field.name === 'blocks' && !value) ||
           // (field.name === 'states' && !value) ||
           // (field.name === 'districts' && !value) ||
@@ -637,14 +638,22 @@ const RegistrationForm = ({ fields }) => {
           newErrors[field.name] = `${t(field.label.toLowerCase())} ${t(
             'is_required'
           )}`;
-        } else if (field.minLength && value.length < field.minLength && value) {
+        } else if (
+          Number(field.minLength) > 0 &&
+          value.length < Number(field.minLength) &&
+          value
+        ) {
           newErrors[field.name] = `${t('min_validation')
             .replace('{field}', t(field.label.toLowerCase()))
-            .replace('{length}', field.minLength)}`;
-        } else if (field.maxLength && value.length > field.maxLength && value) {
+            .replace('{length}', Number(field.minLength))}`;
+        } else if (
+          Number(field.maxLength) > 0 &&
+          value.length > Number(field.maxLength) &&
+          value
+        ) {
           newErrors[field.name] = `${t('max_validation')
             .replace('{field}', t(field.label.toLowerCase()))
-            .replace('{length}', field.maxLength)}`;
+            .replace('{length}', Number(field.maxLength))}`;
         } else if (
           field.pattern &&
           value &&
