@@ -12,6 +12,7 @@ import { useController } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import { isProfileFieldRequired } from '../../utils/JsHelper/Helper';
 
 const DropdownSelect = ({
   field,
@@ -58,9 +59,7 @@ const DropdownSelect = ({
           ]}
         >
           {t(field.label.toLowerCase())}
-          {!field?.validation?.isRequired &&
-            // && !['states', 'districts', 'blocks'].includes(field.name)
-            `(${t('optional')})`}
+          {isProfileFieldRequired(field) && <Text style={styles.required}> *</Text>}
         </GlobalText>
       </View>
 
@@ -165,6 +164,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginTop: 20,
     // marginLeft: 20,
+  },
+  required: {
+    color: 'red',
   },
 });
 

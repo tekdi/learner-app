@@ -7,6 +7,7 @@ import CustomPasswordTextField from '@components/CustomPasswordComponent/CustomP
 import DateTimePicker from '@components/DateTimePicker/DateTimePicker';
 import {
   calculateAge,
+  isProfileFieldRequired,
   isProfileFieldVisible,
   PROFILE_NON_EDITABLE_FIELDS,
 } from '../../utils/JsHelper/Helper';
@@ -26,6 +27,10 @@ const getPhoneType = (formData) => {
 // Re-exported from Helper so the forms, the banner's completeness check, and the
 // mini-form all decide field visibility from one implementation.
 export const isFieldVisible = isProfileFieldVisible;
+
+// Re-exported from Helper so every field component and the validator agree on
+// which fields are actually mandatory (see isProfileFieldRequired's comment).
+export const isFieldRequired = isProfileFieldRequired;
 
 // Reorders `schema` so father_name/mother_name/spouse_name render immediately
 // after family_member_details, regardless of their original position.
@@ -231,16 +236,23 @@ export const validateProfileFields = (schema, formData, t, fieldNames) => {
       return;
     }
 
-    if (field.isRequired && !value) {
+    // Some fields come back from the API with maxLength/minLength as 0 (or the
+    // string "0", which is truthy) meaning "no limit" rather than "zero
+    // characters allowed" - only enforce these when the limit is a positive
+    // number.
+    const minLength = Number(field.minLength);
+    const maxLength = Number(field.maxLength);
+
+    if (isProfileFieldRequired(field) && !value) {
       newErrors[field.name] = `${t(field.name)} ${t('is_required')}`;
-    } else if (field.minLength && value.length < field.minLength && value) {
+    } else if (minLength > 0 && value.length < minLength && value) {
       newErrors[field.name] = `${t('min_validation')
         .replace('{field}', t(field.name))
-        .replace('{length}', field.minLength)}`;
-    } else if (field.maxLength && value.length > field.maxLength && value) {
+        .replace('{length}', minLength)}`;
+    } else if (maxLength > 0 && value.length > maxLength && value) {
       newErrors[field.name] = `${t('max_validation')
         .replace('{field}', t(field.name))
-        .replace('{length}', field.maxLength)}`;
+        .replace('{length}', maxLength)}`;
     } else if (
       field.pattern &&
       value &&

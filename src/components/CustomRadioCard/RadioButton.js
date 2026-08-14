@@ -17,6 +17,7 @@ import { SwiperFlatList } from 'react-native-swiper-flatlist';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import { ImageCarousel } from '@src/screens/LanguageScreen/ImageCarousel';
+import { isProfileFieldRequired } from '../../utils/JsHelper/Helper';
 
 const RadioButton = ({ field, formData, handleValue, errors }) => {
   const { t } = useTranslation();
@@ -34,7 +35,7 @@ const RadioButton = ({ field, formData, handleValue, errors }) => {
       <GlobalText style={[globalStyles.text, { fontSize: 18 }]}>
         {' '}
         {t(field.label.toLowerCase())}
-        {!field?.isRequired && `(${t('optional')})`}
+        {isProfileFieldRequired(field) && <Text style={styles.required}> *</Text>}
       </GlobalText>
 
       <RadioGroup selectedIndex={selectedIndex} onChange={handlePress}>
@@ -114,6 +115,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     // marginTop: 20,
     marginLeft: 20,
+  },
+  required: {
+    color: 'red',
   },
   img: {
     // width: '100%',

@@ -791,6 +791,17 @@ export const PROFILE_BANNER_EXCLUDED_FIELDS = [
   'parent_phone',
 ];
 
+// Whether `field` is actually mandatory. The form-read API's top-level
+// `isRequired` defaults to true for many optional fields and disagrees with
+// `validation.isRequired` (the flag the field was actually configured with) -
+// e.g. Second Chance Program's drop_out_reason, class, work_domain,
+// marital_status, phone_type_accessible, own_phone_check, and
+// family_member_details all carry isRequired: true but validation.isRequired:
+// false. validation.isRequired is authoritative; fall back to the flat field
+// only if validation is absent.
+export const isProfileFieldRequired = (field) =>
+  field?.validation?.isRequired ?? field?.isRequired;
+
 // Whether `field` should be rendered at all given the rest of the form's current
 // values. Single source of truth shared by the Edit Profile form, the Complete
 // Profile mini-form, and the banner's completeness check, so the three can't
