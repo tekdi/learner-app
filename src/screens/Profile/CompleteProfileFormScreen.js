@@ -66,6 +66,13 @@ const CompleteProfileFormScreen = () => {
       // slightly wider set than the banner counts (getProfileFormFields includes
       // middleName, which must never by itself keep the banner up).
       const schema = await getMergedProfileSchema(tenantId);
+
+      const tenantName = tenantData?.find((t) => t?.tenantId === tenantId)?.name;
+      const mandatoryFields = schema.filter((field) => field.isRequired).map((field) => field.name);
+      const nonMandatoryFields = schema.filter((field) => !field.isRequired).map((field) => field.name);
+      console.log(`[CompleteProfileForm] ${tenantName || tenantId} mandatory fields:`, mandatoryFields);
+      console.log(`[CompleteProfileForm] ${tenantName || tenantId} non-mandatory fields:`, nonMandatoryFields);
+
       const profileData = JSON.parse((await getDataFromStorage('profileData')) || 'null');
       const userDetails = buildUserDetailsObject(profileData, schema);
 

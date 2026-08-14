@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import GlobalText from '@components/GlobalText/GlobalText';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { isProfileFieldRequired } from '../../utils/JsHelper/Helper';
 
 const CustomTextField = ({
   handleValue,
@@ -40,9 +41,7 @@ const CustomTextField = ({
         ]}
       >
         {t(field.label.toLowerCase())}
-        {!field?.isRequired &&
-          !['guardian_name', 'guardian_relation'].includes(field.name) &&
-          `(${t('optional')})`}
+        {isProfileFieldRequired(field) && <Text style={styles.required}> *</Text>}
       </GlobalText>
       <View style={styles.inputRow}>
         <TextInput
@@ -138,5 +137,8 @@ const styles = StyleSheet.create({
     paddingRight: 2,
     marginBottom: 6,
     fontFamily: 'Poppins-Regular',
+  },
+  required: {
+    color: 'red',
   },
 });
