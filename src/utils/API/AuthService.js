@@ -1112,17 +1112,17 @@ export const getUserDetails = async (params = {}) => {
 };
 
 export const getAssessmentStatus = async (params = {}) => {
+  const url = `${EndUrls.AssessmentStatus}`; // Define the URL
+  const payload = {
+    userId: [params?.user_id],
+    courseId: params?.uniqueAssessmentsId,
+    unitId: params?.uniqueAssessmentsId,
+    contentId: params?.uniqueAssessmentsId,
+  };
+
   try {
-    const url = `${EndUrls.AssessmentStatus}`; // Define the URL
 
     const headers = await getHeaders();
-
-    const payload = {
-      userId: [params?.user_id],
-      courseId: params?.uniqueAssessmentsId,
-      unitId: params?.uniqueAssessmentsId,
-      contentId: params?.uniqueAssessmentsId,
-    };
 
     const curlCommand = `curl -X POST '${url}' \\ 
     ${Object.entries(headers || {})
@@ -1138,12 +1138,27 @@ export const getAssessmentStatus = async (params = {}) => {
     });
 
     if (result?.data) {
+      await storeApiResponse(
+        params?.user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.data
+      );
       return result?.data?.data;
     } else {
       return {};
     }
   } catch (e) {
-    return handleResponseException(e);
+    // console.log("error outer",e);
+    try{
+      let result_offline = await getApiResponse(params?.user_id, url, 'post', payload);
+      return result_offline;
+    }
+    catch (e) {
+      // console.log("error",e);
+      return handleResponseException(e);
+    }
   }
 };
 
@@ -1375,6 +1390,66 @@ export const getSyncAsessmentOffline = async (user_id) => {
         if (rows.length > 0) {
           try {
             result_data = rows;
+          } catch (e) {}
+        }
+      })
+      .catch((err) => {
+        console.error('err', err);
+      });
+    return result_data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+//store TenantAssessment
+export const storeTenantAssessment = async (user_id, content_id, tenant_id) => {
+  try {
+    //delete if exist to overwrite
+    const data_delete = {
+      user_id: user_id,
+      content_id: content_id,
+      tenant_id: tenant_id,
+    };
+    await deleteData({
+      tableName: 'TenantAssessment',
+      where: data_delete,
+    })
+      .then((msg) => console.log())
+      .catch((err) => console.error());
+    //store or overwrite
+    const data_insert = {
+      user_id: user_id,
+      content_id: content_id,
+      tenant_id: tenant_id,
+    };
+    await insertData({
+      tableName: 'TenantAssessment',
+      data: data_insert,
+    })
+      .then((msg) => console.log())
+      .catch((err) => console.error());
+  } catch (e) {
+    console.log(e);
+  }
+};
+export const getTenantAssessment = async (user_id, content_id, tenant_id) => {
+  try {
+    //get result
+    const data_get = {
+      user_id: user_id,
+      content_id: content_id,
+      tenant_id: tenant_id,
+    };
+    let result_data = null;
+    await getData({
+      tableName: 'TenantAssessment',
+      where: data_get,
+    })
+      .then((rows) => {
+        if (rows.length > 0) {
+          try {
+            result_data = rows[0];
           } catch (e) {}
         }
       })
