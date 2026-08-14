@@ -8,6 +8,7 @@ import FullAttendance from '../../screens/Dashboard/Calendar/FullAttendance';
 import TimeTable from '../../screens/Dashboard/Calendar/TimeTable';
 import PreviousClassMaterialFullView from '../../screens/Dashboard/Preference/SCPDashboard/PreviousClassMaterialFullView';
 import SubjectDetails from '../../screens/Dashboard/Preference/SCPDashboard/SubjectDetails';
+import CompleteProfileFormScreen from '../../screens/Profile/CompleteProfileFormScreen';
 
 //for deep link
 import CourseContentList from '@src/screens/Dashboard/Courses/CourseContentList';
@@ -56,6 +57,11 @@ const SCPUserStack = () => {
       <Stack.Screen
         name="SubjectDetails"
         component={SubjectDetails}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="CompleteProfileForm"
+        component={CompleteProfileFormScreen}
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
       {/* //for deep link course */}

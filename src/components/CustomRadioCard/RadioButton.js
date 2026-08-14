@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   TouchableOpacity,
   Image,
   Dimensions,
@@ -18,6 +17,7 @@ import { SwiperFlatList } from 'react-native-swiper-flatlist';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import { ImageCarousel } from '@src/screens/LanguageScreen/ImageCarousel';
+import { isProfileFieldRequired } from '../../utils/JsHelper/Helper';
 
 const RadioButton = ({ field, formData, handleValue, errors }) => {
   const { t } = useTranslation();
@@ -35,11 +35,11 @@ const RadioButton = ({ field, formData, handleValue, errors }) => {
       <GlobalText style={[globalStyles.text, { fontSize: 18 }]}>
         {' '}
         {t(field.label.toLowerCase())}
-        {!field?.isRequired && `(${t('optional')})`}
+        {isProfileFieldRequired(field) && <Text style={styles.required}> *</Text>}
       </GlobalText>
 
       <RadioGroup selectedIndex={selectedIndex} onChange={handlePress}>
-        <ScrollView>
+        <View>
           <View
             style={{
               flexWrap: 'wrap',
@@ -80,7 +80,7 @@ const RadioButton = ({ field, formData, handleValue, errors }) => {
           {errors[field.name] && (
             <GlobalText style={styles.error}>{errors[field.name]}</GlobalText>
           )}
-        </ScrollView>
+        </View>
       </RadioGroup>
     </>
   );
@@ -88,13 +88,13 @@ const RadioButton = ({ field, formData, handleValue, errors }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    padding: 20,
-    marginVertical: 10,
-    marginHorizontal: 10,
+    backgroundColor: '#b51212',
+    padding:10,
+    marginVertical: 8,
+    marginHorizontal: 8,
     borderRadius: 8,
     elevation: 3,
-    width: '44%',
+   //width: '44%',
   },
   radioContainer: {
     flexDirection: 'row',
@@ -115,6 +115,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     // marginTop: 20,
     marginLeft: 20,
+  },
+  required: {
+    color: 'red',
   },
   img: {
     // width: '100%',
