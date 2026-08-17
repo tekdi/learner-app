@@ -48,6 +48,7 @@ import globalStyles from '../../../utils/Helper/Style';
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../components/AppUpdate/AppUpdatePopup';
 import AttemptAssessmentButton from '../../../components/AttemptAssessmentButton/AttemptAssessmentButton';
+import CompleteProfileBanner from '../../../components/CompleteProfileBanner/CompleteProfileBanner';
 import PrimaryButton from '../../../components/PrimaryButton/PrimaryButton';
 import InterestModal from './InterestModal';
 import InterestModalError from './InterestModalError';
@@ -441,6 +442,7 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
             <ActiveLoading />
           ) : (
             <>
+              <CompleteProfileBanner />
               <View style={styles.view2}>
                 <Image source={wave} resizeMode="contain" />
                 <GlobalText style={globalStyles.h6}>

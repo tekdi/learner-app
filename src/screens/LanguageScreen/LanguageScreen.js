@@ -199,6 +199,15 @@ const LanguageScreen = () => {
         'detailsObject TEXT',
       ];
       await createTable({ tableName, columns });
+      //TenantAssessment
+      tableName = 'TenantAssessment';
+      columns = [
+        'id INTEGER PRIMARY KEY AUTOINCREMENT',
+        'user_id TEXT',
+        'content_id TEXT',
+        'tenant_id TEXT',
+      ];
+      await createTable({ tableName, columns });
 
       //alter table for new columns add
       //add unit_id in Tracking_Offline_2

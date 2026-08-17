@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BackHandler, PermissionsAndroid } from 'react-native';
-import { getAccessToken } from '../API/AuthService';
+import { getAccessToken, getStudentForm } from '../API/AuthService';
 import analytics from '@react-native-firebase/analytics';
 import RNFS from 'react-native-fs';
 import messaging from '@react-native-firebase/messaging';
@@ -624,6 +624,278 @@ export const createNewObjectTarget = (customFields, labels, profileView) => {
   });
 
   return result;
+};
+
+// Fetches the two Form Read responses that make up a learner's profile:
+// the base ("common") form collected at registration, and the current program's
+// own form. Both are cached to storage because TransformPayload reads them back
+// when building the update payload.
+export const getProfileFormSchemas = async (tenantId) => {
+  const base = await getStudentForm();
+  const program = await getStudentForm(tenantId);
+  const commonFields = base?.fields || [];
+  const programFields = program?.fields || [];
+
+  await setDataInStorage('studentForm', JSON.stringify(commonFields));
+  await setDataInStorage('studentProgramForm', JSON.stringify(programFields));
+
+  return { commonFields, programFields };
+};
+
+// Everything a learner can edit: common form + current program's form. This is
+// the scope the web client uses for both the Edit Profile screen and the
+// Complete Profile step (common union program-specific).
+export const getMergedProfileSchema = async (tenantId) => {
+  const { commonFields, programFields } = await getProfileFormSchemas(tenantId);
+
+  return [...commonFields, ...programFields].filter(
+    (field) => field.name !== 'center' && field.name !== 'batch'
+  );
+};
+
+// Builds the same flattened { fieldName: value } object ProfileUpdateForm builds
+// from cached profileData + the merged schema's labels, for reuse by anything that
+// needs to inspect the user's saved values (e.g. the profile-completeness check).
+export const buildUserDetailsObject = (profileData, schema) => {
+  const finalResult = profileData?.getUserDetails?.[0];
+  if (!finalResult) {
+    return {};
+  }
+
+  const keysToRemove = [
+    'customFields',
+    'total_count',
+    'status',
+    'updatedAt',
+    'createdAt',
+    'updatedBy',
+    'createdBy',
+    'username',
+  ];
+  const filteredResult = Object.keys(finalResult)
+    .filter((key) => !keysToRemove.includes(key))
+    .reduce((obj, key) => {
+      obj[key] = finalResult[key];
+      return obj;
+    }, {});
+
+  const requiredLabels = schema?.map((item) => ({
+    label: item?.label,
+    name: item?.name,
+  }));
+  const userDetails = createNewObject(finalResult?.customFields, requiredLabels);
+
+  return { ...userDetails, ...filteredResult };
+};
+
+const extractProfileFieldValue = (fieldValue) => {
+  if (fieldValue === null || fieldValue === undefined) {
+    return '';
+  }
+  if (Array.isArray(fieldValue)) {
+    return fieldValue.length > 0
+      ? String(fieldValue[0]?.value ?? fieldValue[0] ?? '').trim()
+      : '';
+  }
+  if (typeof fieldValue === 'object') {
+    return fieldValue.value !== undefined ? String(fieldValue.value).trim() : '';
+  }
+  return String(fieldValue).trim();
+};
+
+// Field types the profile forms know how to render (see renderProfileField in
+// screens/Profile/ProfileFormShared.js). A field of any other type cannot be
+// filled in through the app, so it must never be counted as "missing" - doing so
+// would show a Complete Profile banner that opens a form with nothing in it.
+export const PROFILE_SUPPORTED_FIELD_TYPES = [
+  'text',
+  'email',
+  'numeric',
+  'radio',
+  'select',
+  'drop_down',
+  'password',
+  'confirm_password',
+  'date',
+];
+
+// Rendered, but read-only - set at registration or derived elsewhere. The user
+// cannot change these here, so they must never be counted as "missing" either.
+export const PROFILE_NON_EDITABLE_FIELDS = [
+  'first_name',
+  'firstName',
+  'last_name',
+  'lastName',
+  'state',
+  'district',
+  'block',
+  'village',
+];
+
+// Never rendered at all - internal/system fields.
+export const PROFILE_ALWAYS_HIDDEN_FIELDS = [
+  'username',
+  'password',
+  'confirm_password',
+  'is_volunteer',
+];
+
+// Collected on their own dedicated screens (registration / enrollment / admin),
+// so the Complete Profile step never asks for them and they never hold the
+// banner open. Mirrors the web client's shared delete-list
+// (EditProfile.tsx responseForm + helper.ts getMissingFields).
+const PROFILE_COLLECTED_ELSEWHERE_FIELDS = [
+  'username',
+  'password',
+  'confirm_password',
+  'program',
+  'batch',
+  'center',
+  'state',
+  'district',
+  'block',
+  'village',
+  'is_volunteer',
+  'consent_file',
+  'privacy_consent',
+  'parent_guardian_consent',
+  'nda_policy',
+  'child_pocso_fraud_policy',
+  'how_would_you_like_to_register',
+  'organisation_registered',
+  'volunteer_type',
+  'ptm_id',
+  'poc_id',
+  'org_id',
+];
+
+// Fields the Complete Profile FORM never renders, on top of the list above.
+// Web deletes what_do_you_want_to_become from the form (EditProfile.tsx:196-217).
+export const PROFILE_FORM_EXCLUDED_FIELDS = [
+  ...PROFILE_COLLECTED_ELSEWHERE_FIELDS,
+  'what_do_you_want_to_become',
+];
+
+// Fields that never count toward completeness (i.e. never keep the banner up),
+// on top of the shared list. Distinct from the form list on purpose - web shows
+// middleName in the form but never lets it mark a profile incomplete
+// ("middle name is optional, filled or not it should never mark the profile
+// incomplete", helper.ts:179), and never reports the guardian trio as missing.
+export const PROFILE_BANNER_EXCLUDED_FIELDS = [
+  ...PROFILE_COLLECTED_ELSEWHERE_FIELDS,
+  'what_do_you_want_to_become',
+  'middle_name',
+  'middleName',
+  'guardian_name',
+  'guardian_relation',
+  'parent_phone',
+];
+
+// Whether `field` is actually mandatory. The form-read API's top-level
+// `isRequired` defaults to true for many optional fields and disagrees with
+// `validation.isRequired` (the flag the field was actually configured with) -
+// e.g. Second Chance Program's drop_out_reason, class, work_domain,
+// marital_status, phone_type_accessible, own_phone_check, and
+// family_member_details all carry isRequired: true but validation.isRequired:
+// false. validation.isRequired is authoritative; fall back to the flat field
+// only if validation is absent.
+export const isProfileFieldRequired = (field) =>
+  field?.validation?.isRequired ?? field?.isRequired;
+
+// Whether `field` should be rendered at all given the rest of the form's current
+// values. Single source of truth shared by the Edit Profile form, the Complete
+// Profile mini-form, and the banner's completeness check, so the three can't
+// drift apart. Note "visible" != "editable": first_name/state/etc. are visible
+// but read-only (see PROFILE_NON_EDITABLE_FIELDS).
+export const isProfileFieldVisible = (field, formData) => {
+  if (PROFILE_ALWAYS_HIDDEN_FIELDS.includes(field?.name)) {
+    return false;
+  }
+
+  const dob = formData?.dob || '';
+  let age = null;
+  if (dob) {
+    try {
+      const parsed = calculateAge(dob);
+      age =
+        parsed !== null && parsed !== undefined && !isNaN(parsed)
+          ? parseInt(parsed, 10)
+          : null;
+    } catch {
+      age = null;
+    }
+  }
+
+  if (
+    ['guardian_relation', 'guardian_name', 'parent_phone'].includes(field?.name) &&
+    age !== null &&
+    age >= 18
+  ) {
+    return false;
+  }
+  if (
+    ['mobile', 'phone_num', 'phone_number'].includes(field?.name) &&
+    age !== null &&
+    age < 18
+  ) {
+    return false;
+  }
+
+  const rawFamilyType = formData?.family_member_details;
+  const familyType =
+    rawFamilyType && typeof rawFamilyType === 'object'
+      ? rawFamilyType.value
+      : rawFamilyType;
+  if (['father_name', 'mother_name', 'spouse_name'].includes(field?.name)) {
+    if (!familyType) {
+      return false;
+    }
+    return field.name === `${familyType}_name`;
+  }
+
+  const rawPhoneType = formData?.phone_type_accessible;
+  const phoneType =
+    rawPhoneType && typeof rawPhoneType === 'object'
+      ? rawPhoneType.value
+      : rawPhoneType;
+  if (field?.name === 'own_phone_check' && phoneType === 'nophone') {
+    return false;
+  }
+
+  return true;
+};
+
+// Shared core: unanswered fields from `schema` that the app can actually render,
+// after applying `excluded` and the conditional-visibility rules.
+const getUnansweredProfileFields = (schema, userDetails, excluded) =>
+  (schema || [])
+    .filter((field) => field?.name)
+    .filter((field) => !excluded.includes(field.name))
+    .filter((field) => PROFILE_SUPPORTED_FIELD_TYPES.includes(field.type))
+    .filter((field) => isProfileFieldVisible(field, userDetails))
+    .filter((field) => !extractProfileFieldValue(userDetails?.[field.name]))
+    .map((field) => field.name);
+
+// Which fields the Complete Profile FORM should ask for. Includes middleName
+// (web shows it) but not what_do_you_want_to_become (web deletes it).
+export const getProfileFormFields = (schema, userDetails) =>
+  getUnansweredProfileFields(schema, userDetails, PROFILE_FORM_EXCLUDED_FIELDS);
+
+// Whether the profile counts as complete, i.e. whether to show the banner.
+// Deliberately a narrower list than the form's: leaving middleName or the
+// guardian trio blank must never keep the banner up.
+//
+// The banner list is a superset of the form list, which guarantees the form can
+// always offer an input for anything the banner reports as missing - otherwise
+// the user would face a banner they can never clear.
+export const getMissingProfileFields = (schema, userDetails) => {
+  const missingFields = getUnansweredProfileFields(
+    schema,
+    userDetails,
+    PROFILE_BANNER_EXCLUDED_FIELDS
+  );
+
+  return { missingFields, isComplete: missingFields.length === 0 };
 };
 
 export const categorizeEvents = async (events) => {

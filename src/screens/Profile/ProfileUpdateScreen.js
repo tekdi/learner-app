@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import ProfileUpdateForm from './ProfileUpdateForm';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
-import { getStudentForm } from '../../utils/API/AuthService';
 import {
   getDataFromStorage,
-  setDataInStorage,
+  getMergedProfileSchema,
 } from '../../utils/JsHelper/Helper';
 import ActiveLoading from '../LoadingScreen/ActiveLoading';
 // import Geolocation from 'react-native-geolocation-service'; //GeoLocation Comment
@@ -24,24 +23,17 @@ const ProfileUpdateScreen = () => {
     });
   };
   const fetchData = async () => {
-    const data = await getStudentForm();
     const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
     const tenantId = tenantData?.[0]?.tenantId;
-    const programForm = await getStudentForm(tenantId);
-    setDataInStorage('studentProgramForm', JSON.stringify(programForm?.fields));
-    const newSchema = [...data.fields, ...programForm.fields];
-    const filteredSchema = newSchema.filter(
-      (field) => field.name !== 'center' && field.name !== 'batch'
-    );
-    const updatedSchema = updateOrder(filteredSchema);
-    console.log("updatedSchema",updatedSchema);
-    if (data?.error) {
-      setNetworkError(true);
-    } else {
-      // const states = await fetchstates();
-      setDataInStorage('studentForm', JSON.stringify(data?.fields));
+
+    try {
+      const filteredSchema = await getMergedProfileSchema(tenantId);
+      const updatedSchema = updateOrder(filteredSchema);
+      console.log("updatedSchema",updatedSchema);
       setMainSchema(updatedSchema);
       setNetworkError(false);
+    } catch {
+      setNetworkError(true);
     }
 
     setLoading(false);

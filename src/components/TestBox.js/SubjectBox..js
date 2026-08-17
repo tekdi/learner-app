@@ -22,6 +22,7 @@ import {
   convertSecondsToMinutes,
   findObjectByIdentifier,
   getDataFromStorage,
+  getTentantId,
 } from '../../utils/JsHelper/Helper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { default as Octicons } from 'react-native-vector-icons/Octicons';
@@ -39,7 +40,7 @@ import {
 import RNFS from 'react-native-fs';
 import Config from 'react-native-config';
 import NetworkAlert from '../../components/NetworkError/NetworkAlert';
-import { getAsessmentOffline } from '../../utils/API/AuthService';
+import { getAsessmentOffline, getTenantAssessment } from '../../utils/API/AuthService';
 import HorizontalLine from '../HorizontalLine/HorizontalLine';
 import PrimaryButton from '../PrimaryButton/PrimaryButton';
 
@@ -139,6 +140,7 @@ const SubjectBox = ({
   const questionListUrl = Config.QUESTION_LIST_URL;
   const [networkstatus, setNetworkstatus] = useState(true);
   const [isSyncPending, setIsSyncPending] = useState(true);
+  const [isAssessmentGiven, setIsAssessmentGiven] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
@@ -166,6 +168,15 @@ const SubjectBox = ({
       setIsSyncPending(true);
     } else {
       setIsSyncPending(false);
+    }
+    //setIsAssessmentGiven
+    const tenant_id = await getTentantId();
+    const result_TenantAssessment = await getTenantAssessment(user_id, content_id, tenant_id);
+    // console.log('############ result_sync_offline', result_sync_offline);
+    if (result_TenantAssessment) {
+      setIsAssessmentGiven(true);
+    } else {
+      setIsAssessmentGiven(false);
     }
   };
 
@@ -423,7 +434,7 @@ const SubjectBox = ({
                   <>
                     {disabled && !isSyncPending ? (
                       <GlobalText style={{ color: '#7C766F' }}>
-                        {t('not_submitted')}
+                        {isAssessmentGiven ? '' : t('not_submitted')}
                       </GlobalText>
                     ) : !isSyncPending ? (
                       <View
@@ -549,7 +560,25 @@ const SubjectBox = ({
                         {t('sync_pending')}
                       </GlobalText>
                     </View>
-                  ) : (
+                  )
+                  : isAssessmentGiven ? (
+                    <View style={globalStyles.flexrow}>
+                      <Ionicons
+                        name="cloud-offline-outline"
+                        color={'#7C766F'}
+                        size={22}
+                      />
+                      <GlobalText
+                        style={[
+                          globalStyles.subHeading,
+                          { color: '#7C766F', marginLeft: 10 },
+                        ]}
+                      >
+                        {/* {t('given')} */}
+                      </GlobalText>
+                    </View>
+                  )
+                  : (
                     <SecondaryButton
                       onPress={() => {
                         navigation.navigate('TestDetailView', {
@@ -583,12 +612,14 @@ const SubjectBox = ({
                 ) : !data?.lastAttemptedOn && downloadStatus == 'progress' ? (
                   <ActivityIndicator size="large" />
                 ) : !data?.lastAttemptedOn && downloadStatus == 'completed' ? (
-                  <TouchableOpacity onPress={() => setModalVisible(true)}>
-                    <Image
+                  <TouchableOpacity onPress={() => {
+                    // setModalVisible(true);
+                  }}>
+                    {/* <Image
                       style={styles.img}
                       source={downloadIcon}
                       resizeMode="contain"
-                    />
+                    /> */}
                   </TouchableOpacity>
                 ) : !data?.lastAttemptedOn ? (
                   <TouchableOpacity onPress={handleDownload}>
