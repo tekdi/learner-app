@@ -35,6 +35,7 @@ import PropTypes from 'prop-types';
 import { NotificationUnsubscribe } from '../../utils/Helper/JSHelper';
 import { useInternet } from '../../context/NetworkContext';
 import { telemetryTrackingData } from '../../utils/API/AuthService';
+import Config from 'react-native-config';
 
 const OtherSettings = ({ route }) => {
   const { age } = route.params;
@@ -226,7 +227,14 @@ const OtherSettings = ({ route }) => {
             <TouchableOpacity
               style={[globalStyles.flexrow, styles.borderColor]}
               onPress={() => {
-                navigation.navigate('ProfileUpdateScreen');
+                // Edit Profile is served by the learner web app in a WebView, so schema
+                // changes ship without native work. If the web URL is not configured for
+                // this build, fall back to the native form rather than dead-ending.
+                if (Config.LEARNER_PLP_LINK) {
+                  navigation.navigate('ProfileWebViewScreen', { screen: 'edit' });
+                } else {
+                  navigation.navigate('ProfileUpdateScreen');
+                }
               }}
             >
               <View
