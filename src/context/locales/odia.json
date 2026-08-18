@@ -636,5 +636,13 @@
   "failed_to_switch_program": "କାର୍ଯ୍ୟକ୍ରମ ବଦଳାଇବାରେ ବିଫଳ:",
   "switched_to": "ବଦଳାଇ ଦିଆଗଲା",
   "failed_to_switch_program_please_try_again": "କାର୍ଯ୍ୟକ୍ରମ ବଦଳାଇବାରେ ବିଫଳ। ଦୟାକରି ପୁନଃ ଚେଷ୍ଟା କରନ୍ତୁ।",
-  "show_all_programs": "ସମସ୍ତ କାର୍ଯ୍ୟକ୍ରମ ଦେଖାନ୍ତୁ"
+  "show_all_programs": "ସମସ୍ତ କାର୍ଯ୍ୟକ୍ରମ ଦେଖାନ୍ତୁ",
+  "assessment_attempts": "ମୂଲ୍ୟାଙ୍କନ ପ୍ରୟାସ",
+  "attempt": "ପ୍ରୟାସ",
+  "not_attempted": "ପ୍ରୟାସ କରାଯାଇ ନାହିଁ",
+  "locked": "ଲକ୍ ହୋଇଛି",
+  "of": "ର",
+  "completed_lowercase": "ସମ୍ପୂର୍ଣ୍ଣ",
+  "start_assessment": "ମୂଲ୍ୟାଙ୍କନ ଆରମ୍ଭ କରନ୍ତୁ",
+  "take_second_attempt": "ଦ୍ୱିତୀୟ ପ୍ରୟାସ କରନ୍ତୁ"
 }

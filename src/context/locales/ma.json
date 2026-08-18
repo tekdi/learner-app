@@ -636,5 +636,13 @@
   "failed_to_switch_program": "कार्यक्रम बदलण्यात अयशस्वी:",
   "switched_to": "यावर बदलले",
   "failed_to_switch_program_please_try_again": "कार्यक्रम बदलण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
-  "show_all_programs": "सर्व कार्यक्रम दाखवा"
+  "show_all_programs": "सर्व कार्यक्रम दाखवा",
+  "assessment_attempts": "मूल्यांकन प्रयत्न",
+  "attempt": "प्रयत्न",
+  "not_attempted": "प्रयत्न केला नाही",
+  "locked": "लॉक केलेले",
+  "of": "पैकी",
+  "completed_lowercase": "पूर्ण झाले",
+  "start_assessment": "मूल्यांकन सुरू करा",
+  "take_second_attempt": "दुसरा प्रयत्न करा"
 }

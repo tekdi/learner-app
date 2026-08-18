@@ -636,5 +636,13 @@
   "failed_to_switch_program": "ಕಾರ್ಯಕ್ರಮ ಬದಲಾಯಿಸಲು ವಿಫಲವಾಗಿದೆ:",
   "switched_to": "ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ",
   "failed_to_switch_program_please_try_again": "ಕಾರ್ಯಕ್ರಮ ಬದಲಾಯಿಸಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
-  "show_all_programs": "ಎಲ್ಲಾ ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ತೋರಿಸಿ"
+  "show_all_programs": "ಎಲ್ಲಾ ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ತೋರಿಸಿ",
+  "assessment_attempts": "ಮೌಲ್ಯಮಾಪನ ಪ್ರಯತ್ನಗಳು",
+  "attempt": "ಪ್ರಯತ್ನ",
+  "not_attempted": "ಪ್ರಯತ್ನಿಸಿಲ್ಲ",
+  "locked": "ಲಾಕ್ ಆಗಿದೆ",
+  "of": "ರಲ್ಲಿ",
+  "completed_lowercase": "ಪೂರ್ಣಗೊಂಡಿದೆ",
+  "start_assessment": "ಮೌಲ್ಯಮಾಪನ ಪ್ರಾರಂಭಿಸಿ",
+  "take_second_attempt": "ಎರಡನೇ ಪ್ರಯತ್ನ ಮಾಡಿ"
 }

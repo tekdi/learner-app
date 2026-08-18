@@ -636,5 +636,13 @@
   "failed_to_switch_program": "કાર્યક્રમ બદલવામાં નિષ્ફળ:",
   "switched_to": "પર બદલાયું",
   "failed_to_switch_program_please_try_again": "કાર્યક્રમ બદલવામાં નિષ્ફળ. કૃપા કરીને ફરી પ્રયાસ કરો.",
-  "show_all_programs": "બધા કાર્યક્રમો બતાવો"
+  "show_all_programs": "બધા કાર્યક્રમો બતાવો",
+  "assessment_attempts": "મૂલ્યાંકન પ્રયાસો",
+  "attempt": "પ્રયાસ",
+  "not_attempted": "પ્રયાસ કરવામાં આવ્યો નથી",
+  "locked": "લૉક કરેલું",
+  "of": "માંથી",
+  "completed_lowercase": "પૂર્ણ થયું",
+  "start_assessment": "મૂલ્યાંકન શરૂ કરો",
+  "take_second_attempt": "બીજો પ્રયાસ કરો"
 }

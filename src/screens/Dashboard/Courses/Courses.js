@@ -47,7 +47,7 @@ import globalStyles from '../../../utils/Helper/Style';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../components/AppUpdate/AppUpdatePopup';
-import AttemptAssessmentButton from '../../../components/AttemptAssessmentButton/AttemptAssessmentButton';
+import AssessmentAttemptsSection from '../../../components/AssessmentAttemptsSection/AssessmentAttemptsSection';
 import CompleteProfileBanner from '../../../components/CompleteProfileBanner/CompleteProfileBanner';
 import PrimaryButton from '../../../components/PrimaryButton/PrimaryButton';
 import InterestModal from './InterestModal';
@@ -187,8 +187,8 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
         userType === 'youthnet'
           ? { frameworkId: 'pos-framework', channelId: 'pos-channel' }
           : userType === 'scp'
-          ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-          : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+            ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
+            : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
       setInstant(instant);
     };
     fetch();
@@ -286,13 +286,16 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
     //       : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
     let contentFilter = JSON.parse(await getDataFromStorage('contentFilter'));
     console.log('mergedFilter==========>', mergedFilter);
-    if (Array.isArray(mergedFilter.program) && mergedFilter.program.length === 0) {
+    if (
+      Array.isArray(mergedFilter.program) &&
+      mergedFilter.program.length === 0
+    ) {
       delete mergedFilter.program;
     }
     const tenantData = JSON.parse(await getDataFromStorage('tenantData'));
     const channelId = tenantData?.[0]?.channelId;
-    if(channelId == 'scp-channel'){
-      mergedFilter.targetBoardIds = ["scp-framework_board_cocurricular"];
+    if (channelId == 'scp-channel') {
+      mergedFilter.targetBoardIds = ['scp-framework_board_cocurricular'];
     }
     let data = await courseListApi_New({
       searchText,
@@ -454,9 +457,7 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
                     )}
                 </GlobalText>
               </View>
-              <View style={{ marginTop: 5 }}>
-                <AttemptAssessmentButton />
-              </View>
+              <AssessmentAttemptsSection />
               {/* {!youthnet && (
                 <GlobalText style={globalStyles.text}>
                   {t('courses')}
@@ -534,7 +535,6 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
                         // handleSearch={handleSearch}
                         placeholder={t('search_placeholder')}
                       />
-                      
                     </View>
                   </CopilotView>
                 </CopilotStep>

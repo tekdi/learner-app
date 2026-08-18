@@ -636,5 +636,13 @@
   "failed_to_switch_program": "ప్రోగ్రామ్‌ను మార్చడంలో విఫలమైంది:",
   "switched_to": "కు మార్చబడింది",
   "failed_to_switch_program_please_try_again": "ప్రోగ్రామ్‌ను మార్చడంలో విఫలమైంది. దయచేసి మళ్లీ ప్రయత్నించండి.",
-  "show_all_programs": "అన్ని ప్రోగ్రామ్‌లను చూపించు"
+  "show_all_programs": "అన్ని ప్రోగ్రామ్‌లను చూపించు",
+  "assessment_attempts": "మూల్యాంకన ప్రయత్నాలు",
+  "attempt": "ప్రయత్నం",
+  "not_attempted": "ప్రయత్నించలేదు",
+  "locked": "లాక్ చేయబడింది",
+  "of": "లో",
+  "completed_lowercase": "పూర్తయింది",
+  "start_assessment": "మూల్యాంకనం ప్రారంభించండి",
+  "take_second_attempt": "రెండవ ప్రయత్నం చేయండి"
 }
