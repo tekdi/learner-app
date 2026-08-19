@@ -4,6 +4,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import GlobalText from '@components/GlobalText/GlobalText';
 import { useTranslation } from '@context/LanguageContext';
 import globalStyles from '../../utils/Helper/Style';
+import Config from 'react-native-config';
 import {
   buildUserDetailsObject,
   getDataFromStorage,
@@ -58,11 +59,18 @@ const CompleteProfileBanner = () => {
       </GlobalText>
       <TouchableOpacity
         style={styles.button}
-        onPress={() =>
-          navigation.navigate('CompleteProfileForm', {
-            tenantId: banner.tenantId,
-          })
-        }
+        onPress={() => {
+          // Complete Profile is served by the learner web app in a WebView, which derives
+          // the tenant from the credentials it is seeded with. If the web URL is not
+          // configured for this build, fall back to the native form.
+          if (Config.LEARNER_PLP_LINK) {
+            navigation.navigate('ProfileWebViewScreen', { screen: 'complete' });
+          } else {
+            navigation.navigate('CompleteProfileForm', {
+              tenantId: banner.tenantId,
+            });
+          }
+        }}
       >
         <GlobalText style={styles.buttonText}>{t('complete_profile_button')}</GlobalText>
       </TouchableOpacity>
