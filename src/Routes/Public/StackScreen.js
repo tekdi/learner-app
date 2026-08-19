@@ -34,6 +34,7 @@ import YouthNetTabScreen from '../Youthnet/YouthNetTabScreen';
 import UnauthorizedScreen from '../../screens/Unauthorized/UnauthorizedScreen';
 import PlpWebViewScreen from '../../screens/PlpWebViewScreen/PlpWebViewScreen';
 import ProgramsScreen from '../../screens/ProgramsScreen/ProgramsScreen';
+import ProfileWebViewScreen from '../../screens/ProfileWebViewScreen/ProfileWebViewScreen';
 
 const StackScreen = () => {
   const Stack = createNativeStackNavigator();
@@ -280,6 +281,14 @@ const StackScreen = () => {
       <Stack.Screen
         name="ProgramsScreen"
         component={ProgramsScreen}
+        options={{ headerShown: false, lazy: true }}
+      />
+      {/* Registered on the root stack so both profile entry points reach it: the profile
+          menu (nested in ProfileStack) and the complete-profile banner (nested in the
+          dashboard stacks). Presented full screen, like the other WebView screens. */}
+      <Stack.Screen
+        name="ProfileWebViewScreen"
+        component={ProfileWebViewScreen}
         options={{ headerShown: false, lazy: true }}
       />
     </Stack.Navigator>
