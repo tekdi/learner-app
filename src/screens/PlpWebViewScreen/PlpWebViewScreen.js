@@ -85,7 +85,7 @@ const PlpWebViewScreen = () => {
                   {
                     window.localStorage.setItem('lang', 'tam');
                   }
-                  else if('${language}' === 'ka')
+                  else if('${language}' === 'kn')
                   {
                     window.localStorage.setItem('lang', 'kan');
                   }
@@ -449,7 +449,7 @@ const PlpWebViewScreen = () => {
        }
        else if(message.data.language === 'kan')
        {
-        setLanguage('ka');
+        setLanguage('kn');
        }
        else if(message.data.language === 'odi')
        {

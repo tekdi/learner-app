@@ -159,7 +159,7 @@ export const translateLanguage = (code) => {
     ma: 'marathi',
     ba: 'bengali',
     te: 'telugu',
-    ka: 'kannada',
+    kn: 'kannada',
     gu: 'gujarati',
     ur: 'urdu',
   };
