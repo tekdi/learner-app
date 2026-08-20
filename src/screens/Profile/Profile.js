@@ -339,6 +339,11 @@ const Profile = () => {
                 {t('joined_on')} {getDate()}
               </GlobalText>
             </View>
+            {userData?.enrollmentId ? (
+              <GlobalText style={[globalStyles.text, { marginTop: 10 }]}>
+                {t('enrollment_number')} : {userData?.enrollmentId ?? 'N/A'}
+              </GlobalText>
+            ) : null}
           </LinearGradient>
           <View style={{ padding: 10 }}>
             <GlobalText style={[globalStyles.h6, { color: '#78590C' }]}>
