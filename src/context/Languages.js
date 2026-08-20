@@ -25,7 +25,7 @@ export const languages = [
   },
   {
     title: 'kannada',
-    value: 'ka',
+    value: 'kn',
   },
   {
     title: 'tamil',
