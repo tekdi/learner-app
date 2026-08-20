@@ -340,7 +340,7 @@ const Profile = () => {
               </GlobalText>
             </View>
             {userData?.enrollmentId ? (
-              <GlobalText style={[globalStyles.text, { marginTop: 10 }]}>
+              <GlobalText style={[globalStyles.text]}>
                 {t('enrollment_number')} : {userData?.enrollmentId ?? 'N/A'}
               </GlobalText>
             ) : null}
