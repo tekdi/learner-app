@@ -636,5 +636,13 @@
   "failed_to_switch_program": "திட்டத்தை மாற்ற முடியவில்லை:",
   "switched_to": "மாற்றப்பட்டது",
   "failed_to_switch_program_please_try_again": "திட்டத்தை மாற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
-  "show_all_programs": "அனைத்து திட்டங்களையும் காட்டு"
+  "show_all_programs": "அனைத்து திட்டங்களையும் காட்டு",
+  "assessment_attempts": "மதிப்பீட்டு முயற்சிகள்",
+  "attempt": "முயற்சி",
+  "not_attempted": "முயற்சிக்கப்படவில்லை",
+  "locked": "பூட்டப்பட்டது",
+  "of": "இல்",
+  "completed_lowercase": "முடிந்தது",
+  "start_assessment": "மதிப்பீட்டைத் தொடங்கு",
+  "take_second_attempt": "இரண்டாவது முயற்சியை மேற்கொள்ளுங்கள்"
 }

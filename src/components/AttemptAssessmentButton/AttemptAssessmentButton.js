@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import { AppState, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
   useFocusEffect,
@@ -46,7 +47,7 @@ const hasActiveBatchAssigned = async () => {
   }
 };
 
-const AttemptAssessmentButton = () => {
+const AttemptAssessmentButton = ({ onStateChange } = {}) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigation = useNavigation();
@@ -57,6 +58,29 @@ const AttemptAssessmentButton = () => {
   const [isContentAvailable, setIsContentAvailable] = useState(false);
   const [showUnavailableModal, setShowUnavailableModal] = useState(false);
 
+  // Read via a ref so re-renders of the parent (which happen when it reacts
+  // to onStateChange) don't recreate checkPendingAssessment and retrigger it.
+  const onStateChangeRef = useRef(onStateChange);
+  useEffect(() => {
+    onStateChangeRef.current = onStateChange;
+  });
+
+  // Tracks the last known attempts so the batch-assignment poll below (which
+  // only re-checks batch status, not attempts) can still emit a correct state.
+  const attemptsRef = useRef([]);
+
+  const emitState = useCallback((state) => {
+    if (state.attempts) {
+      attemptsRef.current = state.attempts;
+    }
+    onStateChangeRef.current?.({
+      visible: false,
+      showButton: false,
+      attempts: attemptsRef.current,
+      ...state,
+    });
+  }, []);
+
   const checkPendingAssessment = useCallback(async () => {
     try {
     const userType = await getDataFromStorage('userType');
@@ -64,6 +88,7 @@ const AttemptAssessmentButton = () => {
     if (userType !== 'scp') {
       console.log('AttemptAssessmentButton: userType is not scp, hiding button');
       setShowButton(false);
+      emitState({ visible: false });
       return;
     }
 
@@ -79,21 +104,19 @@ const AttemptAssessmentButton = () => {
 
     if (!isRegistrationTestEnabled) {
       setShowButton(false);
+      emitState({ visible: false });
       return;
     }
 
     const userId = await getDataFromStorage('userId');
     if (!userId) {
       setShowButton(false);
+      emitState({ visible: false });
       return;
     }
 
     const batchAssigned = await hasActiveBatchAssigned();
     console.log('AttemptAssessmentButton: batchAssigned:', batchAssigned);
-    if (batchAssigned) {
-      setShowButton(false);
-      return;
-    }
 
     const preferredLanguage = await getDataFromStorage('preferred_language');
 
@@ -118,7 +141,15 @@ const AttemptAssessmentButton = () => {
       if (!identifier) {
         setIsContentAvailable(false);
         setQuestionSetIdentifier(null);
-        setShowButton(true);
+        // No question set to attempt — with no attempt history to fall back
+        // on, mirror the batch-assigned/0-attempts rule and hide the section.
+        if (batchAssigned) {
+          setShowButton(false);
+          emitState({ visible: false, showButton: false, attempts: [] });
+        } else {
+          setShowButton(true);
+          emitState({ visible: true, showButton: true, attempts: [] });
+        }
         return;
       }
 
@@ -136,13 +167,30 @@ const AttemptAssessmentButton = () => {
         'AttemptAssessmentButton: registrationTestReattempt from uiConfig:',
         registrationTestReattempt
       );
-      const attemptsUsed = Array.isArray(result) ? result.length : 0;
+      const attempts = Array.isArray(result) ? result : [];
+      const usedCount = attempts.length;
       console.log(
         'AttemptAssessmentButton: remaining attempts:',
-        registrationTestReattempt - attemptsUsed
+        registrationTestReattempt - usedCount
       );
 
-      if (Array.isArray(result) && result.length < registrationTestReattempt) {
+      // Once a batch is assigned (i.e. the learner now sees the Home/My
+      // Class dashboard), the learner can no longer start/continue an
+      // attempt — the button always hides. The attempts section itself only
+      // hides when there is nothing to show (zero attempts so far).
+      if (batchAssigned) {
+        setIsContentAvailable(false);
+        setQuestionSetIdentifier(null);
+        setShowButton(false);
+        if (usedCount === 0) {
+          emitState({ visible: false, showButton: false, attempts });
+        } else {
+          emitState({ visible: true, showButton: false, attempts });
+        }
+        return;
+      }
+
+      if (usedCount < registrationTestReattempt) {
         await setDataInStorage('registerationTestQuestionSetIdentifier', identifier);
         setQuestionSetIdentifier(identifier);
         setQuestionSetMimeType(
@@ -150,18 +198,29 @@ const AttemptAssessmentButton = () => {
         );
         setIsContentAvailable(true);
         setShowButton(true);
+        emitState({ visible: true, showButton: true, attempts });
       } else {
         setShowButton(false);
+        emitState({ visible: true, showButton: false, attempts });
       }
     } catch (error) {
       console.error('AttemptAssessmentButton: status check failed', error);
       setIsContentAvailable(false);
-      setShowButton(true);
+      // Attempt history could not be confirmed. If a batch is assigned the
+      // button must still hide (safe default); otherwise fall back to
+      // letting the learner attempt, as before.
+      setShowButton(!batchAssigned);
+      emitState({
+        visible: true,
+        showButton: !batchAssigned,
+        attempts: attemptsRef.current,
+      });
     }
   } catch (error) {
     console.error('AttemptAssessmentButton: check failed', error);
+    emitState({ visible: false, showButton: false, attempts: [] });
   }
-  }, []);
+  }, [emitState]);
 
   useFocusEffect(
     useCallback(() => {
@@ -185,6 +244,11 @@ const AttemptAssessmentButton = () => {
       const batchAssigned = await hasActiveBatchAssigned();
       if (!cancelled && batchAssigned) {
         setShowButton(false);
+        emitState({
+          visible: attemptsRef.current.length > 0,
+          showButton: false,
+          attempts: attemptsRef.current,
+        });
       }
     };
 
@@ -194,7 +258,7 @@ const AttemptAssessmentButton = () => {
       cancelled = true;
       clearInterval(intervalId);
     };
-  }, [isFocused, showButton]);
+  }, [isFocused, showButton, emitState]);
 
   const handlePress = () => {
     if (isContentAvailable && questionSetIdentifier) {
@@ -217,12 +281,15 @@ const AttemptAssessmentButton = () => {
   return (
     <>
       <Button
-        status="primary"
+        status="basic"
         onPress={handlePress}
-        style={styles.button}
+        style={[styles.button, styles.buttonFirst]}
       >
         {(props) => (
-          <GlobalText {...props} style={[globalStyles.h6, styles.buttonText]}>
+          <GlobalText
+            {...props}
+            style={[globalStyles.h6, styles.buttonText, styles.buttonTextFirst]}
+          >
             {t('attempt_assessment')}
           </GlobalText>
         )}
@@ -259,12 +326,16 @@ const AttemptAssessmentButton = () => {
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 20,
-    height: 36,
+    borderRadius: 24,
+    height: 44,
     alignSelf: 'flex-start',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 14,
+    paddingHorizontal: 20,
+    borderWidth: 0,
+  },
+  buttonFirst: {
+    backgroundColor: '#FDBE16',
   },
   buttonText: {
     textAlign: 'center',
@@ -274,6 +345,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 13,
     includeFontPadding: false,
+  },
+  buttonTextFirst: {
+    color: '#1F1B13',
   },
   overlay: {
     flex: 1,
@@ -310,5 +384,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Black',
   },
 });
+
+AttemptAssessmentButton.propTypes = {
+  onStateChange: PropTypes.func,
+};
 
 export default AttemptAssessmentButton;
