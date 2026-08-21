@@ -139,7 +139,7 @@
   "start_test": "পরীক্ষা শুরু করুন",
   "block": "ব্লক",
   "unit": "ইউনিট",
-  "enrollment_number": "এনরোলমেন্ট নম্বর",
+  "enrollment_id": "এনরোলমেন্ট আইডি",
   "contact_number": "যোগাযোগ নম্বর",
   "class": "শ্রেণী",
   "last_passed_grade": "সর্বশেষ উত্তীর্ণ গ্রেড",

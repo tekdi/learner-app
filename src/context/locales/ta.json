@@ -139,7 +139,7 @@
   "start_test": "தேர்வைத் தொடங்கவும்",
   "block": "வட்டம்",
   "unit": "யூனிட்",
-  "enrollment_number": "சேர்க்கை எண்",
+  "enrollment_id": "சேர்க்கை ஐடி",
   "contact_number": "தொடர்பு எண்",
   "class": "வகுப்பு",
   "last_passed_grade": "கடைசியாக தேர்ச்சி பெற்ற வகுப்பு",

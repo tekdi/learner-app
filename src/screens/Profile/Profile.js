@@ -341,7 +341,7 @@ const Profile = () => {
             </View>
             {userData?.enrollmentId ? (
               <GlobalText style={[globalStyles.text]}>
-                {t('enrollment_number')} : {userData?.enrollmentId ?? 'N/A'}
+                {t('enrollment_id')} : {userData?.enrollmentId ?? 'N/A'}
               </GlobalText>
             ) : null}
           </LinearGradient>
