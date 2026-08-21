@@ -139,7 +139,7 @@
   "start_test": "Start Test",
   "block": "Block",
   "unit": "Unit",
-  "enrollment_number": "Enrollment Number",
+  "enrollment_id": "Enrollment ID",
   "contact_number": "Contact Number",
   "class": "Class",
   "last_passed_grade": "Last Passed Grade",

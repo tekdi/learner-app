@@ -139,7 +139,7 @@
   "start_test": "टेस्ट शुरू करें",
   "block": "ब्लॉक",
   "unit": "युनिट",
-  "enrollment_number": "नामांकन संख्या",
+  "enrollment_id": "नामांकन आईडी",
   "contact_number": "संपर्क संख्या",
   "class": "वर्ग",
   "last_passed_grade": "अंतिम उत्तीर्ण ग्रेड",
