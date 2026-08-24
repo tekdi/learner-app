@@ -27,7 +27,9 @@ const BackHeader = ({ title }) => {
           />
           {/* <GlobalText >Back</GlobalText> */}
         </TouchableOpacity>
-        <GlobalText style={styles.text}>{t(title)}</GlobalText>
+        {/* Title is optional: screens whose content already carries its own heading (e.g. a
+            WebView-hosted page) show just the back arrow. */}
+        {title ? <GlobalText style={styles.text}>{t(title)}</GlobalText> : null}
       </View>
       {/* <GlobalText style={styles.text2}>{t('save')}</GlobalText> */}
     </View>
