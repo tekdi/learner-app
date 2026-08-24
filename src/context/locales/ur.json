@@ -139,7 +139,7 @@
   "start_test": "ٹیسٹ شروع کریں",
   "block": "بلاک",
   "unit": "یونٹ",
-  "enrollment_number": "داخلہ نمبر",
+  "enrollment_id": "داخلہ آئی ڈی",
   "contact_number": "رابطہ نمبر",
   "class": "کلاس",
   "last_passed_grade": "آخری پاس شدہ گریڈ",

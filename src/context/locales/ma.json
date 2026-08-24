@@ -139,7 +139,7 @@
   "start_test": "चाचणी सुरू करा",
   "block": "ब्लॉक",
   "unit": "युनिट",
-  "enrollment_number": "नोंदणी क्रमांक",
+  "enrollment_id": "नोंदणी आयडी",
   "contact_number": "संपर्क क्रमांक",
   "class": "वर्ग",
   "last_passed_grade": "शेवटची उत्तीर्ण श्रेणी",
