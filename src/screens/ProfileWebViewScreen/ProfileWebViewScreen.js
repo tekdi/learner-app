@@ -4,7 +4,6 @@ import WebView from 'react-native-webview';
 import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import BackHeader from '../../components/Layout/BackHeader';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useTranslation } from '../../context/LanguageContext';
 import { getProfileDetails } from '../../utils/API/AuthService';
 import {
   getDataFromStorage,
