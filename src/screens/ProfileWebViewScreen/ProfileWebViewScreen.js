@@ -21,24 +21,6 @@ import Config from 'react-native-config';
 // onboarding form instead of the profile form.
 const KEYS_TO_CLEAR = ['temp_program_type'];
 
-// Native -> web locale codes, covering every language in src/context/Languages.js. The two apps
-// use different codes for the same language, and the web LanguageProvider ignores a 'lang' it
-// does not recognise and falls back to English, so every supported language is listed
-// explicitly rather than relying on the codes happening to match.
-// Bengali ('ba') is intentionally absent: it is commented out of both language lists and the web
-// app ships no Bangla translation, so there is nothing to map it to.
-const NATIVE_TO_WEB_LANG = {
-  en: 'en',
-  hi: 'hi',
-  ur: 'ur',
-  ma: 'mr',
-  odia: 'odi',
-  te: 'tel',
-  ka: 'kan',
-  ta: 'tam',
-  gu: 'guj',
-};
-
 // Serialises a value into a JS string literal. JSON.stringify handles quoting and
 // escaping; U+2028/U+2029 are legal in JSON but were illegal in JS string literals
 // before ES2019, so they are escaped explicitly.
@@ -77,7 +59,6 @@ const ProfileWebViewScreen = () => {
   const [injectedJavaScript, setInjectedJavaScript] = useState(null);
   const navigation = useNavigation();
   const route = useRoute();
-  const { language } = useTranslation();
   const webViewRef = useRef(null);
   // Guards against a duplicate EDIT_PROFILE_EVENT causing a second goBack().
   const handledRef = useRef(false);
@@ -96,6 +77,7 @@ const ProfileWebViewScreen = () => {
         const tenantData = JSON.parse(
           (await getDataFromStorage('tenantData')) || 'null'
         );
+        const preferredLanguage = await getDataFromStorage('preferred_language');
         const tenantId =
           tenantData?.[0]?.tenantId ||
           (await getDataFromStorage('userTenantid')) ||
@@ -113,7 +95,8 @@ const ProfileWebViewScreen = () => {
             uiConfig: await getDataFromStorage('uiConfig'),
             userProgram: tenantData?.[0]?.tenantName || '',
             academicYearId: await getDataFromStorage('academicYearId'),
-            lang: NATIVE_TO_WEB_LANG[language] || language,
+            preferred_language: preferredLanguage,
+            lang: preferredLanguage,
           })
         );
       } catch (error) {
@@ -122,7 +105,7 @@ const ProfileWebViewScreen = () => {
     };
 
     buildInjection();
-  }, [language]);
+  }, []);
 
   const handleProfileSaved = async (data) => {
     if (handledRef.current) {
