@@ -13,6 +13,7 @@ const MonthlyCalendar = ({
   learnerAttendance,
   setModal,
   allEventData,
+  sessionDates,
 }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [date, setDate] = useState(new Date());
@@ -93,6 +94,13 @@ const MonthlyCalendar = ({
     const isPresent = dayData?.attendance === 'present';
     const isAbsent = dayData?.attendance === 'absent';
 
+    // Session scheduled on this day, but attendance is not marked yet
+    const dateKey = `${currentDate.getFullYear()}-${(monthNumber + 1)
+      .toString()
+      .padStart(2, '0')}-${dayNumber.toString().padStart(2, '0')}`;
+    const isSessionUnmarked =
+      !isPresent && !isAbsent && sessionDates?.includes(dateKey);
+
     return (
       <View
         style={[
@@ -104,12 +112,13 @@ const MonthlyCalendar = ({
         <GlobalText style={[globalStyles.text, { fontSize: 14 }]}>
           {dayNumber}
         </GlobalText>
-        {dayData &&
-          (isPresent ? (
-            <Icon name="checkcircleo" size={15} color="green" />
-          ) : isAbsent ? (
-            <FeatherIcon name="x-circle" size={15} color="red" />
-          ) : null)}
+        {isPresent ? (
+          <Icon name="checkcircleo" size={15} color="green" />
+        ) : isAbsent ? (
+          <FeatherIcon name="x-circle" size={15} color="red" />
+        ) : isSessionUnmarked ? (
+          <View style={styles.unmarkedSession} />
+        ) : null}
         {eventDates &&
           (isEvent ? (
             <Image source={eventcal} style={{ width: 20, height: 20 }} />
@@ -151,6 +160,14 @@ const styles = StyleSheet.create({
   },
   today: {
     backgroundColor: '#FDBE16',
+  },
+  unmarkedSession: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 4,
+    borderColor: '#D0D0D0',
+    backgroundColor: 'transparent',
   },
   selected: {
     borderWidth: 1,

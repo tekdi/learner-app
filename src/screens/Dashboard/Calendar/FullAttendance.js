@@ -16,7 +16,8 @@ import { default as Octicons } from 'react-native-vector-icons/Octicons';
 import { useTranslation } from '../../../context/LanguageContext';
 import { useNavigation } from '@react-navigation/native';
 import MonthlyCalendar from './MonthlyCalendar';
-import { getAttendance } from '../../../utils/API/AuthService';
+import { eventList, getAttendance } from '../../../utils/API/AuthService';
+import { convertDates } from '../../../utils/Helper/JSHelper';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import ActiveLoading from '../../LoadingScreen/ActiveLoading';
@@ -25,6 +26,7 @@ import NetworkAlert from '../../../components/NetworkError/NetworkAlert';
 const FullAttendance = () => {
   const [eventDate, setEventDate] = useState(null);
   const [learnerAttendance, setLearnerAttendance] = useState(null);
+  const [sessionDates, setSessionDates] = useState([]);
   const { t } = useTranslation();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
@@ -54,7 +56,37 @@ const FullAttendance = () => {
     setLearnerAttendance(
       response?.attendanceList ? [...response.attendanceList] : []
     );
+    await fetchSessionDates(lastDate, todayDate);
     setLoading(false);
+  };
+
+  // Days on which a session is scheduled - used to show an unmarked
+  // attendance marker for those days in the calendar
+  const fetchSessionDates = async (fromDate, todayDate) => {
+    // 18:30:00 UTC is the start of the day in IST, same convention as the
+    // timetable screen
+    const startDate = new Date(fromDate);
+    startDate.setUTCDate(startDate.getUTCDate() - 1);
+    startDate.setUTCHours(18, 30, 0, 0);
+
+    // Cover the remaining days of the current month as well, so upcoming
+    // sessions of this month are shown as not marked yet
+    const endDate = new Date(
+      Date.UTC(
+        todayDate.getFullYear(),
+        todayDate.getMonth() + 1,
+        0,
+        18,
+        29,
+        59,
+        999
+      )
+    );
+
+    const data = await eventList({ startDate, endDate });
+    const eventDates = data?.events?.map((item) => item?.startDateTime) || [];
+
+    setSessionDates(Array.from(new Set(convertDates(eventDates))));
   };
 
   useEffect(() => {
@@ -121,6 +153,7 @@ const FullAttendance = () => {
           {learnerAttendance && (
             <MonthlyCalendar
               learnerAttendance={learnerAttendance}
+              sessionDates={sessionDates}
               attendance
               setEventDate={setEventDate}
               key={refreshKey}
