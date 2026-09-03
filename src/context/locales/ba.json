@@ -139,7 +139,7 @@
   "start_test": "পরীক্ষা শুরু করুন",
   "block": "ব্লক",
   "unit": "ইউনিট",
-  "enrollment_number": "এনরোলমেন্ট নম্বর",
+  "enrollment_id": "এনরোলমেন্ট আইডি",
   "contact_number": "যোগাযোগ নম্বর",
   "class": "শ্রেণী",
   "last_passed_grade": "সর্বশেষ উত্তীর্ণ গ্রেড",
@@ -624,5 +624,13 @@
   "Learning_Language_Info": "Content, courses, and assessments will be shown in your selected language. You can change this language anytime from the Profile section",
   "attempt_assessment": "Attempt Assessment",
   "come_back_later": "Come Back Later",
-  "assessment_unavailable_message": "No pending assessment available at this time."
+  "assessment_unavailable_message": "No pending assessment available at this time.",
+  "assessment_attempts": "মূল্যায়ন প্রচেষ্টা",
+  "attempt": "প্রচেষ্টা",
+  "not_attempted": "প্রচেষ্টা করা হয়নি",
+  "locked": "লকড",
+  "of": "এর মধ্যে",
+  "completed_lowercase": "সম্পন্ন",
+  "start_assessment": "মূল্যায়ন শুরু করুন",
+  "take_second_attempt": "দ্বিতীয় প্রচেষ্টা নিন"
 }
