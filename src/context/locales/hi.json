@@ -636,5 +636,13 @@
   "failed_to_switch_program": "कार्यक्रम बदलने में विफल:",
   "switched_to": "बदलकर किया गया",
   "failed_to_switch_program_please_try_again": "कार्यक्रम बदलने में विफल। कृपया पुनः प्रयास करें।",
-  "show_all_programs": "सभी कार्यक्रम दिखाएँ"
+  "show_all_programs": "सभी कार्यक्रम दिखाएँ",
+  "assessment_attempts": "मूल्यांकन प्रयास",
+  "attempt": "प्रयास",
+  "not_attempted": "प्रयास नहीं किया",
+  "locked": "लॉक्ड",
+  "of": "में से",
+  "completed_lowercase": "पूरा हुआ",
+  "start_assessment": "मूल्यांकन शुरू करें",
+  "take_second_attempt": "दूसरा प्रयास करें"
 }
