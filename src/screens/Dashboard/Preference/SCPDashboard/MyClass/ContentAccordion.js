@@ -44,7 +44,7 @@ const ContentAccordion = ({ title, resourceData, trackData, openDropDown }) => {
         onPress={() => setAccordionOpen(!isAccordionOpen)}
       >
         <GlobalText style={[globalStyles.text, { color: '#7C766F' }]}>
-          { title === 'during' ? 'Learn' : t(title)}
+          {title === 'during' ? t('during_session') : t(title)}
           {title === 'pre_requisites_2'
             ? `(${resourceData?.prerequisites?.length})`
             : title === 'during'
