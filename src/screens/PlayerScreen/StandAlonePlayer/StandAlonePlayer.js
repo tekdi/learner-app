@@ -370,27 +370,27 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.sunbird.questionset'
         ? (contentType = 'quml')
         : content_mime_type == 'application/vnd.ekstep.ecml-archive'
-          ? (contentType = 'ecml')
+          ? (contentType = 'ECML')
           : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-            ? (contentType = 'h5p')
+            ? (contentType = 'H5P')
             : content_mime_type == 'application/vnd.ekstep.html-archive'
-              ? (contentType = 'html')
+              ? (contentType = 'HTML')
               : content_mime_type == 'video/x-youtube'
-                ? (contentType = 'youtube')
+                ? (contentType = 'YOUTUBE_X_VIDEO')
                 : content_mime_type == 'application/pdf'
-                  ? (contentType = 'pdf')
+                  ? (contentType = 'PDF')
                   : content_mime_type == 'application/epub'
-                    ? (contentType = 'epub')
+                    ? (contentType = 'EPUB')
                     : content_mime_type == 'video/mp4'
-                      ? (contentType = 'mp4')
+                      ? (contentType = 'VIDEO_MP4')
                       : content_mime_type == 'video/webm'
-                        ? (contentType = 'webm')
+                        ? (contentType = 'WEBM_VIDEO')
                         : content_mime_type == 'audio/mp3'
-                          ? (contentType = 'mp3')
+                          ? (contentType = 'AUDIO_MP3')
                           : content_mime_type == 'audio/wav'
-                            ? (contentType = 'wav')
+                            ? (contentType = 'AUDIO_WAV')
                             : content_mime_type == 'audio/mpeg'
-                              ? (contentType = 'mp3')
+                              ? (contentType = 'AUDIO_MP3')
                               : '';
       await storeData('contentId', content_do_id, '');
       await storeData('contentType', contentType, '');
