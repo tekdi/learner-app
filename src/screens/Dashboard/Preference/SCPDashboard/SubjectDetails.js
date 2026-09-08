@@ -48,6 +48,7 @@ function getFilteredData(data, subTopic) {
 
       const prerequisites = [];
       const postrequisites = [];
+      const during = [];
 
       // Process filtered children
       filteredChildren.forEach((child) => {
@@ -64,13 +65,20 @@ function getFilteredData(data, subTopic) {
             .filter((resource) => resource.type === 'postrequisite')
             .map((resource) => resource?.id?.toLowerCase())
         );
+
+        during.push(
+          ...learningResources
+            .filter((resource) => resource.type === 'during')
+            .map((resource) => resource?.id?.toLowerCase())
+        );
       });
 
       return {
         name: item.name, // Include the name of the item for reference
         prerequisites: prerequisites,
         postrequisites: postrequisites,
-        contentIdList: [...prerequisites, ...postrequisites],
+        during: during,
+        contentIdList: [...prerequisites, ...postrequisites, ...during],
       };
     })
     .filter((result) => result !== null); // Filter out null values
@@ -162,6 +170,7 @@ const SubjectDetails = ({ route }) => {
         postrequisites: [
           ...new Set(filterData?.flatMap((item) => item?.postrequisites)),
         ],
+        during: [...new Set(filterData?.flatMap((item) => item?.during))],
         contentIdList: [
           ...new Set(filterData?.flatMap((item) => item?.contentIdList)),
         ],
@@ -189,46 +198,29 @@ const SubjectDetails = ({ route }) => {
         // Initialize arrays for prerequisites and postrequisites
         const prerequisites = [];
         const postrequisites = [];
+        const during = [];
 
-        // Filter prerequisites
-        result?.content?.forEach((item) => {
-          if (
-            combinedData?.prerequisites?.includes(
-              item?.identifier?.toLowerCase()
-            )
-          ) {
-            prerequisites.push(item); // Push filtered items
-          }
-          if (
-            combinedData?.postrequisites?.includes(
-              item?.identifier?.toLowerCase()
-            )
-          ) {
-            postrequisites.push(item); // Push filtered items
-          }
-        });
+        const allItems = [
+          ...(result?.content || []),
+          ...(result?.QuestionSet || []),
+        ];
 
-        // Filter postrequisites
-        result?.QuestionSet?.forEach((item) => {
-          if (
-            combinedData?.prerequisites?.includes(
-              item?.identifier?.toLowerCase()
-            )
-          ) {
-            prerequisites.push(item); // Push filtered items
+        allItems.forEach((item) => {
+          const identifier = item?.identifier?.toLowerCase();
+          if (combinedData?.prerequisites?.includes(identifier)) {
+            prerequisites.push(item);
           }
-          if (
-            combinedData?.postrequisites?.includes(
-              item?.identifier?.toLowerCase()
-            )
-          ) {
-            postrequisites.push(item); // Push filtered items
+          if (combinedData?.postrequisites?.includes(identifier)) {
+            postrequisites.push(item);
+          }
+          if (combinedData?.during?.includes(identifier)) {
+            during.push(item);
           }
         });
 
         // console.log('result===>', JSON.stringify(result));
 
-        setResourceData({ prerequisites, postrequisites });
+        setResourceData({ prerequisites, postrequisites, during });
       }
     }
   };
@@ -278,6 +270,11 @@ const SubjectDetails = ({ route }) => {
           resourceData={resourceData}
           title={'pre_requisites_2'}
           openDropDown={true}
+        />
+        <ContentAccordion
+          trackData={trackData}
+          resourceData={resourceData}
+          title={'during'}
         />
         <ContentAccordion
           trackData={trackData}
