@@ -2228,6 +2228,7 @@ export const CourseEnrollStatus = async ({ course_id }) => {
 };
 export const courseEnroll = async ({ course_id }) => {
   const url = `${EndUrls.courseEnroll}`; // Define the URL
+  const enrollStatusUrl = `${EndUrls.courseEnrollStatus}`; // Status cache used by CourseEnrollStatus
   const headers = await getHeaders();
   const headersString = Object.entries(headers)
     .map(([key, value]) => `-H "${key}: ${value}"`)
@@ -2251,6 +2252,16 @@ export const courseEnroll = async ({ course_id }) => {
     });
 
     if (result) {
+      // Keep the cached enrollment status (read by CourseEnrollStatus's offline
+      // fallback) in sync so it reflects the new enrollment immediately, instead
+      // of the stale pre-enrollment record it would otherwise fall back to.
+      await storeApiResponse(
+        user_id,
+        enrollStatusUrl,
+        'post',
+        payload,
+        result?.data
+      );
       return result?.data;
     }
   } catch (e) {
