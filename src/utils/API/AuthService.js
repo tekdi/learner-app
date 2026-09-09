@@ -477,6 +477,7 @@ export const courseListApi_New = async ({
         'trackable',
         'children',
         'leafNodes',
+        'certificateTemplate',
       ],
       // facets: [
       //   'se_boards',
@@ -2328,14 +2329,68 @@ export const issueCertificate = async ({ payload }) => {
     console.log('e', e);
   }
 };
-export const viewCertificate = async ({ certificateId }) => {
+/**
+ * Course content metadata is loosely typed server-side. `certificateTemplate`
+ * has been observed as a plain string, a single-element array, an object
+ * carrying the id under `identifier`/`templateId`, or absent/null/blank.
+ * Normalises all of those shapes to a clean string id, or null.
+ */
+export const normalizeCertificateTemplateId = (value) => {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  }
+
+  if (Array.isArray(value)) {
+    return value.length ? normalizeCertificateTemplateId(value[0]) : null;
+  }
+
+  if (typeof value === 'object') {
+    return (
+      normalizeCertificateTemplateId(value.identifier) ||
+      normalizeCertificateTemplateId(value.templateId) ||
+      null
+    );
+  }
+
+  return null;
+};
+
+/**
+ * Single fallback chain for the certificate render templateId, shared by
+ * viewCertificate/downloadCertificate/shareCertificate: a course-level
+ * certificateTemplate wins; otherwise fall back to the locally-stored
+ * tenant/program template id (unchanged from today).
+ */
+export const resolveCertificateTemplateId = async (
+  courseCertificateTemplate
+) => {
+  const courseTemplateId = normalizeCertificateTemplateId(
+    courseCertificateTemplate
+  );
+
+  if (courseTemplateId) {
+    return courseTemplateId;
+  }
+
+  return await getDataFromStorage('templateId');
+};
+
+export const viewCertificate = async ({
+  certificateId,
+  certificateTemplate,
+}) => {
   const url = `${EndUrls.viewCertificate}`; // Define the URL
   const headers = await getHeaders();
   const headersString = Object.entries(headers)
     .map(([key, value]) => `-H "${key}: ${value}"`)
     .join(' ');
   const user_id = await getDataFromStorage('userId');
-  const template_id = await getDataFromStorage('templateId');
+  const template_id = await resolveCertificateTemplateId(certificateTemplate);
 
   const payload = {
     credentialId: certificateId,
@@ -2559,14 +2614,17 @@ export const downloadCertificate = async ({
   certificateId,
   certificateName,
   certificateHtml,
+  certificateTemplate,
 }) => {
   const user_id = await getDataFromStorage('userId');
-  const template_id = await getDataFromStorage('templateId');
 
   let htmlContent = certificateHtml;
 
   // Fetch HTML from API if not provided by caller
   if (!htmlContent) {
+    const template_id = await resolveCertificateTemplateId(
+      certificateTemplate
+    );
     const url = `${EndUrls.viewCertificate}`;
     const headers = await getHeaders();
     const payload = { credentialId: certificateId, templateId: template_id };
@@ -2656,13 +2714,16 @@ export const shareCertificate = async ({
   certificateId,
   certificateName,
   certificateHtml,
+  certificateTemplate,
 }) => {
   const user_id = await getDataFromStorage('userId');
-  const template_id = await getDataFromStorage('templateId');
 
   let htmlContent = certificateHtml;
 
   if (!htmlContent) {
+    const template_id = await resolveCertificateTemplateId(
+      certificateTemplate
+    );
     const url = `${EndUrls.viewCertificate}`;
     const headers = await getHeaders();
     const payload = { credentialId: certificateId, templateId: template_id };

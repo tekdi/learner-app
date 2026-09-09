@@ -17,6 +17,7 @@ const CertificateViewer = ({
   certificateHtml,
   certificateId,
   certificateName,
+  certificateTemplate,
 }) => {
   const webViewRef = useRef(null);
   const { t } = useTranslation();
@@ -24,7 +25,12 @@ const CertificateViewer = ({
 
   const handleDownload = async () => {
     setLoading(true);
-    const data = await downloadCertificate({ certificateId, certificateName, certificateHtml });
+    const data = await downloadCertificate({
+      certificateId,
+      certificateName,
+      certificateHtml,
+      certificateTemplate,
+    });
     if (data) {
       setLoading(false);
     }
@@ -32,7 +38,12 @@ const CertificateViewer = ({
 
   const handleShare = async () => {
     setLoading(true);
-    await shareCertificate({ certificateId, certificateName, certificateHtml });
+    await shareCertificate({
+      certificateId,
+      certificateName,
+      certificateHtml,
+      certificateTemplate,
+    });
     setLoading(false);
   };
 
