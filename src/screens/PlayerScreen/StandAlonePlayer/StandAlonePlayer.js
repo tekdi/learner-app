@@ -512,33 +512,11 @@ const StandAlonePlayer = ({ route }) => {
 
   //set data from react native
   const webviewRef = useRef(null);
-  const totalDurationResolverRef = useRef(null);
+  //timestamp (ms) captured when the assessment webview finishes loading, used to compute time spent on the assessment
+  const assessmentLoadStartTimeRef = useRef(null);
   // webview event
   const handleNavigationStateChange = (navState) => {
     console.log('Current URL:', navState.url);
-  };
-  //reads localStorage.totalDuration set by the webview's own player on the END event
-  const getTotalDurationFromWebView = () => {
-    return new Promise((resolve) => {
-      totalDurationResolverRef.current = resolve;
-      webviewRef.current?.injectJavaScript(`
-        (function() {
-          try {
-            window.ReactNativeWebView.postMessage(JSON.stringify({ totalDurationValue: localStorage.getItem('totalDuration') }));
-          } catch (e) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({ totalDurationValue: null }));
-          }
-        })();
-        true;
-      `);
-      //webview may never respond (page navigated away, etc.), so don't hang forever
-      setTimeout(() => {
-        if (totalDurationResolverRef.current) {
-          totalDurationResolverRef.current(null);
-          totalDurationResolverRef.current = null;
-        }
-      }, 1000);
-    });
   };
   const handleMessage = async (event) => {
     try {
@@ -546,11 +524,6 @@ const StandAlonePlayer = ({ route }) => {
       const data = event.nativeEvent.data;
       console.log('data_obj data', JSON.stringify(event.nativeEvent));
       let jsonObj = JSON.parse(data);
-      if (jsonObj?.totalDurationValue !== undefined && totalDurationResolverRef.current) {
-        totalDurationResolverRef.current(jsonObj.totalDurationValue);
-        totalDurationResolverRef.current = null;
-        return;
-      }
       let data_obj = jsonObj.data;
       let data_event = jsonObj?.event;
       let youtubeExit = jsonObj?.youtube;
@@ -764,12 +737,9 @@ const StandAlonePlayer = ({ route }) => {
           let scoreDetails = jsonObj.scoreDetails;
           let identifierWithoutImg = jsonObj.identifierWithoutImg;
           let maxScore = jsonObj.maxScore;
-
-          let totalDurationFromStorage = await getTotalDurationFromWebView();
-          let seconds =
-            totalDurationFromStorage != null
-              ? Number(totalDurationFromStorage)
-              : jsonObj.seconds;
+          let seconds = assessmentLoadStartTimeRef.current
+            ? Math.round((Date.now() - assessmentLoadStartTimeRef.current) / 1000)
+            : jsonObj.seconds;
           console.log(
             '####### debug timespent scoreDetails',
             JSON.stringify(scoreDetails)
@@ -2255,6 +2225,11 @@ fetch(
               console.warn('WebView error: ', nativeEvent);
             }}
             onNavigationStateChange={handleNavigationStateChange}
+            onLoadEnd={() => {
+              if (content_mime_type == 'application/vnd.sunbird.questionset') {
+                assessmentLoadStartTimeRef.current = Date.now();
+              }
+            }}
             allowsInlineMediaPlayback={true}
             /*
             //for rtl
