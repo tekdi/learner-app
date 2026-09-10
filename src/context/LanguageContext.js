@@ -25,7 +25,7 @@ import ma from './locales/ma.json'; // Marathi
 import odia from './locales/odia.json'; //Odia
 import ba from './locales/ba.json'; // Bangla
 import te from './locales/te.json'; // Telugu
-import ka from './locales/ka.json'; // Kannada
+import kn from './locales/kn.json'; // Kannada
 import ta from './locales/ta.json'; // Tamil
 import gu from './locales/gu.json'; // Gujarati
 import ur from './locales/ur.json'; // Urdu
@@ -37,7 +37,7 @@ const translations = {
   odia,
   ba,
   te,
-  ka,
+  kn,
   ta,
   gu,
   ur,
@@ -58,7 +58,12 @@ export const LanguageProvider = ({ children }) => {
   useEffect(() => {
     const loadLanguage = async () => {
       try {
-        const savedLanguage = await AsyncStorage.getItem('appLanguage');
+        let savedLanguage = await AsyncStorage.getItem('appLanguage');
+        if (savedLanguage === 'ka') {
+          // Migrate legacy Kannada code ('ka' is Georgian's ISO code) to 'kn'
+          savedLanguage = 'kn';
+          await AsyncStorage.setItem('appLanguage', savedLanguage);
+        }
         if (savedLanguage && translations[savedLanguage]) {
           setLanguage(savedLanguage);
           const rtl = rtlLanguages.includes(savedLanguage);

@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import L1Courses from '@src/screens/YouthNet/L1Courses';
 import CourseContentList from '@src/screens/Dashboard/Courses/CourseContentList';
 import UnitList from '@src/screens/Dashboard/Courses/UnitList';
+import CompleteProfileFormScreen from '@src/screens/Profile/CompleteProfileFormScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,11 @@ const YouthNetStack = () => {
       <Stack.Screen
         name="UnitList"
         component={UnitList}
+        options={{ lazy: true }} // Lazily load LoadingScreen
+      />
+      <Stack.Screen
+        name="CompleteProfileForm"
+        component={CompleteProfileFormScreen}
         options={{ lazy: true }} // Lazily load LoadingScreen
       />
     </Stack.Navigator>

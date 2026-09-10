@@ -5,6 +5,7 @@ import uuid from 'react-native-uuid';
 import {
   getApiResponse,
   storeApiResponse,
+  storeTenantAssessment,
   updateCourseStatus,
 } from './AuthService';
 import { getDataFromStorage, getTentantId } from '../JsHelper/Helper';
@@ -228,6 +229,11 @@ export const listQuestion = async (url, identifiers) => {
     data: data,
   };
 
+  // const curlCommand = `curl -X POST "${url}" ${Object.entries(config.headers)
+  //   .map(([key, value]) => `-H "${key}: ${value}"`)
+  //   .join(' ')} -d '${data}'`;
+  // console.log("listquestion curl",curlCommand);
+
   await axios
     .request(config)
     .then((response) => {
@@ -312,7 +318,9 @@ export const assessmentTracking = async (
 
     await axios
       .request(config)
-      .then((response) => {
+      .then(async(response) => {
+        //store as assessment given for that user
+        await storeTenantAssessment(userId,identifierWithoutImg,headers?.tenantId);
         api_response = { response: response.data, data: data };
       })
       .catch((error) => {

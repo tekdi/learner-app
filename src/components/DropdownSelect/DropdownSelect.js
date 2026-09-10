@@ -12,13 +12,21 @@ import { useController } from 'react-hook-form';
 import { useTranslation } from '../../context/LanguageContext';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import { isProfileFieldRequired } from '../../utils/JsHelper/Helper';
 
-const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
+const DropdownSelect = ({
+  field,
+  errors,
+  options,
+  formData,
+  handleValue,
+  editable = true,
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { t } = useTranslation();
 
   const toggleDropdown = () => {
-    if (options && options.length > 0) {
+    if (editable && options && options.length > 0) {
       setIsDropdownOpen(!isDropdownOpen);
     }
   };
@@ -51,9 +59,7 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
           ]}
         >
           {t(field.label.toLowerCase())}
-          {!field?.validation?.isRequired &&
-            // && !['states', 'districts', 'blocks'].includes(field.name)
-            `(${t('optional')})`}
+          {isProfileFieldRequired(field) && <Text style={styles.required}> *</Text>}
         </GlobalText>
       </View>
 
@@ -61,22 +67,24 @@ const DropdownSelect = ({ field, errors, options, formData, handleValue }) => {
         onPress={toggleDropdown}
         style={[
           styles.dropdownButton,
-          { borderColor: errors[field.name] ? 'red' : '#DADADA' },
+          {
+            borderColor: errors[field.name] ? 'red' : '#DADADA',
+            backgroundColor: editable ? 'white' : '#F5F5F5',
+          },
         ]}
       >
         {labelArray.includes(field.label) ? (
-          <GlobalText style={[globalStyles.text]}>
+          <GlobalText style={[globalStyles.text, { color: editable ? '#3B383E' : '#A0A0A0' }]}>
             {t(formData[field.name]?.label)}
           </GlobalText>
         ) : (
-          <GlobalText style={[globalStyles.text]}>
+          <GlobalText style={[globalStyles.text, { color: editable ? '#3B383E' : '#A0A0A0' }]}>
             {t(formData[field.name]?.label?.toLowerCase())}
           </GlobalText>
         )}
-        {/* <GlobalText style={[globalStyles.text]}>
-          {t(formData[field.name]?.label?.toLowerCase())}
-        </GlobalText> */}
-        <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
+        {editable && (
+          <MaterialCommunityIcons name="chevron-down" size={24} color="black" />
+        )}
       </TouchableOpacity>
       {isDropdownOpen && (
         <View style={styles.dropdownOptions}>
@@ -115,7 +123,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: '95%',
     alignSelf: 'center',
-    top: -10,
   },
   dropdownButton: {
     flexDirection: 'row',
@@ -127,12 +134,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   label: {
-    // position: 'absolute',
-    top: 15,
-    left: 15,
     backgroundColor: 'white',
     paddingHorizontal: 5,
-    zIndex: 1,
+    marginBottom: 6,
     alignSelf: 'flex-start', // Allow the label to adjust to its content width
   },
   selectedValue: {
@@ -160,6 +164,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginTop: 20,
     // marginLeft: 20,
+  },
+  required: {
+    color: 'red',
   },
 });
 

@@ -36,6 +36,7 @@ import {
 } from '../../../../utils/API/AuthService';
 import ActiveLoading from '../../../LoadingScreen/ActiveLoading';
 import BackButtonHandler from '../../../../components/BackNavigation/BackButtonHandler';
+import CompleteProfileBanner from '../../../../components/CompleteProfileBanner/CompleteProfileBanner';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '../../../../components/AppUpdate/AppUpdatePopup';
@@ -232,6 +233,7 @@ const SCPDashboard = (props) => {
         }
         style={styles.view2}
       >
+        <CompleteProfileBanner />
         <View style={globalStyles.flexrow}>
           <Image source={wave} resizeMode="contain" />
           <GlobalText style={styles.text2}>

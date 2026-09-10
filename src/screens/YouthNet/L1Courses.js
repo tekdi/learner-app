@@ -42,6 +42,7 @@ import globalStyles from '@src/utils/Helper/Style';
 
 import GlobalText from '@components/GlobalText/GlobalText';
 import AppUpdatePopup from '@src/components/AppUpdate/AppUpdatePopup';
+import CompleteProfileBanner from '@src/components/CompleteProfileBanner/CompleteProfileBanner';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
@@ -237,6 +238,7 @@ const L1Courses = () => {
                   // translucent={true}
                   backgroundColor="transparent"
                 />
+                <CompleteProfileBanner />
                 <View style={styles.view2}>
                   <Image source={wave} resizeMode="contain" />
                   <GlobalText style={styles.text2}>

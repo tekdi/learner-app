@@ -13,6 +13,7 @@ import { useTranslation } from '../../context/LanguageContext';
 import PropTypes from 'prop-types';
 
 import GlobalText from '@components/GlobalText/GlobalText';
+import { isProfileFieldRequired } from '../../utils/JsHelper/Helper';
 
 const EyeIcon = ({ setHidden, hidden }) => (
   <TouchableOpacity
@@ -49,7 +50,7 @@ const CustomPasswordTextField = ({ handleValue, field, formData, errors }) => {
           ]}
         >
           {t(field.label.toLowerCase())}
-          {!field?.isRequired && `(${t('optional')})`}
+          {isProfileFieldRequired(field) && <Text style={styles.required}> *</Text>}
         </GlobalText>
       </View>
       <View style={styles.overlap}>
@@ -143,5 +144,8 @@ const styles = StyleSheet.create({
     paddingLeft: 2,
     fontFamily: 'Poppins-Regular',
     paddingRight: 2,
+  },
+  required: {
+    color: 'red',
   },
 });
