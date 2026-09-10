@@ -28,7 +28,10 @@ import {
   courseListApi_New,
   enrollInterest,
   filterContent,
+  getProfileDetails,
+  updateUser,
 } from '../../../utils/API/AuthService';
+import { L2_INTERESTED_FIELD_ID } from '../../../utils/Constants/app-constants';
 import SyncCard from '../../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../../components/BackNavigation/BackButtonHandler';
 import FilterModal from '@components/FilterModal/FilterModal';
@@ -61,6 +64,21 @@ import { useInternet } from '../../../context/NetworkContext';
 import { deepLinkCheck } from '../../../utils/JsHelper/DeepLink';
 
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
+
+// The L2_INTERESTED customField value can come back either as a plain string
+// on the field, or nested inside a selectedValues array - check both shapes.
+const isL2InterestedFromCustomFields = (customFields) => {
+  const field = customFields?.find(
+    (item) => item?.fieldId === L2_INTERESTED_FIELD_ID
+  );
+  if (!field) {
+    return false;
+  }
+  if (field?.value === 'yes') {
+    return true;
+  }
+  return field?.selectedValues?.[0]?.value === 'yes';
+};
 
 const Courses = ({ route, CopilotStopped, customProp = null }) => {
   const navigation = useNavigation();
@@ -353,7 +371,24 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
 
     if (data === 'yes') {
       setInterestContent(false);
-    } else if (isInterested && data !== 'yes') {
+      return;
+    }
+
+    if (!isInterested) {
+      return;
+    }
+
+    // Persistence must be driven by the profile API (not local/cached state)
+    // so the Interest section stays hidden across app reinstalls/devices.
+    try {
+      const profileResult = await getProfileDetails({ userId: user_Id });
+      const profileDetails = profileResult?.getUserDetails?.[0];
+      const alreadyInterested = isL2InterestedFromCustomFields(
+        profileDetails?.customFields
+      );
+      setInterestContent(!alreadyInterested);
+    } catch (e) {
+      console.log('Error checking L2 interested status:', e);
       setInterestContent(true);
     }
   }
@@ -408,19 +443,52 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
 
   const handleInterest = async (selectedIds) => {
     setLoading(true);
-    const data = await enrollInterest(selectedIds);
-    const userId = await getDataFromStorage('userId');
-    if (data?.params?.status === 'successful') {
+    try {
+      const salesforceData = await enrollInterest(selectedIds);
+      if (salesforceData?.params?.status !== 'successful') {
+        setIsTopicModal(false);
+        setInterestModalError(true);
+        return;
+      }
+
+      const userId = await getDataFromStorage('userId');
+      const academicYearId = await getDataFromStorage('academicYearId');
+      const profileDetails = JSON.parse(
+        await getDataFromStorage('profileData')
+      )?.getUserDetails?.[0];
+
+      const updateResult = await updateUser({
+        user_id: userId,
+        payload: {
+          userData: {
+            firstName: profileDetails?.firstName,
+            lastName: profileDetails?.lastName,
+            mobile: profileDetails?.mobile,
+            dob: profileDetails?.dob,
+            gender: profileDetails?.gender,
+          },
+          customFields: [{ fieldId: L2_INTERESTED_FIELD_ID, value: 'yes' }],
+        },
+        extraHeaders: { academicyearid: academicYearId },
+      });
+
+      if (updateResult?.params?.status === 'failed' || updateResult?.error) {
+        setIsTopicModal(false);
+        setInterestModalError(true);
+        return;
+      }
+
       setIsTopicModal(false);
       setInterestModal(true);
       setInterestContent(false);
       await setDataInStorage(`Enrolled_to_l2${userId}`, 'yes');
-    } else {
-      //error alert
-      // setInterestModalError(true);
+    } catch (e) {
+      console.log('Error submitting interest:', e);
       setIsTopicModal(false);
+      setInterestModalError(true);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
