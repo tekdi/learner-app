@@ -6,6 +6,7 @@ import {
   Alert,
   TouchableOpacity,
   ScrollView,
+  DeviceEventEmitter,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import GlobalText from '@components/GlobalText/GlobalText';
@@ -26,6 +27,7 @@ import {
   deleteSavedItem,
   getActiveCohortData,
   getActiveCohortIds,
+  getBatchAssignmentCacheKey,
   getDataFromStorage,
   getDeviceId,
   getuserDetails,
@@ -36,7 +38,10 @@ import {
   storeUsername,
 } from '../../utils/JsHelper/Helper';
 import moment from 'moment';
-import { TENANT_DATA } from '../../utils/Constants/app-constants';
+import {
+  PROGRAM_SWITCHED_EVENT,
+  TENANT_DATA,
+} from '../../utils/Constants/app-constants';
 import { NotificationUnsubscribe } from '../../utils/Helper/JSHelper';
 const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
   const [loading, setLoading] = useState(false);
@@ -339,7 +344,13 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           routes: [{ name: 'Dashboard' }],
         });
       }
-      
+
+      // Storage (userType/uiConfig/tenantData/cohortData/etc.) now reflects
+      // the newly selected program. Screens that are reused across programs
+      // (not recreated by the navigation.reset above) rely on this event to
+      // re-fetch program-scoped state such as Assessment Attempts.
+      DeviceEventEmitter.emit(PROGRAM_SWITCHED_EVENT);
+
     } catch (error) {
       console.error('#### Error in handleProgramLogin:', error);
       console.error('#### Error details:', JSON.stringify(error));
@@ -576,7 +587,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
             await deleteSavedItem('academicYearId');
             await deleteSavedItem('userType');
             await deleteSavedItem('uiConfig');
-            await deleteSavedItem('cohortAssignedToAnyAcademicYearId');
+            await deleteSavedItem(await getBatchAssignmentCacheKey());
             await deleteSavedItem('preferred_language');
             await deleteSavedItem('registerationTestQuestionSetIdentifier');
             logoutEvent();

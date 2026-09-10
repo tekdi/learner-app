@@ -16,6 +16,7 @@ import {
 import {
   getActiveCohortData,
   getActiveCohortIds,
+  getBatchAssignmentCacheKey,
   getDataFromStorage,
   getDeviceId,
   getuserDetails,
@@ -275,7 +276,10 @@ const academicyear = await setAcademicYear({ tenantid: tenantId });
       }
 
       if (message.type === 'COHORT_ASSIGNED_ACADEMIC_YEAR_ID') {
-        await setDataInStorage('cohortAssignedToAnyAcademicYearId', message.value || '');
+        await setDataInStorage(
+          await getBatchAssignmentCacheKey(),
+          message.value || ''
+        );
         return;
       }
 

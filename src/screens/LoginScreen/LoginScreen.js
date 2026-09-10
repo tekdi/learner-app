@@ -439,7 +439,7 @@
 // });
 // export default LoginScreen;
 import React, { useState, useRef, useEffect } from 'react';
-import { View, ActivityIndicator, StyleSheet, Alert, BackHandler } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, Alert, BackHandler, DeviceEventEmitter } from 'react-native';
 import WebView from 'react-native-webview';
 import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import BackHeader from '../../components/Layout/BackHeader';
@@ -457,6 +457,7 @@ import {
 import {
   getActiveCohortData,
   getActiveCohortIds,
+  getBatchAssignmentCacheKey,
   getDeviceId,
   getuserDetails,
   saveAccessToken,
@@ -465,7 +466,10 @@ import {
   storeUsername,
 } from '../../utils/JsHelper/Helper';
 import moment from 'moment';
-import { TENANT_DATA } from '../../utils/Constants/app-constants';
+import {
+  PROGRAM_SWITCHED_EVENT,
+  TENANT_DATA,
+} from '../../utils/Constants/app-constants';
 import Config from 'react-native-config';
 
 const LoginScreen = () => {
@@ -698,6 +702,11 @@ const LoginScreen = () => {
     telemetryPayloadData,
   });
 
+  // Storage now reflects the newly selected program — let screens that are
+  // reused across programs (not recreated by the navigate above) re-fetch
+  // program-scoped state such as Assessment Attempts.
+  DeviceEventEmitter.emit(PROGRAM_SWITCHED_EVENT);
+
   };
 
   const handleSelectedProgramLogin = async (selectedtenantId, userId, token, refreshToken) => {
@@ -828,7 +837,10 @@ const LoginScreen = () => {
       }
 
       if (message.type === 'COHORT_ASSIGNED_ACADEMIC_YEAR_ID') {
-        await setDataInStorage('cohortAssignedToAnyAcademicYearId', message.value || '');
+        await setDataInStorage(
+          await getBatchAssignmentCacheKey(),
+          message.value || ''
+        );
         return;
       }
 

@@ -91,6 +91,18 @@ export const getAcademicYearId = async () => {
   }
 };
 
+// Batch-assignment ("cohortAssignedToAnyAcademicYearId") is fetched by a
+// WebView bridge for whichever program is currently selected. A dual-enrolled
+// user shares one userId across programs, so the cache key must also carry
+// the current tenant/program — otherwise one program's result leaks into the
+// other's eligibility checks.
+export const getBatchAssignmentCacheKey = async () => {
+  const tenantId = await getDataFromStorage('userTenantid');
+  return tenantId
+    ? `cohortAssignedToAnyAcademicYearId:${tenantId}`
+    : 'cohortAssignedToAnyAcademicYearId';
+};
+
 // Save Refresh Token
 
 export const saveRefreshToken = async (data) => {
