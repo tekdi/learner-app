@@ -29,6 +29,7 @@ import {
   targetedSolutions,
 } from '../../../../utils/API/AuthService';
 import ContentAccordion from './MyClass/ContentAccordion';
+import ActiveLoading from '../../../LoadingScreen/ActiveLoading';
 
 function getFilteredData(data, subTopic) {
   console .log('data====>', JSON.stringify(data));
@@ -48,6 +49,7 @@ function getFilteredData(data, subTopic) {
 
       const prerequisites = [];
       const postrequisites = [];
+      const during = [];
 
       // Process filtered children
       filteredChildren.forEach((child) => {
@@ -64,13 +66,20 @@ function getFilteredData(data, subTopic) {
             .filter((resource) => resource.type === 'postrequisite')
             .map((resource) => resource?.id?.toLowerCase())
         );
+
+        during.push(
+          ...learningResources
+            .filter((resource) => resource.type === 'during')
+            .map((resource) => resource?.id?.toLowerCase())
+        );
       });
 
       return {
         name: item.name, // Include the name of the item for reference
         prerequisites: prerequisites,
         postrequisites: postrequisites,
-        contentIdList: [...prerequisites, ...postrequisites],
+        during: during,
+        contentIdList: [...prerequisites, ...postrequisites, ...during],
       };
     })
     .filter((result) => result !== null); // Filter out null values
@@ -83,6 +92,7 @@ const SubjectDetails = ({ route }) => {
   const [tasks, setTasks] = useState([]);
   const [track, setTrack] = useState();
   const [resourceData, setResourceData] = useState();
+  const [loading, setLoading] = useState(true);
 
   const callProgramIfempty = async ({ solutionId, id }) => {
     const data = await SolutionEvent({ solutionId });
@@ -123,113 +133,104 @@ const SubjectDetails = ({ route }) => {
   };
 
   const fetchData = async () => {
-    let result;
-    const subjectName = item?.metadata?.subject || '';
-    const type = item?.metadata?.courseType || '';
-    const tenantid = await getDataFromStorage('userTenantid');
-    const academicYearId = await getDataFromStorage('academicYearId');
-    console.log('#### SubjectDetails academicYearId', academicYearId);
-    const academicYearList = await getAcademicYearList({ tenantid });
-    console.log('#### SubjectDetails academicYearList', academicYearList);
-    const storedAcademicYear = academicYearList?.find((ay) => ay?.id === academicYearId);
-    const isStoredYearActive = storedAcademicYear?.isActive === true;
-    console.log('#### SubjectDetails isStoredYearActive', isStoredYearActive);
-    let startDate, endDate, academicYearRange;
-    if (isStoredYearActive) {
-      startDate = storedAcademicYear?.startDate;
-      endDate = storedAcademicYear?.endDate;
-      academicYearRange = `${startDate?.split('-')[0]}-${endDate?.split('-')[0]}`;
-      console.log('#### SubjectDetails academicYearRange', academicYearRange);
-    }
-    const data = await targetedSolutions({ subjectName, type });
-
-    const id = data?.data?.[0]?._id;
-    const solutionId = data?.data?.[0]?.solutionId;
-
-    if (id == '') {
-      callProgramIfempty({ solutionId, id });
-    } else {
-      result = await EventDetails({ id });
-
-      const filterData = getFilteredData(result?.tasks || [], subTopic);
-      // console.log('getFilteredData==>', JSON.stringify(getFilteredData));
-
-      // setTasks(filterData);
-      const combinedData = {
-        prerequisites: [
-          ...new Set(filterData?.flatMap((item) => item?.prerequisites)),
-        ],
-        postrequisites: [
-          ...new Set(filterData?.flatMap((item) => item?.postrequisites)),
-        ],
-        contentIdList: [
-          ...new Set(filterData?.flatMap((item) => item?.contentIdList)),
-        ],
-      };
-
-      let userId = await getDataFromStorage('userId');
-      let course_track_data = await courseTrackingStatus(
-        userId,
-        combinedData?.contentIdList
+    setLoading(true);
+    try {
+      let result;
+      const subjectName = item?.metadata?.subject || '';
+      const type = item?.metadata?.courseType || '';
+      const tenantid = await getDataFromStorage('userTenantid');
+      const academicYearId = await getDataFromStorage('academicYearId');
+      console.log('#### SubjectDetails academicYearId', academicYearId);
+      const academicYearList = await getAcademicYearList({ tenantid });
+      console.log('#### SubjectDetails academicYearList', academicYearList);
+      const storedAcademicYear = academicYearList?.find(
+        (ay) => ay?.id === academicYearId
       );
-
-      let courseTrackData = [];
-      if (course_track_data?.data) {
-        courseTrackData =
-          course_track_data?.data?.find((course) => course.userId === userId)
-            ?.course || [];
+      const isStoredYearActive = storedAcademicYear?.isActive === true;
+      console.log('#### SubjectDetails isStoredYearActive', isStoredYearActive);
+      let startDate, endDate, academicYearRange;
+      if (isStoredYearActive) {
+        startDate = storedAcademicYear?.startDate;
+        endDate = storedAcademicYear?.endDate;
+        academicYearRange = `${startDate?.split('-')[0]}-${endDate?.split('-')[0]}`;
+        console.log('#### SubjectDetails academicYearRange', academicYearRange);
       }
+      const data = await targetedSolutions({ subjectName, type });
 
-      setTrackData(courseTrackData || []);
-      setTrack(courseTrackData || []);
+      const id = data?.data?.[0]?._id;
+      const solutionId = data?.data?.[0]?.solutionId;
 
-      if (combinedData) {
-        const result = await getDoidsDetails(combinedData?.contentIdList);
+      if (id == '') {
+        callProgramIfempty({ solutionId, id });
+      } else {
+        result = await EventDetails({ id });
 
-        // Initialize arrays for prerequisites and postrequisites
-        const prerequisites = [];
-        const postrequisites = [];
+        const filterData = getFilteredData(result?.tasks || [], subTopic);
+        // console.log('getFilteredData==>', JSON.stringify(getFilteredData));
 
-        // Filter prerequisites
-        result?.content?.forEach((item) => {
-          if (
-            combinedData?.prerequisites?.includes(
-              item?.identifier?.toLowerCase()
-            )
-          ) {
-            prerequisites.push(item); // Push filtered items
-          }
-          if (
-            combinedData?.postrequisites?.includes(
-              item?.identifier?.toLowerCase()
-            )
-          ) {
-            postrequisites.push(item); // Push filtered items
-          }
-        });
+        // setTasks(filterData);
+        const combinedData = {
+          prerequisites: [
+            ...new Set(filterData?.flatMap((item) => item?.prerequisites)),
+          ],
+          postrequisites: [
+            ...new Set(filterData?.flatMap((item) => item?.postrequisites)),
+          ],
+          during: [...new Set(filterData?.flatMap((item) => item?.during))],
+          contentIdList: [
+            ...new Set(filterData?.flatMap((item) => item?.contentIdList)),
+          ],
+        };
 
-        // Filter postrequisites
-        result?.QuestionSet?.forEach((item) => {
-          if (
-            combinedData?.prerequisites?.includes(
-              item?.identifier?.toLowerCase()
-            )
-          ) {
-            prerequisites.push(item); // Push filtered items
-          }
-          if (
-            combinedData?.postrequisites?.includes(
-              item?.identifier?.toLowerCase()
-            )
-          ) {
-            postrequisites.push(item); // Push filtered items
-          }
-        });
+        let userId = await getDataFromStorage('userId');
+        let course_track_data = await courseTrackingStatus(
+          userId,
+          combinedData?.contentIdList
+        );
 
-        // console.log('result===>', JSON.stringify(result));
+        let courseTrackData = [];
+        if (course_track_data?.data) {
+          courseTrackData =
+            course_track_data?.data?.find((course) => course.userId === userId)
+              ?.course || [];
+        }
 
-        setResourceData({ prerequisites, postrequisites });
+        setTrackData(courseTrackData || []);
+        setTrack(courseTrackData || []);
+
+        if (combinedData) {
+          const result = await getDoidsDetails(combinedData?.contentIdList);
+
+          // Initialize arrays for prerequisites and postrequisites
+          const prerequisites = [];
+          const postrequisites = [];
+          const during = [];
+
+          const allItems = [
+            ...(result?.content || []),
+            ...(result?.QuestionSet || []),
+          ];
+
+          allItems.forEach((item) => {
+            const identifier = item?.identifier?.toLowerCase();
+            if (combinedData?.prerequisites?.includes(identifier)) {
+              prerequisites.push(item);
+            }
+            if (combinedData?.postrequisites?.includes(identifier)) {
+              postrequisites.push(item);
+            }
+            if (combinedData?.during?.includes(identifier)) {
+              during.push(item);
+            }
+          });
+
+          // console.log('result===>', JSON.stringify(result));
+
+          setResourceData({ prerequisites, postrequisites, during });
+        }
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -272,19 +273,28 @@ const SubjectDetails = ({ route }) => {
           );
         })}
       </View>
-      <ScrollView>
-        <ContentAccordion
-          trackData={trackData}
-          resourceData={resourceData}
-          title={'pre_requisites_2'}
-          openDropDown={true}
-        />
-        <ContentAccordion
-          trackData={trackData}
-          resourceData={resourceData}
-          title={'post_requisites_2'}
-        />
-      </ScrollView>
+      {loading ? (
+        <ActiveLoading />
+      ) : (
+        <ScrollView>
+          <ContentAccordion
+            trackData={trackData}
+            resourceData={resourceData}
+            title={'pre_requisites_2'}
+            openDropDown={true}
+          />
+          <ContentAccordion
+            trackData={trackData}
+            resourceData={resourceData}
+            title={'during'}
+          />
+          <ContentAccordion
+            trackData={trackData}
+            resourceData={resourceData}
+            title={'post_requisites_2'}
+          />
+        </ScrollView>
+      )}
     </SafeAreaWrapper>
   );
 };
