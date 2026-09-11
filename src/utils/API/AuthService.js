@@ -3,6 +3,7 @@ import {
   createNewObject,
   createNewObjectTarget,
   getDataFromStorage,
+  getDefaultProgramTags,
   getTentantId,
 } from '../JsHelper/Helper';
 import {
@@ -362,7 +363,7 @@ export const courseListApi_testing = async ({
       filters: {
         program:
           userType == 'scp'
-            ? uiConfig?.program || ['secondchance', 'Second Chance']
+            ? uiConfig?.program || (await getDefaultProgramTags())
             : ['Youthnet', 'youthnet', 'YouthNet', TENANT_DATA.YOUTHNET],
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }),
         primaryCategory: ['Course'],
@@ -859,7 +860,7 @@ export const assessmentListApi = async (params = {}) => {
       filters: {
         program:
           userType == 'scp'
-            ? uiConfig?.program || ['Second Chance']
+            ? uiConfig?.program || (await getDefaultProgramTags())
             : [TENANT_DATA.YOUTHNET],
         board: `${params?.boardName}`,
         // "se_boards": [`${params?.boardName}`],
