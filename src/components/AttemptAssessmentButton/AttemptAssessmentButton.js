@@ -18,12 +18,10 @@ import { useTranslation } from '../../context/LanguageContext';
 import {
   getBatchAssignmentCacheKey,
   getDataFromStorage,
+  getDefaultProgramTags,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
-import {
-  PROGRAM_SWITCHED_EVENT,
-  TENANT_DATA,
-} from '../../utils/Constants/app-constants';
+import { PROGRAM_SWITCHED_EVENT } from '../../utils/Constants/app-constants';
 import {
   ContentSearch,
   getRegistrationAssessmentStatus,
@@ -107,6 +105,15 @@ const AttemptAssessmentButton = ({ onStateChange } = {}) => {
     const wasJustAttempted = justAttemptedRef.current;
     justAttemptedRef.current = false;
 
+    const userType = await getDataFromStorage('userType');
+    console.log('AttemptAssessmentButton: userType from storage:', userType);
+    if (userType !== 'scp') {
+      console.log('AttemptAssessmentButton: userType is not scp, hiding button');
+      setShowButton(false);
+      emitState({ visible: false });
+      return;
+    }
+
     let uiConfig = {};
     try {
       const uiConfigRaw = await getDataFromStorage('uiConfig');
@@ -135,22 +142,6 @@ const AttemptAssessmentButton = ({ onStateChange } = {}) => {
 
     const preferredLanguage = await getDataFromStorage('preferred_language');
 
-    // The content-search tag must reflect the CURRENTLY SELECTED program, not
-    // a single hardcoded program name, so a dual-enrolled user's search for
-    // (say) SCPP's assessment content doesn't return SCP's (or nothing). SCP
-    // alone also keeps its legacy "Second Chance" tag for backward compatibility.
-    let currentProgramName = null;
-    try {
-      const tenantDataRaw = await getDataFromStorage('tenantData');
-      const tenantData = JSON.parse(tenantDataRaw || 'null');
-      currentProgramName = tenantData?.[0]?.tenantName || null;
-    } catch (_) {}
-
-    const programFilter =
-      currentProgramName === TENANT_DATA.SECOND_CHANCE_PROGRAM
-        ? [TENANT_DATA.SECOND_CHANCE_PROGRAM, 'Second Chance']
-        : [currentProgramName || TENANT_DATA.SECOND_CHANCE_PROGRAM];
-
     try {
       const response = await ContentSearch({
         query: '',
@@ -158,7 +149,7 @@ const AttemptAssessmentButton = ({ onStateChange } = {}) => {
           status: ['Live'],
           primaryCategory: ['Practice Question Set'],
           assessmentType: 'Eligibility Test',
-          program: programFilter,
+          program: uiConfig?.program || (await getDefaultProgramTags()),
           ...(preferredLanguage ? { contentLanguage: [preferredLanguage] } : {}),
         },
         sort_by: { lastUpdatedOn: 'desc' },

@@ -46,6 +46,7 @@ import { NotificationUnsubscribe } from '../../utils/Helper/JSHelper';
 const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [currentUserType, setCurrentUserType] = useState('');
+  const [currentProgramName, setCurrentProgramName] = useState('');
   const [enrolledPrograms, setEnrolledPrograms] = useState([]);
   const [tenantData, setTenantData] = useState([]);
   const navigation = useNavigation();
@@ -96,6 +97,11 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
         const allTenantData = response.userData.tenantData;
         setTenantData(allTenantData);
 
+        const currentTenant = allTenantData.find(
+          (tenant) => tenant.tenantId === currentTenantId
+        );
+        setCurrentProgramName(currentTenant?.tenantName || '');
+
         // Filter tenants where role is "Learner" and status is "active" or "pending"
         // AND exclude the current program
         const filteredPrograms = allTenantData.filter((tenant) => {
@@ -105,7 +111,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           const isActiveOrPending =
             tenant.tenantStatus === 'active' || tenant.tenantStatus === 'pending';
           const isNotCurrentProgram = tenant.tenantId !== currentTenantId;
-          
+
           return hasLearnerRole && isActiveOrPending && isNotCurrentProgram;
         });
 
@@ -140,12 +146,12 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       setLoading(true);
       const tenantId = tenant?.tenantId;
       const tenantName = tenant?.tenantName;
-      
+
       console.log('#### Starting program switch for:', tenantName, tenantId);
-      
+
       // Get user_id from storage
       const user_id = await getDataFromStorage('userId');
-      
+
       if (!user_id) {
         Alert.alert(t('error'), t('user_id_not_found_please_login_again'));
         setLoading(false);
@@ -188,14 +194,14 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       const academicYearId = academicyear?.[0]?.id;
       await setDataInStorage('academicYearId', academicYearId || '');
       await setDataInStorage('userTenantid', tenantId || '');
-      
+
       const cohort = await getCohort({
         user_id,
         tenantid: tenantId,
         academicYearId,
       });
       console.log('#### loginmultirole cohort', cohort);
-      
+
       let cohort_id;
       if (cohort.params?.status !== 'failed') {
         const getActiveCohort = await getActiveCohortData(cohort);
@@ -223,7 +229,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
         'cohortId',
         cohort_id || '00000000-0000-0000-0000-000000000000'
       );
-      
+
       const tenantDetails = (await getProgramDetails()) || [];
 
       const MatchedTenant = tenantDetails.filter(
@@ -241,7 +247,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
         ?.map((item) => item?.tenantId);
 
       const scpTenantIds = tenantDetails
-        ?.filter((item) => item?.name === TENANT_DATA.SECOND_CHANCE_PROGRAM)
+        ?.filter((item) => [TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(item?.name))
         ?.map((item) => item?.tenantId);
 
       const campToClubTenantIds = tenantDetails
@@ -252,7 +258,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       console.log('#### Tenant IDs - SCP:', scpTenantIds, 'Youthnet:', youthnetTenantIds, 'Camp to Club:', campToClubTenantIds);
       console.log('#### Selected Tenant Name:', selectedTenantData?.[0]?.tenantName);
       console.log('#### Looking for tenant with ID:', tenantId);
-      
+
       // Also check by tenant name directly from selectedTenantData
       const selectedTenantName = selectedTenantData?.[0]?.tenantName;
       console.log('#### Comparing tenant name:', selectedTenantName, 'with constants');
@@ -265,7 +271,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       } catch (notifError) {
         console.log('#### Notification subscribe error (non-critical):', notifError);
       }
-      
+
       // Telemetry tracking
       try {
         const now = moment();
@@ -291,7 +297,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
 
       // Navigate based on program type
       setLoading(false);
-      
+
       // Use selectedTenantName already declared above
       if (scpTenantIds?.includes(tenantId)) {
         console.log('#### Navigating to SCP (matched by tenant ID)');
@@ -300,7 +306,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           index: 0,
           routes: [{ name: 'SCPUserTabScreen' }],
         });
-      } else if (selectedTenantName === TENANT_DATA.SECOND_CHANCE_PROGRAM) {
+      } else if ([TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(selectedTenantName)) {
         console.log('#### Navigating to SCP (matched by tenant name)');
         await setDataInStorage('userType', 'scp');
         navigation.reset({
@@ -355,12 +361,12 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       console.error('#### Error in handleProgramLogin:', error);
       console.error('#### Error details:', JSON.stringify(error));
       setLoading(false);
-      
+
       // Close modal on error too
       if (onClose && typeof onClose === 'function') {
         onClose();
       }
-      
+
       Alert.alert(
         t('error'),
         `${t('failed_to_switch_program')} ${error.message || t('try_again')}`,
@@ -381,14 +387,14 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
   //   try {
   //     setLoading(true);
   //     const tenantId = tenant?.tenantId;
-      
+
   //     // Get user details from storage
   //     const userDetails = await getuserDetails();
   //     const roleName = "Learner";
 
   //     // Get userId properly from storage (await the promise)
   //     const user_id = await getDataFromStorage('userId');
-      
+
   //     if (!user_id) {
   //       Alert.alert('Error', 'User ID not found. Please login again.');
   //       setLoading(false);
@@ -419,14 +425,14 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
   //     const academicYearId = academicyear?.[0]?.id;
   //     await setDataInStorage('academicYearId', academicYearId || '');
   //     await setDataInStorage('userTenantid', tenantId || '');
-      
+
   //     const cohort = await getCohort({
   //       user_id,
   //       tenantid: tenantId,
   //       academicYearId,
   //     });
   //     console.log('#### loginmultirole cohort', cohort);
-      
+
   //     let cohort_id;
   //     if (cohort.params?.status !== 'failed') {
   //       const getActiveCohort = await getActiveCohortData(cohort);
@@ -454,7 +460,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
   //       'cohortId',
   //       cohort_id || '00000000-0000-0000-0000-000000000000'
   //     );
-      
+
   //     const tenantDetails = (await getProgramDetails()) || [];
 
   //     const MatchedTenant = tenantDetails.filter(
@@ -505,17 +511,17 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
   //       setLoading(false);
   //       navigation.navigate('Dashboard');
   //     }
-      
+
   //     // Close the modal/dialog if onClose is provided
   //     if (onClose) {
   //       onClose();
   //     }
-      
+
   //   } catch (error) {
   //     console.error('Error in handleProgramLogin:', error);
   //     setLoading(false);
   //     Alert.alert(
-  //       'Error', 
+  //       'Error',
   //       'Failed to switch program. Please try again.',
   //       [
   //         {
@@ -530,29 +536,6 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
   //     );
   //   }
   // };
-  const handleProgramSwitch = async (tenant) => {
-    try {
-      // Store the selected tenant information
-      await setDataInStorage('userTenantid', tenant.tenantId);
-      await setDataInStorage('userType', tenant.tenantName);
-      
-      console.log('Switched to program:', tenant.tenantName);
-      Alert.alert(t('success'), `${t('switched_to')} ${tenant.tenantName}`, [
-        {
-          text: t('OK'),
-          onPress: () => {
-            if (onSuccess) {
-              onSuccess(tenant);
-            }
-          },
-        },
-      ]);
-    } catch (error) {
-      console.error('Error switching program:', error);
-      Alert.alert(t('error'), t('failed_to_switch_program_please_try_again'));
-    }
-  };
-
   const handleShowAllPrograms = () => {
     console.log('All tenant data:', tenantData);
     // Navigate to Programs screen
@@ -608,7 +591,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
               telemetryPayloadData,
             });
           };
-      
+
           fetchData();          // Add your logout logic here
         },
       },
@@ -619,6 +602,29 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
 
 
 
+  const normalizeName = (name) => (name || '').trim().toLowerCase();
+  const normalizedCurrentProgramName = normalizeName(currentProgramName);
+
+  let headerProgramLabel;
+  if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM)) {
+    headerProgramLabel = t('second_chance_program');
+  } else if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS)) {
+    headerProgramLabel = t('second_chance_program_pathways');
+  } else if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.YOUTHNET)) {
+    headerProgramLabel = t('vocational_training');
+  } else if (currentProgramName) {
+    headerProgramLabel = currentProgramName;
+  } else if (currentUserType === 'youthnet') {
+    headerProgramLabel = t('vocational_training');
+  } else if (currentUserType === 'scp') {
+    // Tenant name unavailable (e.g. fetch failed) — SCP and Pathways both
+    // map to userType 'scp', so we can't tell which one this is. Show
+    // nothing rather than guessing and risking the wrong program name.
+    headerProgramLabel = '';
+  } else {
+    headerProgramLabel = currentUserType;
+  }
+
   return (
     <View style={styles.container}>
       {loading ? (
@@ -627,14 +633,14 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           <GlobalText style={styles.loadingText}>{t('loading_programs')}</GlobalText>
         </View>
       ) : (
-        <ScrollView 
+        <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
           {/* Current Program Header */}
           <View style={styles.headerContainer}>
             <GlobalText style={styles.currentProgramTitle}>
-              {currentUserType === 'scp' ? t('second_chance_program') : currentUserType === 'youthnet' ? t('vocational_training') : currentUserType}
+              {headerProgramLabel}
             </GlobalText>
           </View>
 
@@ -823,4 +829,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProgramSwitch;
-
