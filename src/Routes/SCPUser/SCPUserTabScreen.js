@@ -8,7 +8,6 @@ import SCPUserStack from './SCPUserStack';
 import MyClassStack from './MyClassStack';
 import ProfileStack from '../Public/ProfileStack';
 import DashboardStack from '../Public/DashboardStack';
-import Contents from '../../screens/Dashboard/Contents';
 import profile from '../../assets/images/png/profile.png';
 import profile_filled from '../../assets/images/png/profile_filled.png';
 import home from '../../assets/images/png/home.png';
@@ -17,8 +16,6 @@ import book_filled from '../../assets/images/png/book_filled.png';
 import book from '../../assets/images/png/book.png';
 import Coursesfilled from '../../assets/images/png/Coursesfilled.png';
 import Coursesunfilled from '../../assets/images/png/Coursesunfilled.png';
-import contentunfilled from '../../assets/images/png/content.png';
-import contentfilled from '../../assets/images/png/content2.png';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
 import { 
   getDataFromStorage, 
@@ -253,13 +250,6 @@ const SCPUserTabScreen = () => {
                 size={30}
               />
             );
-          } else if (route.name === 'content') {
-            return (
-              <Image
-                source={focused ? contentfilled : contentunfilled}
-                style={{ width: 30, height: 30 }}
-              />
-            );
           } else if (route.name === 'Profile') {
             if (focused) {
               return (
@@ -328,11 +318,6 @@ const SCPUserTabScreen = () => {
           )}
         </Tab.Screen>
       )}
-      <Tab.Screen
-        name="content"
-        component={Contents}
-        options={{ tabBarLabel: t('content') }}
-      />
       <Tab.Screen
         name="Profile"
         component={ProfileStack}
