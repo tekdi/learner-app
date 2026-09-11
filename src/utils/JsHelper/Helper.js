@@ -6,7 +6,6 @@ import RNFS from 'react-native-fs';
 import messaging from '@react-native-firebase/messaging';
 import { getCurrentRouteParams } from '../NavigationService';
 import { readContent } from '../API/ApiCalls';
-import { TENANT_DATA, CONTENT_PLATFORM_IDS } from '../Constants/app-constants';
 
 // Get Saved Data from AsyncStorage
 
@@ -18,23 +17,6 @@ export const getDataFromStorage = async (value) => {
     return null;
     console.error('Error retrieving credentials:', e);
   }
-};
-
-// Resolve the content-platform (Ekstep) framework/channel IDs for the
-// currently logged-in user's program. SCP and SCP Pathways both store
-// userType === 'scp', so the actual tenant name (not userType) is what
-// distinguishes which set of IDs to use.
-export const getContentPlatformIds = async () => {
-  const userType = await getDataFromStorage('userType');
-  if (userType !== 'scp') {
-    return CONTENT_PLATFORM_IDS.DEFAULT;
-  }
-  const tenantData = JSON.parse((await getDataFromStorage('tenantData')) || '[]');
-  const tenantName = (tenantData?.[0]?.tenantName || '').trim().toLowerCase();
-  const pathwaysName = TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS.trim().toLowerCase();
-  return tenantName === pathwaysName
-    ? CONTENT_PLATFORM_IDS.SCP_PATHWAYS
-    : CONTENT_PLATFORM_IDS.SCP;
 };
 
 // Save Refresh Token
@@ -107,6 +89,18 @@ export const getAcademicYearId = async () => {
   } catch (e) {
     console.error('Error retrieving credentials:', e);
   }
+};
+
+// Batch-assignment ("cohortAssignedToAnyAcademicYearId") is fetched by a
+// WebView bridge for whichever program is currently selected. A dual-enrolled
+// user shares one userId across programs, so the cache key must also carry
+// the current tenant/program — otherwise one program's result leaks into the
+// other's eligibility checks.
+export const getBatchAssignmentCacheKey = async () => {
+  const tenantId = await getDataFromStorage('userTenantid');
+  return tenantId
+    ? `cohortAssignedToAnyAcademicYearId:${tenantId}`
+    : 'cohortAssignedToAnyAcademicYearId';
 };
 
 // Save Refresh Token
