@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, ActivityIndicator, StyleSheet, Alert, BackHandler } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, Alert, BackHandler, DeviceEventEmitter } from 'react-native';
 import WebView from 'react-native-webview';
 import SafeAreaWrapper from '../../components/SafeAreaWrapper/SafeAreaWrapper';
 import BackHeader from '../../components/Layout/BackHeader';
@@ -17,6 +17,7 @@ import {
 import {
   getActiveCohortData,
   getActiveCohortIds,
+  getBatchAssignmentCacheKey,
   getDataFromStorage,
   getDeviceId,
   getuserDetails,
@@ -26,7 +27,10 @@ import {
   storeUsername,
 } from '../../utils/JsHelper/Helper';
 import moment from 'moment';
-import { TENANT_DATA } from '../../utils/Constants/app-constants';
+import {
+  PROGRAM_SWITCHED_EVENT,
+  TENANT_DATA,
+} from '../../utils/Constants/app-constants';
 import Config from 'react-native-config';
 import { useTranslation } from '../../context/LanguageContext';
 
@@ -245,12 +249,7 @@ const PlpWebViewScreen = () => {
     ?.map((item) => item?.tenantId);
 
   const scp = tenantDetails
-    ?.filter((item) =>
-      [
-        TENANT_DATA.SECOND_CHANCE_PROGRAM,
-        TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS,
-      ].includes(item.name)
-    )
+    ?.filter((item) => item.name === 'Second Chance Program')
     ?.map((item) => item.tenantId);
 
  // const role = roleName;
@@ -258,7 +257,7 @@ const PlpWebViewScreen = () => {
   {
     // console.log('#### loginmultirole role', role);
 
-    if (scp?.includes(tenantId)) {
+    if (tenantId === scp?.[0]) {
       console.log('####loginintoscp', scp);
       await setDataInStorage('userType', 'scp');
       navigation.navigate('SCPUserTabScreen');
@@ -295,6 +294,11 @@ const PlpWebViewScreen = () => {
   await telemetryTrackingData({
     telemetryPayloadData,
   });
+
+  // Storage now reflects the newly selected program — let screens that are
+  // reused across programs (not recreated by the navigate above) re-fetch
+  // program-scoped state such as Assessment Attempts.
+  DeviceEventEmitter.emit(PROGRAM_SWITCHED_EVENT);
 
   };
 
@@ -373,11 +377,11 @@ const PlpWebViewScreen = () => {
     // Determine program type using tenant name (reliable) as primary,
     // tenant ID match from getProgramDetails as secondary.
     // selectedTenantName comes directly from the user's enrolled tenant data via getUserDetails API.
-    const scpTenantIds = tenantDetails?.filter((item) => [TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(item?.name))?.map((item) => item?.tenantId);
+    const scpTenantIds = tenantDetails?.filter((item) => item?.name === TENANT_DATA.SECOND_CHANCE_PROGRAM)?.map((item) => item?.tenantId);
     const youthnetTenantIds = tenantDetails?.filter((item) => item?.name === TENANT_DATA.YOUTHNET)?.map((item) => item?.tenantId);
     const campToClubTenantIds = tenantDetails?.filter((item) => item?.name === TENANT_DATA.CAMP_TO_CLUB)?.map((item) => item?.tenantId);
 
-    if ([TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(selectedTenantName) || scpTenantIds?.includes(selectedtenantId)) {
+    if (selectedTenantName === TENANT_DATA.SECOND_CHANCE_PROGRAM || scpTenantIds?.includes(selectedtenantId)) {
       console.log('#### selectedProgramLogin → SCPUserTabScreen');
       await setDataInStorage('userType', 'scp');
       navigation.reset({ index: 0, routes: [{ name: 'SCPUserTabScreen' }] });
@@ -415,7 +419,10 @@ const PlpWebViewScreen = () => {
       }
 
       if (message.type === 'COHORT_ASSIGNED_ACADEMIC_YEAR_ID') {
-        await setDataInStorage('cohortAssignedToAnyAcademicYearId', message.value || '');
+        await setDataInStorage(
+          await getBatchAssignmentCacheKey(),
+          message.value || ''
+        );
         return;
       }
 

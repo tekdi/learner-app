@@ -6,6 +6,7 @@ import {
   Alert,
   TouchableOpacity,
   ScrollView,
+  DeviceEventEmitter,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import GlobalText from '@components/GlobalText/GlobalText';
@@ -26,6 +27,7 @@ import {
   deleteSavedItem,
   getActiveCohortData,
   getActiveCohortIds,
+  getBatchAssignmentCacheKey,
   getDataFromStorage,
   getDeviceId,
   getuserDetails,
@@ -36,12 +38,14 @@ import {
   storeUsername,
 } from '../../utils/JsHelper/Helper';
 import moment from 'moment';
-import { TENANT_DATA } from '../../utils/Constants/app-constants';
+import {
+  PROGRAM_SWITCHED_EVENT,
+  TENANT_DATA,
+} from '../../utils/Constants/app-constants';
 import { NotificationUnsubscribe } from '../../utils/Helper/JSHelper';
 const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [currentUserType, setCurrentUserType] = useState('');
-  const [currentProgramName, setCurrentProgramName] = useState('');
   const [enrolledPrograms, setEnrolledPrograms] = useState([]);
   const [tenantData, setTenantData] = useState([]);
   const navigation = useNavigation();
@@ -91,11 +95,6 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
       if (response?.userData?.tenantData) {
         const allTenantData = response.userData.tenantData;
         setTenantData(allTenantData);
-
-        const currentTenant = allTenantData.find(
-          (tenant) => tenant.tenantId === currentTenantId
-        );
-        setCurrentProgramName(currentTenant?.tenantName || '');
 
         // Filter tenants where role is "Learner" and status is "active" or "pending"
         // AND exclude the current program
@@ -242,7 +241,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
         ?.map((item) => item?.tenantId);
 
       const scpTenantIds = tenantDetails
-        ?.filter((item) => [TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(item?.name))
+        ?.filter((item) => item?.name === TENANT_DATA.SECOND_CHANCE_PROGRAM)
         ?.map((item) => item?.tenantId);
 
       const campToClubTenantIds = tenantDetails
@@ -301,7 +300,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           index: 0,
           routes: [{ name: 'SCPUserTabScreen' }],
         });
-      } else if ([TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(selectedTenantName)) {
+      } else if (selectedTenantName === TENANT_DATA.SECOND_CHANCE_PROGRAM) {
         console.log('#### Navigating to SCP (matched by tenant name)');
         await setDataInStorage('userType', 'scp');
         navigation.reset({
@@ -345,7 +344,13 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           routes: [{ name: 'Dashboard' }],
         });
       }
-      
+
+      // Storage (userType/uiConfig/tenantData/cohortData/etc.) now reflects
+      // the newly selected program. Screens that are reused across programs
+      // (not recreated by the navigation.reset above) rely on this event to
+      // re-fetch program-scoped state such as Assessment Attempts.
+      DeviceEventEmitter.emit(PROGRAM_SWITCHED_EVENT);
+
     } catch (error) {
       console.error('#### Error in handleProgramLogin:', error);
       console.error('#### Error details:', JSON.stringify(error));
@@ -582,7 +587,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
             await deleteSavedItem('academicYearId');
             await deleteSavedItem('userType');
             await deleteSavedItem('uiConfig');
-            await deleteSavedItem('cohortAssignedToAnyAcademicYearId');
+            await deleteSavedItem(await getBatchAssignmentCacheKey());
             await deleteSavedItem('preferred_language');
             await deleteSavedItem('registerationTestQuestionSetIdentifier');
             logoutEvent();
@@ -614,29 +619,6 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
 
 
 
-  const normalizeName = (name) => (name || '').trim().toLowerCase();
-  const normalizedCurrentProgramName = normalizeName(currentProgramName);
-
-  let headerProgramLabel;
-  if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM)) {
-    headerProgramLabel = t('second_chance_program');
-  } else if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS)) {
-    headerProgramLabel = t('second_chance_program_pathways');
-  } else if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.YOUTHNET)) {
-    headerProgramLabel = t('vocational_training');
-  } else if (currentProgramName) {
-    headerProgramLabel = currentProgramName;
-  } else if (currentUserType === 'youthnet') {
-    headerProgramLabel = t('vocational_training');
-  } else if (currentUserType === 'scp') {
-    // Tenant name unavailable (e.g. fetch failed) — SCP and Pathways both
-    // map to userType 'scp', so we can't tell which one this is. Show
-    // nothing rather than guessing and risking the wrong program name.
-    headerProgramLabel = '';
-  } else {
-    headerProgramLabel = currentUserType;
-  }
-
   return (
     <View style={styles.container}>
       {loading ? (
@@ -645,14 +627,14 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           <GlobalText style={styles.loadingText}>{t('loading_programs')}</GlobalText>
         </View>
       ) : (
-        <ScrollView
+        <ScrollView 
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
           {/* Current Program Header */}
           <View style={styles.headerContainer}>
             <GlobalText style={styles.currentProgramTitle}>
-              {headerProgramLabel}
+              {currentUserType === 'scp' ? t('second_chance_program') : currentUserType === 'youthnet' ? t('vocational_training') : currentUserType}
             </GlobalText>
           </View>
 
