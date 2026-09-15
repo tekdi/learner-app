@@ -3,6 +3,7 @@ import {
   createNewObject,
   createNewObjectTarget,
   getDataFromStorage,
+  getDefaultProgramTags,
   getTentantId,
 } from '../JsHelper/Helper';
 import {
@@ -351,12 +352,18 @@ export const courseListApi_testing = async ({
     Accept: 'application/json',
   };
   let userType = await getDataFromStorage('userType');
+  let uiConfig = {};
+  try {
+    uiConfig = JSON.parse((await getDataFromStorage('uiConfig')) || '{}');
+  } catch (e) {
+    console.log('Error parsing uiConfig:', e);
+  }
   const payload = {
     request: {
       filters: {
         program:
           userType == 'scp'
-            ? ['secondchance', 'Second Chance']
+            ? uiConfig?.program || (await getDefaultProgramTags())
             : ['Youthnet', 'youthnet', 'YouthNet', TENANT_DATA.YOUTHNET],
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }),
         primaryCategory: ['Course'],
@@ -842,10 +849,19 @@ export const assessmentListApi = async (params = {}) => {
     Accept: 'application/json',
   };
   let userType = await getDataFromStorage('userType');
+  let uiConfig = {};
+  try {
+    uiConfig = JSON.parse((await getDataFromStorage('uiConfig')) || '{}');
+  } catch (e) {
+    console.log('Error parsing uiConfig:', e);
+  }
   const payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
+        program:
+          userType == 'scp'
+            ? uiConfig?.program || (await getDefaultProgramTags())
+            : [TENANT_DATA.YOUTHNET],
         board: `${params?.boardName}`,
         // "se_boards": [`${params?.boardName}`],
 

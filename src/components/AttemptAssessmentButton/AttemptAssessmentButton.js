@@ -1,6 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { AppState, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  AppState,
+  DeviceEventEmitter,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   useFocusEffect,
   useIsFocused,
@@ -9,10 +16,12 @@ import {
 import { Button, useTheme } from '@ui-kitten/components';
 import { useTranslation } from '../../context/LanguageContext';
 import {
+  getBatchAssignmentCacheKey,
   getDataFromStorage,
+  getDefaultProgramTags,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
-import { TENANT_DATA } from '../../utils/Constants/app-constants';
+import { PROGRAM_SWITCHED_EVENT } from '../../utils/Constants/app-constants';
 import {
   ContentSearch,
   getRegistrationAssessmentStatus,
@@ -22,9 +31,11 @@ import globalStyles from '../../utils/Helper/Style';
 
 // Mirrors the batch eligibility check used by SCPUserTabScreen to show the
 // Home/My Class tabs, so the button disappears as soon as those tabs appear.
+// Keyed by the currently selected program/tenant (see getBatchAssignmentCacheKey)
+// so a dual-enrolled user's batch status in one program never leaks into the other.
 const hasActiveBatchAssigned = async () => {
   const cohortAssignedId = await getDataFromStorage(
-    'cohortAssignedToAnyAcademicYearId'
+    await getBatchAssignmentCacheKey()
   );
   if (cohortAssignedId) {
     return true;
@@ -69,6 +80,11 @@ const AttemptAssessmentButton = ({ onStateChange } = {}) => {
   // only re-checks batch status, not attempts) can still emit a correct state.
   const attemptsRef = useRef([]);
 
+  // Set right before navigating to the assessment player, so the very next
+  // status check (on refocus, after the learner returns) knows to tolerate
+  // brief backend indexing lag instead of trusting an immediate zero-result.
+  const justAttemptedRef = useRef(false);
+
   const emitState = useCallback((state) => {
     if (state.attempts) {
       attemptsRef.current = state.attempts;
@@ -83,6 +99,12 @@ const AttemptAssessmentButton = ({ onStateChange } = {}) => {
 
   const checkPendingAssessment = useCallback(async () => {
     try {
+    // Consumed once per call, right away, so it can't leak into an unrelated
+    // later focus event if this call returns early before reaching the
+    // attempts check below.
+    const wasJustAttempted = justAttemptedRef.current;
+    justAttemptedRef.current = false;
+
     const userType = await getDataFromStorage('userType');
     console.log('AttemptAssessmentButton: userType from storage:', userType);
     if (userType !== 'scp') {
@@ -127,7 +149,7 @@ const AttemptAssessmentButton = ({ onStateChange } = {}) => {
           status: ['Live'],
           primaryCategory: ['Practice Question Set'],
           assessmentType: 'Eligibility Test',
-          program: [TENANT_DATA.SECOND_CHANCE_PROGRAM, 'Second Chance'],
+          program: uiConfig?.program || (await getDefaultProgramTags()),
           ...(preferredLanguage ? { contentLanguage: [preferredLanguage] } : {}),
         },
         sort_by: { lastUpdatedOn: 'desc' },
@@ -160,6 +182,29 @@ const AttemptAssessmentButton = ({ onStateChange } = {}) => {
         contentId: identifier,
       });
 
+      let attempts = Array.isArray(result) ? result : [];
+
+      // A zero-result response right after a fresh submission can just be
+      // read-after-write lag on the backend, not a real "no attempts" state
+      // — retry once after a short delay before trusting a zero count. Only
+      // do this for the check right after the learner returns from an
+      // attempt (wasJustAttempted) — otherwise every normal page load with
+      // genuinely zero attempts would pay this delay before the button/
+      // section can even appear.
+      if (attempts.length === 0 && wasJustAttempted) {
+        await new Promise((resolve) => setTimeout(resolve, 1200));
+        const retryResult = await getRegistrationAssessmentStatus({
+          userId,
+          courseId: identifier,
+          unitId: identifier,
+          contentId: identifier,
+        });
+        const retryAttempts = Array.isArray(retryResult) ? retryResult : [];
+        if (retryAttempts.length > 0) {
+          attempts = retryAttempts;
+        }
+      }
+
       const registrationTestReattempt = Number(
         uiConfig?.registrationTestReattempt ?? 0
       );
@@ -167,7 +212,6 @@ const AttemptAssessmentButton = ({ onStateChange } = {}) => {
         'AttemptAssessmentButton: registrationTestReattempt from uiConfig:',
         registrationTestReattempt
       );
-      const attempts = Array.isArray(result) ? result : [];
       const usedCount = attempts.length;
       console.log(
         'AttemptAssessmentButton: remaining attempts:',
@@ -228,6 +272,17 @@ const AttemptAssessmentButton = ({ onStateChange } = {}) => {
     }, [checkPendingAssessment])
   );
 
+  // Switching the active program doesn't always recreate this screen (e.g. a
+  // dashboard reused across programs without a nav reset), so re-run the
+  // check reactively whenever the selected program changes, not just on focus.
+  useEffect(() => {
+    const subscription = DeviceEventEmitter.addListener(
+      PROGRAM_SWITCHED_EVENT,
+      checkPendingAssessment
+    );
+    return () => subscription.remove();
+  }, [checkPendingAssessment]);
+
   // SCPUserTabScreen keeps `cohortData` fresh while the tabs are mounted, so a
   // cheap storage-only poll is enough to drop the button the moment a batch is
   // assigned — no need to repeat the ContentSearch/assessment-status calls.
@@ -262,6 +317,7 @@ const AttemptAssessmentButton = ({ onStateChange } = {}) => {
 
   const handlePress = () => {
     if (isContentAvailable && questionSetIdentifier) {
+      justAttemptedRef.current = true;
       navigation.navigate('StandAlonePlayer', {
         content_do_id: questionSetIdentifier,
         content_mime_type: questionSetMimeType,

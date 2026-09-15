@@ -15,6 +15,7 @@ import {
   getDataFromStorage,
   getPreferredContentLanguageSelection,
 } from '../../utils/JsHelper/Helper';
+import { CONTENT_PLATFORM_IDS } from '../../utils/Constants/app-constants';
 
 const FilterList = ({
   setParentFormData,
@@ -708,7 +709,10 @@ const FilterList = ({
     
     // Remove grade from default form data, but keep board
     const filteredDefaultFormData = { ...defaultFormData };
-    if (filteredDefaultFormData.gradeLevel && channelId === 'scp-channel') {
+    const isScpChannel =
+      channelId === CONTENT_PLATFORM_IDS.SCP.channelId ||
+      channelId === CONTENT_PLATFORM_IDS.SCP_PATHWAYS.channelId;
+    if (filteredDefaultFormData.gradeLevel && isScpChannel) {
       delete filteredDefaultFormData.gradeLevel;
     }
     // Keep board if it exists
@@ -789,7 +793,9 @@ const FilterList = ({
                   )}
 
                   {/* Dynamic Filters (Categories/Subdomains) */}
-                  {channelId !== 'scp-channel' && sortFilterSections(renderForm || []).map((item, key) => {
+                  {channelId !== CONTENT_PLATFORM_IDS.SCP.channelId &&
+                    channelId !== CONTENT_PLATFORM_IDS.SCP_PATHWAYS.channelId &&
+                    sortFilterSections(renderForm || []).map((item, key) => {
                     return (
                       (item?.name !== 'Domain' || isExplore == true) && (
                         renderFilterSection(item, key, false)

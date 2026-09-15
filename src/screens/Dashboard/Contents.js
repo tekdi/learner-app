@@ -25,6 +25,7 @@ import SyncCard from '../../components/SyncComponent/SyncCard';
 import BackButtonHandler from '../../components/BackNavigation/BackButtonHandler';
 import {
   capitalizeName,
+  getContentPlatformIds,
   getDataFromStorage,
   logEventFunction,
 } from '../../utils/JsHelper/Helper';
@@ -165,13 +166,7 @@ const Contents = () => {
       setLoadingMore(true);
     }
     console.log('refreshed');
-    let userType = await getDataFromStorage('userType');
-    const instant =
-      userType === 'youthnet'
-        ? { frameworkId: 'pos-framework', channelId: 'pos-channel' }
-        : userType === 'scp'
-        ? { frameworkId: 'scp-framework', channelId: 'scp-channel' }
-        : { frameworkId: 'pos-framework', channelId: 'pos-channel' };
+    const instant = await getContentPlatformIds();
 
     const data = await contentListApi_Pratham({ searchText, instant, offset });
     //found content progress
