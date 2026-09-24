@@ -30,6 +30,7 @@ const ResetPassword = () => {
   const [isDisabled, setIsDisabled] = useState(true);
   const [passwordError, setPasswordError] = useState(false);
   const [oldPasswordError, setOldPasswordError] = useState(false);
+  const [samePasswordError, setSamePasswordError] = useState(false);
   const { t } = useTranslation();
   const navigation = useNavigation();
 
@@ -47,6 +48,8 @@ const ResetPassword = () => {
 
   const handleOldPassword = (e) => {
     setOldPassword(e.trim());
+    setOldPasswordError(false);
+    setSamePasswordError(false);
     if (e.trim() === '') {
       setIsDisabled(true);
     } else if (ConfirmPassword == '' && password == '') {
@@ -55,6 +58,7 @@ const ResetPassword = () => {
   };
   const handlePassword = (e) => {
     setPassword(e.trim());
+    setSamePasswordError(false);
     if (e.trim() === '') {
       setIsDisabled(true);
     } else if (ConfirmPassword !== '' && e.trim() !== ConfirmPassword) {
@@ -80,6 +84,10 @@ const ResetPassword = () => {
   };
 
   const handlelogin = async () => {
+    if (password === oldPassword) {
+      setSamePasswordError(true);
+      return;
+    }
     const payload = {
       username: userName,
       password: oldPassword,
@@ -196,6 +204,20 @@ const ResetPassword = () => {
               {t('old_password_is_incorrect')}
             </Text>
           )}
+          {samePasswordError && (
+            <Text
+              allowFontScaling={false}
+              style={{
+                color: 'red',
+                alignSelf: 'flex-start',
+                marginBottom: 10,
+                marginTop: -20,
+                fontFamily: 'Poppins-Regular',
+              }}
+            >
+              {t('new_password_must_be_different')}
+            </Text>
+          )}
           <PrimaryButton
             isDisabled={isDisabled}
             onPress={handlelogin}
@@ -236,7 +258,7 @@ const ResetPassword = () => {
                       { textAlign: 'center', marginVertical: 10 },
                     ]}
                   >
-                    {t(failed_to_reset_password)}
+                    {t('failed_to_reset_password')}
                   </Text>
                 ) : (
                   <>

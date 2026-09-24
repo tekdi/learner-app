@@ -269,6 +269,7 @@
   "saving": "محفوظ کریں",
   "old_password": "پرانا پاس ورڈ",
   "old_password_is_incorrect": "پرانا پاس ورڈ غلط ہے۔",
+  "new_password_must_be_different": "نیا پاس ورڈ پرانے پاس ورڈ سے مختلف ہونا چاہیے",
   "create_new_account": "نیا اکاؤنٹ بنائیں",
   "the_following_details_must_be_filled_by_parents_or_guardians": "مندرجہ ذیل تفصیلات والدین یا سرپرستوں کی طرف سے پُر کرنا ضروری ہے۔",
   "parent_name": "والدین/سرپرست کا نام",

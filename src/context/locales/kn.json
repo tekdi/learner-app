@@ -269,6 +269,7 @@
   "saving": "ಉಳಿಸಲಾಗುತ್ತಿದೆ",
   "old_password": "ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್",
   "old_password_is_incorrect": "ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್ ತಪ್ಪಾಗಿದೆ",
+  "new_password_must_be_different": "ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್‌ಗಿಂತ ಭಿನ್ನವಾಗಿರಬೇಕು",
   "create_new_account": "ಹೊಸ ಖಾತೆಯನ್ನು ರಚಿಸಿ",
   "the_following_details_must_be_filled_by_parents_or_guardians": "ಈ ಕೆಳಗಿನ ವಿವರಗಳನ್ನು ಪೋಷಕರು ಅಥವಾ ಪೋಷಕರು ಭರ್ತಿ ಮಾಡಬೇಕು",
   "parent_name": "ಪೋಷಕರು/ಪಾಲಕರು  ಹೆಸರು",

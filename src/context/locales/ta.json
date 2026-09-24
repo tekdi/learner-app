@@ -269,6 +269,7 @@
   "saving": "சேமிக்கப்படுகிறது",
   "old_password": "பழைய பாஸ்வேர்டு",
   "old_password_is_incorrect": "பழைய பாஸ்வேர்டு தவறாக உள்ளது",
+  "new_password_must_be_different": "புதிய கடவுச்சொல் பழைய கடவுச்சொல்லிலிருந்து வேறுபட்டதாக இருக்க வேண்டும்",
   "create_new_account": "புதிய கணக்கை உருவாக்கவும்",
   "the_following_details_must_be_filled_by_parents_or_guardians": "கீழே உள்ள விவரங்களை பெற்றோர் அல்லது பாதுகாவலர் நிரப்ப வேண்டும்",
   "parent_name": "பெற்றோர் / பாதுகாவலரின் பெயர்",
