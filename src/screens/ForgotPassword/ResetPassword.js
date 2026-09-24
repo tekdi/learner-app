@@ -19,6 +19,8 @@ import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 import GlobalText from '@components/GlobalText/GlobalText';
 
+const MIN_PASSWORD_LENGTH = 4;
+
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
   const [oldPassword, setOldPassword] = useState('');
@@ -31,6 +33,7 @@ const ResetPassword = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [oldPasswordError, setOldPasswordError] = useState(false);
   const [samePasswordError, setSamePasswordError] = useState(false);
+  const [minLengthError, setMinLengthError] = useState(false);
   const { t } = useTranslation();
   const navigation = useNavigation();
 
@@ -59,6 +62,7 @@ const ResetPassword = () => {
   const handlePassword = (e) => {
     setPassword(e.trim());
     setSamePasswordError(false);
+    setMinLengthError(false);
     if (e.trim() === '') {
       setIsDisabled(true);
     } else if (ConfirmPassword !== '' && e.trim() !== ConfirmPassword) {
@@ -84,6 +88,10 @@ const ResetPassword = () => {
   };
 
   const handlelogin = async () => {
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setMinLengthError(true);
+      return;
+    }
     if (password === oldPassword) {
       setSamePasswordError(true);
       return;
@@ -216,6 +224,22 @@ const ResetPassword = () => {
               }}
             >
               {t('new_password_must_be_different')}
+            </Text>
+          )}
+          {minLengthError && (
+            <Text
+              allowFontScaling={false}
+              style={{
+                color: 'red',
+                alignSelf: 'flex-start',
+                marginBottom: 10,
+                marginTop: -20,
+                fontFamily: 'Poppins-Regular',
+              }}
+            >
+              {t('min_validation')
+                .replace('{field}', t('new_password'))
+                .replace('{length}', MIN_PASSWORD_LENGTH)}
             </Text>
           )}
           <PrimaryButton

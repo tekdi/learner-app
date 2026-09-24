@@ -326,7 +326,7 @@
   "resend_otp_in": "{count}లలో OTPని తిరిగి పంపండి",
   "verify_otp": "OTPని ధృవీకరించండి",
   "unable_to_send_otp": "OTP పంపలేకపోయింది",
-  "min_validation": "{ఫీల్డ్} కనీసం {length} అక్షరాలు ఉండాలి",
+  "min_validation": "{field} కనీసం {length} అక్షరాలు ఉండాలి",
   "max_validation": "{field} గరిష్టంగా {length} అక్షరాలు ఉండాలి",
   "settings": "సెట్టింగ్‌లు",
   "q2_a_bit_more": "మీ గురించి కొంచెం ఎక్కువ",

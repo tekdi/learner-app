@@ -326,7 +326,7 @@
   "resend_otp_in": "{count} ಗಳಲ್ಲಿ OTP ಅನ್ನು ಮತ್ತೆ ಕಳುಹಿಸಿ",
   "verify_otp": "OTP ಪರಿಶೀಲಿಸಿ",
   "unable_to_send_otp": "OTP ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ",
-  "min_validation": "{ಕ್ಷೇತ್ರ} ಕನಿಷ್ಠ {length} ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರಬೇಕು",
+  "min_validation": "{field} ಕನಿಷ್ಠ {length} ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರಬೇಕು",
   "max_validation": "{ಕ್ಷೇತ್ರ} ಗರಿಷ್ಠ {length} ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರಬೇಕು",
   "settings": "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
   "q2_a_bit_more": "ನಿಮ್ಮ ಬಗ್ಗೆ ಸ್ವಲ್ಪ ಹೆಚ್ಚು",
