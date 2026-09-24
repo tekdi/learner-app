@@ -269,6 +269,7 @@
   "saving": "Saving",
   "old_password": "Old Password",
   "old_password_is_incorrect": "Old Password is incorrect",
+  "new_password_must_be_different": "New password must be different from the old password",
   "create_new_account": "Create New Account",
   "the_following_details_must_be_filled_by_parents_or_guardians": "The following details must be filled by parents or guardians",
   "parent_name": "Parent/Guardian Name",
