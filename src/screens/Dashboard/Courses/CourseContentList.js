@@ -355,7 +355,10 @@ const CourseContentList = ({ route }) => {
   }, [trackCompleted]);
 
   const handleViewCertificate = async () => {
-    const data = await viewCertificate({ certificateId });
+    const data = await viewCertificate({
+      certificateId,
+      certificateTemplate: coursesContent?.certificateTemplate,
+    });
     setCertificateHtml(data?.result);
     setVisible(true);
   };
@@ -559,6 +562,7 @@ const CourseContentList = ({ route }) => {
               visible={visible}
               setVisible={setVisible}
               certificateHtml={certificateHtml}
+              certificateTemplate={coursesContent?.certificateTemplate}
               certificateId={certificateId}
               certificateName={coursesContent?.name}
             />

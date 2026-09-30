@@ -93,6 +93,7 @@ const Profile = () => {
         name: matchedContent?.name || '',
         posterImage: matchedContent?.posterImage || '',
         description: matchedContent?.description || '',
+        certificateTemplate: matchedContent?.certificateTemplate,
       };
     });
   };
