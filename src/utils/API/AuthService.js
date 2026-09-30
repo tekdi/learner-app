@@ -451,7 +451,7 @@ export const courseListApi_New = async ({
         //   userType == 'scp'
         //     ? ['secondchance', 'Second Chance']
         //     : ['Youthnet', 'youthnet', 'YouthNet'],
-        domain: contentFilter?.domain,
+        se_domains: contentFilter?.domain,
         program: contentFilter?.program,
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }), // Add identifier conditionally
         status: ['Live'],
