@@ -127,7 +127,7 @@ const switchToProgram = async (tenant, navigation) => {
       ?.map((item) => item?.tenantId);
 
     const scpTenantIds = tenantDetails
-      ?.filter((item) => item?.name === TENANT_DATA.SECOND_CHANCE_PROGRAM)
+      ?.filter((item) => [TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(item?.name))
       ?.map((item) => item?.tenantId);
 
     const campToClubTenantIds = tenantDetails
@@ -168,7 +168,7 @@ const switchToProgram = async (tenant, navigation) => {
     if (scpTenantIds?.includes(tenantId)) {
       console.log('#### DeepLink: Setting userType to scp');
       await setDataInStorage('userType', 'scp');
-    } else if (selectedTenantName === TENANT_DATA.SECOND_CHANCE_PROGRAM) {
+    } else if ([TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(selectedTenantName)) {
       console.log('#### DeepLink: Setting userType to scp (by name)');
       await setDataInStorage('userType', 'scp');
     } else if (youthnetTenantIds?.includes(tenantId)) {
