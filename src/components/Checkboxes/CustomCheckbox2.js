@@ -9,6 +9,14 @@ import { CheckBox } from '@ui-kitten/components';
 import GlobalText from '@components/GlobalText/GlobalText';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+// Static filter options are usually plain strings (e.g. "Marathi"), but some
+// fields (e.g. "Certificate Template") carry { identifier, label } objects
+// instead. Normalise both shapes to a stable string value + display label.
+const getOptionValue = (item) =>
+  typeof item === 'string' ? item : item?.identifier ?? item?.label ?? '';
+const getOptionLabel = (item) =>
+  typeof item === 'string' ? item : item?.label ?? item?.identifier ?? '';
+
 const CustomCheckbox2 = ({
   setStaticFormData,
   staticFormData,
@@ -24,27 +32,30 @@ const CustomCheckbox2 = ({
   }, [staticFormData, category]); // ✅ Added category to dependencies
 
   const toggleSelection = (item) => {
+    const value = getOptionValue(item);
+
     setStaticFormData((prevFormData) => {
       const updatedCategoryData = prevFormData[category] || [];
-      const exists = updatedCategoryData.includes(item);
+      const exists = updatedCategoryData.includes(value);
 
       const newCategoryData = exists
-        ? updatedCategoryData.filter((code) => code !== item)
-        : [...updatedCategoryData, item];
+        ? updatedCategoryData.filter((code) => code !== value)
+        : [...updatedCategoryData, value];
 
       return { ...prevFormData, [category]: newCategoryData };
     });
 
     // ✅ Immediately update selectedItems for UI reactivity
     setSelectedItems((prevSelected) =>
-      prevSelected.includes(item)
-        ? prevSelected.filter((code) => code !== item)
-        : [...prevSelected, item]
+      prevSelected.includes(value)
+        ? prevSelected.filter((code) => code !== value)
+        : [...prevSelected, value]
     );
   };
 
   const renderCheckboxItem = ({ item }) => {
-    const isSelected = selectedItems.includes(item);
+    const value = getOptionValue(item);
+    const isSelected = selectedItems.includes(value);
 
     return (
       <View style={styles.optionContainer}>
@@ -57,7 +68,7 @@ const CustomCheckbox2 = ({
         >
           {() => (
             <GlobalText style={[styles.optionText, isSelected && styles.selectedText]}>
-              {item}
+              {getOptionLabel(item)}
             </GlobalText>
           )}
         </CheckBox>
@@ -72,7 +83,7 @@ const CustomCheckbox2 = ({
     <View style={styles.container}>
       <FlatList
         data={displayOptions}
-        keyExtractor={(item) => item} // Ensure items are unique
+        keyExtractor={(item) => getOptionValue(item)} // Ensure items are unique
         renderItem={renderCheckboxItem}
         nestedScrollEnabled
         keyboardShouldPersistTaps="handled"
