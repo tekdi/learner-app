@@ -38,8 +38,8 @@ const InterestModalError = ({ isModal, setIsModal }) => {
           >
             <View style={{ alignItems: 'center', marginTop: 20 }}>
               <Icon
-                name={'checkmark-circle-outline'}
-                color="#1A8825"
+                name={'close-circle-outline'}
+                color="#D32F2F"
                 size={50}
               />
             </View>
@@ -50,26 +50,13 @@ const InterestModalError = ({ isModal, setIsModal }) => {
                   { textAlign: 'center', fontWeight: 'bold' },
                 ]}
               >
-                {t('your_response_has_been_recorded')}
-              </GlobalText>
-              <GlobalText
-                style={[
-                  globalStyles.subHeading,
-                  { textAlign: 'center', marginVertical: 10 },
-                ]}
-              >
-                {t('our_expert_will_reach_out_to_you_soon')}
-              </GlobalText>
-              <GlobalText
-                style={[globalStyles.subHeading, { textAlign: 'center' }]}
-              >
-                {t('l2_desp')}
+                {t('something_went_wrong_try_again_later')}
               </GlobalText>
             </View>
           </View>
           <View style={styles.btnbox}>
             <PrimaryButton
-              text={t('close')}
+              text={t('try_again')}
               onPress={() => {
                 setIsModal(false);
               }}
