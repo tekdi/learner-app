@@ -269,6 +269,7 @@
   "saving": "सुरक्षितपणे ठेवली जात आहे",
   "old_password": "जुना संकेत शब्द",
   "old_password_is_incorrect": "जुना पासवर्ड चुकीचा आहे",
+  "new_password_must_be_different": "नवीन पासवर्ड जुन्या पासवर्डपेक्षा वेगळा असणे आवश्यक आहे",
   "create_new_account": "नवीन खाते उघडा",
   "the_following_details_must_be_filled_by_parents_or_guardians": "खालील तपशील पालक किंवा संरक्षकाने भरले पाहिजे",
   "parent_name": "पालक/संरक्षकाचे नाव",
