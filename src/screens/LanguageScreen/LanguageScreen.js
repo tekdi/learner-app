@@ -26,6 +26,7 @@ import {
   deleteSavedItem,
   getActiveCohortData,
   getActiveCohortIds,
+  getBatchAssignmentCacheKey,
   getDataFromStorage,
   getRefreshToken,
   logEventFunction,
@@ -135,7 +136,7 @@ const LanguageScreen = () => {
       await deleteSavedItem('tenantData');
       await deleteSavedItem('academicYearId');
       await deleteSavedItem('uiConfig');
-      await deleteSavedItem('cohortAssignedToAnyAcademicYearId');
+      await deleteSavedItem(await getBatchAssignmentCacheKey());
       await deleteSavedItem('preferred_language');
       await deleteSavedItem('registerationTestQuestionSetIdentifier');
       logoutEvent();
