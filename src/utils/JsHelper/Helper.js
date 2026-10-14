@@ -21,7 +21,7 @@ export const getDataFromStorage = async (value) => {
 };
 
 // Resolve the content-platform (Ekstep) framework/channel IDs for the
-// currently logged-in user's program. SCP and SCP Pathways both store
+// currently logged-in user's program. SCP and Pathways both store
 // userType === 'scp', so the actual tenant name (not userType) is what
 // distinguishes which set of IDs to use.
 export const getContentPlatformIds = async () => {
@@ -31,7 +31,7 @@ export const getContentPlatformIds = async () => {
   }
   const tenantData = JSON.parse((await getDataFromStorage('tenantData')) || '[]');
   const tenantName = (tenantData?.[0]?.tenantName || '').trim().toLowerCase();
-  const pathwaysName = TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS.trim().toLowerCase();
+  const pathwaysName = TENANT_DATA.PATHWAYS.trim().toLowerCase();
   return tenantName === pathwaysName
     ? CONTENT_PLATFORM_IDS.SCP_PATHWAYS
     : CONTENT_PLATFORM_IDS.SCP;
@@ -39,16 +39,16 @@ export const getContentPlatformIds = async () => {
 
 // Fallback program tag(s) for content/assessment search filters, used only
 // when the backend hasn't configured uiConfig.program for the tenant. SCP
-// and SCP Pathways both store userType === 'scp', so — like
+// and Pathways both store userType === 'scp', so — like
 // getContentPlatformIds above — the actual tenant name is what distinguishes
 // them here. SCP alone also keeps its legacy "Second Chance" tag for
 // backward compatibility; Pathways has no such legacy tag to preserve.
 export const getDefaultProgramTags = async () => {
   const tenantData = JSON.parse((await getDataFromStorage('tenantData')) || '[]');
   const tenantName = (tenantData?.[0]?.tenantName || '').trim().toLowerCase();
-  const pathwaysName = TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS.trim().toLowerCase();
+  const pathwaysName = TENANT_DATA.PATHWAYS.trim().toLowerCase();
   return tenantName === pathwaysName
-    ? [TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS]
+    ? [TENANT_DATA.PATHWAYS]
     : [TENANT_DATA.SECOND_CHANCE_PROGRAM, 'Second Chance'];
 };
 

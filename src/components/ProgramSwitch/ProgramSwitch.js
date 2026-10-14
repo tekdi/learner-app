@@ -247,7 +247,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
         ?.map((item) => item?.tenantId);
 
       const scpTenantIds = tenantDetails
-        ?.filter((item) => [TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(item?.name))
+        ?.filter((item) => [TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.PATHWAYS].includes(item?.name))
         ?.map((item) => item?.tenantId);
 
       const campToClubTenantIds = tenantDetails
@@ -306,7 +306,7 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
           index: 0,
           routes: [{ name: 'SCPUserTabScreen' }],
         });
-      } else if ([TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(selectedTenantName)) {
+      } else if ([TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.PATHWAYS].includes(selectedTenantName)) {
         console.log('#### Navigating to SCP (matched by tenant name)');
         await setDataInStorage('userType', 'scp');
         navigation.reset({
@@ -608,8 +608,8 @@ const ProgramSwitch = ({ userId, onSuccess, onError, onClose }) => {
   let headerProgramLabel;
   if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM)) {
     headerProgramLabel = t('second_chance_program');
-  } else if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS)) {
-    headerProgramLabel = t('second_chance_program_pathways');
+  } else if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.PATHWAYS)) {
+    headerProgramLabel = t('pathways');
   } else if (normalizedCurrentProgramName === normalizeName(TENANT_DATA.YOUTHNET)) {
     headerProgramLabel = t('vocational_training');
   } else if (currentProgramName) {

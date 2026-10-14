@@ -76,8 +76,8 @@ const SecondaryHeader = ({ logo }) => {
   let displayProgramLabel;
   if (normalizedProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM)) {
     displayProgramLabel = t('second_chance_program');
-  } else if (normalizedProgramName === normalizeName(TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS)) {
-    displayProgramLabel = t('second_chance_program_pathways');
+  } else if (normalizedProgramName === normalizeName(TENANT_DATA.PATHWAYS)) {
+    displayProgramLabel = t('pathways');
   } else if (normalizedProgramName === normalizeName(TENANT_DATA.YOUTHNET)) {
     displayProgramLabel = t('vocational_training');
   } else if (programName) {

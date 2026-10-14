@@ -252,7 +252,7 @@ const PlpWebViewScreen = () => {
     ?.filter((item) =>
       [
         TENANT_DATA.SECOND_CHANCE_PROGRAM,
-        TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS,
+        TENANT_DATA.PATHWAYS,
       ].includes(item.name)
     )
     ?.map((item) => item.tenantId);
@@ -382,11 +382,11 @@ const PlpWebViewScreen = () => {
     // Determine program type using tenant name (reliable) as primary,
     // tenant ID match from getProgramDetails as secondary.
     // selectedTenantName comes directly from the user's enrolled tenant data via getUserDetails API.
-    const scpTenantIds = tenantDetails?.filter((item) => [TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(item?.name))?.map((item) => item?.tenantId);
+    const scpTenantIds = tenantDetails?.filter((item) => [TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.PATHWAYS].includes(item?.name))?.map((item) => item?.tenantId);
     const youthnetTenantIds = tenantDetails?.filter((item) => item?.name === TENANT_DATA.YOUTHNET)?.map((item) => item?.tenantId);
     const campToClubTenantIds = tenantDetails?.filter((item) => item?.name === TENANT_DATA.CAMP_TO_CLUB)?.map((item) => item?.tenantId);
 
-    if ([TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS].includes(selectedTenantName) || scpTenantIds?.includes(selectedtenantId)) {
+    if ([TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.PATHWAYS].includes(selectedTenantName) || scpTenantIds?.includes(selectedtenantId)) {
       console.log('#### selectedProgramLogin → SCPUserTabScreen');
       await setDataInStorage('userType', 'scp');
       navigation.reset({ index: 0, routes: [{ name: 'SCPUserTabScreen' }] });

@@ -217,7 +217,7 @@ const academicyear = await setAcademicYear({ tenantid: tenantId });
     ?.filter((item) =>
       [
         TENANT_DATA.SECOND_CHANCE_PROGRAM,
-        TENANT_DATA.SECOND_CHANCE_PROGRAM_PATHWAYS,
+        TENANT_DATA.PATHWAYS,
       ].includes(item.name)
     )
     ?.map((item) => item.tenantId);
