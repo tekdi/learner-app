@@ -60,6 +60,20 @@ const Assessment = ({ header, background }) => {
       console.log('e', e);
     }
 
+    // Vocational Training batches have no BOARD; the assessments assigned to the
+    // batch are listed in its ASSESSMENTS custom field and are the only ones shown.
+    const userType = await getDataFromStorage('userType');
+    const isVT = userType === 'youthnet';
+    let assignedAssessmentIds = [];
+    if (isVT) {
+      const assessmentsField = cohort?.customField?.find(
+        (field) => field.label === 'ASSESSMENTS'
+      );
+      assignedAssessmentIds = (assessmentsField?.selectedValues || [])
+        .map((value) => (typeof value === 'string' ? value : value?.id))
+        .filter(Boolean);
+    }
+
     //fix for public user get maharashtra board assessments
     /*if (!board?.value) {
       board = { value: 'maharashtra' };
@@ -67,15 +81,29 @@ const Assessment = ({ header, background }) => {
 
     console.log('########### board', board);
 
-    if (board) {
+    console.log('VT-ASSESS[tmp] list', {
+      userType,
+      isVT,
+      assignedAssessmentIds,
+      hasCohort: !!cohort,
+      cohortName: cohort?.cohortName,
+      fields: cohort?.customField?.map((field) => field.label),
+    });
+
+    if (isVT && assignedAssessmentIds.length === 0) {
+      // No assessment attached to the learner's batch.
+      setAssessments([]);
+    } else if (board || isVT) {
       const boardName = board?.selectedValues?.[0];
       // const stateName = state.value;
 
       const assessmentList = await assessmentListApi({
         boardName,
+        ...(isVT ? { identifiers: assignedAssessmentIds } : {}),
         // stateName,
         user_id,
       });
+      console.log('VT-ASSESS[tmp] result count', assessmentList?.count, assessmentList?.QuestionSet?.length);
       if (assessmentList) {
         const OfflineAssessmentList = assessmentList;
         const uniqueAssessments = [

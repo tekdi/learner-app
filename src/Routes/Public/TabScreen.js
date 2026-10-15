@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from '../../context/LanguageContext';
 import {
@@ -17,6 +18,8 @@ import {
 import DashboardStack from './DashboardStack';
 import SurveyStack from '../Youthnet/SurveyStack';
 import ExploreStack from '../Youthnet/ExploreStack';
+import AssessmentStack from '../Youthnet/AssessmentStack';
+import useActiveBatchEligibility from '../../utils/Helper/useActiveBatchEligibility';
 import Contents from '../../screens/Dashboard/Contents';
 import Coursesfilled from '../../assets/images/png/Coursesfilled.png';
 import profile from '../../assets/images/png/profile.png';
@@ -52,6 +55,8 @@ const WalkthroughableView = walkthroughable(View); // Wrap Image component
   const insets = useSafeAreaInsets();
   const tabBarStyle = useTabBarStyle();
   const tabLabelStyle = useTabLabelStyle();
+  // Vocational Training learners with an active batch get the Assessment tab.
+  const hasActiveBatch = useActiveBatchEligibility(userType === 'youthnet');
 
   // useEffect(() => {
   //   const COPILOT_ENABLE = Config.COPILOT_ENABLE;
@@ -253,6 +258,22 @@ const WalkthroughableView = walkthroughable(View); // Wrap Image component
               <Image
                 source={focused ? explore_FILL : explore_UNFILLED}
                 style={{ width: 30, height: 30 }}
+              />
+            ),
+          }}
+        />
+      )}
+      {userType === 'youthnet' && hasActiveBatch && (
+        <Tab.Screen
+          name="AssessmentStack"
+          component={AssessmentStack}
+          options={{
+            tabBarLabel: t('assessment'),
+            tabBarIcon: ({ focused }) => (
+              <SimpleIcon
+                name="note"
+                color={focused ? '#987100' : 'black'}
+                size={30}
               />
             ),
           }}

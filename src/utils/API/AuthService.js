@@ -843,9 +843,19 @@ export const assessmentListApi = async (params = {}) => {
     Accept: 'application/json',
   };
   let userType = await getDataFromStorage('userType');
+  // Vocational Training: only the assessments assigned to the learner's batch.
+  const assignedIds = Array.isArray(params?.identifiers)
+    ? params.identifiers
+    : null;
   const payload = {
     request: {
-      filters: {
+      filters: assignedIds
+        ? {
+            identifier: assignedIds,
+            status: ['Live'],
+            primaryCategory: ['Practice Question Set'],
+          }
+        : {
         program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
         board: `${params?.boardName}`,
         // "se_boards": [`${params?.boardName}`],
@@ -865,7 +875,7 @@ export const assessmentListApi = async (params = {}) => {
         // new different type
         // undo this
         evaluationType: ['offline', 'online', 'ai'],
-      },
+          },
       sort_by: {
         lastUpdatedOn: 'desc',
       },
