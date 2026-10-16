@@ -1803,14 +1803,18 @@ export const eventList = async ({ startDate, endDate }) => {
     });
 
     if (result) {
-      await storeApiResponse(
-        user_id,
-        url,
-        'post',
-        payload,
-        result?.data?.result
-      );
-      return result?.data?.result;
+      // event/list does not honour filters.cohortId, so keep only this batch's events
+      const eventResult = result?.data?.result;
+      const scopedResult = Array.isArray(eventResult?.events)
+        ? {
+            ...eventResult,
+            events: eventResult.events.filter((event) =>
+              event?.metadata?.cohortIds?.includes(cohort?.cohortId)
+            ),
+          }
+        : eventResult;
+      await storeApiResponse(user_id, url, 'post', payload, scopedResult);
+      return scopedResult;
     } else {
       let result_offline = await getApiResponse(user_id, url, 'post', payload);
       return result_offline;
