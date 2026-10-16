@@ -791,7 +791,8 @@ const FilterList = ({
                   {/* Dynamic Filters (Categories/Subdomains) */}
                   {channelId !== 'scp-channel' && sortFilterSections(renderForm || []).map((item, key) => {
                     return (
-                      (item?.name !== 'Domain' || isExplore == true) && (
+                      (item?.name !== 'Domain' || isExplore == true) &&
+                      !['Certificate Template', 'Skills'].includes(item?.name) && (
                         renderFilterSection(item, key, false)
                       )
                     );
@@ -803,7 +804,9 @@ const FilterList = ({
                       {sortFilterSections(renderStaticForm || [])
                         .filter(item => 
                           item?.name !== 'Content Language' && 
-                          item?.name !== 'Language'
+                          item?.name !== 'Language' &&
+                          item?.name !== 'Certificate Template' &&
+                          item?.name !== 'Skills'
                         )
                         .map((item, key) => {
                           return (
