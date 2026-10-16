@@ -269,6 +269,7 @@
   "saving": "ସେଭ ହେଉଛି",
   "old_password": "ପୁରୁଣା ପାସୱାର୍ଡ",
   "old_password_is_incorrect": "ପୁରୁଣା ପାସୱାର୍ଡ ଭୁଲ ଅଟେ",
+  "new_password_must_be_different": "ନୂଆ ପାସୱାର୍ଡ ପୁରୁଣା ପାସୱାର୍ଡଠାରୁ ଭିନ୍ନ ହେବା ଆବଶ୍ୟକ",
   "create_new_account": "ନୂଆ ଏକାଉଣ୍ଟ ତିଆରି କରନ୍ତୁ",
   "the_following_details_must_be_filled_by_parents_or_guardians": "ନିମ୍ନଲିଖିତ ବିବରଣୀ ପିତାମାତା କିମ୍ବା ଅଭିଭାବକଙ୍କ ଦ୍ୱାରା ପୂରଣ କରାଯିବା ଆବଶ୍ୟକ",
   "parent_name": "ପିତାମାତା/ଅଭିଭାବକଙ୍କ ନାମ",

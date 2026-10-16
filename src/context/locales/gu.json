@@ -269,6 +269,7 @@
   "saving": "સેવ કરી રહ્યા છીએ",
   "old_password": "જૂનો પાસવર્ડ",
   "old_password_is_incorrect": "જૂનો પાસવર્ડ ખોટો છે",
+  "new_password_must_be_different": "નવો પાસવર્ડ જૂના પાસવર્ડથી અલગ હોવો જોઈએ",
   "create_new_account": "નવું એકાઉન્ટ બનાવો",
   "the_following_details_must_be_filled_by_parents_or_guardians": "નીચેની વિગતો માતાપિતા અથવા વાલીઓ દ્વારા ભરવાની રહેશે",
   "parent_name": "માતાપિતા/વાલીનું નામ",
