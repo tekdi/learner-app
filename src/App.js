@@ -36,6 +36,11 @@ import RNRestart from 'react-native-restart';
 
 //background sync service
 import { startGlobalSync, stopGlobalSync } from './services/syncService';
+//access token renewal while the app is in use
+import {
+  startSessionManager,
+  stopSessionManager,
+} from './utils/API/sessionManager';
 import RNFS from 'react-native-fs';
 import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
@@ -548,10 +553,12 @@ const App = () => {
   useEffect(() => {
     // ✅ Start global sync when app loads
     startGlobalSync();
+    startSessionManager();
 
     return () => {
       // 🧹 Cleanup on unmount
       stopGlobalSync();
+      stopSessionManager();
     };
   }, []);
 
