@@ -14,6 +14,7 @@ import {
   clearDoKeys,
   deleteFilesInDirectory,
   deleteSavedItem,
+  getBatchAssignmentCacheKey,
   getDataFromStorage,
   logEventFunction,
 } from '../../utils/JsHelper/Helper';
@@ -144,7 +145,7 @@ const OtherSettings = ({ route }) => {
       await deleteSavedItem('academicYearId');
       await deleteSavedItem('userType');
       await deleteSavedItem('uiConfig');
-      await deleteSavedItem('cohortAssignedToAnyAcademicYearId');
+      await deleteSavedItem(await getBatchAssignmentCacheKey());
       await deleteSavedItem('preferred_language');
       await deleteSavedItem('registerationTestQuestionSetIdentifier');
       logoutEvent();
