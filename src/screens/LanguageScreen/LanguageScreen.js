@@ -27,19 +27,20 @@ import {
   getActiveCohortData,
   getActiveCohortIds,
   getDataFromStorage,
-  getRefreshToken,
   logEventFunction,
-  saveAccessToken,
-  saveRefreshToken,
   setDataInStorage,
 } from '../../utils/JsHelper/Helper';
 import { NotificationUnsubscribe } from '../../utils/Helper/JSHelper';
+import {
+  isAccessTokenExpired,
+  isAccessTokenExpiringSoon,
+} from '../../utils/API/sessionManager';
+import { refreshSession } from '../../utils/API/RestClient';
 
 import {
   getCohort,
   getProfileDetails,
   getProgramDetails,
-  refreshToken,
 } from '../../utils/API/AuthService';
 import Loading from '../LoadingScreen/Loading';
 import { useInternet } from '../../context/NetworkContext';
@@ -228,62 +229,46 @@ const LanguageScreen = () => {
       // console.log('cohort_id', cohort_id);
       // console.log('isConnected', isConnected);
 
-      if (token && userId) {
-        if (isConnected) {
-          const refresh_token = await getRefreshToken();
-          const data = await refreshToken({
-            refresh_token: refresh_token,
-          });
-
-          if (token && data?.access_token) {
-            await saveAccessToken(data?.access_token);
-            await saveRefreshToken(data?.refresh_token);
-            if (
-              cohort_id !== '00000000-0000-0000-0000-000000000000' &&
-              userType === 'scp'
-            ) {
-              await setCurrentCohort(cohort_id);
-              navigation.navigate('SCPUserTabScreen');
-            } else {
-              if (userType === 'youthnet') {
-                // navigation.navigate('YouthNetTabScreen');
-                const user_id = await getDataFromStorage('userId');
-                const profileData = await getProfileDetails({
-                  userId: user_id,
-                });
-                await setDataInStorage(
-                  'profileData',
-                  JSON.stringify(profileData)
-                );
-                navigation.navigate('Dashboard');
-              } else {
-                navigation.navigate('Dashboard');
-              }
-            }
-          } else if (
-            token &&
-            (data?.params?.status === 'failed' ||
-              data?.params?.status === undefined)
-          ) {
-            handleLogout();
-          } else {
-            setLoading(false);
-          }
+      // Opens the user's home screen. Online, the cohort and profile are loaded first.
+      const goToHome = async (online) => {
+        if (
+          cohort_id !== '00000000-0000-0000-0000-000000000000' &&
+          userType === 'scp'
+        ) {
+          if (online) await setCurrentCohort(cohort_id);
+          navigation.navigate('SCPUserTabScreen');
         } else {
-          if (
-            cohort_id !== '00000000-0000-0000-0000-000000000000' &&
-            userType === 'scp'
-          ) {
-            // await setCurrentCohort(cohort_id);
-            navigation.navigate('SCPUserTabScreen');
-          } else {
-            if (userType === 'youthnet') {
-              // navigation.navigate('YouthNetTabScreen');
-              navigation.navigate('Dashboard');
-            } else {
-              navigation.navigate('Dashboard');
-            }
+          if (online && userType === 'youthnet') {
+            const user_id = await getDataFromStorage('userId');
+            const profileData = await getProfileDetails({
+              userId: user_id,
+            });
+            await setDataInStorage('profileData', JSON.stringify(profileData));
           }
+          navigation.navigate('Dashboard');
+        }
+      };
+
+      if (token && userId) {
+        if (isConnected && isAccessTokenExpiringSoon(token)) {
+          // The access token expires soon: get a new access + refresh token first.
+          const { accessToken, rejected } = await refreshSession();
+          if (rejected) {
+            // Refresh token expired/revoked: sessionManager has logged the user out.
+          } else if (accessToken || !isAccessTokenExpired(token)) {
+            await goToHome(true);
+          } else {
+            // Server unreachable and the access token has already expired.
+            handleLogout();
+          }
+        } else if (isConnected) {
+          // Access token still has enough time: no refresh call needed.
+          await goToHome(true);
+        } else if (isAccessTokenExpired(token)) {
+          // Offline: an expired access token can't be refreshed, so end the session.
+          handleLogout();
+        } else {
+          await goToHome(false);
         }
       } else {
         setLoading(false);
