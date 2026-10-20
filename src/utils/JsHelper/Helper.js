@@ -948,7 +948,12 @@ export const categorizeEvents = async (events) => {
   const extraSessions = [];
 
   events?.forEach((event) => {
-    if (event.isRecurring) {
+    // metadata.type ('planned' | 'extra') is the source of truth; a planned
+    // session can be non-recurring. Fall back to isRecurring for older events
+    // created without a type.
+    const type = event?.metadata?.type?.toLowerCase();
+    const isPlanned = type ? type === 'planned' : event?.isRecurring;
+    if (isPlanned) {
       plannedSessions.push(event);
     } else {
       extraSessions.push(event);
