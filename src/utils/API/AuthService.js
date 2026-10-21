@@ -1798,7 +1798,9 @@ export const eventList = async ({ startDate, endDate }) => {
         after: startDate,
         before: endDate,
       },
-      cohortId: cohort?.cohortId,
+      // cohortData holds the learner's active BATCH cohort, so this scopes
+      // events to their own batch only
+      cohortIds: [cohort?.cohortId],
       status: ['live'],
     },
   };
