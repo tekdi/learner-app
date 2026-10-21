@@ -114,7 +114,9 @@ const ResetPassword = () => {
 
   const resetPasswordAPi = async () => {
     const payload = {
+      username: userName,
       newPassword: password,
+      oldPassword: oldPassword,
     };
     const data = await resetPassword({ payload });
     if (data?.params?.err !== undefined) {
