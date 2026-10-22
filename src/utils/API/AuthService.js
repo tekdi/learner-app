@@ -1808,12 +1808,7 @@ export const eventList = async ({ startDate, endDate }) => {
       status: ['live'],
     },
   };
-  console.log(
-    'eventList filters:',
-    JSON.stringify(payload.filters, null, 2),
-    'academicyearid:',
-    academicYearId
-  );
+  
   try {
     // const curlCommand = `
     // curl -X POST '${url}' \\
