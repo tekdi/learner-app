@@ -1773,19 +1773,28 @@ export const eventList = async ({ startDate, endDate }) => {
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
   const url = `${EndUrls.eventList}`; // Define the URL
   const headers = await getHeaders();
+  const academicYearId = await getDataFromStorage('academicYearId');
   const cohort = JSON.parse(await getDataFromStorage('cohortData'));
   const payload = {
     limit: 0,
     offset: 0,
     filters: {
-      date: {
+      ...(cohort?.cohortId ? { cohortIds: [cohort.cohortId] } : {}),
+      startDate: {
         after: startDate,
+      },
+      endDate: {
         before: endDate,
       },
-      cohortId: cohort?.cohortId,
       status: ['live'],
     },
   };
+  console.log(
+    'eventList filters:',
+    JSON.stringify(payload.filters, null, 2),
+    'academicyearid:',
+    academicYearId
+  );
   try {
     // const curlCommand = `
     // curl -X POST '${url}' \\
@@ -1799,22 +1808,18 @@ export const eventList = async ({ startDate, endDate }) => {
 
     // Make the actual request
     const result = await post(url, payload, {
-      headers: headers || {},
+      headers: { ...headers, academicyearid: academicYearId },
     });
 
     if (result) {
-      // event/list does not honour filters.cohortId, so keep only this batch's events
-      const eventResult = result?.data?.result;
-      const scopedResult = Array.isArray(eventResult?.events)
-        ? {
-            ...eventResult,
-            events: eventResult.events.filter((event) =>
-              event?.metadata?.cohortIds?.includes(cohort?.cohortId)
-            ),
-          }
-        : eventResult;
-      await storeApiResponse(user_id, url, 'post', payload, scopedResult);
-      return scopedResult;
+      await storeApiResponse(
+        user_id,
+        url,
+        'post',
+        payload,
+        result?.data?.result
+      );
+      return result?.data?.result;
     } else {
       let result_offline = await getApiResponse(user_id, url, 'post', payload);
       return result_offline;
