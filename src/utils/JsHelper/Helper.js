@@ -947,16 +947,14 @@ export const categorizeEvents = async (events) => {
   const plannedSessions = [];
   const extraSessions = [];
 
+  // The teacher app marks the session kind on metadata.type ('planned' or
+  // 'extra'); a one-off planned session is still planned, so isRecurring is not
+  // the right signal. Anything without a recognised type falls back to planned.
   events?.forEach((event) => {
-    // metadata.type ('planned' | 'extra') is the source of truth; a planned
-    // session can be non-recurring. Fall back to isRecurring for older events
-    // created without a type.
-    const type = event?.metadata?.type?.toLowerCase();
-    const isPlanned = type ? type === 'planned' : event?.isRecurring;
-    if (isPlanned) {
-      plannedSessions.push(event);
-    } else {
+    if (event?.metadata?.type === 'extra') {
       extraSessions.push(event);
+    } else {
+      plannedSessions.push(event);
     }
   });
 

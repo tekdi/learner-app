@@ -1789,21 +1789,26 @@ export const eventList = async ({ startDate, endDate }) => {
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
   const url = `${EndUrls.eventList}`; // Define the URL
   const headers = await getHeaders();
+  const academicYearId = await getDataFromStorage('academicYearId');
   const cohort = JSON.parse(await getDataFromStorage('cohortData'));
   const payload = {
     limit: 0,
     offset: 0,
     filters: {
-      date: {
+      // cohortData holds the learner's active BATCH cohort, so this scopes
+      // events to their own batch only. Omitted entirely when no batch is
+      // selected, so the server never receives [null].
+      ...(cohort?.cohortId ? { cohortIds: [cohort.cohortId] } : {}),
+      startDate: {
         after: startDate,
+      },
+      endDate: {
         before: endDate,
       },
-      // cohortData holds the learner's active BATCH cohort, so this scopes
-      // events to their own batch only
-      cohortIds: [cohort?.cohortId],
       status: ['live'],
     },
   };
+  
   try {
     // const curlCommand = `
     // curl -X POST '${url}' \\
@@ -1817,7 +1822,7 @@ export const eventList = async ({ startDate, endDate }) => {
 
     // Make the actual request
     const result = await post(url, payload, {
-      headers: headers || {},
+      headers: { ...headers, academicyearid: academicYearId },
     });
 
     if (result) {
