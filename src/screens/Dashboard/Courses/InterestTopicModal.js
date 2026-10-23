@@ -88,7 +88,6 @@ const InterestTopicModal = ({
               onPress={() => {
                 handleInterest(selectedIds);
               }}
-              isDisabled={!selectedIds?.label}
             />
           </View>
         </View>

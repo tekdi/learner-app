@@ -2470,7 +2470,7 @@ export const enrollInterest = async (selectedIds) => {
     enrollmentId: profileDetails?.enrollmentId || '',
     courseId: '',
     courseName: '',
-    topicName: selectedIds?.label,
+    topicName: selectedIds?.label || '', // Topic is optional
   };
   const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
     payload

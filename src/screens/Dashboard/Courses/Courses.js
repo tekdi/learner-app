@@ -65,30 +65,16 @@ import { deepLinkCheck } from '../../../utils/JsHelper/DeepLink';
 
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
-// The L2_INTERESTED customField value can come back either as a plain string
-// on the field, or inside a selectedValues array whose entries are either
-// strings ("yes") or objects ({ value: 'yes' }) - check all shapes.
-const isYesValue = (value) =>
-  typeof value === 'string' && value.trim().toLowerCase() === 'yes';
-
+// The learner counts as already interested as soon as the L2_INTERESTED field
+// is present in customFields - its value is intentionally not inspected.
 const isL2InterestedFromCustomFields = (customFields) => {
   if (!Array.isArray(customFields)) {
     return false;
   }
-  const field = customFields.find(
-    (item) => item?.fieldId === L2_INTERESTED_FIELD_ID
-  );
-  if (!field) {
-    return false;
-  }
-  if (isYesValue(field?.value)) {
-    return true;
-  }
-  const selectedValues = Array.isArray(field?.selectedValues)
-    ? field.selectedValues
-    : [];
-  return selectedValues.some(
-    (item) => isYesValue(item) || isYesValue(item?.value)
+  return customFields.some(
+    (item) =>
+      item?.fieldId === L2_INTERESTED_FIELD_ID ||
+      item?.label === 'L2_INTERESTED'
   );
 };
 
@@ -382,12 +368,6 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
     let user_Id = await getDataFromStorage('userId');
 
     const isInterested = trackData.some((course) => course.completed);
-    const data = (await getDataFromStorage(`Enrolled_to_l2${user_Id}`)) || '';
-
-    if (data === 'yes') {
-      setInterestContent(false);
-      return;
-    }
 
     if (!isInterested) {
       return;
@@ -395,6 +375,8 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
 
     // Persistence must be driven by the profile API (not local/cached state)
     // so the Interest section stays hidden across app reinstalls/devices.
+    // The local Enrolled_to_l2 flag is only a fallback when the API fails, so a
+    // stale flag can no longer keep the section hidden for eligible learners.
     try {
       const profileResult = await getProfileDetails({ userId: user_Id });
       const profileDetails = profileResult?.getUserDetails?.[0];
@@ -403,12 +385,14 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
       );
       setInterestContent(!alreadyInterested);
       if (alreadyInterested) {
-        // Cache the confirmed status so later visits skip the profile call.
+        // Cache the confirmed status as an offline fallback.
         await setDataInStorage(`Enrolled_to_l2${user_Id}`, 'yes');
       }
     } catch (e) {
       console.log('Error checking L2 interested status:', e);
-      setInterestContent(true);
+      const data =
+        (await getDataFromStorage(`Enrolled_to_l2${user_Id}`)) || '';
+      setInterestContent(data !== 'yes');
     }
   }
 
