@@ -34,6 +34,13 @@ const TestResultModal = ({ modal, title, isRegistrationTest }) => {
       navigation.navigate('SCPUserTabScreen');
       navigation.navigate('MyClass');
       navigation.navigate('TestView', { title: title || '-' });
+    } else if (userType == 'youthnet') {
+      // Vocational Training: same hand-back as SCP, into the Assessment tab.
+      await setDataInStorage('isFromPlayer', 'yes');
+      navigation.navigate('Dashboard', {
+        screen: 'AssessmentStack',
+        params: { screen: 'TestView', params: { title: title || '-' } },
+      });
     } else {
       navigation.goBack();
     }
