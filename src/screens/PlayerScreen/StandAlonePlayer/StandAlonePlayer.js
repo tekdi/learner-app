@@ -370,27 +370,27 @@ const StandAlonePlayer = ({ route }) => {
       content_mime_type == 'application/vnd.sunbird.questionset'
         ? (contentType = 'quml')
         : content_mime_type == 'application/vnd.ekstep.ecml-archive'
-          ? (contentType = 'ecml')
+          ? (contentType = 'ECML')
           : content_mime_type == 'application/vnd.ekstep.h5p-archive'
-            ? (contentType = 'h5p')
+            ? (contentType = 'H5P')
             : content_mime_type == 'application/vnd.ekstep.html-archive'
-              ? (contentType = 'html')
+              ? (contentType = 'HTML')
               : content_mime_type == 'video/x-youtube'
-                ? (contentType = 'youtube')
+                ? (contentType = 'YOUTUBE_X_VIDEO')
                 : content_mime_type == 'application/pdf'
-                  ? (contentType = 'pdf')
+                  ? (contentType = 'PDF')
                   : content_mime_type == 'application/epub'
-                    ? (contentType = 'epub')
+                    ? (contentType = 'EPUB')
                     : content_mime_type == 'video/mp4'
-                      ? (contentType = 'mp4')
+                      ? (contentType = 'VIDEO_MP4')
                       : content_mime_type == 'video/webm'
-                        ? (contentType = 'webm')
+                        ? (contentType = 'WEBM_VIDEO')
                         : content_mime_type == 'audio/mp3'
-                          ? (contentType = 'mp3')
+                          ? (contentType = 'AUDIO_MP3')
                           : content_mime_type == 'audio/wav'
-                            ? (contentType = 'wav')
+                            ? (contentType = 'AUDIO_WAV')
                             : content_mime_type == 'audio/mpeg'
-                              ? (contentType = 'mp3')
+                              ? (contentType = 'AUDIO_MP3')
                               : '';
       await storeData('contentId', content_do_id, '');
       await storeData('contentType', contentType, '');
@@ -512,6 +512,8 @@ const StandAlonePlayer = ({ route }) => {
 
   //set data from react native
   const webviewRef = useRef(null);
+  //timestamp (ms) captured when the assessment webview finishes loading, used to compute time spent on the assessment
+  const assessmentLoadStartTimeRef = useRef(null);
   // webview event
   const handleNavigationStateChange = (navState) => {
     console.log('Current URL:', navState.url);
@@ -735,7 +737,9 @@ const StandAlonePlayer = ({ route }) => {
           let scoreDetails = jsonObj.scoreDetails;
           let identifierWithoutImg = jsonObj.identifierWithoutImg;
           let maxScore = jsonObj.maxScore;
-          let seconds = jsonObj.seconds;
+          let seconds = assessmentLoadStartTimeRef.current
+            ? Math.round((Date.now() - assessmentLoadStartTimeRef.current) / 1000)
+            : jsonObj.seconds;
           console.log(
             '####### debug timespent scoreDetails',
             JSON.stringify(scoreDetails)
@@ -2221,6 +2225,11 @@ fetch(
               console.warn('WebView error: ', nativeEvent);
             }}
             onNavigationStateChange={handleNavigationStateChange}
+            onLoadEnd={() => {
+              if (content_mime_type == 'application/vnd.sunbird.questionset') {
+                assessmentLoadStartTimeRef.current = Date.now();
+              }
+            }}
             allowsInlineMediaPlayback={true}
             /*
             //for rtl

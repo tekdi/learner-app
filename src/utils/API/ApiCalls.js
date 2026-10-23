@@ -229,6 +229,11 @@ export const listQuestion = async (url, identifiers) => {
     data: data,
   };
 
+  // const curlCommand = `curl -X POST "${url}" ${Object.entries(config.headers)
+  //   .map(([key, value]) => `-H "${key}: ${value}"`)
+  //   .join(' ')} -d '${data}'`;
+  // console.log("listquestion curl",curlCommand);
+
   await axios
     .request(config)
     .then((response) => {

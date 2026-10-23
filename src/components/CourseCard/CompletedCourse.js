@@ -22,11 +22,11 @@ const CompletedCourse = ({ data }) => {
   const [visible, setVisible] = useState(false); // State to track which item is expanded
   const [certificateHtml, setCertificateHtml] = useState(null); // State to track which item is expanded
   let certificateId = data?.certificateId;
+  let certificateTemplate = data?.certificateTemplate;
 
   const handleViewCertificate = async () => {
-    const data = await viewCertificate({ certificateId });
-    // console.log('data', JSON.stringify(data?.result));
-    setCertificateHtml(data?.result);
+    const result = await viewCertificate({ certificateId, certificateTemplate });
+    setCertificateHtml(result?.result);
     setVisible(true);
   };
 
@@ -82,6 +82,7 @@ const CompletedCourse = ({ data }) => {
         certificateHtml={certificateHtml}
         certificateId={data?.certificateId}
         certificateName={data?.name}
+        certificateTemplate={data?.certificateTemplate}
       />
     </SafeAreaView>
   );
