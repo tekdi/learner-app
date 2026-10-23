@@ -306,12 +306,12 @@ export const registerUser = async (params = {}) => {
     return handleResponseException(e);
   }
 };
-export const updateUser = async ({ payload, user_id }) => {
+export const updateUser = async ({ payload, user_id, extraHeaders = {} }) => {
   try {
     const method = 'PATCH'; // Define the HTTP method
     const url = `${EndUrls.update_profile}/${user_id}`; // Define the URL
     const token = await getDataFromStorage('Accesstoken');
-    const headers = await getHeaders();
+    const headers = { ...(await getHeaders()), ...extraHeaders };
 
     const curlCommand = `
     curl -X PATCH '${url}' \\
@@ -2480,7 +2480,7 @@ export const enrollInterest = async (selectedIds) => {
     enrollmentId: profileDetails?.enrollmentId || '',
     courseId: '',
     courseName: '',
-    topicName: selectedIds?.label,
+    topicName: selectedIds?.label || '', // Topic is optional
   };
   const curlCommand = `curl -X POST ${headersString} -d '${JSON.stringify(
     payload
