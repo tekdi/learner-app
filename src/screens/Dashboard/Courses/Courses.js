@@ -28,7 +28,7 @@ import {
   courseListApi_New,
   enrollInterest,
   filterContent,
-  getUserDetails,
+  getProfileDetails,
   updateUser,
 } from '../../../utils/API/AuthService';
 import { L2_INTERESTED_FIELD_ID } from '../../../utils/Constants/app-constants';
@@ -65,16 +65,30 @@ import { deepLinkCheck } from '../../../utils/JsHelper/DeepLink';
 
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
-// The learner counts as already interested as soon as the L2_INTERESTED field
-// is present in customFields - its value is intentionally not inspected.
+// The L2_INTERESTED customField value can come back either as a plain string
+// on the field, or inside a selectedValues array whose entries are either
+// strings ("yes") or objects ({ value: 'yes' }) - check all shapes.
+const isYesValue = (value) =>
+  typeof value === 'string' && value.trim().toLowerCase() === 'yes';
+
 const isL2InterestedFromCustomFields = (customFields) => {
   if (!Array.isArray(customFields)) {
     return false;
   }
-  return customFields.some(
-    (item) =>
-      item?.fieldId === L2_INTERESTED_FIELD_ID ||
-      item?.label === 'L2_INTERESTED'
+  const field = customFields.find(
+    (item) => item?.fieldId === L2_INTERESTED_FIELD_ID
+  );
+  if (!field) {
+    return false;
+  }
+  if (isYesValue(field?.value)) {
+    return true;
+  }
+  const selectedValues = Array.isArray(field?.selectedValues)
+    ? field.selectedValues
+    : [];
+  return selectedValues.some(
+    (item) => isYesValue(item) || isYesValue(item?.value)
   );
 };
 
@@ -379,19 +393,17 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
       return;
     }
 
-    // Persistence must be driven by the User Read API (not local/cached state)
+    // Persistence must be driven by the profile API (not local/cached state)
     // so the Interest section stays hidden across app reinstalls/devices.
     try {
-      const userResult = await getUserDetails({
-        user_id: user_Id,
-        fieldvalue: true,
-      });
+      const profileResult = await getProfileDetails({ userId: user_Id });
+      const profileDetails = profileResult?.getUserDetails?.[0];
       const alreadyInterested = isL2InterestedFromCustomFields(
-        userResult?.userData?.customFields
+        profileDetails?.customFields
       );
       setInterestContent(!alreadyInterested);
       if (alreadyInterested) {
-        // Cache the confirmed status so later visits skip the user read call.
+        // Cache the confirmed status so later visits skip the profile call.
         await setDataInStorage(`Enrolled_to_l2${user_Id}`, 'yes');
       }
     } catch (e) {
