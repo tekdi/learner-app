@@ -66,18 +66,30 @@ import { deepLinkCheck } from '../../../utils/JsHelper/DeepLink';
 const CopilotView = walkthroughable(View); // Wrap Text to make it interactable
 
 // The L2_INTERESTED customField value can come back either as a plain string
-// on the field, or nested inside a selectedValues array - check both shapes.
+// on the field, or inside a selectedValues array whose entries are either
+// strings ("yes") or objects ({ value: 'yes' }) - check all shapes.
+const isYesValue = (value) =>
+  typeof value === 'string' && value.trim().toLowerCase() === 'yes';
+
 const isL2InterestedFromCustomFields = (customFields) => {
-  const field = customFields?.find(
+  if (!Array.isArray(customFields)) {
+    return false;
+  }
+  const field = customFields.find(
     (item) => item?.fieldId === L2_INTERESTED_FIELD_ID
   );
   if (!field) {
     return false;
   }
-  if (field?.value === 'yes') {
+  if (isYesValue(field?.value)) {
     return true;
   }
-  return field?.selectedValues?.[0]?.value === 'yes';
+  const selectedValues = Array.isArray(field?.selectedValues)
+    ? field.selectedValues
+    : [];
+  return selectedValues.some(
+    (item) => isYesValue(item) || isYesValue(item?.value)
+  );
 };
 
 const Courses = ({ route, CopilotStopped, customProp = null }) => {
@@ -163,6 +175,9 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
       }
       // setTrackData(courseTrackData);
       setTrackData(courseTrackData);
+      // Re-evaluate eligibility so a course completed since the last visit
+      // surfaces the Interest section without needing a full reload.
+      updateInterestStatus(courseTrackData);
     } catch (e) {
       console.log('Error:', e);
     }
@@ -387,6 +402,10 @@ const Courses = ({ route, CopilotStopped, customProp = null }) => {
         profileDetails?.customFields
       );
       setInterestContent(!alreadyInterested);
+      if (alreadyInterested) {
+        // Cache the confirmed status so later visits skip the profile call.
+        await setDataInStorage(`Enrolled_to_l2${user_Id}`, 'yes');
+      }
     } catch (e) {
       console.log('Error checking L2 interested status:', e);
       setInterestContent(true);
