@@ -3,6 +3,7 @@ import {
   createNewObject,
   createNewObjectTarget,
   getDataFromStorage,
+  getDefaultProgramTags,
   getTentantId,
 } from '../JsHelper/Helper';
 import {
@@ -351,12 +352,18 @@ export const courseListApi_testing = async ({
     Accept: 'application/json',
   };
   let userType = await getDataFromStorage('userType');
+  let uiConfig = {};
+  try {
+    uiConfig = JSON.parse((await getDataFromStorage('uiConfig')) || '{}');
+  } catch (e) {
+    console.log('Error parsing uiConfig:', e);
+  }
   const payload = {
     request: {
       filters: {
         program:
           userType == 'scp'
-            ? ['secondchance', 'Second Chance']
+            ? uiConfig?.program || (await getDefaultProgramTags())
             : ['Youthnet', 'youthnet', 'YouthNet', TENANT_DATA.YOUTHNET],
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }),
         primaryCategory: ['Course'],
@@ -843,6 +850,12 @@ export const assessmentListApi = async (params = {}) => {
     Accept: 'application/json',
   };
   let userType = await getDataFromStorage('userType');
+  let uiConfig = {};
+  try {
+    uiConfig = JSON.parse((await getDataFromStorage('uiConfig')) || '{}');
+  } catch (e) {
+    console.log('Error parsing uiConfig:', e);
+  }
   // Vocational Training: only the assessments assigned to the learner's batch.
   const assignedIds = Array.isArray(params?.identifiers)
     ? params.identifiers
@@ -856,7 +869,10 @@ export const assessmentListApi = async (params = {}) => {
             primaryCategory: ['Practice Question Set'],
           }
         : {
-        program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
+        program:
+          userType == 'scp'
+            ? uiConfig?.program || (await getDefaultProgramTags())
+            : [TENANT_DATA.YOUTHNET],
         board: `${params?.boardName}`,
         // "se_boards": [`${params?.boardName}`],
 
@@ -1783,19 +1799,26 @@ export const eventList = async ({ startDate, endDate }) => {
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
   const url = `${EndUrls.eventList}`; // Define the URL
   const headers = await getHeaders();
+  const academicYearId = await getDataFromStorage('academicYearId');
   const cohort = JSON.parse(await getDataFromStorage('cohortData'));
   const payload = {
     limit: 0,
     offset: 0,
     filters: {
-      date: {
+      // cohortData holds the learner's active BATCH cohort, so this scopes
+      // events to their own batch only. Omitted entirely when no batch is
+      // selected, so the server never receives [null].
+      ...(cohort?.cohortId ? { cohortIds: [cohort.cohortId] } : {}),
+      startDate: {
         after: startDate,
+      },
+      endDate: {
         before: endDate,
       },
-      cohortId: cohort?.cohortId,
       status: ['live'],
     },
   };
+  
   try {
     // const curlCommand = `
     // curl -X POST '${url}' \\
@@ -1809,7 +1832,7 @@ export const eventList = async ({ startDate, endDate }) => {
 
     // Make the actual request
     const result = await post(url, payload, {
-      headers: headers || {},
+      headers: { ...headers, academicyearid: academicYearId },
     });
 
     if (result) {
