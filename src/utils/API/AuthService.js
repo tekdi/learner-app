@@ -1097,7 +1097,10 @@ export const getProfileDetails = async (params = {}) => {
 
 export const getUserDetails = async (params = {}) => {
   try {
-    const url = `${EndUrls.userDetails}/${params?.user_id}`; // Define the URL
+    // fieldvalue=true makes the API include the user's customFields
+    const url = `${EndUrls.userDetails}/${params?.user_id}${
+      params?.fieldvalue ? '?fieldvalue=true' : ''
+    }`; // Define the URL
     const headers = await getHeaders();
     const result = await get(url, {
       headers: headers || {},
