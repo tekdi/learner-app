@@ -9,7 +9,11 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons';
-import { useFocusEffect } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import { useTranslation } from '../../context/LanguageContext';
 import {
   useTabBarStyle,
@@ -19,6 +23,7 @@ import DashboardStack from './DashboardStack';
 import SurveyStack from '../Youthnet/SurveyStack';
 import ExploreStack from '../Youthnet/ExploreStack';
 import AssessmentStack from '../Youthnet/AssessmentStack';
+import L2CoursesStack from '../Youthnet/L2CoursesStack';
 import useActiveBatchEligibility from '../../utils/Helper/useActiveBatchEligibility';
 import Contents from '../../screens/Dashboard/Contents';
 import Coursesfilled from '../../assets/images/png/Coursesfilled.png';
@@ -29,7 +34,10 @@ import Coursesunfilled from '../../assets/images/png/Coursesunfilled.png';
 import contentunfilled from '../../assets/images/png/content.png';
 import contentfilled from '../../assets/images/png/content2.png';
 import ProfileStack from './ProfileStack';
-import { getDataFromStorage } from '../../utils/JsHelper/Helper';
+import {
+  getDataFromStorage,
+  setDataInStorage,
+} from '../../utils/JsHelper/Helper';
 import { CopilotStep, useCopilot, walkthroughable } from 'react-native-copilot';
 import survey_filled from '@src/assets/images/png/survey_filled.png';
 import survey_unfilled from '@src/assets/images/png/survey_unfilled.png';
@@ -40,6 +48,10 @@ import { TENANT_DATA } from '../../utils/Constants/app-constants';
 
 const Tab = createBottomTabNavigator();
 const WalkthroughableView = walkthroughable(View); // Wrap Image component
+
+// `${userId}:${cohortId}` of the batch the learner was last sent to L2 Courses
+// for, so the redirect happens once per batch per login. Logout deletes it.
+const L2_COURSES_SHOWN_KEY = 'l2CoursesShownFor';
 
   const TabScreen = () => {
   console.log('###### TabScreen----yyyyy');
@@ -55,8 +67,41 @@ const WalkthroughableView = walkthroughable(View); // Wrap Image component
   const insets = useSafeAreaInsets();
   const tabBarStyle = useTabBarStyle();
   const tabLabelStyle = useTabLabelStyle();
-  // Vocational Training learners with an active batch get the Assessment tab.
+  // Vocational Training learners with an active batch get the L2 Courses and
+  // Assessment tabs.
   const hasActiveBatch = useActiveBatchEligibility(userType === 'youthnet');
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  // When a batch is assigned, and after each login with one, open L2 Courses
+  // directly — once, so the learner can still move to other tabs afterwards.
+  useEffect(() => {
+    if (userType !== 'youthnet' || !hasActiveBatch) {
+      return undefined;
+    }
+    let cancelled = false;
+    const redirectToL2Courses = async () => {
+      const userId = await getDataFromStorage('userId');
+      const cohortId = await getDataFromStorage('cohortId');
+      const shownFor = `${userId}:${cohortId}`;
+      if (
+        cancelled ||
+        !userId ||
+        !cohortId ||
+        (await getDataFromStorage(L2_COURSES_SHOWN_KEY)) === shownFor
+      ) {
+        return;
+      }
+      await setDataInStorage(L2_COURSES_SHOWN_KEY, shownFor);
+      if (!cancelled) {
+        navigation.navigate(route.name, { screen: 'L2CoursesStack' });
+      }
+    };
+    redirectToL2Courses();
+    return () => {
+      cancelled = true;
+    };
+  }, [userType, hasActiveBatch, navigation, route.name]);
 
   // useEffect(() => {
   //   const COPILOT_ENABLE = Config.COPILOT_ENABLE;
@@ -257,6 +302,21 @@ const WalkthroughableView = walkthroughable(View); // Wrap Image component
             tabBarIcon: ({ focused }) => (
               <Image
                 source={focused ? explore_FILL : explore_UNFILLED}
+                style={{ width: 30, height: 30 }}
+              />
+            ),
+          }}
+        />
+      )}
+      {userType === 'youthnet' && hasActiveBatch && (
+        <Tab.Screen
+          name="L2CoursesStack"
+          component={L2CoursesStack}
+          options={{
+            tabBarLabel: t('l2_courses'),
+            tabBarIcon: ({ focused }) => (
+              <Image
+                source={focused ? Coursesfilled : Coursesunfilled}
                 style={{ width: 30, height: 30 }}
               />
             ),
