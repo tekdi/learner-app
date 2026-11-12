@@ -68,7 +68,13 @@ export const login = async (params = {}) => {
     }
   } catch (e) {
     console.error('Login error:', e);
-    return {};
+    // Return the failure reason so callers can tell wrong credentials apart
+    // from other failures (CAPTCHA, server error, no network).
+    return {
+      error: true,
+      status: e?.response?.status,
+      params: e?.response?.data?.params,
+    };
   }
 };
 
