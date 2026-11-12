@@ -223,6 +223,12 @@ const FilterList = ({
   };
 
   const renderFilterSection = (item, key, isStatic = false) => {
+    // Skip sections the API sent without any options (e.g. a static field
+    // with no `range`): there is nothing to select in them.
+    const sectionOptions = isStatic ? item?.range : item?.options;
+    if (!Array.isArray(sectionOptions) || sectionOptions.length === 0) {
+      return null;
+    }
     const isExpanded = expandedSections[item.code];
     const selectedCount = isStatic 
       ? (staticFormData[item.code]?.length || 0)
