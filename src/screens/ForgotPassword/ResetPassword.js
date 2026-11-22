@@ -11,13 +11,15 @@ import {
 import globalStyles from '../../utils/Helper/Style';
 import PrimaryButton from '../../components/PrimaryButton/PrimaryButton';
 import { useTranslation } from '../../context/LanguageContext';
-import { login, resetPassword } from '../../utils/API/AuthService';
+import { resetPassword } from '../../utils/API/AuthService';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import PasswordField from '../../components/CustomPasswordComponent/PasswordField';
 import SecondaryHeader from '../../components/Layout/SecondaryHeader';
 import { getDataFromStorage } from '../../utils/JsHelper/Helper';
 import GlobalText from '@components/GlobalText/GlobalText';
+
+const MIN_PASSWORD_LENGTH = 4;
 
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
@@ -30,6 +32,9 @@ const ResetPassword = () => {
   const [isDisabled, setIsDisabled] = useState(true);
   const [passwordError, setPasswordError] = useState(false);
   const [oldPasswordError, setOldPasswordError] = useState(false);
+  const [samePasswordError, setSamePasswordError] = useState(false);
+  const [minLengthError, setMinLengthError] = useState(false);
+  const [loginError, setLoginError] = useState('');
   const { t } = useTranslation();
   const navigation = useNavigation();
 
@@ -47,6 +52,9 @@ const ResetPassword = () => {
 
   const handleOldPassword = (e) => {
     setOldPassword(e.trim());
+    setOldPasswordError(false);
+    setLoginError('');
+    setSamePasswordError(false);
     if (e.trim() === '') {
       setIsDisabled(true);
     } else if (ConfirmPassword == '' && password == '') {
@@ -55,6 +63,8 @@ const ResetPassword = () => {
   };
   const handlePassword = (e) => {
     setPassword(e.trim());
+    setSamePasswordError(false);
+    setMinLengthError(false);
     if (e.trim() === '') {
       setIsDisabled(true);
     } else if (ConfirmPassword !== '' && e.trim() !== ConfirmPassword) {
@@ -80,44 +90,51 @@ const ResetPassword = () => {
   };
 
   const handlelogin = async () => {
+    setLoginError('');
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setMinLengthError(true);
+      return;
+    }
+    if (password === oldPassword) {
+      setSamePasswordError(true);
+      return;
+    }
+    // The reset-password API validates the old password itself, so no
+    // separate login call is needed (the login API also requires a CAPTCHA).
     const payload = {
       username: userName,
-      password: oldPassword,
-    };
-    console.log("###### password debug payload",{ payload });
-
-    const data = await login(payload);
-    console.log("###### password debug data",{ data });
-
-    if (Object.keys(data).length !== 0 && data?.params?.status !== 'failed' && !data?.error) {
-      resetPasswordAPi();
-    } else {
-      setOldPasswordError(true);
-    }
-  };
-
-  const resetPasswordAPi = async () => {
-    const payload = {
       newPassword: password,
+      oldPassword: oldPassword,
     };
     const data = await resetPassword({ payload });
-    if (data?.params?.err !== undefined) {
-      console.log('reached');
-      setmodalError(data?.params?.err);
-    } else {
-      console.log('reached else', data);
+
+    const failed = data?.params?.status === 'failed' || !!data?.error;
+    if (!failed) {
       setmodalError();
+      setmodal(true);
+      return;
     }
-    setmodal(true);
-    console.log(data?.email);
-    console.log(data?.params?.err);
+
+    const errmsg = data?.params?.errmsg || data?.error;
+    if (!data?.params) {
+      // No API response body at all: network failure
+      setLoginError(t('network_error_try_again_later'));
+    } else if (
+      data?.status === 401 ||
+      /old password|incorrect|invalid.*(credential|password)/i.test(
+        errmsg || ''
+      )
+    ) {
+      setOldPasswordError(true);
+    } else {
+      // Any other failure: show the real reason from the server
+      setLoginError(errmsg || t('something_went_wrong_try_again_later'));
+    }
   };
 
   function encryptEmail(email) {
     if (email) {
       // Split the email into username and domain
-      console.log({ email });
-
       const [emailUsername, domain] = email.split('@');
 
       // Check if emailUsername is valid
@@ -196,6 +213,50 @@ const ResetPassword = () => {
               {t('old_password_is_incorrect')}
             </Text>
           )}
+          {!!loginError && (
+            <Text
+              allowFontScaling={false}
+              style={{
+                color: 'red',
+                alignSelf: 'flex-start',
+                marginBottom: 10,
+                marginTop: -20,
+                fontFamily: 'Poppins-Regular',
+              }}
+            >
+              {loginError}
+            </Text>
+          )}
+          {samePasswordError && (
+            <Text
+              allowFontScaling={false}
+              style={{
+                color: 'red',
+                alignSelf: 'flex-start',
+                marginBottom: 10,
+                marginTop: -20,
+                fontFamily: 'Poppins-Regular',
+              }}
+            >
+              {t('new_password_must_be_different')}
+            </Text>
+          )}
+          {minLengthError && (
+            <Text
+              allowFontScaling={false}
+              style={{
+                color: 'red',
+                alignSelf: 'flex-start',
+                marginBottom: 10,
+                marginTop: -20,
+                fontFamily: 'Poppins-Regular',
+              }}
+            >
+              {t('min_validation')
+                .replace('{field}', t('new_password'))
+                .replace('{length}', MIN_PASSWORD_LENGTH)}
+            </Text>
+          )}
           <PrimaryButton
             isDisabled={isDisabled}
             onPress={handlelogin}
@@ -236,7 +297,7 @@ const ResetPassword = () => {
                       { textAlign: 'center', marginVertical: 10 },
                     ]}
                   >
-                    {t(failed_to_reset_password)}
+                    {t('failed_to_reset_password')}
                   </Text>
                 ) : (
                   <>

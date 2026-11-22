@@ -6,6 +6,7 @@ import RNFS from 'react-native-fs';
 import messaging from '@react-native-firebase/messaging';
 import { getCurrentRouteParams } from '../NavigationService';
 import { readContent } from '../API/ApiCalls';
+import { TENANT_DATA, CONTENT_PLATFORM_IDS } from '../Constants/app-constants';
 
 // Get Saved Data from AsyncStorage
 
@@ -17,6 +18,38 @@ export const getDataFromStorage = async (value) => {
     return null;
     console.error('Error retrieving credentials:', e);
   }
+};
+
+// Resolve the content-platform (Ekstep) framework/channel IDs for the
+// currently logged-in user's program. SCP and Pathways both store
+// userType === 'scp', so the actual tenant name (not userType) is what
+// distinguishes which set of IDs to use.
+export const getContentPlatformIds = async () => {
+  const userType = await getDataFromStorage('userType');
+  if (userType !== 'scp') {
+    return CONTENT_PLATFORM_IDS.DEFAULT;
+  }
+  const tenantData = JSON.parse((await getDataFromStorage('tenantData')) || '[]');
+  const tenantName = (tenantData?.[0]?.tenantName || '').trim().toLowerCase();
+  const pathwaysName = TENANT_DATA.PATHWAYS.trim().toLowerCase();
+  return tenantName === pathwaysName
+    ? CONTENT_PLATFORM_IDS.SCP_PATHWAYS
+    : CONTENT_PLATFORM_IDS.SCP;
+};
+
+// Fallback program tag(s) for content/assessment search filters, used only
+// when the backend hasn't configured uiConfig.program for the tenant. SCP
+// and Pathways both store userType === 'scp', so — like
+// getContentPlatformIds above — the actual tenant name is what distinguishes
+// them here. SCP alone also keeps its legacy "Second Chance" tag for
+// backward compatibility; Pathways has no such legacy tag to preserve.
+export const getDefaultProgramTags = async () => {
+  const tenantData = JSON.parse((await getDataFromStorage('tenantData')) || '[]');
+  const tenantName = (tenantData?.[0]?.tenantName || '').trim().toLowerCase();
+  const pathwaysName = TENANT_DATA.PATHWAYS.trim().toLowerCase();
+  return tenantName === pathwaysName
+    ? [TENANT_DATA.PATHWAYS]
+    : [TENANT_DATA.SECOND_CHANCE_PROGRAM, 'Second Chance'];
 };
 
 // Save Refresh Token
@@ -89,6 +122,18 @@ export const getAcademicYearId = async () => {
   } catch (e) {
     console.error('Error retrieving credentials:', e);
   }
+};
+
+// Batch-assignment ("cohortAssignedToAnyAcademicYearId") is fetched by a
+// WebView bridge for whichever program is currently selected. A dual-enrolled
+// user shares one userId across programs, so the cache key must also carry
+// the current tenant/program — otherwise one program's result leaks into the
+// other's eligibility checks.
+export const getBatchAssignmentCacheKey = async () => {
+  const tenantId = await getDataFromStorage('userTenantid');
+  return tenantId
+    ? `cohortAssignedToAnyAcademicYearId:${tenantId}`
+    : 'cohortAssignedToAnyAcademicYearId';
 };
 
 // Save Refresh Token
@@ -525,15 +570,19 @@ export const translateDate = (dateStr, lang) => {
   }
 };
 
+// Labels are compared after stripping punctuation and case on BOTH sides, so
+// labels like "What_DIVISION_/_PERCENTAGE..." or "PRATHAM'S..." still match.
+const normalizeFieldLabel = (label) =>
+  label?.replace(/[^a-zA-Z0-9_ ]/g, '').toLowerCase();
+
 export const createNewObject = (customFields, labels, profileView) => {
   const result = {};
 
   customFields?.forEach((field) => {
-    const cleanedFieldLabel = field?.label?.replace(/[^a-zA-Z0-9_ ]/g, '');
-    // console.log('cleanedFieldLabel', cleanedFieldLabel);
+    const cleanedFieldLabel = normalizeFieldLabel(field?.label);
 
     labels.map((item) => {
-      if (item?.label === cleanedFieldLabel) {
+      if (cleanedFieldLabel && normalizeFieldLabel(item?.label) === cleanedFieldLabel) {
         const selectedValues = field?.selectedValues;
 
         if (field.type === 'drop_down') {
@@ -802,6 +851,12 @@ export const PROFILE_BANNER_EXCLUDED_FIELDS = [
 export const isProfileFieldRequired = (field) =>
   field?.validation?.isRequired ?? field?.isRequired;
 
+// "Please specify" fields (e.g. fromWhichBoardDidYouPassClass10Other) only apply
+// when their parent field - the same name minus the Other suffix - is "other".
+// Returns that parent's name, or null for any other field.
+export const getOtherFieldParent = (name) =>
+  name?.match(/^(.+?)(?:Other|_other|_OTHER)$/)?.[1] || null;
+
 // Whether `field` should be rendered at all given the rest of the form's current
 // values. Single source of truth shared by the Edit Profile form, the Complete
 // Profile mini-form, and the banner's completeness check, so the three can't
@@ -862,6 +917,14 @@ export const isProfileFieldVisible = (field, formData) => {
     return false;
   }
 
+  const otherParent = getOtherFieldParent(field?.name);
+  if (otherParent) {
+    const rawParent = formData?.[otherParent];
+    const parentValue =
+      rawParent && typeof rawParent === 'object' ? rawParent.value : rawParent;
+    return String(parentValue ?? '').toLowerCase() === 'other';
+  }
+
   return true;
 };
 
@@ -902,11 +965,14 @@ export const categorizeEvents = async (events) => {
   const plannedSessions = [];
   const extraSessions = [];
 
+  // The teacher app marks the session kind on metadata.type ('planned' or
+  // 'extra'); a one-off planned session is still planned, so isRecurring is not
+  // the right signal. Anything without a recognised type falls back to planned.
   events?.forEach((event) => {
-    if (event.isRecurring) {
-      plannedSessions.push(event);
-    } else {
+    if (event?.metadata?.type === 'extra') {
       extraSessions.push(event);
+    } else {
+      plannedSessions.push(event);
     }
   });
 

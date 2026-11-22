@@ -182,6 +182,9 @@ const RegistrationForm = ({ fields }) => {
     await setDataInStorage('academicYearId', academicYearId || '');
     await setDataInStorage('userTenantid', tenantid || '');
     const cohort = await getCohort({ user_id, tenantid, academicYearId });
+    // Drop the previous program's batch first: if this program has no active
+    // cohort below, cohortData must stay empty rather than leak across programs.
+    await setDataInStorage('cohortData', '');
     let cohort_id;
     if (cohort.params?.status !== 'failed') {
       const getActiveCohort = await getActiveCohortData(cohort);
@@ -226,7 +229,12 @@ const RegistrationForm = ({ fields }) => {
       ?.map((item) => item?.tenantId);
 
     const scp = programData
-      ?.filter((item) => item.name === 'Second Chance Program')
+      ?.filter((item) =>
+        [
+          TENANT_DATA.SECOND_CHANCE_PROGRAM,
+          TENANT_DATA.PATHWAYS,
+        ].includes(item.name)
+      )
       ?.map((item) => item.tenantId);
 
     const role = roleName;
@@ -234,7 +242,7 @@ const RegistrationForm = ({ fields }) => {
     console.log('#### loginmultirole tenantid', tenantid);
 
     if (role == 'Learner' || role == 'Student') {
-      if (tenantid === scp?.[0]) {
+      if (scp?.includes(tenantid)) {
         await setDataInStorage('userType', 'scp');
         if (cohort_id) {
           navigation.navigate('SCPUserTabScreen');

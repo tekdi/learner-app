@@ -132,6 +132,7 @@
   "no_data_found": "کوئی ڈیٹا نہیں ملا",
   "my_profile": "میرا پروفائل",
   "second_chance_program": "سکنڈ چانس پروگرام",
+  "pathways": "راستے",
   "logout": "لاگ آؤٹ",
   "general_instructions": "عام ہدایات",
   "test_medium": "ٹیسٹ کا ذریعہ",
@@ -269,6 +270,7 @@
   "saving": "محفوظ کریں",
   "old_password": "پرانا پاس ورڈ",
   "old_password_is_incorrect": "پرانا پاس ورڈ غلط ہے۔",
+  "new_password_must_be_different": "نیا پاس ورڈ پرانے پاس ورڈ سے مختلف ہونا چاہیے",
   "create_new_account": "نیا اکاؤنٹ بنائیں",
   "the_following_details_must_be_filled_by_parents_or_guardians": "مندرجہ ذیل تفصیلات والدین یا سرپرستوں کی طرف سے پُر کرنا ضروری ہے۔",
   "parent_name": "والدین/سرپرست کا نام",
@@ -648,5 +650,10 @@
   "of": "میں سے",
   "completed_lowercase": "مکمل ہو گیا",
   "start_assessment": "تشخیص شروع کریں",
-  "take_second_attempt": "دوسری کوشش کریں"
+  "take_second_attempt": "دوسری کوشش کریں",
+  "from_which_board_did_you_pass_class_10": "آپ نے دسویں جماعت کس بورڈ سے پاس کی؟",
+  "from_which_board_did_you_pass_class_10_other": "براہ کرم وہ بورڈ بتائیں جس سے آپ نے دسویں جماعت پاس کی",
+  "what_division_/_percentage_did_you_get_in_class_10": "دسویں جماعت میں آپ کو کون سا ڈویژن / کتنے فیصد ملے؟",
+  "have_you_studied_in_pratham's_second_chance_program": "کیا آپ نے پرتھم کے سیکنڈ چانس پروگرام میں تعلیم حاصل کی ہے؟",
+  "in_which_year_did_you_pass_class_10": "آپ نے دسویں جماعت کس سال پاس کی؟"
 }

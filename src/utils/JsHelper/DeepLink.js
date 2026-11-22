@@ -81,7 +81,10 @@ const switchToProgram = async (tenant, navigation) => {
       academicYearId,
     });
     console.log('#### DeepLink: cohort', cohort);
-    
+
+    // Drop the previous program's batch first: if this program has no active
+    // cohort below, cohortData must stay empty rather than leak across programs.
+    await setDataInStorage('cohortData', '');
     let cohort_id;
     if (cohort.params?.status !== 'failed') {
       const getActiveCohort = await getActiveCohortData(cohort);
@@ -127,7 +130,7 @@ const switchToProgram = async (tenant, navigation) => {
       ?.map((item) => item?.tenantId);
 
     const scpTenantIds = tenantDetails
-      ?.filter((item) => item?.name === TENANT_DATA.SECOND_CHANCE_PROGRAM)
+      ?.filter((item) => [TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.PATHWAYS].includes(item?.name))
       ?.map((item) => item?.tenantId);
 
     const campToClubTenantIds = tenantDetails
@@ -168,7 +171,7 @@ const switchToProgram = async (tenant, navigation) => {
     if (scpTenantIds?.includes(tenantId)) {
       console.log('#### DeepLink: Setting userType to scp');
       await setDataInStorage('userType', 'scp');
-    } else if (selectedTenantName === TENANT_DATA.SECOND_CHANCE_PROGRAM) {
+    } else if ([TENANT_DATA.SECOND_CHANCE_PROGRAM, TENANT_DATA.PATHWAYS].includes(selectedTenantName)) {
       console.log('#### DeepLink: Setting userType to scp (by name)');
       await setDataInStorage('userType', 'scp');
     } else if (youthnetTenantIds?.includes(tenantId)) {

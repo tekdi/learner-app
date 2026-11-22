@@ -76,8 +76,13 @@ const CustomCheckbox2 = ({
     );
   };
 
-  const displayOptions = showAllOptions ? options : options.slice(0, showMoreLimit);
-  const hasMoreOptions = options.length > showMoreLimit;
+  // Some static filter fields come from the API without a `range`, so
+  // `options` can be undefined; treat that as "no options" instead of crashing.
+  const safeOptions = Array.isArray(options) ? options : [];
+  const displayOptions = showAllOptions
+    ? safeOptions
+    : safeOptions.slice(0, showMoreLimit);
+  const hasMoreOptions = safeOptions.length > showMoreLimit;
 
   return (
     <View style={styles.container}>

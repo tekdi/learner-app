@@ -132,6 +132,7 @@
   "no_data_found": "డేటా కనుగొనబడలేదు",
   "my_profile": "నా ప్రొఫైల్",
   "second_chance_program": "సెకండ్ ఛాన్స్ ప్రోగ్రామ్",
+  "pathways": "మార్గాలు",
   "logout": "లాగ్ అవుట్",
   "general_instructions": "సాధారణ సూచనలు",
   "test_medium": "పరీక్ష మాధ్యమం",
@@ -269,6 +270,7 @@
   "saving": "సేవ్",
   "old_password": "పాత పాస్‌వర్డ్",
   "old_password_is_incorrect": "పాత పాస్‌వర్డ్ తప్పు",
+  "new_password_must_be_different": "కొత్త పాస్‌వర్డ్ పాత పాస్‌వర్డ్‌కు భిన్నంగా ఉండాలి",
   "create_new_account": "కొత్త ఖాతాను సృష్టించండి",
   "the_following_details_must_be_filled_by_parents_or_guardians": "కింది వివరాలను తల్లిదండ్రులు లేదా సంరక్షకులు పూరించాలి",
   "parent_name": "తల్లిదండ్రులు/సంరక్షకుల పేరు",
@@ -325,7 +327,7 @@
   "resend_otp_in": "{count}లలో OTPని తిరిగి పంపండి",
   "verify_otp": "OTPని ధృవీకరించండి",
   "unable_to_send_otp": "OTP పంపలేకపోయింది",
-  "min_validation": "{ఫీల్డ్} కనీసం {length} అక్షరాలు ఉండాలి",
+  "min_validation": "{field} కనీసం {length} అక్షరాలు ఉండాలి",
   "max_validation": "{field} గరిష్టంగా {length} అక్షరాలు ఉండాలి",
   "settings": "సెట్టింగ్‌లు",
   "q2_a_bit_more": "మీ గురించి కొంచెం ఎక్కువ",
@@ -648,5 +650,10 @@
   "of": "లో",
   "completed_lowercase": "పూర్తయింది",
   "start_assessment": "మూల్యాంకనం ప్రారంభించండి",
-  "take_second_attempt": "రెండవ ప్రయత్నం చేయండి"
+  "take_second_attempt": "రెండవ ప్రయత్నం చేయండి",
+  "from_which_board_did_you_pass_class_10": "మీరు 10వ తరగతి ఏ బోర్డు నుండి ఉత్తీర్ణులయ్యారు?",
+  "from_which_board_did_you_pass_class_10_other": "దయచేసి మీరు 10వ తరగతి ఉత్తీర్ణులైన బోర్డును పేర్కొనండి",
+  "what_division_/_percentage_did_you_get_in_class_10": "10వ తరగతిలో మీకు ఏ డివిజన్ / ఎంత శాతం వచ్చింది?",
+  "have_you_studied_in_pratham's_second_chance_program": "మీరు ప్రథమ్ సెకండ్ ఛాన్స్ ప్రోగ్రామ్‌లో చదివారా?",
+  "in_which_year_did_you_pass_class_10": "మీరు 10వ తరగతి ఏ సంవత్సరంలో ఉత్తీర్ణులయ్యారు?"
 }

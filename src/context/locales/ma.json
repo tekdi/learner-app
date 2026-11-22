@@ -132,6 +132,7 @@
   "no_data_found": "कोणतीही माहिती आढळली नाही",
   "my_profile": "माझे प्रोफाइल",
   "second_chance_program": "दुसरी संधी कार्यक्रम",
+  "pathways": "मार्ग",
   "logout": "लॉगआउट करा",
   "general_instructions": "सर्वसाधारण सूचना",
   "test_medium": "चाचणी माध्यम",
@@ -269,6 +270,7 @@
   "saving": "सुरक्षितपणे ठेवली जात आहे",
   "old_password": "जुना संकेत शब्द",
   "old_password_is_incorrect": "जुना पासवर्ड चुकीचा आहे",
+  "new_password_must_be_different": "नवीन पासवर्ड जुन्या पासवर्डपेक्षा वेगळा असणे आवश्यक आहे",
   "create_new_account": "नवीन खाते उघडा",
   "the_following_details_must_be_filled_by_parents_or_guardians": "खालील तपशील पालक किंवा संरक्षकाने भरले पाहिजे",
   "parent_name": "पालक/संरक्षकाचे नाव",
@@ -648,5 +650,10 @@
   "of": "पैकी",
   "completed_lowercase": "पूर्ण झाले",
   "start_assessment": "मूल्यांकन सुरू करा",
-  "take_second_attempt": "दुसरा प्रयत्न करा"
+  "take_second_attempt": "दुसरा प्रयत्न करा",
+  "from_which_board_did_you_pass_class_10": "तुम्ही इयत्ता 10 वी कोणत्या बोर्डातून उत्तीर्ण झालात?",
+  "from_which_board_did_you_pass_class_10_other": "कृपया तुम्ही इयत्ता 10 वी उत्तीर्ण झालेल्या बोर्डाचे नाव नमूद करा",
+  "what_division_/_percentage_did_you_get_in_class_10": "इयत्ता 10 वी मध्ये तुम्हाला कोणती श्रेणी / किती टक्के मिळाले?",
+  "have_you_studied_in_pratham's_second_chance_program": "तुम्ही प्रथमच्या सेकंड चान्स प्रोग्राममध्ये शिक्षण घेतले आहे का?",
+  "in_which_year_did_you_pass_class_10": "तुम्ही इयत्ता 10 वी कोणत्या वर्षी उत्तीर्ण झालात?"
 }

@@ -48,6 +48,12 @@ const SubjectCard = ({ item }) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
 
+  // "Subject - Short description", as the web UI shows it. Either part can be
+  // empty on events created without one, so only join what is actually there.
+  const cardTitle = [item?.metadata?.subject, item?.shortDescription]
+    .filter(Boolean)
+    .join(' - ');
+
   const handleCopyLink = (zoomLink) => {
     Clipboard.setString(zoomLink); // Copy the Zoom link to the clipboard
     setShowToast(true); // Show toast message
@@ -73,25 +79,21 @@ const SubjectCard = ({ item }) => {
       {/* Subject Name */}
 
       <View style={{ padding: 15 }}>
-        <View
-          style={[globalStyles.flexrow, { justifyContent: 'space-between' }]}
-        >
-          <View style={[globalStyles.flexrow]}>
-            {!item?.onlineDetails ? (
-              <Icon name="building" size={20} color="#000" />
-            ) : (
-              <SimpleIcon name="social-youtube" size={20} color="#000" />
-            )}
-            <GlobalText style={[globalStyles.subHeading, { marginLeft: 5 }]}>
-              {item?.metadata?.subject}
-            </GlobalText>
-          </View>
-
-          <GlobalText style={[globalStyles.text]}>
-            {formatDateTimeRange(item?.startDateTime)} -
-            {formatDateTimeRange(item?.endDateTime)}
+        <View style={[globalStyles.flexrow]}>
+          {!item?.onlineDetails ? (
+            <Icon name="building" size={20} color="#000" />
+          ) : (
+            <SimpleIcon name="social-youtube" size={20} color="#000" />
+          )}
+          <GlobalText style={[globalStyles.subHeading, { marginLeft: 5 }]}>
+            {cardTitle}
           </GlobalText>
         </View>
+
+        <GlobalText style={[globalStyles.text, { marginTop: 5 }]}>
+          {formatDateTimeRange(item?.startDateTime)} -
+          {formatDateTimeRange(item?.endDateTime)}
+        </GlobalText>
 
         <GlobalText
           style={[globalStyles.text, { color: '#7C766F', marginTop: 5 }]}

@@ -32,12 +32,12 @@ import {
   resumeTrackingStatus,
 } from '../../../utils/API/ApiCalls';
 import {
-  qumlPlayerConfig,
+  qumlPlayerConfig as defaultQumlPlayerConfig,
   contentPlayerConfig,
   pdfPlayerConfig,
   videoPlayerConfig,
   epubPlayerConfig,
-  questionsData,
+  questionsData as defaultQuestionsData,
 } from './data';
 import { getData, removeData, storeData } from '../../../utils/Helper/JSHelper';
 import RNFS from 'react-native-fs';
@@ -239,6 +239,15 @@ const StandAlonePlayer = ({ route }) => {
     course_id ? course_id : content_do_id
   );
   const [unitId, setUnitId] = useState(unit_id ? unit_id : content_do_id);
+
+  //per-screen copies so metadata/questions of a previously opened
+  //assessment never leak into this one (data.js exports shared objects)
+  const qumlPlayerConfig = useRef(
+    JSON.parse(JSON.stringify(defaultQumlPlayerConfig))
+  ).current;
+  const questionsData = useRef(
+    JSON.parse(JSON.stringify(defaultQuestionsData))
+  ).current;
 
   const contentResumeData = useRef(null);
 
@@ -514,6 +523,21 @@ const StandAlonePlayer = ({ route }) => {
   const webviewRef = useRef(null);
   //timestamp (ms) captured when the assessment webview finishes loading, used to compute time spent on the assessment
   const assessmentLoadStartTimeRef = useRef(null);
+  // Holds the in-flight assessment-attempt save promise (if any). The content
+  // can fire its "close"/exit signal right after posting scoreDetails, so any
+  // navigate-away path must wait for this before tearing down the webview —
+  // otherwise the save request can be aborted mid-flight and the attempt is
+  // silently never persisted, even though the user saw a "completed" screen.
+  const pendingAttemptSaveRef = useRef(null);
+  const waitForPendingAttemptSave = async () => {
+    if (!pendingAttemptSaveRef.current) {
+      return;
+    }
+    await Promise.race([
+      pendingAttemptSaveRef.current.catch(() => {}),
+      new Promise((resolve) => setTimeout(resolve, 6000)),
+    ]);
+  };
   // webview event
   const handleNavigationStateChange = (navState) => {
     console.log('Current URL:', navState.url);
@@ -569,6 +593,7 @@ const StandAlonePlayer = ({ route }) => {
         await storeData(content_do_id+'contentEidEND', contentEidEND, 'json');
         //check if exit button pressed
         fetchExitData();
+        await waitForPendingAttemptSave();
         navigation.goBack();
       }
       //check telemetry
@@ -628,6 +653,7 @@ const StandAlonePlayer = ({ route }) => {
         //check if exit button pressed
         if (data_obj?.eid == 'HEARTBEAT' && data_obj?.edata?.type == 'EXIT') {
           fetchExitData();
+          await waitForPendingAttemptSave();
           navigation.goBack();
         }
       }
@@ -722,6 +748,7 @@ const StandAlonePlayer = ({ route }) => {
             Orientation.lockToPortrait();
           }, 300);
           fetchExitData();
+          await waitForPendingAttemptSave();
           navigation.goBack();
       }
       //for assessment
@@ -736,6 +763,23 @@ const StandAlonePlayer = ({ route }) => {
           let jsonObj = JSON.parse(data);
           let scoreDetails = jsonObj.scoreDetails;
           let identifierWithoutImg = jsonObj.identifierWithoutImg;
+          //guard: player must report the content opened on this screen
+          const expectedContentId = String(content_do_id).replace('.img', '');
+          if (identifierWithoutImg !== expectedContentId) {
+            console.warn(
+              'assessment contentId mismatch',
+              identifierWithoutImg,
+              expectedContentId
+            );
+            set_loading_text('');
+            setLoading(false);
+            Alert.alert(
+              'Error',
+              'Unable to submit assessment. Please close and open the assessment again.',
+              [{ text: 'OK' }]
+            );
+            return;
+          }
           let maxScore = jsonObj.maxScore;
           let seconds = assessmentLoadStartTimeRef.current
             ? Math.round((Date.now() - assessmentLoadStartTimeRef.current) / 1000)
@@ -750,7 +794,7 @@ const StandAlonePlayer = ({ route }) => {
           // let userId = 'fb6b2e58-0f14-4d4f-90e4-bae092e7a951';
           let lastAttemptedOn = new Date().toISOString();
 
-          let create_assessment = await assessmentTracking(
+          const savePromise = assessmentTracking(
             scoreDetails,
             identifierWithoutImg,
             maxScore,
@@ -760,6 +804,15 @@ const StandAlonePlayer = ({ route }) => {
             courseId,
             unitId
           );
+          pendingAttemptSaveRef.current = savePromise;
+          let create_assessment;
+          try {
+            create_assessment = await savePromise;
+          } finally {
+            if (pendingAttemptSaveRef.current === savePromise) {
+              pendingAttemptSaveRef.current = null;
+            }
+          }
 
           //add manual end event
           let storedContentEidEND = await getData(content_do_id+'contentEidEND', 'json');
@@ -2192,6 +2245,15 @@ fetch(
             */
             allowFileAccessFromFileURLs={true}
           />
+        )
+        : content_mime_type == 'application/vnd.sunbird.questionset' &&
+          is_valid_file !== true ? (
+          //wait for fetchDataQuml to fill qumlPlayerConfig for this content,
+          //otherwise the webview injects the previous assessment's metadata
+          //(module-level singleton) and the wrong contentId gets submitted
+          <View style={styles.middle_screen}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
         )
         : (
           <WebView

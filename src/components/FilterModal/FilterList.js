@@ -15,6 +15,7 @@ import {
   getDataFromStorage,
   getPreferredContentLanguageSelection,
 } from '../../utils/JsHelper/Helper';
+import { CONTENT_PLATFORM_IDS } from '../../utils/Constants/app-constants';
 
 const FilterList = ({
   setParentFormData,
@@ -222,6 +223,12 @@ const FilterList = ({
   };
 
   const renderFilterSection = (item, key, isStatic = false) => {
+    // Skip sections the API sent without any options (e.g. a static field
+    // with no `range`): there is nothing to select in them.
+    const sectionOptions = isStatic ? item?.range : item?.options;
+    if (!Array.isArray(sectionOptions) || sectionOptions.length === 0) {
+      return null;
+    }
     const isExpanded = expandedSections[item.code];
     const selectedCount = isStatic 
       ? (staticFormData[item.code]?.length || 0)
@@ -708,7 +715,10 @@ const FilterList = ({
     
     // Remove grade from default form data, but keep board
     const filteredDefaultFormData = { ...defaultFormData };
-    if (filteredDefaultFormData.gradeLevel && channelId === 'scp-channel') {
+    const isScpChannel =
+      channelId === CONTENT_PLATFORM_IDS.SCP.channelId ||
+      channelId === CONTENT_PLATFORM_IDS.SCP_PATHWAYS.channelId;
+    if (filteredDefaultFormData.gradeLevel && isScpChannel) {
       delete filteredDefaultFormData.gradeLevel;
     }
     // Keep board if it exists
@@ -789,9 +799,12 @@ const FilterList = ({
                   )}
 
                   {/* Dynamic Filters (Categories/Subdomains) */}
-                  {channelId !== 'scp-channel' && sortFilterSections(renderForm || []).map((item, key) => {
+                  {channelId !== CONTENT_PLATFORM_IDS.SCP.channelId &&
+                    channelId !== CONTENT_PLATFORM_IDS.SCP_PATHWAYS.channelId &&
+                    sortFilterSections(renderForm || []).map((item, key) => {
                     return (
-                      (item?.name !== 'Domain' || isExplore == true) && (
+                      (item?.name !== 'Domain' || isExplore == true) &&
+                      !['Certificate Template', 'Skills'].includes(item?.name) && (
                         renderFilterSection(item, key, false)
                       )
                     );
@@ -803,7 +816,9 @@ const FilterList = ({
                       {sortFilterSections(renderStaticForm || [])
                         .filter(item => 
                           item?.name !== 'Content Language' && 
-                          item?.name !== 'Language'
+                          item?.name !== 'Language' &&
+                          item?.name !== 'Certificate Template' &&
+                          item?.name !== 'Skills'
                         )
                         .map((item, key) => {
                           return (

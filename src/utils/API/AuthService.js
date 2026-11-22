@@ -3,6 +3,7 @@ import {
   createNewObject,
   createNewObjectTarget,
   getDataFromStorage,
+  getDefaultProgramTags,
   getTentantId,
 } from '../JsHelper/Helper';
 import {
@@ -67,7 +68,13 @@ export const login = async (params = {}) => {
     }
   } catch (e) {
     console.error('Login error:', e);
-    return {};
+    // Return the failure reason so callers can tell wrong credentials apart
+    // from other failures (CAPTCHA, server error, no network).
+    return {
+      error: true,
+      status: e?.response?.status,
+      params: e?.response?.data?.params,
+    };
   }
 };
 
@@ -351,12 +358,18 @@ export const courseListApi_testing = async ({
     Accept: 'application/json',
   };
   let userType = await getDataFromStorage('userType');
+  let uiConfig = {};
+  try {
+    uiConfig = JSON.parse((await getDataFromStorage('uiConfig')) || '{}');
+  } catch (e) {
+    console.log('Error parsing uiConfig:', e);
+  }
   const payload = {
     request: {
       filters: {
         program:
           userType == 'scp'
-            ? ['secondchance', 'Second Chance']
+            ? uiConfig?.program || (await getDefaultProgramTags())
             : ['Youthnet', 'youthnet', 'YouthNet', TENANT_DATA.YOUTHNET],
         ...(inprogress_do_ids && { identifier: inprogress_do_ids }),
         primaryCategory: ['Course'],
@@ -843,10 +856,19 @@ export const assessmentListApi = async (params = {}) => {
     Accept: 'application/json',
   };
   let userType = await getDataFromStorage('userType');
+  let uiConfig = {};
+  try {
+    uiConfig = JSON.parse((await getDataFromStorage('uiConfig')) || '{}');
+  } catch (e) {
+    console.log('Error parsing uiConfig:', e);
+  }
   const payload = {
     request: {
       filters: {
-        program: userType == 'scp' ? ['Second Chance'] : [TENANT_DATA.YOUTHNET],
+        program:
+          userType == 'scp'
+            ? uiConfig?.program || (await getDefaultProgramTags())
+            : [TENANT_DATA.YOUTHNET],
         board: `${params?.boardName}`,
         // "se_boards": [`${params?.boardName}`],
 
@@ -865,6 +887,8 @@ export const assessmentListApi = async (params = {}) => {
         // new different type
         // undo this
         evaluationType: ['offline', 'online', 'ai'],
+        // Only assessments tagged with the learner's batch stream(s)
+        ...(params?.streams?.length && { stream: params.streams }),
       },
       sort_by: {
         lastUpdatedOn: 'desc',
@@ -1773,19 +1797,26 @@ export const eventList = async ({ startDate, endDate }) => {
   const user_id = await getDataFromStorage('userId'); // Ensure this is defined
   const url = `${EndUrls.eventList}`; // Define the URL
   const headers = await getHeaders();
-  const cohort = JSON.parse(await getDataFromStorage('cohortData'));
+  const academicYearId = await getDataFromStorage('academicYearId');
+  const cohort = JSON.parse((await getDataFromStorage('cohortData')) || 'null');
   const payload = {
     limit: 0,
     offset: 0,
     filters: {
-      date: {
+      // cohortData holds the learner's active BATCH cohort, so this scopes
+      // events to their own batch only. Omitted entirely when no batch is
+      // selected, so the server never receives [null].
+      ...(cohort?.cohortId ? { cohortIds: [cohort.cohortId] } : {}),
+      startDate: {
         after: startDate,
+      },
+      endDate: {
         before: endDate,
       },
-      cohortId: cohort?.cohortId,
       status: ['live'],
     },
   };
+  
   try {
     // const curlCommand = `
     // curl -X POST '${url}' \\
@@ -1799,7 +1830,7 @@ export const eventList = async ({ startDate, endDate }) => {
 
     // Make the actual request
     const result = await post(url, payload, {
-      headers: headers || {},
+      headers: { ...headers, academicyearid: academicYearId },
     });
 
     if (result) {
@@ -1832,7 +1863,7 @@ export const targetedSolutions = async ({ subjectName, type,academicYear="" }) =
       'AWSALB=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+; AWSALBCORS=QVc9G+7LKggb8zF3qcLslwzgKzrKMO8SR2IhHCuIOYqAWLb7Z8j/dQsgOgAcWzoHng47JkYeBVsERcq2LH1Uqrcw371BlDe3KXU84ewyOlTU2Gxi9KwnIGIRKHW+',
     'x-auth-token': token,
   };
-  const cohort = JSON.parse(await getDataFromStorage('cohortData'));
+  const cohort = JSON.parse((await getDataFromStorage('cohortData')) || 'null');
   // console.log('cohort==>', JSON.stringify(cohort));
 
   const requiredLabels = ['GRADE', 'STATES', 'MEDIUM', 'BOARD'];

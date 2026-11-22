@@ -10,7 +10,7 @@ import {
   syncCourseDetails,
   updateCourseStatus,
 } from '../utils/API/AuthService';
-import { getDataFromStorage, getTentantId } from '../utils/JsHelper/Helper';
+import { getDataFromStorage } from '../utils/JsHelper/Helper';
 import {
   contentTracking,
   contentTrackingSync,
@@ -268,7 +268,7 @@ async function checkCriteriaForCertificate(reqBody) {
       console.log('Question Set Data:', questionSetData);
 
       //tenantId
-      const tenantId = getTentantId();
+      const userType = await getDataFromStorage('userType');
 
       // You can now use questionSetData array for further processing
       // Example output: [{contentId: "do_214302433656496128152", unitId: "do_214373529013116928121"}]
@@ -313,7 +313,7 @@ async function checkCriteriaForCertificate(reqBody) {
                 const percentage = parseFloat(assessment.percentage);
                 //percentage comparison from program specific configuration
                 let percentageComparision = 40;
-                if (tenantId === '914ca990-9b45-4385-a06b-05054f35d0b9') {
+                if (userType === 'scp') {
                   percentageComparision = 80;
                 }
                 return percentage >= percentageComparision;
