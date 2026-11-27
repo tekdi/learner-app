@@ -44,6 +44,7 @@ import {
 import RNFS from 'react-native-fs';
 import { unzip } from 'react-native-zip-archive';
 import Config from 'react-native-config';
+import AppErrorBoundary from '@components/ErrorBoundary/AppErrorBoundary';
 
 const linking = {
   prefixes: ['pratham://'],
@@ -625,6 +626,7 @@ const App = () => {
   }
 
   return (
+    <AppErrorBoundary>
     <SafeAreaProvider>
       <NetworkProvider>
         <ConfirmationProvider>
@@ -649,6 +651,7 @@ const App = () => {
         </ConfirmationProvider>
       </NetworkProvider>
     </SafeAreaProvider>
+    </AppErrorBoundary>
   );
 };
 

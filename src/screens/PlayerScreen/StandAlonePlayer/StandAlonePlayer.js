@@ -1184,12 +1184,26 @@ fetch(
         //get content file name
         let temp_file_url = contentObj?.artifactUrl;
         const dividedArray = temp_file_url.split(content_do_id);
-        const file_name =
+        let file_name =
           dividedArray[
             dividedArray.length > 0
               ? dividedArray.length - 1
               : dividedArray.length
           ];
+        // artifactUrl may contain a different do_ id than content_do_id,
+        // so split doesn't divide it. In that case take the part after
+        // the last "do_<id>" segment (e.g. "/dummy.pdf").
+        if (dividedArray.length === 1 && temp_file_url.includes('do_')) {
+          const doIndex = temp_file_url.lastIndexOf('do_');
+          const slashIndex = temp_file_url.indexOf('/', doIndex);
+          file_name =
+            slashIndex !== -1
+              ? temp_file_url.substring(slashIndex)
+              : temp_file_url.substring(doIndex);
+        }
+        // console.log("content_do_id",content_do_id);
+        // console.log('file_name', file_name);  
+        // console.log('dividedArray', dividedArray);  
         filePath = `http://127.0.0.1:8080/${content_do_id}/${content_do_id}${file_name}`;
         //console.log('filePath', filePath);
         //console.log('create blob url');
